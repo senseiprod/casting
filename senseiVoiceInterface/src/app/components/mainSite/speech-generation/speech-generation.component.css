@@ -1,0 +1,71 @@
+.generator-card {
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 30px;
+  background-color: white;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+input {
+  border: none;
+  resize: none;
+  font-size: 1.25rem;
+  min-height: 150px;
+  width: 100%;
+  outline: none;
+}
+.divider {
+  height: 1px;
+  background-color: #e9ecef;
+  margin: 20px 0;
+}
+.option-btn {
+  border-radius: 30px;
+  padding: 10px 20px;
+  background-color: white;
+  border: 1px solid #e9ecef;
+  margin-right: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.voice-selector {
+  border-radius: 30px;
+  padding: 10px 20px;
+  background-color: white;
+  border: 1px solid #e9ecef;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+.play-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: black;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.flag-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+.voice-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #a18cd1, #fbc2eb);
+  margin-right: 10px;
+}
+.purple-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #6f42c1;
+  border-radius: 50%;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}

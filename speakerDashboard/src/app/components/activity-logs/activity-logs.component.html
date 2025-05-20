@@ -1,0 +1,266 @@
+<main class="content p-4 fade-in">
+
+  <!-- Filters and Search -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 fw-bold text-primary">Search & Filter Logs</h6>
+      <button class="btn btn-sm btn-link text-primary p-0" type="button" (click)="toggleFilters()">
+        <i class="bi" [ngClass]="showFilters ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+      </button>
+    </div>
+    <div class="collapse" [ngClass]="{'show': showFilters}">
+      <div class="card-body">
+        <form>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label for="categoryFilter" class="form-label">Category</label>
+              <select id="categoryFilter" class="form-select rounded-pill" [(ngModel)]="categoryFilter" name="categoryFilter">
+                <option value="" selected>All Categories</option>
+                <option value="account">Account</option>
+                <option value="project">Project</option>
+                <option value="billing">Billing</option>
+                <option value="security">Security</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="dateRangeFilter" class="form-label">Date Range</label>
+              <select id="dateRangeFilter" class="form-select rounded-pill" [(ngModel)]="dateRangeFilter" name="dateRangeFilter" (change)="onDateRangeChange()">
+                <option value="all" selected>All Time</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="custom">Custom Range</option>
+              </select>
+            </div>
+            <div class="col-md-6" *ngIf="customDateRange">
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="startDate" class="form-label">Start Date</label>
+                  <input type="date" id="startDate" class="form-control rounded-pill" [(ngModel)]="startDate" name="startDate">
+                </div>
+                <div class="col-md-6">
+                  <label for="endDate" class="form-label">End Date</label>
+                  <input type="date" id="endDate" class="form-control rounded-pill" [(ngModel)]="endDate" name="endDate">
+                </div>
+              </div>
+            </div>
+            <div class="col" [ngClass]="{'col-md-6': !customDateRange, 'col-md-12': customDateRange}">
+              <label for="searchFilter" class="form-label">Search</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="searchFilter" placeholder="Search logs by ID, action, or description..." [(ngModel)]="searchFilter" name="searchFilter">
+                <button class="btn btn-primary px-4" type="button">
+                  <i class="bi bi-search me-1"></i> Search
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end mt-3">
+            <button class="btn btn-outline-secondary rounded-pill me-2" type="button" (click)="resetFilters()">Reset Filters</button>
+            <button class="btn btn-primary rounded-pill" type="button" (click)="applyFilters()">Apply Filters</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Logs Table -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 fw-bold text-primary">Activity Logs</h6>
+      <div class="dropdown">
+        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-sort-down me-1"></i> Sort By
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="#">Newest First</a></li>
+          <li><a class="dropdown-item" href="#">Oldest First</a></li>
+          <li><a class="dropdown-item" href="#">Category (A-Z)</a></li>
+          <li><a class="dropdown-item" href="#">Status</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date & Time</th>
+            <th>Category</th>
+            <th>Action</th>
+            <th>Description</th>
+            <th>IP Address</th>
+            <th>Device</th>
+            <th>Status</th>
+            <th>Details</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let log of activityLogs">
+            <td>{{log.id}}</td>
+            <td>
+              <div>{{log.date}}</div>
+              <small class="text-muted">{{log.time}}</small>
+            </td>
+            <td>
+                <span class="category-badge {{getCategoryClass(log.category)}}">
+                  <i class="bi {{getCategoryIcon(log.category)}} me-1"></i>
+                  {{log.category | titlecase}}
+                </span>
+            </td>
+            <td>{{log.action}}</td>
+            <td class="text-truncate" style="max-width: 200px;">{{log.description}}</td>
+            <td>{{log.ip}}</td>
+            <td class="text-truncate" style="max-width: 150px;">{{log.device}}</td>
+            <td>
+                <span [ngClass]="getStatusClass(log.status)">
+                  <i class="bi" [ngClass]="log.status === 'success' ? 'bi-check-circle' : (log.status === 'warning' ? 'bi-exclamation-triangle' : 'bi-x-circle')"></i>
+                  {{log.status | titlecase}}
+                </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary rounded-pill" (click)="viewLogDetails(log)" data-bs-toggle="modal" data-bs-target="#logDetailsModal">
+                <i class="bi bi-eye"></i>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+</main>
+
+<!-- Log Details Modal -->
+<div class="modal fade" id="logDetailsModal" tabindex="-1" aria-labelledby="logDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="selectedLog">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="logDetailsModalLabel">Activity Log Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h6 class="fw-bold">Basic Information</h6>
+            <table class="table table-sm">
+              <tr>
+                <th>Log ID:</th>
+                <td>{{selectedLog.id}}</td>
+              </tr>
+              <tr>
+                <th>Date:</th>
+                <td>{{selectedLog.date}}</td>
+              </tr>
+              <tr>
+                <th>Time:</th>
+                <td>{{selectedLog.time}}</td>
+              </tr>
+              <tr>
+                <th>Category:</th>
+                <td>
+                  <span class="category-badge {{getCategoryClass(selectedLog.category)}}">
+                    <i class="bi {{getCategoryIcon(selectedLog.category)}} me-1"></i>
+                    {{selectedLog.category | titlecase}}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Action:</th>
+                <td>{{selectedLog.action}}</td>
+              </tr>
+              <tr>
+                <th>Status:</th>
+                <td>
+                  <span [ngClass]="getStatusClass(selectedLog.status)">
+                    <i class="bi" [ngClass]="selectedLog.status === 'success' ? 'bi-check-circle' : (selectedLog.status === 'warning' ? 'bi-exclamation-triangle' : 'bi-x-circle')"></i>
+                    {{selectedLog.status | titlecase}}
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold">Location & Device Information</h6>
+            <table class="table table-sm">
+              <tr>
+                <th>IP Address:</th>
+                <td>{{selectedLog.ip}}</td>
+              </tr>
+              <tr>
+                <th>Device:</th>
+                <td>{{selectedLog.device}}</td>
+              </tr>
+              <tr>
+                <th>Location:</th>
+                <td>New York, United States</td>
+              </tr>
+              <tr>
+                <th>Browser:</th>
+                <td>Chrome 112.0.5615.121</td>
+              </tr>
+              <tr>
+                <th>Operating System:</th>
+                <td>macOS 12.6</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h6 class="fw-bold">Description</h6>
+          <p>{{selectedLog.description}}</p>
+        </div>
+
+        <div class="mt-4">
+          <h6 class="fw-bold">Additional Details</h6>
+          <div class="bg-light p-3 rounded">
+            <pre class="mb-0">
+              "action": "{{selectedLog.action}}",
+              "category": "{{selectedLog.category}}",
+              "status": "{{selectedLog.status}}",
+              "user_id": "user_12345",
+              "timestamp": "{{selectedLog.timestamp}}",
+              "ip": "{{selectedLog.ip}}",
+              "device": "{{selectedLog.device}}",
+              "browser": "Chrome 112.0.5615.121",
+              "os": "macOS 12.6",
+              "location":
+                "country": "United States",
+                "coordinates":
+                          "lat": 40.7128,
+                          "lng": -74.0060
+                }
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">
+          <i class="bi bi-download me-1"></i> Export
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,266 @@
+/* Header Styles */
+.topbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 70px;
+  background-color: white;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  z-index: 999;
+  transition: all 0.3s;
+  padding: 0 1.5rem;
+}
+
+.topbar-divider {
+  width: 0;
+  border-right: 1px solid #e3e6f0;
+  height: calc(70px - 2rem);
+  margin: auto 1rem;
+}
+
+.profile-pic {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #CB1025;
+}
+
+/* Main Content Styles */
+.content {
+  padding-top: 700px;
+  min-height: 100vh;
+  transition: all 0.3s;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e3e6f0;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+}
+
+/* Checkout Steps */
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  border: 2px solid #dee2e6;
+  color: #6c757d;
+  transition: all 0.3s;
+}
+
+.step.active .step-icon {
+  background-color: #CB1025;
+  border-color: #CB1025;
+  color: white;
+}
+
+.step.completed .step-icon {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.step-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.step.active .step-label,
+.step.completed .step-label {
+  color: #212529;
+  font-weight: 600;
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background-color: #dee2e6;
+  margin: 0 0.5rem;
+  position: relative;
+  top: -20px;
+  z-index: 0;
+}
+
+/* Form Styles */
+.form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-control, .form-select {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ced4da;
+  transition: all 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #CB1025;
+  box-shadow: 0 0 0 0.25rem rgba(203, 16, 37, 0.25);
+}
+
+.input-group .btn {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* Payment Options */
+.payment-option {
+  border: 2px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-option:hover {
+  border-color: #CB1025;
+}
+
+.payment-option.active {
+  border-color: #CB1025;
+  background-color: rgba(203, 16, 37, 0.05);
+}
+
+.payment-option-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.payment-option.active .payment-option-icon {
+  color: #CB1025;
+}
+
+.payment-option-label {
+  font-weight: 500;
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #A00D1E;
+  border-color: #A00D1E;
+}
+
+.btn-outline-primary {
+  color: #CB1025;
+  border-color: #CB1025;
+}
+
+.btn-outline-primary:hover {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.text-primary {
+  color: #CB1025 !important;
+}
+
+/* Order Summary */
+.order-summary {
+  position: sticky;
+  top: 90px;
+}
+
+/* Order Complete */
+.success-icon {
+  font-size: 4rem;
+  color: #28a745;
+}
+
+.order-details {
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+/* PayPal */
+.paypal-logo {
+  font-size: 3rem;
+  color: #003087;
+}
+
+/* Bank Details */
+.bank-details {
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .order-summary {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-steps {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .step {
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .step-icon {
+    margin-bottom: 0;
+    margin-right: 1rem;
+  }
+
+  .step-connector {
+    display: none;
+  }
+}

@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:17.1
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: senseiprodmain
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  spring-backend:
+    build: ./voiceOverFinal2
+    container_name: spring-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/senseiprodmain
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_PROFILES_ACTIVE: docker
+      
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  angular-app1:
+    build: ./speakerDashboard
+    container_name: angular-app1
+    ports:
+      - "4200:80"
+
+  angular-app2:
+    build: ./senseiVoiceInterface
+    container_name: angular-app2
+    ports:
+      - "4201:80"
+
+  angular-app3:
+    build: ./vristo-angular-main
+    container_name: angular-app3
+    ports:
+      - "4202:80"
+
+volumes:
+  pgdata:

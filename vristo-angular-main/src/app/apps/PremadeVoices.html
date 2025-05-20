@@ -1,0 +1,747 @@
+<div class="container-fluid py-5">
+    <!-- Shared Voices Section -->
+    <div class="card border-0 rounded-lg shadow-xl position-relative overflow-hidden">
+      <div class="card-blur-bg"></div>
+      <div class="card-header border-0 p-4" style="background: linear-gradient(135deg, #ce091c, #192840);">
+        <h3 class="m-0 fw-bold text-white d-flex align-items-center">
+          <i class="bi bi-globe me-2"></i>ElevenLabs Shared Voices
+        </h3>
+      </div>
+      <div class="card-body p-4 position-relative">
+
+        <!-- Loading Indicator -->
+        <div *ngIf="loading" class="text-center my-5">
+          <div class="spinner-border" style="color: #ce091c;" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2 text-gray-600">Loading voices...</p>
+        </div>
+
+        <!-- Enhanced Search & Filter Section - Horizontal Layout -->
+        <div class="search-filter-container mb-4 p-4 rounded-lg" style="background-color: rgba(25, 40, 64, 0.05);">
+          <div class="row g-3 align-items-center">
+            <!-- Search Box -->
+            <div class="col-lg-5">
+              <div class="search-box custom-input-group d-flex align-items-center rounded-pill px-3 py-2" style="background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <i class="bi bi-search me-2" style="color: #ce091c;"></i>
+                <input
+                  type="text"
+                  class="form-control border-0 shadow-none bg-transparent"
+                  placeholder="{{ 'search_voices' | translate }}"
+                  [(ngModel)]="searchQuery"
+                  (input)="applyFilters()">
+              </div>
+            </div>
+
+            <!-- Language Filter -->
+            <div class="col-lg-3">
+              <div class="custom-input-group d-flex align-items-center rounded-pill px-3 py-2" style="background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <i class="bi bi-translate me-2" style="color: #ce091c;"></i>
+                <select class="form-select border-0 shadow-none bg-transparent" [(ngModel)]="selectedLanguage" (change)="onLanguageChange(selectedLanguage)">
+                  <option value="all">{{ 'Language' | translate }}</option>
+                  <option *ngFor="let lang of languages" [value]="lang.code">
+                    {{ lang.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Gender Filter -->
+            <div class="col-lg-2">
+              <div class="custom-input-group d-flex align-items-center rounded-pill px-3 py-2" style="background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <i class="bi bi-gender-ambiguous me-2" style="color: #ce091c;"></i>
+                <select class="form-select border-0 shadow-none bg-transparent" [(ngModel)]="selectedGender" (change)="applyFilters()">
+                  <option value="all">{{ 'Gender' | translate }}</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Age Filter -->
+                <div class="col-lg-2">
+                    <div class="custom-input-group d-flex align-items-center rounded-pill px-3 py-2" style="background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                    <i class="bi bi-calendar me-2" style="color: #ce091c;"></i>
+                    <select class="form-select border-0 shadow-none bg-transparent" [(ngModel)]="selectedAge" (change)="applyFilters()">
+                        <option value="all">{{ 'Age' | translate }}</option>
+                        <option value="young">Young</option>
+                        <option value="middle_aged">Middle-aged</option>
+                        <option value="old">Old</option>
+                    </select>
+                    </div>
+                </div>
+
+                <!-- Use Case Filter - Button that opens a popover/modal -->
+<div class="col-lg-3">
+    <div class="custom-input-group d-flex align-items-center rounded-pill px-3 py-2" style="background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <i class="bi bi-tag me-2" style="color: #ce091c;"></i>
+      <div class="form-control border-0 shadow-none bg-transparent d-flex justify-content-between align-items-center cursor-pointer"
+           (click)="toggleUseCaseSelector()">
+        <span *ngIf="selectedUseCase === 'all'">{{ 'all_use_cases' | translate }}</span>
+        <span *ngIf="selectedUseCase !== 'all'">{{formatUseCase(selectedUseCase)}}</span>
+        <i class="bi bi-chevron-down ms-2"></i>
+      </div>
+    </div>
+
+    <!-- Use Case Selector Popover -->
+    <div *ngIf="showUseCaseSelector" class="use-case-popover position-absolute mt-1 rounded-lg shadow-lg p-3 z-index-1"
+         style="background-color: white; width: 280px; max-height: 400px; overflow-y: auto; border: 1px solid rgba(25, 40, 64, 0.1);">
+
+      <!-- Search input for use cases -->
+      <div class="mb-3">
+        <div class="search-box custom-input-group d-flex align-items-center rounded-pill px-3 py-2 mb-2"
+             style="background-color: rgba(25, 40, 64, 0.05);">
+          <i class="bi bi-search me-2" style="color: #ce091c;"></i>
+          <input type="text" class="form-control border-0 shadow-none bg-transparent"
+                 placeholder="Search use cases..." [(ngModel)]="useCaseSearchQuery">
+        </div>
+      </div>
+
+      <!-- All Use Cases option -->
+      <div class="use-case-item d-flex align-items-center p-2 rounded mb-1 cursor-pointer"
+           [ngClass]="{'selected': selectedUseCase === 'all'}"
+           (click)="selectUseCase('all', $event)"
+           style="transition: all 0.2s ease;">
+        <div class="me-2" [style.color]="selectedUseCase === 'all' ? '#ce091c' : '#192840'">
+          <i class="bi bi-check-circle-fill" *ngIf="selectedUseCase === 'all'"></i>
+          <i class="bi bi-circle" *ngIf="selectedUseCase !== 'all'"></i>
+        </div>
+        <span>All Use Cases</span>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider my-2" style="height: 1px; background-color: rgba(25, 40, 64, 0.1);"></div>
+
+      <!-- List of use cases -->
+      <div *ngFor="let useCase of filteredUseCases"
+           class="use-case-item d-flex align-items-center p-2 rounded mb-1 cursor-pointer"
+           [ngClass]="{'selected': selectedUseCase === useCase}"
+           (click)="selectUseCase(useCase, $event)"
+           style="transition: all 0.2s ease;">
+        <div class="me-2" [style.color]="selectedUseCase === useCase ? '#ce091c' : '#192840'">
+          <i class="bi bi-check-circle-fill" *ngIf="selectedUseCase === useCase"></i>
+          <i class="bi bi-circle" *ngIf="selectedUseCase !== useCase"></i>
+        </div>
+        <span>{{formatUseCase(useCase)}}</span>
+      </div>
+
+      <!-- No results message -->
+      <div *ngIf="filteredUseCases.length === 0" class="text-center py-3 text-muted">
+        <i class="bi bi-emoji-frown mb-2"></i>
+        <p class="mb-0">No matching use cases found</p>
+      </div>
+    </div>
+  </div>
+
+            <!-- Reset Filters -->
+            <div class="col-lg-2">
+              <button class="btn w-100 d-flex align-items-center justify-content-center rounded-pill py-2"
+                      (click)="resetFilters()"
+                      style="background-color: #192840; color: white; transition: all 0.3s ease;">
+                <i class="bi bi-arrow-counterclockwise me-2"></i> {{ 'reset_filters' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Results Message (enhanced) -->
+        <div *ngIf="paginatedVoices.length === 0 && !loading" class="no-results-container text-center my-5 py-5 rounded-lg" style="background-color: rgba(25, 40, 64, 0.05);">
+          <div class="no-results-icon mx-auto d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; border-radius: 50%; background-color: rgba(206, 9, 28, 0.1);">
+            <i class="bi bi-search fs-3" style="color: #ce091c;"></i>
+          </div>
+          <h4 class="mt-3 mb-2 fw-bold">No Voices Found</h4>
+          <p class="text-muted">Try adjusting your search terms or filters</p>
+          <button class="btn mt-2 px-4 py-2 rounded-pill"
+                  (click)="resetFilters()"
+                  style="background: linear-gradient(135deg, #ce091c, #192840); color: white;">
+            <i class="bi bi-arrow-counterclockwise me-2"></i> Reset All Filters
+          </button>
+        </div>
+
+        <!-- Responsive Table -->
+        <div class="table-responsive" *ngIf="!loading">
+          <table class="table align-middle mb-0 modern-table">
+            <thead>
+                <tr style="background-color: rgba(25, 40, 64, 0.05);">
+                  <th class="py-3"  style="color: #ce091c;">{{ 'Name' | translate }}</th>
+                  <th class="py-3" style="color: #ce091c;">{{ 'Gender' | translate }}</th>
+                  <th class="py-3"style="color: #ce091c;">{{ 'Accent' | translate }}</th>
+                  <th class="py-3" style="color: #ce091c;"  >{{ 'Language' | translate }}</th>
+                  <th class="py-3"style="color: #ce091c;">Voice Id</th>
+                  <th class="py-3"style="color: #ce091c;">{{ 'Description' | translate }}</th>
+                  <th class="py-3"style="color: #ce091c;">{{ 'Age' | translate }}</th>
+                  <th class="py-3"style="color: #ce091c;">{{ 'use_case' | translate }}</th>
+                  <th class="py-3"style="color: #ce091c;">{{ 'preview' | translate }}</th>
+                  <th class="py-3 text-center" style="color: #ce091c;">{{ 'actions' | translate }}</th>
+                </tr>
+              </thead>
+            <tbody>
+              <tr *ngFor="let voice of paginatedVoices" class="voice-row border-bottom" style="transition: all 0.2s ease;">
+                <td class="py-3 fw-medium">{{ voice.name }}</td>
+                <td class="py-3">
+                  <span class="gender-badge px-3 py-1 rounded-pill d-inline-flex align-items-center"
+                        [ngClass]="voice.gender?.toLowerCase() === 'male' ? 'male' : 'female'"
+                        [style]="voice.gender?.toLowerCase() === 'male' ? 'background-color: rgba(25, 40, 64, 0.1); color: #192840;' : 'background-color: rgba(206, 9, 28, 0.1); color: #ce091c;'">
+                    <i [class]="voice.gender?.toLowerCase() === 'male' ? 'bi bi-gender-male me-1' : 'bi bi-gender-female me-1'"></i>
+                    {{ voice.gender || 'N/A' }}
+                  </span>
+                </td>
+                <td class="py-3">{{ voice.accent || 'N/A' }}</td>
+                <td class="py-3">{{ voice.language || 'N/A' }}</td>
+                <td class="py-3 text-monospace" style="font-family: monospace; font-size: 0.85rem;">{{ voice.voice_id }}</td>
+                <td class="py-3">
+                  <div class="description-cell" data-bs-toggle="tooltip" [title]="voice.description" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ (voice.description || 'N/A') | slice:0:30 }}{{ (voice.description && voice.description.length > 30) ? '...' : '' }}
+                  </div>
+                </td>
+                <td class="py-3">{{ voice.age || 'N/A' }}</td>
+                <td class="py-3">{{ voice.use_case || 'N/A' }}</td>
+
+                <!-- Updated template with loading state -->
+                <td class="py-3">
+                    <button class="audio-player-btn rounded-pill d-flex align-items-center justify-content-center"
+                            (click)="togglePlayPreview(voice)"
+                            [ngClass]="{'playing': voice.isPlaying}"
+                            [disabled]="voice.isLoading">
+                    <!-- Left side (Icon container) -->
+                    <span class="play-icon-container">
+                        <!-- Show spinner when loading -->
+                        <span *ngIf="voice.isLoading" class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                        </span>
+                        <!-- Show custom play/pause icon when not loading -->
+                        <svg *ngIf="!voice.isLoading" class="player-icon" [class.pause-icon]="voice.isPlaying" viewBox="0 0 24 24" width="18" height="18">
+                            <!-- Play triangle -->
+                            <polygon *ngIf="!voice.isPlaying"
+                                    points="8,5 8,19 19,12"
+                                    fill="#ce091c"
+                                    class="play-triangle" />
+                            <!-- Pause bars -->
+                            <g *ngIf="voice.isPlaying">
+                                <rect x="7" y="5" width="4" height="14" rx="1" fill="white" class="pause-bar"></rect>
+                                <rect x="14" y="5" width="4" height="14" rx="1" fill="white" class="pause-bar"></rect>
+                            </g>
+                        </svg>
+                    </span>
+                    <!-- Right side (Text) -->
+                    <span class="play-text d-none d-sm-inline">
+                        <ng-container *ngIf="voice.isLoading">Loading...</ng-container>
+                        <ng-container *ngIf="!voice.isLoading">{{ voice.isPlaying ? 'Pause' : 'Play' }}</ng-container>
+                    </span>
+                    </button>
+                </td>
+                <td class="py-3 text-center">
+                  <button class="btn btn-sm px-3 py-2 rounded-pill action-btn"
+                          (click)="onSynthesizeClick(voice)"
+                          style="background: linear-gradient(135deg, #ce091c, #192840); color: white; transition: all 0.3s ease;">
+                    <i class="bi bi-soundwave me-1"></i> Synthesize
+                  </button>
+                </td>
+              </tr>
+              <!-- No results row -->
+              <tr *ngIf="paginatedVoices.length === 0">
+                <td colspan="10" class="text-center py-4">
+                  <i class="bi bi-emoji-frown fs-4 mb-2"></i>
+                  <p>No voices found for this language.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav *ngIf="totalPages > 1" aria-label="Voice pagination" class="mt-4">
+          <ul class="pagination justify-content-center flex-row">
+            <li class="page-item" [ngClass]="{'disabled': currentPage === 1}">
+              <a class="page-link d-flex align-items-center justify-content-center"
+                 href="javascript:void(0)"
+                 (click)="onPageChange(currentPage - 1)"
+                 style="border: none; width: 40px; height: 40px; border-radius: 8px; margin: 0 4px; color: #192840;">
+                <i class="bi bi-chevron-left"></i>
+              </a>
+            </li>
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                [ngClass]="{'active': currentPage === i + 1}">
+              <a class="page-link d-flex align-items-center justify-content-center"
+                 href="javascript:void(0)"
+                 (click)="onPageChange(i + 1)"
+                 style="border: none; width: 40px; height: 40px; border-radius: 8px; margin: 0 4px; font-weight: 500;"
+                 [ngStyle]="{'background-color': currentPage === i + 1 ? '#ce091c' : 'rgba(25, 40, 64, 0.05)',
+                             'color': currentPage === i + 1 ? 'white' : '#192840'}">
+                {{ i + 1 }}
+              </a>
+            </li>
+            <li class="page-item" [ngClass]="{'disabled': currentPage === totalPages}">
+              <a class="page-link d-flex align-items-center justify-content-center"
+                 href="javascript:void(0)"
+                 (click)="onPageChange(currentPage + 1)"
+                 style="border: none; width: 40px; height: 40px; border-radius: 8px; margin: 0 4px; color: #192840;">
+                <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Synthesize Form Section (appears when a voice is selected) -->
+    <div id="synthesize-form-section" class="card border-0 rounded-lg mt-4 shadow-xl position-relative overflow-hidden"
+         *ngIf="selectedVoice && showSynthesizeForm">
+      <div class="card-blur-bg"></div>
+      <div class="card-header border-0 p-4" style="background: linear-gradient(135deg, #192840, #ce091c);">
+        <h3 class="m-0 fw-bold text-white d-flex align-items-center">
+          <i class="bi bi-music-note-beamed me-2"></i>Synthesize Speech
+        </h3>
+      </div>
+      <div class="card-body p-4 position-relative">
+        <div class="selected-voice-info mb-4 p-3 rounded-lg" style="background-color: rgba(25, 40, 64, 0.05);">
+          <div class="d-flex align-items-center">
+            <div class="voice-avatar me-3 d-flex align-items-center justify-content-center"
+                 style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, rgba(206, 9, 28, 0.1), rgba(25, 40, 64, 0.1)); color: #ce091c;">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div>
+              <h5 class="mb-1 fw-bold">{{ selectedVoice.name }}</h5>
+              <p class="mb-0 text-muted small">
+                {{ selectedVoice.language || 'Unknown language' }} •
+                {{ selectedVoice.gender || 'Gender not specified' }} •
+                {{ selectedVoice.accent || 'Accent not specified' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <form [formGroup]="synthesizeForm">
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <label for="text" class="form-label fw-semibold">Text to speak <span style="color: #ce091c;">*</span></label>
+              <div class="custom-input-group rounded-lg p-2" style="background-color: rgba(25, 40, 64, 0.05);">
+                <textarea id="text" class="form-control border-0 shadow-none"
+                          rows="5" formControlName="text"
+                          placeholder="Enter the text to be synthesized"
+                          style="background-color: transparent; resize: none;"></textarea>
+              </div>
+              <div *ngIf="synthesizeForm.get('text')?.invalid && synthesizeForm.get('text')?.touched" style="color: #ce091c; font-size: 0.875rem; margin-top: 0.25rem;">
+                Text is required
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+              <label for="output_format" class="form-label fw-semibold">Output Format</label>
+              <div class="custom-input-group d-flex align-items-center rounded-lg px-3 py-2" style="background-color: rgba(25, 40, 64, 0.05);">
+                <i class="bi bi-file-earmark-music me-2" style="color: #ce091c;"></i>
+                <select id="output_format" class="form-select border-0 shadow-none bg-transparent" formControlName="output_format">
+                  <option value="mp3_44100_128">MP3 (44.1kHz, 128kbps)</option>
+                  <option value="mp3_44100_192">MP3 (44.1kHz, 192kbps)</option>
+                  <option value="pcm_16000">WAV (16kHz)</option>
+                  <option value="pcm_22050">WAV (22.05kHz)</option>
+                  <option value="pcm_24000">WAV (24kHz)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <label for="stability" class="form-label fw-semibold d-flex justify-content-between">
+                <span>Stability</span>
+                <span class="value-display px-2 py-1 rounded-pill" style="background-color: rgba(206, 9, 28, 0.1); color: #ce091c; font-size: 0.875rem;">
+                  {{synthesizeForm.get('stability')?.value}}
+                </span>
+              </label>
+              <div class="modern-range-slider px-2">
+                <input type="range" id="stability" class="form-range"
+                       formControlName="stability" min="0" max="1" step="0.1"
+                       style="height: 6px; accent-color: #ce091c;" />
+                <div class="d-flex justify-content-between range-labels mt-2">
+                  <small style="color: #192840;">Less stable</small>
+                  <small style="color: #192840;">More stable</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+              <label for="similarity_boost" class="form-label fw-semibold d-flex justify-content-between">
+                <span>Similarity Boost</span>
+                <span class="value-display px-2 py-1 rounded-pill" style="background-color: rgba(206, 9, 28, 0.1); color: #ce091c; font-size: 0.875rem;">
+                  {{synthesizeForm.get('similarity_boost')?.value}}
+                </span>
+              </label>
+              <div class="modern-range-slider px-2">
+                <input type="range" id="similarity_boost" class="form-range"
+                       formControlName="similarity_boost" min="0" max="1" step="0.1"
+                       style="height: 6px; accent-color: #ce091c;" />
+                <div class="d-flex justify-content-between range-labels mt-2">
+                  <small style="color: #192840;">Less similar</small>
+                  <small style="color: #192840;">More similar</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <label for="style_guidance" class="form-label fw-semibold d-flex justify-content-between">
+                <span>Style</span>
+                <span class="value-display px-2 py-1 rounded-pill" style="background-color: rgba(206, 9, 28, 0.1); color: #ce091c; font-size: 0.875rem;">
+                  {{synthesizeForm.get('style_guidance')?.value}}
+                </span>
+              </label>
+              <div class="modern-range-slider px-2">
+                <input type="range" id="style_guidance" class="form-range"
+                       formControlName="style_guidance" min="0" max="1" step="0.1"
+                       style="height: 6px; accent-color: #ce091c;" />
+                <div class="d-flex justify-content-between range-labels mt-2">
+                  <small style="color: #192840;">Less style</small>
+                  <small style="color: #192840;">More style</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+              <div class="form-check form-switch modern-switch mt-4 ps-5">
+                <input class="form-check-input" type="checkbox" id="speaker_boost" formControlName="use_speaker_boost"
+                       style="width: 2.5rem; height: 1.25rem; margin-left: -3rem;">
+                <label class="form-check-label fw-medium" for="speaker_boost">Use Speaker Boost</label>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-lg w-100 d-flex align-items-center justify-content-center py-3 rounded-pill"
+                  (click)="synthesizeSpeech()"
+                  [disabled]="synthesizeForm.invalid"
+                  style="background: linear-gradient(135deg, #ce091c, #192840); color: white; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(206, 9, 28, 0.2);">
+            <i class="bi bi-play-fill me-2"></i>
+            {{ 'synthesize' | translate }}
+          </button>
+
+          <div id="shared-audio-container" class="mt-4 p-4 rounded-lg" style="background-color: rgba(25, 40, 64, 0.05);">
+            <div class="audio-placeholder text-center py-5">
+              <i class="bi bi-volume-up fs-1 mb-3" style="color: #ce091c;"></i>
+              <p class="mb-0" style="color: #192840;">Audio will appear here after synthesis</p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Add these styles to your existing CSS */
+    .pagination {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+    }
+
+    .pagination .page-item {
+      margin: 0 2px;
+    }
+
+    .pagination .page-link {
+      transition: all 0.2s ease;
+    }
+
+    .pagination .page-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(206, 9, 28, 0.15);
+    }
+
+    .pagination .page-item.disabled .page-link {
+      opacity: 0.5;
+      background-color: rgba(25, 40, 64, 0.05);
+    }
+
+    @media (max-width: 576px) {
+      .pagination .page-link {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 0.9rem;
+      }
+    }
+
+    .card-body {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem;
+    }
+
+    .card-blur-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+      z-index: 0;
+    }
+
+    .modern-table {
+      position: relative;
+      z-index: 1;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .modern-table th {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      border-top: none;
+      color: #192840;
+    }
+
+    .modern-table td {
+      vertical-align: middle;
+      border-color: rgba(25, 40, 64, 0.1);
+    }
+
+    .voice-row {
+      transition: all 0.2s ease;
+    }
+
+    .voice-row:hover {
+      background-color: rgba(206, 9, 28, 0.03);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .voice-row .action-btn {
+      transition: all 0.3s ease;
+    }
+
+    .voice-row .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(206, 9, 28, 0.2);
+    }
+
+    .custom-input-group {
+      transition: all 0.3s ease;
+    }
+
+    .custom-input-group:focus-within {
+      box-shadow: 0 0 0 3px rgba(206, 9, 28, 0.1);
+    }
+
+    .custom-input-group .form-control,
+    .custom-input-group .form-select {
+      transition: all 0.3s ease;
+    }
+
+    .form-range::-webkit-slider-thumb {
+      background: #ce091c;
+    }
+
+    .form-range::-moz-range-thumb {
+      background: #ce091c;
+    }
+
+    .form-range::-ms-thumb {
+      background: #ce091c;
+    }
+
+    .form-check-input:checked {
+      background-color: #ce091c;
+      border-color: #ce091c;
+    }
+
+    .pagination .page-link:hover {
+      background-color: rgba(206, 9, 28, 0.1);
+    }
+
+    .search-filter-container {
+      transition: all 0.3s ease;
+    }
+
+    .search-filter-container:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    @media (max-width: 768px) {
+      .search-filter-container {
+        padding: 1rem;
+      }
+
+      .modern-table th,
+      .modern-table td {
+        padding: 0.75rem;
+      }
+    }
+
+
+    /* Additional styles for loading state */
+.audio-player-btn {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 2px solid #ce091c;
+  color: #ce091c;
+  padding: 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  min-width: 42px;
+  height: 36px;
+  position: relative;
+}
+
+.audio-player-btn .play-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(206, 9, 28, 0.1);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin: 0 2px;
+}
+
+.audio-player-btn .play-text {
+  padding: 0 10px 0 5px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.audio-player-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(206, 9, 28, 0.15);
+  background-color: rgba(206, 9, 28, 0.05);
+}
+
+.audio-player-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* When playing */
+.audio-player-btn.playing {
+  background-color: #ce091c;
+  color: white;
+}
+
+.audio-player-btn.playing .play-icon-container {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Disabled state */
+.audio-player-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner color */
+.audio-player-btn .spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}
+
+.audio-player-btn.playing .spinner-border {
+  border-color: white;
+  border-right-color: transparent;
+}
+
+/* Small screen adaptations */
+@media (max-width: 576px) {
+  .audio-player-btn {
+    width: 36px;
+    border-radius: 50%;
+  }
+
+  .audio-player-btn .play-icon-container {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+  }
+}
+
+/* Custom styles for the synthesized audio player */
+#shared-audio-container audio {
+  width: 100%;
+  border-radius: 8px;
+  background-color: rgba(25, 40, 64, 0.02);
+}
+
+/* Better looking audio player controls */
+.custom-audio-player::-webkit-media-controls-panel {
+  background-color: rgba(25, 40, 64, 0.05);
+}
+
+.custom-audio-player::-webkit-media-controls-play-button {
+  background-color: #ce091c;
+  border-radius: 50%;
+  transform: scale(1.2);
+}
+
+.custom-audio-player::-webkit-media-controls-current-time-display,
+.custom-audio-player::-webkit-media-controls-time-remaining-display {
+  color: #192840;
+  font-weight: 500;
+}
+
+.custom-audio-player::-webkit-media-controls-volume-slider {
+  background-color: rgba(206, 9, 28, 0.1);
+  border-radius: 25px;
+  padding: 0 5px;
+}
+
+.custom-audio-player::-webkit-media-controls-volume-slider-container {
+  background-color: rgba(25, 40, 64, 0.05);
+  border-radius: 25px;
+}
+
+/* Custom Play/Pause Icon Styles */
+.player-icon {
+  transition: all 0.3s ease;
+}
+
+.play-triangle {
+  transform-origin: center;
+  transition: transform 0.3s ease, fill 0.3s ease;
+}
+
+.audio-player-btn:hover .play-triangle {
+  transform: scale(1.1);
+}
+
+.pause-bar {
+  transition: all 0.3s ease;
+}
+
+.audio-player-btn:hover .pause-bar {
+  height: 12px;
+  y: 6px;
+}
+
+/* Animation for play/pause transition */
+@keyframes morphToPlay {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.8); }
+  100% { transform: scale(1); }
+}
+
+@keyframes morphToPause {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.8); }
+  100% { transform: scale(1); }
+}
+
+.audio-player-btn .player-icon {
+  animation: morphToPlay 0.3s ease forwards;
+}
+
+.audio-player-btn.playing .player-icon {
+  animation: morphToPause 0.3s ease forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .audio-player-btn .player-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+  </style>

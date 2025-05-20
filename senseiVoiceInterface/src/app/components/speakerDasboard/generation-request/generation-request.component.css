@@ -1,0 +1,218 @@
+/* Main container styles */
+.container {
+  width: 150%;         /* Changed from 120% to 100% */
+  min-height: 100vh;
+  margin-top: 80px;
+  transition: all 0.3s;
+  margin-left: 280px;  /* Add margin to account for sidebar width */
+}
+/* Rest of your CSS remains the same */
+.card {
+  border: none;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  border-radius: 0.5rem;
+}
+.card-header {
+  background-color: #CB1025;
+  color: white;
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
+}
+
+/* Accordion styles */
+.accordion-button {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  box-shadow: none;
+}
+
+.accordion-button:not(.collapsed) {
+  color: #CB1025;
+  background-color: #f8f9fa;
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border-color: rgba(0, 0, 0, 0.125);
+}
+
+.accordion-button::after {
+  background-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Status badges */
+.status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+}
+
+.status-completed {
+  background-color: rgba(25, 135, 84, 0.15);
+  color: #198754;
+}
+
+.status-in-progress {
+  background-color: rgba(13, 110, 253, 0.15);
+  color: #0d6efd;
+}
+
+.status-pending {
+  background-color: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+}
+
+.status-rejected {
+  background-color: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+}
+
+/* Project details */
+.project-details {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.project-details-item {
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.project-details-label {
+  font-weight: 600;
+  min-width: 120px;
+  margin-right: 0.5rem;
+}
+
+/* Audio file card */
+.audio-file {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.audio-file:hover {
+  box-shadow: 0 0.15rem 0.5rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.waveform-container {
+  height: 6px;
+  background-color: #e9ecef;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.waveform {
+  height: 100%;
+  background: linear-gradient(90deg, #CB1025 0%, #e9ecef 50%, #CB1025 100%);
+  background-size: 200% 100%;
+  animation: wave 2s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes wave {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.audio-player {
+  width: 100%;
+  height: 40px;
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #a00d1e;
+  border-color: #a00d1e;
+}
+
+.btn-outline-primary {
+  color: #CB1025;
+  border-color: #CB1025;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  background-color: #CB1025;
+  border-color: #CB1025;
+  color: white;
+}
+
+/* Modal styles */
+.modal-content {
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.modal-header {
+  background-color: #CB1025;
+  color: white;
+}
+
+/* Pagination */
+.pagination .page-item.active .page-link {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.pagination .page-link {
+  color: #CB1025;
+}
+
+.pagination .page-link:hover {
+  color: #a00d1e;
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .container {
+    margin-left: 0;  /* Remove margin when sidebar is collapsed/hidden */
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .project-details-label {
+    min-width: 100%;
+    margin-bottom: 0.25rem;
+  }
+
+  .audio-file {
+    padding: 0.75rem !important;
+  }
+
+  .waveform-container {
+    height: 40px;
+  }
+}

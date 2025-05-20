@@ -1,0 +1,412 @@
+<main class="content p-4 fade-in">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-dark fw-bold">{{ 'earnings.overview' | translate }}</h1>
+    <div class="d-flex align-items-center">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#withdrawModal" (click)="openWithdrawalModal()">
+        <i class="bi bi-cash-stack me-1"></i> {{ 'earnings.withdraw_button' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">{{ 'earnings.loading' | translate }}</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadData()">
+      {{ 'earnings.retry' | translate }}
+    </button>
+
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <!-- Earnings Stats Cards -->
+    <div class="row">
+      <div *ngFor="let card of statCards" class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card {{card.color}} h-100">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col">
+                <div class="text-xs fw-bold text-{{card.color}} text-uppercase mb-1">
+                  {{card.title}}
+                </div>
+                <div class="h5 mb-0 fw-bold text-dark">{{card.value}}</div>
+                <div *ngIf="card.subtext" class="small" [ngClass]="{'text-success': card.isUp, 'text-muted': !card.isUp}" mt-2>
+                  <i *ngIf="card.isUp !== undefined" class="bi" [ngClass]="card.isUp ? 'bi-arrow-up' : 'bi-hourglass-split'"></i>
+                  <i *ngIf="card.isUp === undefined" class="bi bi-wallet"></i>
+                  {{card.subtext}}
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="bi {{card.icon}} stat-icon text-{{card.color}}"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction History Table -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 fw-bold text-primary">{{ 'earnings.transaction_history' | translate }}</h6>
+      </div>
+      <div class="card-body">
+        <div *ngIf="transactionDetails.length === 0" class="text-center py-5">
+          <i class="bi bi-receipt fs-1 text-muted mb-3"></i>
+          <p class="mb-0">{{ 'earnings.no_transactions' | translate }}</p>
+        </div>
+        <div *ngIf="transactionDetails.length > 0" class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>{{ 'earnings.table.id' | translate }}</th>
+              <th>{{ 'earnings.table.date' | translate }}</th>
+              <th>{{ 'earnings.table.description' | translate }}</th>
+              <th>{{ 'earnings.table.type' | translate }}</th>
+              <th>{{ 'earnings.table.amount' | translate }}</th>
+              <th>{{ 'earnings.table.status' | translate }}</th>
+              <th>{{ 'earnings.table.actions' | translate }}</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let transaction of transactionDetails">
+              <td>{{transaction.code}}</td>
+              <td>{{transaction.date}}</td>
+              <td>{{transaction.description}}</td>
+              <td>
+                <span class="badge" [ngClass]="transaction.isWithdrawal ? 'bg-danger' : 'bg-success'">
+                  {{transaction.type}}
+                </span>
+              </td>
+              <td [ngClass]="{
+                  'text-success': !transaction.isWithdrawal && !transaction.isPending,
+                  'text-danger': transaction.isWithdrawal,
+                  'text-warning': transaction.isPending
+                }">{{transaction.formattedAmount}}</td>
+              <td>
+                <span class="badge" [ngClass]="transaction.status === 'Completed' ? 'bg-success' : 'bg-warning text-dark'">
+                  {{ transaction.status === 'Completed' ? ('earnings.status.completed' | translate) : ('earnings.status.pending' | translate) }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="viewTransactionDetails(transaction)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav *ngIf="transactionDetails.length > 0" aria-label="Page navigation" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction Details Modal -->
+  <div class="modal fade" [ngClass]="{'show d-block': showTransactionDetails}" tabindex="-1" role="dialog" aria-labelledby="transactionDetailsModalLabel" [attr.aria-hidden]="!showTransactionDetails">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header" [ngClass]="selectedTransaction?.isWithdrawal ? 'bg-danger text-white' : 'bg-primary text-white'">
+          <h5 class="modal-title" id="transactionDetailsModalLabel">
+            {{ 'earnings.modal.details_title' | translate }}
+          </h5>
+
+          <button type="button" class="btn-close btn-close-white" (click)="closeTransactionDetails()"></button>
+        </div>
+        <div class="modal-body" *ngIf="selectedTransaction">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-4">
+                <h6 class="fw-bold mb-3">{{ 'earnings.modal.info_title' | translate }}</h6>
+                <div class="mb-2">
+                  <span class="fw-bold">{{ 'earnings.modal.fields.id' | translate }}:</span>
+                  <span class="ms-2">{{selectedTransaction.code}}</span>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-bold">Date:</span>
+                  <span class="ms-2">{{selectedTransaction.date}}</span>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-bold">Type:</span>
+                  <span class="ms-2">
+                    <span class="badge" [ngClass]="selectedTransaction.isWithdrawal ? 'bg-danger' : 'bg-success'">
+                      {{selectedTransaction.type}}
+                    </span>
+                  </span>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-bold">Amount:</span>
+                  <span class="ms-2" [ngClass]="{
+                    'text-success': !selectedTransaction.isWithdrawal && !selectedTransaction.isPending,
+                    'text-danger': selectedTransaction.isWithdrawal,
+                    'text-warning': selectedTransaction.isPending
+                  }">{{selectedTransaction.formattedAmount}}</span>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-bol">Status:</span>
+                  <span class="ms-2">
+                    <span class="badge" [ngClass]="selectedTransaction.status === 'Completed' ? 'bg-success' : 'bg-warning text-dark'">
+                      {{selectedTransaction.status}}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-4">
+                <h6 class="fw-bold mb-3">{{ 'earnings.modal.related_title' | translate }}</h6>
+                <div *ngIf="selectedTransaction.factureCode" class="mb-2">
+                  <span class="fw-bold">{{ 'earnings.modal.fields.invoice_id' | translate }}:</span>
+                  <span class="ms-2">{{selectedTransaction.factureCode}}</span>
+                </div>
+                <div *ngIf="selectedTransaction.demandeCode" class="mb-2">
+                  <span class="fw-bold">Request ID:</span>
+                  <span class="ms-2">{{selectedTransaction.demandeCode}}</span>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-bold">Description:</span>
+                  <span class="ms-2">{{selectedTransaction.description}}</span>
+                </div>
+              </div>
+              <div *ngIf="selectedTransaction.isPending">
+                <div class="alert alert-warning">
+                  <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                  This transaction is pending and will be processed soon.
+                </div>
+              </div>
+              <div *ngIf="!selectedTransaction.isPending && !selectedTransaction.isWithdrawal">
+                <div class="alert alert-success">
+                  <i class="bi bi-check-circle-fill me-2"></i>
+                  This payment has been completed and added to your balance.
+                </div>
+              </div>
+              <div *ngIf="!selectedTransaction.isPending && selectedTransaction.isWithdrawal">
+                <div class="alert alert-info">
+                  <i class="bi bi-info-circle-fill me-2"></i>
+                  This withdrawal has been processed and deducted from your balance.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeTransactionDetails()">Close</button>
+          <button *ngIf="selectedTransaction?.factureCode" type="button" class="btn btn-primary">
+            <i class="bi bi-file-earmark-pdf me-1"></i> View Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="showTransactionDetails" class="modal-backdrop fade show"></div>
+
+  <!-- Withdraw Modal -->
+  <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="withdrawModalLabel">
+            <span *ngIf="withdrawalStep === 1">Create Invoice for Withdrawal</span>
+            <span *ngIf="withdrawalStep === 2">Review and Confirm Withdrawal</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Step 1: Select Actions and Upload Signature -->
+          <div *ngIf="withdrawalStep === 1">
+            <div class="mb-4">
+              <h6 class="fw-bold">{{ 'earnings.withdrawal.available_balance' | translate }}</h6>
+              <h3 class="text-success">{{availableBalance}}</h3>
+            </div>
+
+            <form [formGroup]="invoiceForm">
+              <div class="mb-3">
+                <label for="invoiceTitle" class="form-label">{{ 'earnings.withdrawal.invoice_title' | translate }}</label>
+                <input type="text" class="form-control" id="invoiceTitle" formControlName="invoiceTitle">
+                <div *ngIf="invoiceForm.get('invoiceTitle')?.invalid && invoiceForm.get('invoiceTitle')?.touched" class="text-danger small mt-1">
+                  {{ 'earnings.withdrawal.invoice_title_required' | translate }}
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="invoiceDescription" class="form-label">{{ 'earnings.withdrawal.invoice_description' | translate }}</label>
+                <textarea class="form-control" id="invoiceDescription" rows="2"
+                          formControlName="invoiceDescription"></textarea>
+                <div *ngIf="invoiceForm.get('invoiceDescription')?.invalid && invoiceForm.get('invoiceDescription')?.touched" class="text-danger small mt-1">
+                  {{ 'earnings.withdrawal.invoice_description_required' | translate }}
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label">{{ 'earnings.withdrawal.select_actions' | translate }}</label>
+                <div class="d-flex justify-content-between mb-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="selectAllActions()">{{ 'earnings.withdrawal.select_all' | translate }}</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="deselectAllActions()">{{ 'earnings.withdrawal.deselect_all' | translate }}</button>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                    <tr>
+                      <th style="width: 50px;"></th>
+                      <th>{{ 'earnings.withdrawal.action_code' | translate }}</th>
+                      <th>{{ 'earnings.withdrawal.text' | translate }}</th>
+                      <th>{{ 'earnings.withdrawal.date' | translate }}</th>
+                      <th>{{ 'earnings.withdrawal.amount' | translate }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let action of speakerActions">
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox"
+                                 [checked]="action.selected"
+                                 (change)="toggleActionSelection(action)">
+                        </div>
+                      </td>
+                      <td>{{action.code}}</td>
+                      <td>{{action.text.substring(0, 30)}}{{action.text.length > 30 ? '...' : ''}}</td>
+                      <td>{{formatDate(action.dateCreation.toString())}}</td>
+                      <td>{{formatCurrency(action.amount)}}</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                      <td colspan="4" class="text-end fw-bold">{{ 'earnings.withdrawal.total_selected' | translate }}</td>
+                      <td class="fw-bold">{{formatCurrency(selectedActionsTotal)}}</td>
+                    </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                <div *ngIf="speakerActions.length === 0" class="alert alert-info">
+                  <i class="bi bi-info-circle-fill me-2"></i>
+                  {{ 'earnings.withdrawal.no_actions' | translate }}
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label">{{ 'earnings.withdrawal.upload_signature' | translate }}</label>
+                <div class="d-flex align-items-center">
+                  <input type="file" class="form-control" id="signatureUpload" accept="image/png"
+                         (change)="onSignatureUpload($event)">
+                  <button *ngIf="signaturePreview" type="button" class="btn btn-outline-danger ms-2" (click)="clearSignature()">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+                <div *ngIf="signaturePreview" class="mt-3 p-3 border rounded bg-light text-center">
+                  <img [src]="signaturePreview" alt="Signature Preview" style="max-height: 100px;">
+                </div>
+                <div *ngIf="!signaturePreview && invoiceForm.get('signature')?.touched" class="text-danger small mt-1">
+                  {{ 'earnings.withdrawal.signature_required' | translate }}
+                </div>
+              </div>
+            </form>
+
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+              <i class="bi bi-info-circle-fill me-2"></i>
+              <div>
+                {{ 'earnings.withdrawal.info_invoice_creation' | translate }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Review and Confirm -->
+          <div *ngIf="withdrawalStep === 2">
+            <div class="mb-4">
+              <h6 class="fw-bold">{{ 'earnings.withdrawal.invoice_summary' | translate }}</h6>
+              <div class="card">
+                <div class="card-body">
+                  <div class="mb-3">
+                    <span class="fw-bold">{{ 'earnings.withdrawal.invoice_title' | translate }}</span>
+                    <span class="ms-2">{{invoiceForm.get('invoiceTitle')?.value}}</span>
+                  </div>
+                  <div class="mb-3">
+                    <span class="fw-bold">{{ 'earnings.withdrawal.description' | translate }}</span>
+                    <span class="ms-2">{{invoiceForm.get('invoiceDescription')?.value}}</span>
+                  </div>
+                  <div class="mb-3">
+                    <span class="fw-bold">{{ 'earnings.withdrawal.total_amount' | translate }}</span>
+                    <span class="ms-2 text-success">{{formatCurrency(selectedActionsTotal)}}</span>
+                  </div>
+                  <div class="mb-3">
+                    <span class="fw-bold">{{ 'earnings.withdrawal.actions_included' | translate }}</span>
+                    <span class="ms-2">{{selectedActionsCount()}} {{ 'earnings.withdrawal.actions' | translate }}</span>
+                  </div>
+                  <div class="mb-3">
+                    <span class="fw-bold">{{ 'earnings.withdrawal.signature' | translate }}</span>
+                    <div *ngIf="signaturePreview" class="mt-2 p-2 border rounded bg-light text-center">
+                      <img [src]="signaturePreview" alt="Signature Preview" style="max-height: 80px;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <h6 class="fw-bold">{{ 'earnings.withdrawal.payment_method' | translate }}</h6>
+              <div *ngFor="let method of paymentMethods; let i = index"
+                   class="payment-method-card d-flex align-items-center mb-2"
+                   [ngClass]="{'active': method.isActive}"
+                   (click)="selectPaymentMethod(i)">
+                <div class="payment-method-icon">
+                  <i class="bi {{method.icon}} text-primary"></i>
+                </div>
+                <div>
+                  <div class="fw-bold">{{method.name}}</div>
+                  <div class="small text-muted">{{method.details}}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <div>
+                {{ 'earnings.withdrawal.confirmation_warning' | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+          <!-- Step 1 Buttons -->
+          <button *ngIf="withdrawalStep === 1" type="button" class="btn btn-primary" (click)="nextStep()">
+            Next <i class="bi bi-arrow-right"></i>
+          </button>
+
+          <!-- Step 2 Buttons -->
+          <button *ngIf="withdrawalStep === 2" type="button" class="btn btn-outline-primary me-2" (click)="previousStep()">
+            <i class="bi bi-arrow-left"></i> Back
+          </button>
+          <button *ngIf="withdrawalStep === 2" type="button" class="btn btn-primary" (click)="submitWithdrawal()" [disabled]="submitting">
+            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            {{ submitting ? 'Processing...' : 'Submit Withdrawal Request' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

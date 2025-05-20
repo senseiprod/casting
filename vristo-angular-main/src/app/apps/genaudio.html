@@ -1,0 +1,431 @@
+<div class="container-fluid py-5">
+    <!-- Main wrapper with background -->
+    <div class="audio-management-wrapper">
+      <!-- Audio Library Section -->
+      <div class="card border-0 shadow-lg rounded-lg mb-5 overflow-hidden">
+        <div class="card-header bg-gradient-primary p-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="audio-icon-container me-3">
+                <i class="bi bi-soundwave text-white"></i>
+              </div>
+              <h2 class="text-white mb-0 fw-bold">{{ 'generated_audio_library' | translate }}</h2>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading state -->
+        <div *ngIf="isLoading" class="card-body d-flex justify-content-center align-items-center py-5">
+          <div class="audio-loading">
+            <div class="audio-wave">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p class="text-muted mt-3">{{ 'loading_audio_files' | translate }}</p>
+          </div>
+        </div>
+
+        <!-- Audio table with improved spacing -->
+        <div *ngIf="!isLoading" class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <!-- Adjusted column widths for better spacing -->
+                  <th class="px-4 py-3 border-0" style="width: 80px; min-width: 80px;">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-hash text-primary me-2"></i>
+                      <span>{{ 'id' | translate }}</span>
+                    </div>
+                  </th>
+                  <th class="px-4 py-3 border-0" style="width: 300px; min-width: 300px;">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-person-badge text-primary me-2"></i>
+                      <span>{{ 'speaker' | translate }}</span>
+                    </div>
+                  </th>
+                  <th class="px-4 py-3 border-0" style="width: 120px; min-width: 120px;">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-file-earmark-music text-primary me-2"></i>
+                      <span>{{ 'format' | translate }}</span>
+                    </div>
+                  </th>
+                  <th class="px-4 py-3 border-0" style="width: 300px; min-width: 300px;">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-music-note-beamed text-primary me-2"></i>
+                      <span>{{ 'audio' | translate }}</span>
+                    </div>
+                  </th>
+                  <th class="px-4 py-3 border-0" style="width: 120px; min-width: 120px;">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-gear text-primary me-2"></i>
+                      <span>{{ 'actions' | translate }}</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let audio of audios" class="border-bottom audio-row">
+                  <td class="px-4 py-3">
+                    <span class="badge bg-light text-dark">{{ audio.id }}</span>
+                  </td>
+                  <!-- Improved UUID display -->
+                  <td class="px-4 py-3">
+                    <div class="uuid-container">
+                      <div class="uuid-display" [title]="audio.speakerUuid">
+                        {{ audio.speakerUuid | slice:0:8 }}...{{ audio.speakerUuid | slice:-8 }}
+                      </div>
+
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="badge rounded-pill bg-info text-dark">
+                      <i class="bi bi-filetype-{{ audio.format.toLowerCase() }} me-1"></i>
+                      {{ audio.format }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div *ngIf="audio.fileUrl" class="modern-audio-player">
+                      <audio #audioPlayer [src]="audio.fileUrl" preload="metadata"></audio>
+                      <div class="audio-controls d-flex align-items-center">
+                        <button class="btn btn-play me-2" (click)="togglePlay(audioPlayer)">
+                          <i class="bi bi-play-fill"></i>
+                        </button>
+                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                          <div class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <span class="audio-time small">0:00</span>
+                      </div>
+                    </div>
+                    <div *ngIf="!audio.fileUrl" class="text-muted">
+                      <i class="bi bi-exclamation-circle me-2"></i> {{ 'no_audio_available' | translate }}
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <a *ngIf="audio.fileUrl" [href]="audio.fileUrl" download class="btn btn-sm btn-primary w-100">
+                      <i class="bi bi-download me-1"></i> {{ 'download' | translate }}
+                    </a>
+                    <span *ngIf="!audio.fileUrl" class="badge bg-secondary">{{ 'no_file' | translate }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Upload Form Section (unchanged) -->
+      <div class="card border-0 shadow-lg rounded-lg overflow-hidden">
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Bootstrap Icons CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    /* Modern audio management styling */
+    .audio-management-wrapper {
+      background-color: #f8f9fa;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    /* Gradient backgrounds */
+    .bg-gradient-primary {
+      background: linear-gradient(135deg, #ce091c, #2575fc);
+    }
+
+    .bg-gradient-secondary {
+      background: linear-gradient(135deg, #ce091c, #8f94fb);
+    }
+
+    /* Icon container styling */
+    .audio-icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 24px;
+    }
+
+    /* Audio wave animation for loading */
+    .audio-loading {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .audio-wave {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
+    }
+
+    .audio-wave span {
+      display: block;
+      width: 5px;
+      margin: 0 3px;
+      border-radius: 3px;
+      background: #4e54c8;
+      animation: audio-wave 1.2s infinite ease-in-out;
+    }
+
+    .audio-wave span:nth-child(1) { height: 10px; animation-delay: 0s; }
+    .audio-wave span:nth-child(2) { height: 20px; animation-delay: 0.1s; }
+    .audio-wave span:nth-child(3) { height: 30px; animation-delay: 0.2s; }
+    .audio-wave span:nth-child(4) { height: 20px; animation-delay: 0.3s; }
+    .audio-wave span:nth-child(5) { height: 10px; animation-delay: 0.4s; }
+
+    @keyframes audio-wave {
+      0%, 100% {
+        transform: scaleY(1);
+      }
+      50% {
+        transform: scaleY(2);
+      }
+    }
+
+    /* Modern audio player styling */
+    .modern-audio-player {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+    }
+
+    .btn-play {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #4e54c8;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      font-size: 18px;
+      padding: 0;
+      transition: all 0.2s ease;
+    }
+
+    .btn-play:hover {
+      background-color: #3a3f99;
+      transform: scale(1.05);
+    }
+
+    .progress {
+      border-radius: 4px;
+      background-color: #e9ecef;
+      overflow: hidden;
+    }
+
+    .audio-time {
+      min-width: 40px;
+      text-align: right;
+    }
+
+    /* Improved UUID display */
+    .uuid-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .uuid-display {
+      font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: #333;
+      width: fit-content;
+    }
+
+    .copy-btn {
+      font-size: 12px;
+      padding: 2px 8px;
+      width: fit-content;
+    }
+
+    /* File upload styling */
+    .file-upload-container {
+      width: 100%;
+    }
+
+    .file-upload-area {
+      border: 2px dashed #ced4da;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+    }
+
+    .file-upload-area:hover {
+      border-color: #4e54c8;
+      background-color: rgba(78, 84, 200, 0.05);
+    }
+
+    .file-upload-area.has-file {
+      border-color: #28a745;
+      background-color: rgba(40, 167, 69, 0.05);
+    }
+
+    .file-upload-area.is-invalid {
+      border-color: #dc3545;
+      background-color: rgba(220, 53, 69, 0.05);
+    }
+
+    .upload-prompt, .file-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Table styling */
+    .table-responsive {
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 0;
+    }
+
+    /* Ensure cells don't wrap content unless specified */
+    .table th, .table td {
+      white-space: nowrap;
+      padding: 16px;
+      vertical-align: middle;
+    }
+
+    /* Allow specific cells to wrap content */
+    .table td .modern-audio-player {
+      white-space: normal;
+    }
+
+    .audio-row {
+      transition: all 0.2s ease;
+    }
+
+    .audio-row:hover {
+      background-color: rgba(78, 84, 200, 0.05);
+    }
+
+    /* Card styling */
+    .card {
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .audio-management-wrapper {
+        padding: 10px;
+      }
+
+      .file-upload-area {
+        padding: 20px;
+      }
+
+      .card-header {
+        padding: 15px;
+      }
+
+      .table th, .table td {
+        padding: 12px 8px;
+      }
+
+      .uuid-display {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+    }
+
+    /* Custom scrollbar */
+    .table-responsive::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+  </style>
+
+  <script>
+    // This would need to be implemented in your Angular component
+    function togglePlay(audioElement) {
+      if (audioElement.paused) {
+        audioElement.play();
+        // Update button icon to pause
+        this.querySelector('i').classList.replace('bi-play-fill', 'bi-pause-fill');
+
+        // Update progress bar as audio plays
+        const progressBar = this.parentElement.querySelector('.progress-bar');
+        const timeDisplay = this.parentElement.querySelector('.audio-time');
+
+        audioElement.ontimeupdate = function() {
+          const percent = (audioElement.currentTime / audioElement.duration) * 100;
+          progressBar.style.width = percent + '%';
+
+          // Format time display
+          const minutes = Math.floor(audioElement.currentTime / 60);
+          const seconds = Math.floor(audioElement.currentTime % 60);
+          timeDisplay.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        };
+      } else {
+        audioElement.pause();
+        // Update button icon to play
+        this.querySelector('i').classList.replace('bi-pause-fill', 'bi-play-fill');
+      }
+    }
+
+    function onFileDrop(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (event.dataTransfer.files.length) {
+        const file = event.dataTransfer.files[0];
+        if (file.type.startsWith('audio/')) {
+          this.onFileSelected({ target: { files: [file] } });
+        }
+      }
+    }
+
+    function clearFile() {
+      this.audioFile = null;
+      // Reset file input
+      document.getElementById('audioFile').value = '';
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        // You could show a toast notification here
+        console.log('UUID copied to clipboard');
+      });
+    }
+  </script>

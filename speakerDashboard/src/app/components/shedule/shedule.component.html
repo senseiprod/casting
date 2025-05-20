@@ -1,0 +1,323 @@
+<main class="content p-4 fade-in">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-dark fw-bold">Schedule Management</h1>
+    <button class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addEventModal">
+      <i class="bi bi-plus-lg me-2"></i> Add Event
+    </button>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section mb-4">
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label for="eventTypeFilter" class="form-label">Event Type</label>
+        <select class="form-select" id="eventTypeFilter" [(ngModel)]="eventTypeFilter">
+          <option value="">All Events</option>
+          <option value="recording">Recording Sessions</option>
+          <option value="meeting">Client Meetings</option>
+          <option value="deadline">Project Deadlines</option>
+          <option value="other">Other Events</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="clientFilter" class="form-label">Client</label>
+        <select class="form-select" id="clientFilter" [(ngModel)]="clientFilter">
+          <option value="">All Clients</option>
+          <option value="acme">Acme Corporation</option>
+          <option value="techstart">TechStart Inc.</option>
+          <option value="global">Global Media</option>
+          <option value="edulearn">EduLearn Platform</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="dateFilter" class="form-label">Date Range</label>
+        <select class="form-select" id="dateFilter" [(ngModel)]="dateFilter">
+          <option value="all">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="custom">Custom Range</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="searchFilter" class="form-label">Search</label>
+        <div class="input-group">
+          <input type="text" class="form-control" id="searchFilter" placeholder="Search events..." [(ngModel)]="searchFilter">
+          <button class="btn btn-primary" type="button">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar View -->
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 fw-bold text-primary">Calendar</h6>
+          <div class="event-legend">
+            <div class="event-legend-item">
+              <div class="event-legend-color recording"></div>
+              <span>Recording</span>
+            </div>
+            <div class="event-legend-item">
+              <div class="event-legend-color meeting"></div>
+              <span>Meeting</span>
+            </div>
+            <div class="event-legend-item">
+              <div class="event-legend-color deadline"></div>
+              <span>Deadline</span>
+            </div>
+            <div class="event-legend-item">
+              <div class="event-legend-color other"></div>
+              <span>Other</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div #calendar id="calendar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <!-- Upcoming Events -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 fw-bold text-primary">Upcoming Events</h6>
+        </div>
+        <div class="card-body">
+          <div *ngFor="let event of upcomingEvents" class="schedule-list-item" [ngClass]="event.type">
+            <div class="schedule-time">
+              <i class="bi bi-clock me-1"></i>
+              {{ event.date }}, {{ event.startTime }}
+              <ng-container *ngIf="event.endTime"> - {{ event.endTime }}</ng-container>
+              <ng-container *ngIf="event.daysLeft !== undefined"> ({{ event.daysLeft }} days left)</ng-container>
+            </div>
+            <div class="schedule-title">{{ event.title }}</div>
+            <div class="schedule-client">
+              <i class="bi bi-building me-1"></i> {{ event.client }}
+            </div>
+            <div class="schedule-type" [ngClass]="event.type">
+              {{ event.type === 'recording' ? 'Recording Session' :
+              event.type === 'meeting' ? 'Client Meeting' :
+                event.type === 'deadline' ? 'Project Deadline' : 'Other' }}
+            </div>
+            <div class="schedule-actions">
+              <button class="btn btn-sm btn-outline-primary" (click)="editEvent(event.id)">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="deleteEvent(event.id)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="upcomingEvents.length === 0" class="text-center py-3">
+            <p class="text-muted mb-0">No upcoming events</p>
+          </div>
+
+          <div class="text-center mt-3">
+            <a href="#" class="text-primary fw-bold">View All Events</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Availability Card -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 fw-bold text-primary">My Availability</h6>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Working Hours</label>
+            <div *ngFor="let hours of workingHours; let i = index" class="d-flex align-items-center mb-2">
+              <div class="fw-bold me-2">{{ hours.days }}:</div>
+              <div>{{ hours.start }} - {{ hours.end }}</div>
+              <button class="btn btn-sm btn-outline-primary ms-auto" (click)="editWorkingHours(i)">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Time Off</label>
+            <div *ngFor="let timeOff of timeOffPeriods" class="d-flex align-items-center mb-2">
+              <div>{{ timeOff.startDate | date:'mediumDate' }} - {{ timeOff.endDate | date:'mediumDate' }}</div>
+              <div class="badge bg-primary ms-2">{{ timeOff.type | titlecase }}</div>
+              <button class="btn btn-sm btn-outline-danger ms-auto" (click)="deleteTimeOff(timeOff.id)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+            <div *ngIf="timeOffPeriods.length === 0" class="text-center py-2">
+              <p class="text-muted mb-0">No time off scheduled</p>
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addTimeOffModal">
+            <i class="bi bi-plus-lg me-2"></i> Add Time Off
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Add Event Modal -->
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="addEventModalLabel">Add New Event</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="eventTitle" class="form-label">Event Title</label>
+              <input type="text" class="form-control" id="eventTitle" placeholder="Enter event title" [(ngModel)]="newEvent.title" name="title">
+            </div>
+            <div class="col-md-6">
+              <label for="eventType" class="form-label">Event Type</label>
+              <select class="form-select" id="eventType" [(ngModel)]="newEvent.type" name="type">
+                <option value="recording">Recording Session</option>
+                <option value="meeting">Client Meeting</option>
+                <option value="deadline">Project Deadline</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="eventClient" class="form-label">Client</label>
+              <select class="form-select" id="eventClient" [(ngModel)]="newEvent.client" name="client">
+                <option value="">Select Client</option>
+                <option value="acme">Acme Corporation</option>
+                <option value="techstart">TechStart Inc.</option>
+                <option value="global">Global Media</option>
+                <option value="edulearn">EduLearn Platform</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="eventProject" class="form-label">Project</label>
+              <select class="form-select" id="eventProject" [(ngModel)]="newEvent.project" name="project">
+                <option value="">Select Project</option>
+                <option value="product-launch">Product Launch Video</option>
+                <option value="mobile-app">Mobile App Tutorial</option>
+                <option value="podcast">Podcast Intro</option>
+                <option value="elearning">Science Course Narration</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="eventStartDate" class="form-label">Start Date & Time</label>
+              <input type="datetime-local" class="form-control" id="eventStartDate" [(ngModel)]="newEvent.startDate" name="startDate">
+            </div>
+            <div class="col-md-6">
+              <label for="eventEndDate" class="form-label">End Date & Time</label>
+              <input type="datetime-local" class="form-control" id="eventEndDate" [(ngModel)]="newEvent.endDate" name="endDate">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="eventLocation" class="form-label">Location</label>
+            <input type="text" class="form-control" id="eventLocation" placeholder="Enter location" [(ngModel)]="newEvent.location" name="location">
+          </div>
+
+          <div class="mb-3">
+            <label for="eventDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="eventDescription" rows="3" placeholder="Enter event description" [(ngModel)]="newEvent.description" name="description"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="eventReminder" [(ngModel)]="newEvent.reminder" name="reminder" (change)="toggleReminderOptions()">
+              <label class="form-check-label" for="eventReminder">
+                Set Reminder
+              </label>
+            </div>
+          </div>
+
+          <div class="row mb-3" *ngIf="newEvent.reminder">
+            <div class="col-md-6">
+              <label for="reminderTime" class="form-label">Remind me</label>
+              <select class="form-select" id="reminderTime" [(ngModel)]="newEvent.reminderTime" name="reminderTime">
+                <option value="15">15 minutes before</option>
+                <option value="30">30 minutes before</option>
+                <option value="60">1 hour before</option>
+                <option value="1440">1 day before</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="reminderMethod" class="form-label">Notification Method</label>
+              <select class="form-select" id="reminderMethod" [(ngModel)]="newEvent.reminderMethod" name="reminderMethod">
+                <option value="email">Email</option>
+                <option value="push">Push Notification</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addEvent()">Add Event</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Time Off Modal -->
+<div class="modal fade" id="addTimeOffModal" tabindex="-1" aria-labelledby="addTimeOffModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="addTimeOffModalLabel">Add Time Off</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="timeOffType" class="form-label">Time Off Type</label>
+            <select class="form-select" id="timeOffType" [(ngModel)]="newTimeOff.type" name="type">
+              <option value="vacation">Vacation</option>
+              <option value="sick">Sick Leave</option>
+              <option value="personal">Personal Day</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="timeOffStart" class="form-label">Start Date</label>
+              <input type="date" class="form-control" id="timeOffStart" [(ngModel)]="newTimeOff.startDate" name="startDate">
+            </div>
+            <div class="col-md-6">
+              <label for="timeOffEnd" class="form-label">End Date</label>
+              <input type="date" class="form-control" id="timeOffEnd" [(ngModel)]="newTimeOff.endDate" name="endDate">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="timeOffNotes" class="form-label">Notes</label>
+            <textarea class="form-control" id="timeOffNotes" rows="3" placeholder="Enter any additional notes" [(ngModel)]="newTimeOff.notes" name="notes"></textarea>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addTimeOff()">Add Time Off</button>
+      </div>
+    </div>
+  </div>
+</div>
+

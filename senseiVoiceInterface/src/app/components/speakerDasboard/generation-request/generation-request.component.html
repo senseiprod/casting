@@ -1,0 +1,385 @@
+<div class="container py-4">
+  <div class="content" style="width: 140%">
+    <!-- Filter Controls -->
+    <div class="filter-controls mb-4">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="bi bi-search " style="color: #CB1025"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" [placeholder]="'projectManagement.filters.search' | translate" [(ngModel)]="searchTerm" (input)="applyFilters()">
+          </div>
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="filters.type" (change)="applyFilters()">
+            <option value="">{{ 'projectManagement.filters.projectTypes.all' | translate }}</option>
+            <option value="Commercial">{{ 'projectManagement.filters.projectTypes.commercial' | translate }}</option>
+            <option value="Explainer">{{ 'projectManagement.filters.projectTypes.explainer' | translate }}</option>
+            <option value="Podcast">{{ 'projectManagement.filters.projectTypes.podcast' | translate }}</option>
+            <option value="E-Learning">{{ 'projectManagement.filters.projectTypes.eLearning' | translate }}</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="filters.status" (change)="applyFilters()">
+            <option value="">{{ 'projectManagement.filters.status.all' | translate }}</option>
+            <option value="COMPLETED">{{ 'projectManagement.filters.status.completed' | translate }}</option>
+            <option value="PROCESSING">{{ 'projectManagement.filters.status.inProgress' | translate }}</option>
+            <option value="EN_ATTENTE">{{ 'projectManagement.filters.status.pending' | translate }}</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="sortOption" (change)="applyFilters()">
+            <option value="dateDesc">{{ 'projectManagement.filters.sort.dateDesc' | translate }}</option>
+            <option value="dateAsc">{{ 'projectManagement.filters.sort.dateAsc' | translate }}</option>
+            <option value="nameAsc">{{ 'projectManagement.filters.sort.nameAsc' | translate }}</option>
+            <option value="nameDesc">{{ 'projectManagement.filters.sort.nameDesc' | translate }}</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100" (click)="toggleNewProjectForm()">
+            <i class="bi bi-plus-circle me-1"></i> {{ 'projectManagement.filters.newProject' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div *ngIf="loading" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ 'projectManagement.loading.projects' | translate }}</span>
+      </div>
+      <p class="mt-2">{{ 'projectManagement.loading.projects' | translate }}</p>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ error }}
+    </div>
+
+    <!-- Projects List -->
+    <div class="row" *ngIf="!loading && !error">
+      <div class="col-12">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 fw-bold " style="color: wite">{{ 'projectManagement.projects.title' | translate }}</h6>
+            <span class="badge  rounded-pill" style="color: wite ">{{ filteredProjects.length }} {{ 'projectManagement.projects.total' | translate }}</span>
+          </div>
+          <div class="card-body p-0">
+            <!-- No Projects Message -->
+            <div *ngIf="filteredProjects.length === 0" class="text-center py-5">
+              <i class="bi bi-folder2-open text-muted" style="font-size: 3rem;"></i>
+              <h5 class="mt-3"  style="color: #CB1025 ">{{ 'projectManagement.projects.noProjects.title' | translate }}</h5>
+              <p class="text-muted">{{ 'projectManagement.projects.noProjects.message' | translate }}</p>
+              <button class="btn btn-primary mt-2" (click)="toggleNewProjectForm()">
+                <i class="bi bi-plus-circle me-1"></i> {{ 'projectManagement.projects.noProjects.button' | translate }}
+              </button>
+            </div>
+
+            <!-- Project List Accordion -->
+            <div class="accordion" id="projectsAccordion" *ngIf="filteredProjects.length > 0">
+              <div class="accordion-item border-0" *ngFor="let project of filteredProjects; let i = index">
+                <h2 class="accordion-header" [id]="'heading' + i">
+                  <button class="accordion-button" [class.collapsed]="!expandedProjects[project.id]" type="button"
+                          (click)="toggleProjectExpansion(project.id)">
+                    <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                      <div>
+                        <span class="fw-bold " style="color: #CB1025 ">{{ project.name }}</span>
+                        <span class="ms-3 status-badge"
+                              [ngClass]="{
+                                'status-completed': project.actions[0].statutAction === 'COMPLETED',
+                                'status-in-progress': project.actions[0].statutAction === 'PROCESSING',
+                                'status-pending': project.actions[0].statutAction === 'EN_ATTENTE',
+                                'status-rejected': project.actions[0].statutAction === 'REJECTED'
+                              }">
+                          {{ project.actions[0].statutAction === 'PROCESSING' ? ('projectManagement.filters.status.inProgress' | translate) :
+                          project.actions[0].statutAction === 'EN_ATTENTE' ? ('projectManagement.filters.status.pending' | translate) :
+                            project.actions[0].statutAction === 'COMPLETED' ? ('projectManagement.filters.status.completed' | translate) :
+                              project.actions[0].statutAction }}
+                        </span>
+                      </div>
+                      <div class="d-none d-md-flex align-items-center">
+                        <span class="me-4"><i class="bi bi-calendar-event me-1"></i> {{ project.dateCreation | date }}</span>
+                        <span class="me-4"><i class="bi bi-music-note-beamed me-1"></i> {{ project.actions?.length || 0 }} {{ 'projectManagement.projects.audioFiles.title' | translate }}</span>
+                      </div>
+                    </div>
+                  </button>
+                </h2>
+                <div [id]="'collapse' + i" class="accordion-collapse collapse" [class.show]="expandedProjects[project.id]">
+                  <div class="accordion-body">
+                    <!-- Project Loading State -->
+                    <div *ngIf="projectLoading[project.id]" class="text-center py-3">
+                      <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">{{ 'projectManagement.loading.projectDetails' | translate }}</span>
+                      </div>
+                      <span class="ms-2">{{ 'projectManagement.loading.projectDetails' | translate }}</span>
+                    </div>
+
+                    <!-- Project Error State -->
+                    <div *ngIf="projectErrors[project.id]" class="alert alert-danger">
+                      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                      {{ projectErrors[project.id] }}
+                      <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadProjectActions(project.id)">{{ 'projectManagement.error.retry' | translate }}</button>
+                    </div>
+
+                    <!-- Project Content -->
+                    <div class="row" *ngIf="!projectLoading[project.id] && !projectErrors[project.id]">
+                      <div class="col-md-4">
+                        <div class="project-details">
+                          <h6 class="fw-bold mb-3">{{ 'projectManagement.projects.details.title' | translate }}</h6>
+                          <div class="project-details-item">
+                            <span class="project-details-label">{{ 'projectManagement.projects.details.id' | translate }}</span>
+                            <span>{{ project.id }}</span>
+                          </div>
+                          <div class="project-details-item">
+                            <span class="project-details-label">{{ 'projectManagement.projects.details.code' | translate }}</span>
+                            <span>{{ project.code }}</span>
+                          </div>
+                          <div class="project-details-item">
+                            <span class="project-details-label">{{ 'projectManagement.projects.details.created' | translate }}</span>
+                            <span>{{ project.dateCreation | date }}</span>
+                          </div>
+                          <div class="project-details-item">
+                            <span class="project-details-label">{{ 'projectManagement.projects.details.description' | translate }}</span>
+                            <span>{{ project.description || ('projectManagement.projects.details.noDescription' | translate) }}</span>
+                          </div>
+                          <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary me-2">
+                              <i class="bi bi-pencil"></i> {{ 'projectManagement.projects.details.buttons.edit' | translate }}
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary">
+                              <i class="bi bi-share"></i> {{ 'projectManagement.projects.details.buttons.share' | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-8">
+                        <h6 class="fw-bold mb-3" >{{ 'projectManagement.projects.audioFiles.title' | translate }}</h6>
+
+                        <!-- No Audio Files Message -->
+                        <div *ngIf="!project.actions || project.actions.length === 0" class="alert alert-warning d-flex align-items-center" role="alert">
+                          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                          <div>
+                            {{ 'projectManagement.projects.audioFiles.noFiles' | translate }}
+                          </div>
+                        </div>
+
+                        <!-- Audio Files List -->
+                        <div *ngIf="project.actions && project.actions.length > 0">
+                          <div class="audio-file p-3 mb-3 rounded" *ngFor="let action of project.actions">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <h6 class="mb-0">{{ action.voice?.name || ('projectManagement.projects.audioFiles.unknownVoice' | translate) }}</h6>
+                              <div>
+                                <button class="btn btn-sm btn-outline-primary me-1" (click)="downloadAudio(action)">
+                                  <i class="fa fa-download"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary">
+                                  <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                              </div>
+                            </div>
+                            <div class="waveform-container mb-2">
+                              <div class="waveform" style="width: 100%;"></div>
+                            </div>
+                            <audio controls class="audio-player" *ngIf="action.audioGenerated">
+                              <source [src]="getAudioUrl(action)" type="audio/mpeg">
+                              Your browser does not support the audio element.
+                            </audio>
+                            <div *ngIf="!action.audioGenerated" class="alert alert-info py-2 mb-0">
+                              <i class="bi bi-info-circle me-2"></i> {{ 'projectManagement.projects.audioFiles.processing' | translate }}
+                            </div>
+                            <div class="d-flex justify-content-between mt-2">
+                              <small class="text-muted">{{ action.language || ('projectManagement.projects.audioFiles.unknownLanguage' | translate) }} • {{ getAudioStatus(action) }}</small>
+                              <small class="text-muted">{{ 'projectManagement.projects.audioFiles.created' | translate }} {{ action.dateCreation | date }}</small>
+                            </div>
+                            <div class="mt-2">
+                              <p class="text-truncate mb-0" title="{{ action.text }}">
+                                <i class="bi bi-quote me-1"></i> {{ action.text }}
+                              </p>
+                              <button class="btn btn-link btn-sm p-0 mt-1" (click)="toggleFullText(action)">
+                                {{ showFullText[action.id] ? ('projectManagement.projects.audioFiles.showLess' | translate) : ('projectManagement.projects.audioFiles.showMore' | translate) }}
+                              </button>
+                              <div *ngIf="showFullText[action.id]" class="mt-2 p-2 bg-light rounded">
+                                {{ action.text }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Add New Audio Button -->
+                        <button class="btn btn-primary mt-3" (click)="navigateToGeneration(project.id)">
+                          <i class="bi bi-plus-circle me-1"></i> {{ 'projectManagement.projects.audioFiles.buttons.generateNew' | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Pagination -->
+          <div class="card-footer bg-white py-3" *ngIf="filteredProjects.length > 0">
+            <nav aria-label="Projects pagination">
+              <ul class="pagination justify-content-center mb-0">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">{{ 'projectManagement.projects.pagination.previous' | translate }}</a>
+                </li>
+                <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+                  <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">{{ page }}</a>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                  <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">{{ 'projectManagement.projects.pagination.next' | translate }}</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recently Generated Audio -->
+    <div class="row" *ngIf="!loading && !error && recentActions.length > 0">
+      <div class="col-12">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 fw-bold " style="color: wite ">{{ 'projectManagement.recentAudio.title' | translate }}</h6>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <th>{{ 'projectManagement.recentAudio.table.text' | translate }}</th>
+                  <th>{{ 'projectManagement.recentAudio.table.voice' | translate }}</th>
+                  <th>{{ 'projectManagement.recentAudio.table.project' | translate }}</th>
+                  <th>{{ 'projectManagement.recentAudio.table.language' | translate }}</th>
+                  <th>{{ 'projectManagement.recentAudio.table.createdDate' | translate }}</th>
+                  <th>{{ 'projectManagement.recentAudio.table.actions' | translate }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let action of recentActions">
+                  <td class="text-truncate" style="max-width: 200px;" title="{{ action.text }}">{{ action.text }}</td>
+                  <td>{{ action.voice?.name || ('projectManagement.recentAudio.unknown' | translate) }}</td>
+                  <td>{{ action.project?.name || ('projectManagement.recentAudio.unknown' | translate) }}</td>
+                  <td>{{ action.language || ('projectManagement.recentAudio.unknown' | translate) }}</td>
+                  <td>{{ action.dateCreation | date }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-primary me-1" (click)="playAudio(action)">
+                      <i class="bi bi-play-fill"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary me-1" (click)="downloadAudio(action)">
+                      <i class="bi bi-download"></i>
+                    </button>
+                      <i class="bi bi-share"></i>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Project Form Modal -->
+<div class="modal fade" [ngClass]="{'show d-block': showNewProjectForm}" tabindex="-1" role="dialog" aria-labelledby="newProjectModalLabel" [attr.aria-hidden]="!showNewProjectForm" >
+  <div class="modal-dialog modal-lg" role="document" >
+    <div class="modal-content" >
+      <div class="modal-header  text-white" style="background-color: #CB1025">
+        <h5 class="modal-title" id="newProjectModalLabel" >{{ 'projectManagement.newProjectModal.title' | translate }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="toggleNewProjectForm()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="newProjectForm" (ngSubmit)="submitNewProject()">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="projectName" class="form-label">{{ 'projectManagement.newProjectModal.form.name.label' | translate }}</label>
+              <input type="text" class="form-control" id="projectName" formControlName="name" [placeholder]="'projectManagement.newProjectModal.form.name.placeholder' | translate">
+              <div *ngIf="newProjectForm.get('name')?.invalid && newProjectForm.get('name')?.touched" class="text-danger small mt-1">
+                {{ 'projectManagement.newProjectModal.form.name.error' | translate }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="projectType" class="form-label">{{ 'projectManagement.newProjectModal.form.type.label' | translate }}</label>
+              <select class="form-select" id="projectType" formControlName="type">
+                <option value="">{{ 'projectManagement.newProjectModal.form.type.placeholder' | translate }}</option>
+                <option value="Commercial">{{ 'projectManagement.filters.projectTypes.commercial' | translate }}</option>
+                <option value="Explainer Video">{{ 'projectManagement.filters.projectTypes.explainer' | translate }}</option>
+                <option value="Podcast">{{ 'projectManagement.filters.projectTypes.podcast' | translate }}</option>
+                <option value="E-Learning">{{ 'projectManagement.filters.projectTypes.eLearning' | translate }}</option>
+                <option value="IVR">{{ 'projectManagement.filters.projectTypes.ivr' | translate }}</option>
+                <option value="Audiobook">{{ 'projectManagement.filters.projectTypes.audiobook' | translate }}</option>
+                <option value="Other">{{ 'projectManagement.filters.projectTypes.other' | translate }}</option>
+              </select>
+              <div *ngIf="newProjectForm.get('type')?.invalid && newProjectForm.get('type')?.touched" class="text-danger small mt-1">
+                {{ 'projectManagement.newProjectModal.form.type.error' | translate }}
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label for="projectDescription" class="form-label">{{ 'projectManagement.newProjectModal.form.description.label' | translate }}</label>
+              <textarea class="form-control" id="projectDescription" formControlName="description" rows="3" [placeholder]="'projectManagement.newProjectModal.form.description.placeholder' | translate"></textarea>
+              <div *ngIf="newProjectForm.get('description')?.invalid && newProjectForm.get('description')?.touched" class="text-danger small mt-1">
+                {{ 'projectManagement.newProjectModal.form.description.error' | translate }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="dueDate" class="form-label">{{ 'projectManagement.newProjectModal.form.dueDate.label' | translate }}</label>
+              <input type="date" class="form-control" id="dueDate" formControlName="dueDate">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="toggleNewProjectForm()">{{ 'projectManagement.newProjectModal.buttons.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="submitNewProject()" [disabled]="newProjectForm.invalid || submitting">
+          <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          {{ submitting ? ('projectManagement.newProjectModal.buttons.creating' | translate) : ('projectManagement.newProjectModal.buttons.create' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showNewProjectForm" class="modal-backdrop fade show"></div>
+
+<!-- Audio Player Modal -->
+<div class="modal fade" [ngClass]="{'show d-block': showAudioPlayer}" tabindex="-1" role="dialog" aria-labelledby="audioPlayerModalLabel" [attr.aria-hidden]="!showAudioPlayer">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="audioPlayerModalLabel">{{ 'projectManagement.audioPlayerModal.title' | translate }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeAudioPlayer()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div *ngIf="currentAudio">
+          <h6>{{ currentAudio.voice?.name || ('projectManagement.projects.audioFiles.unknownVoice' | translate) }}</h6>
+          <p class="text-muted">{{ currentAudio.project?.name || ('projectManagement.audioPlayerModal.unknownProject' | translate) }}</p>
+
+          <div class="waveform-container my-3">
+            <div class="waveform" style="width: 100%;"></div>
+          </div>
+
+          <audio controls class="audio-player w-100" *ngIf="currentAudio.audioGenerated" autoplay>
+            <source [src]="getAudioUrl(currentAudio)" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+
+          <p class="mt-3">{{ currentAudio.text }}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" (click)="downloadAudio(currentAudio)">
+          <i class="bi bi-download me-1"></i> {{ 'projectManagement.audioPlayerModal.buttons.download' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="closeAudioPlayer()">{{ 'projectManagement.audioPlayerModal.buttons.close' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showAudioPlayer" class="modal-backdrop fade show"></div>

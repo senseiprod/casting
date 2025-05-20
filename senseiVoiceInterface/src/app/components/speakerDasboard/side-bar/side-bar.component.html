@@ -1,0 +1,91 @@
+<nav class="sidebar">
+  <!-- Logo Section -->
+  <div class="sidebar-brand">
+    <img src="assets/img/LOGO NOIR (2).png" alt="Company Logo" class="logo">
+  </div>
+
+  <!-- Profile Section -->
+  <div class="profile-section">
+    <div class="profile-avatar">
+      <img [src]="'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" alt="Profile" class="avatar-img">
+    </div>
+    <div class="profile-info">
+      <h4 class="profile-title">Client Portal</h4>
+      <p class="profile-subtitle">Acme Corporation</p>
+    </div>
+  </div>
+
+  <!-- Main Navigation -->
+  <div class="nav-section">
+    <div class="nav-group">
+      <div class="nav-label">Main</div>
+
+      <div class="nav-item">
+        <a routerLink="generate" class="nav-link" routerLinkActive="active">
+          <div class="nav-icon">
+            <i class="bi bi-speedometer2"></i>
+          </div>
+          <span>Dashboard</span>
+        </a>
+      </div>
+
+      <div class="nav-item">
+        <a routerLink="demande-generation" class="nav-link" routerLinkActive="active">
+          <div class="nav-icon">
+            <i class="bi bi-collection"></i>
+          </div>
+          <span>My Projects</span>
+        </a>
+      </div>
+
+      <div class="nav-item">
+        <a routerLink="demande" class="nav-link" routerLinkActive="active">
+          <div class="nav-icon">
+            <i class="bi bi-clipboard-check"></i>
+          </div>
+          <span>My Requests</span>
+        </a>
+      </div>
+
+      <div class="nav-item">
+        <a routerLink="requests" class="nav-link" routerLinkActive="active">
+          <div class="nav-icon">
+            <i class="bi bi-music-note-list"></i>
+          </div>
+          <span>Audio Library</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Settings Navigation -->
+    <div class="nav-group">
+      <div class="nav-label">Account</div>
+
+      <div class="nav-item">
+        <a routerLink="profile" class="nav-link" routerLinkActive="active">
+          <div class="nav-icon">
+            <i class="bi bi-gear"></i>
+          </div>
+          <span>Settings</span>
+        </a>
+      </div>
+
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon">
+            <i class="bi bi-question-circle"></i>
+          </div>
+          <span>Help & Support</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Section -->
+  <div class="logout-section">
+    <a href="#" (click)="logout()" class="logout-button">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Logout</span>
+    </a>
+  </div>
+</nav>

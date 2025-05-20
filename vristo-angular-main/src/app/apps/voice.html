@@ -1,0 +1,1025 @@
+<div class="container-fluid py-5">
+    <!-- Main Content Wrapper -->
+    <div class="row g-4">
+      <!-- Left Column: Voice Creation -->
+      <div class="col-lg-5">
+        <div class="card border-0 rounded-4 h-100 shadow-lg position-relative overflow-hidden">
+          <div class="card-blur-bg"></div>
+          <div class="card-header bg-gradient-primary p-4 border-0">
+            <h3 class="m-0 fw-bold text-white d-flex align-items-center">
+              <i class="bi bi-soundwave me-2"></i>{{ 'clone_new_voice' | translate }}
+            </h3>
+          </div>
+          <div class="card-body p-4 position-relative">
+            <form [formGroup]="voiceForm" (ngSubmit)="submitForm()">
+              <div class="mb-4">
+                <label for="name" class="form-label fw-semibold">{{ 'voice_name' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-tag"></i>
+                  </span>
+                  <input type="text" class="form-control border-0" id="name" formControlName="name" placeholder="Enter voice name">
+                </div>
+              </div>
+
+              <!-- Improved speaker selection with better button styling -->
+              <div class="mb-4">
+                <label for="speakerName" class="form-label fw-semibold">{{ 'select_speaker' | translate }}</label>
+                <div class="speaker-selection-container">
+                  <div class="input-group input-group-lg custom-input-group">
+                    <span class="input-group-text border-0">
+                      <i class="bi bi-person-fill"></i>
+                    </span>
+                    <select class="form-select border-0" id="speakerName" formControlName="id" (change)="onSpeakerChange($event)">
+                      <option value="" disabled selected>{{ 'select_speaker' | translate }}</option>
+                      <option *ngFor="let speaker of speakers" [value]="speaker.uuid">{{ speaker.nom }}</option>
+                    </select>
+                  </div>
+                  <button type="button" class="btn-add-speaker" (click)="openAddSpeakerModal()">
+                    <span class="btn-icon"><i class="bi bi-person-plus"></i></span>
+                    <span class="btn-text" style="color:#ce091c">{{ 'Add New Speaker' | translate }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Now, let's add the modal component to the template -->
+              <ngx-custom-modal #newSpeakerModal class="no-footer" style="z-index: 9999;">
+                <ng-template #modalHeader>
+                  <div class="!font-medium">{{ 'Add New Speaker' | translate }}</div>
+                </ng-template>
+                <ng-template #modalBody>
+                  <form [formGroup]="speakerForm" class="text-sm" (ngSubmit)="addNewSpeaker()" ngNativeValidate>
+                    <div class="mb-5">
+                      <label for="prenom">First Name</label>
+                      <input id="prenom" type="text" name="prenom" placeholder="Enter First Name" class="form-input" formControlName="prenom" />
+                    </div>
+                    <div class="mb-5">
+                      <label for="nom">Last Name</label>
+                      <input id="nom" type="text" name="nom" placeholder="Enter Last Name" class="form-input" formControlName="nom" />
+                    </div>
+                    <div class="mb-5">
+                      <label for="username">Username</label>
+                      <input id="username" type="text" name="username" placeholder="Enter Username" class="form-input" formControlName="username" />
+                    </div>
+                    <div class="mb-5">
+                      <label for="email">Email</label>
+                      <input id="email" type="email" name="email" placeholder="Enter Email" class="form-input" formControlName="email" />
+                    </div>
+                    <div class="mb-5">
+                      <label for="company_name">Company name</label>
+                      <input id="company_name" type="text" name="company_name" placeholder="Enter Company Name" class="form-input" formControlName="company_name" />
+                    </div>
+                    <div class="mb-5">
+                      <label for="motDePasse">Password</label>
+                      <input id="motDePasse" type="password" placeholder="Enter Password" class="form-input" formControlName="motDePasse" />
+                    </div>
+                    <div class="mb-5">
+                      <label for="phone">Phone Number</label>
+                      <input id="phone" type="text" placeholder="Enter Phone Number" class="form-input" formControlName="phone" />
+                    </div>
+                    <!-- Hidden field, as we know this is always a SPEAKER -->
+                    <input type="hidden" formControlName="role" value="SPEAKER" />
+
+                    <div class="mb-5">
+                      <label for="photo">Profile Photo</label>
+                      <input id="photo" type="file" class="form-input" (change)="onSpeakerFileSelected($event)" />
+                    </div>
+                    <div class="mt-8 flex items-center justify-end">
+                      <button type="button" class="btn btn-outline-danger" (click)="newSpeakerModal.close()">Cancel</button>
+                      <button
+                          type="submit"
+                          class="btn btn-primary ltr:ml-3 rtl:mr-3"
+                          [disabled]="!speakerForm.valid"
+                      >
+                          Save
+                      </button>
+                    </div>
+                  </form>
+                </ng-template>
+              </ngx-custom-modal>
+
+              <div class="mb-4">
+                <label for="gender" class="form-label fw-semibold">{{ 'Gender' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-gender-ambiguous"></i>
+                  </span>
+                  <input type="text" class="form-control border-0" id="gender" formControlName="gender" placeholder="Enter gender">
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="language" class="form-label fw-semibold">{{ 'Language' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-translate"></i>
+                  </span>
+                  <input type="text" class="form-control border-0" id="language" formControlName="language" placeholder="Enter language">
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="price" class="form-label fw-semibold">{{ 'Price' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-currency-dollar"></i>
+                  </span>
+                  <input type="text" class="form-control border-0" id="price" formControlName="price" placeholder="Enter price">
+                </div>
+              </div>
+
+
+              <div class="mb-4">
+                <label for="accent" class="form-label fw-semibold">{{ 'Accent' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-currency-dollar"></i>
+                  </span>
+                  <input type="text" class="form-control border-0" id="accent" formControlName="accent" placeholder="Enter accent">
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="age" class="form-label fw-semibold">{{ 'Age' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-currency-dollar"></i>
+                  </span>
+                  <input type="text" class="form-control border-0" id="age" formControlName="age" placeholder="Enter age">
+                </div>
+              </div>
+
+
+              <div class="mb-4">
+                <label for="style" class="form-label fw-semibold">{{ 'Speaking style' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-currency-dollar"></i>
+                  </span>
+                  <input type="text" class="form-control border-0" id="style" formControlName="style" placeholder="Enter speaking style">
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="description" class="form-label fw-semibold">{{ 'Description' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-card-text"></i>
+                  </span>
+                  <textarea class="form-control border-0" id="description" formControlName="description" placeholder="Enter voice description" rows="3"></textarea>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="labels" class="form-label fw-semibold">{{ 'labels_optional' | translate }}</label>
+                <div class="input-group input-group-lg custom-input-group">
+                  <span class="input-group-text border-0">
+                    <i class="bi bi-tags"></i>
+                  </span>
+                  <input type="text" class="form-control border-0" id="labels" formControlName="labels" placeholder="Enter labels (comma separated)">
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <div class="form-check form-switch modern-switch">
+                  <input class="form-check-input" type="checkbox" id="removeBackgroundNoise" formControlName="removeBackgroundNoise">
+                  <label class="form-check-label" for="removeBackgroundNoise">{{ 'remove_background_noise' | translate }}</label>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="file" class="form-label fw-semibold">{{ 'upload_voice_file' | translate }}</label>
+                <div class="modern-file-upload">
+                  <input
+                    type="file"
+                    class="file-upload-input"
+                    id="file"
+                    (change)="onFileChange($event)"
+                  >
+                  <div class="file-upload-label">
+                    <i class="bi bi-cloud-arrow-up fs-3"></i>
+                    <span class="file-name">Choose a file or drag it here</span>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center" [disabled]="loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!loading" class="bi bi-plus-circle me-2"></i>
+                {{ 'create_voice' | translate }}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Synthesize Speech Form -->
+      <div class="col-lg-7" *ngIf="selectedVoice">
+        <div class="card border-0 rounded-4 h-100 shadow-lg position-relative overflow-hidden">
+          <div class="card-blur-bg"></div>
+          <div class="card-header bg-gradient-success p-4 border-0">
+            <h3 class="m-0 fw-bold text-white d-flex align-items-center">
+              <i class="bi bi-music-note-beamed me-2"></i>Synthesize Speech
+            </h3>
+          </div>
+          <div class="card-body p-4 position-relative">
+            <div class="selected-voice-info mb-4">
+              <div class="d-flex align-items-center">
+                <div class="voice-avatar me-3">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <div>
+                  <h5 class="mb-1">{{ selectedVoice.name || 'Voice' }}</h5>
+                  <p class="mb-0 text-muted small">{{ selectedVoice.language || 'Language not specified' }} • {{ selectedVoice.gender || 'Gender not specified' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <form [formGroup]="synthesizeForm">
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="text" class="form-label fw-semibold">Text to speak</label>
+                  <div class="custom-input-group">
+                    <span class="input-group-text border-0">
+                      <i class="bi bi-chat-text"></i>
+                    </span>
+                    <textarea id="text" class="form-control border-0" rows="5" formControlName="text" placeholder="Enter the text to be synthesized"></textarea>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                  <label for="output_format" class="form-label fw-semibold">Output Format</label>
+                  <div class="input-group input-group-lg custom-input-group">
+                    <span class="input-group-text border-0">
+                      <i class="bi bi-file-earmark-music"></i>
+                    </span>
+                    <select id="output_format" class="form-select border-0" formControlName="output_format">
+                      <option value="mp3_44100_128">MP3 (44.1kHz, 128kbps)</option>
+                      <option value="mp3_44100_192">MP3 (44.1kHz, 192kbps)</option>
+                      <option value="pcm_16000">WAV (16kHz)</option>
+                      <option value="pcm_22050">WAV (22.05kHz)</option>
+                      <option value="pcm_24000">WAV (24kHz)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="stability" class="form-label fw-semibold d-flex justify-content-between">
+                    <span>Stability</span>
+                    <span class="value-display">{{synthesizeForm.get('stability')?.value}}</span>
+                  </label>
+                  <div class="modern-range-slider">
+                    <input type="range" id="stability" class="form-range" formControlName="stability" min="0" max="1" step="0.1" />
+                    <div class="d-flex justify-content-between range-labels">
+                      <small>Less stable</small>
+                      <small>More stable</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                  <label for="similarity_boost" class="form-label fw-semibold d-flex justify-content-between">
+                    <span>Similarity Boost</span>
+                    <span class="value-display">{{synthesizeForm.get('similarity_boost')?.value}}</span>
+                  </label>
+                  <div class="modern-range-slider">
+                    <input type="range" id="similarity_boost" class="form-range" formControlName="similarity_boost" min="0" max="1" step="0.1" />
+                    <div class="d-flex justify-content-between range-labels">
+                      <small>Less similar</small>
+                      <small>More similar</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="style_guidance" class="form-label fw-semibold d-flex justify-content-between">
+                    <span>Style</span>
+                    <span class="value-display">{{synthesizeForm.get('style_guidance')?.value}}</span>
+                  </label>
+                  <div class="modern-range-slider">
+                    <input type="range" id="style_guidance" class="form-range" formControlName="style_guidance" min="0" max="1" step="0.1" />
+                    <div class="d-flex justify-content-between range-labels">
+                      <small>Less style</small>
+                      <small>More style</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                  <div class="form-check form-switch modern-switch mt-4">
+                    <input class="form-check-input" type="checkbox" id="speaker_boost" formControlName="use_speaker_boost">
+                    <label class="form-check-label" for="speaker_boost">Use Speaker Boost</label>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-success btn-lg w-100 d-flex align-items-center justify-content-center" (click)="synthesizeSpeech()">
+                <i class="bi bi-play-fill me-2"></i>
+                Synthesize
+              </button>
+
+              <div id="audio-container" class="mt-4">
+                <div class="audio-placeholder">
+                  <i class="bi bi-volume-up"></i>
+                  <p>Audio will appear here after synthesis</p>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Voice List Section -->
+    <div class="card border-0 rounded-4 mt-4 shadow-lg position-relative overflow-hidden">
+      <div class="card-blur-bg"></div>
+      <div class="card-header bg-gradient-dark p-4 border-0 d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <h3 class="m-0 fw-bold text-white d-flex align-items-center">
+          <i class="bi bi-list-ul me-2"></i>{{ 'voice_library' | translate }}
+        </h3>
+        <div class="search-container">
+          <div class="input-group">
+            <span class="input-group-text border-0">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control border-0" placeholder="{{ 'search_voices...' | translate }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Responsive Table -->
+      <div class="table-responsive">
+        <table class="table align-middle mb-0 modern-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Speaker UUID</th>
+              <th>{{ 'points' | translate }}</th>
+              <th>{{ 'Gender' | translate }}</th>
+              <th>{{ 'Language' | translate }}</th>
+              <th>{{'name' | translate }}</th>
+              <th>{{'Price' | translate }}</th>
+              <th>{{'Age' | translate }}</th>
+              <th>{{'Accent' | translate }}</th>
+              <th>Style</th>
+              <th>ElevenLabs ID</th>
+              <th class="text-center">{{'Actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let voice of voices" class="voice-row">
+              <td><span class="badge bg-primary">{{ voice.code }}</span></td>
+              <td>
+                <div class="uuid-cell" data-bs-toggle="tooltip" [title]="voice.speakerUuid">
+                  {{ voice.speakerUuid }}
+                </div>
+              </td>
+              <td><span class="badge bg-info">{{ voice.nombrePoint }}</span></td>
+              <td>
+                <span class="gender-badge" [ngClass]="voice.gender === 'Male' ? 'male' : 'female'">
+                  <i [class]="voice.gender === 'male' ? 'bi bi-gender-male' : 'bi bi-gender-female'"></i>
+                  {{ voice.gender || 'N/A' }}
+                </span>
+              </td>
+              <td>
+                <span class="language-badge">{{ voice.language || 'N/A' }}</span>
+              </td>
+              <td>{{ voice.name || 'N/A' }}</td>
+              <td>{{ voice.price || 'N/A' }}</td>
+              <td>{{ voice.age || 'N/A' }}</td>
+              <td>{{ voice.accent || 'N/A' }}</td>
+              <td>{{ voice.style || 'N/A' }}</td>
+
+              <td>
+                <div class="uuid-cell" data-bs-toggle="tooltip" [title]="voice.elevenlabs_id">
+                  {{ voice.elevenlabs_id }}
+                </div>
+              </td>
+              <td class="text-center">
+                <div class="btn-group">
+                  <button class="btn btn-primary btn-sm action-btn" (click)="onSynthesizeClick(voice)">
+                    <i class="bi bi-soundwave"></i> {{ 'synthesize' | translate }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add this to your styles -->
+  <style>
+    :root {
+      --primary-color: #ce091c;
+      --primary-hover: #a70717;
+      --secondary-color: #4895ef;
+      --dark-color: #1a1a2e;
+      --light-color: #f8f9fa;
+      --success-color: #10b981;
+      --border-radius: 12px;
+      --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    /* Card styling */
+    .card {
+      transition: var(--transition);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      background-color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-blur-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.05;
+      z-index: 0;
+    }
+
+    .card-header {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem;
+    }
+
+    .card-body {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem;
+    }
+
+    /* Custom gradients */
+    .bg-gradient-primary {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #3a0ca3 100%);
+    }
+
+    .bg-gradient-success {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    }
+
+    .bg-gradient-dark {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-color) 100%);
+    }
+
+    /* Input styling */
+    .custom-input-group {
+      display: flex;
+      align-items: center;
+      background-color: var(--light-color);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+    }
+
+    .custom-input-group:focus-within {
+      box-shadow: 0 0 0 3px rgba(206, 9, 28, 0.15);
+    }
+
+    .custom-input-group .input-group-text {
+      background-color: transparent;
+      color: #6c757d;
+      border: none;
+      padding: 0.75rem 1rem;
+    }
+
+    .custom-input-group .form-control,
+    .custom-input-group .form-select {
+      border: none;
+      padding: 0.75rem 1rem;
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    .custom-input-group .form-control:focus,
+    .custom-input-group .form-select:focus {
+      box-shadow: none;
+    }
+
+    /* Modern file upload */
+    .modern-file-upload {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      border: 2px dashed #dee2e6;
+      border-radius: 12px;
+      background-color: var(--light-color);
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .modern-file-upload:hover {
+      border-color: var(--primary-color);
+      background-color: rgba(206, 9, 28, 0.05);
+    }
+
+    .file-upload-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .file-upload-label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #6c757d;
+      padding: 1rem;
+      z-index: 1;
+    }
+
+    .file-upload-label i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    /* Modern switch */
+    .modern-switch .form-check-input {
+      width: 3rem;
+      height: 1.5rem;
+      margin-top: 0.25rem;
+    }
+
+    .modern-switch .form-check-input:checked {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .modern-switch .form-check-label {
+      padding-left: 0.5rem;
+    }
+
+    /* Modern range slider */
+    .modern-range-slider {
+      position: relative;
+      padding: 0.5rem 0;
+    }
+
+    .modern-range-slider .form-range {
+      height: 8px;
+    }
+
+    .modern-range-slider .form-range::-webkit-slider-thumb {
+      background: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(206, 9, 28, 0.2);
+    }
+
+    .modern-range-slider .form-range::-moz-range-thumb {
+      background: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(206, 9, 28, 0.2);
+    }
+
+    .range-labels {
+      margin-top: 0.25rem;
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    .value-display {
+      font-weight: normal;
+      color: var(--primary-color);
+    }
+
+    /* Button styling */
+    .btn {
+      border-radius: 10px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: var(--transition);
+      border: none;
+      box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-success {
+      background-color: var(--success-color);
+    }
+
+    .action-btn {
+      border-radius: 50px;
+      padding: 0.5rem 1rem;
+      transition: var(--transition);
+    }
+
+    /* Voice avatar */
+    .voice-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    /* Selected voice info */
+    .selected-voice-info {
+      background-color: var(--light-color);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Table styling */
+    .modern-table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .modern-table thead tr {
+      background-color: var(--light-color);
+    }
+
+    .modern-table th {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      padding: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+      color: #6c757d;
+    }
+
+    .modern-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+    }
+
+    .voice-row {
+      transition: var(--transition);
+    }
+
+    .voice-row:hover {
+      background-color: rgba(206, 9, 28, 0.05);
+    }
+
+    /* UUID cell styling */
+    .uuid-cell {
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+      position: relative;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.5rem;
+      background-color: rgba(0, 0, 0, 0.03);
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    .uuid-cell:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+    }
+
+    /* Badge styling */
+    .badge {
+      font-weight: 500;
+      padding: 0.5em 0.75em;
+      border-radius: 6px;
+    }
+
+    .gender-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .gender-badge.male {
+      background-color: rgba(73, 148, 239, 0.15);
+      color: #4994ef;
+    }
+
+    .gender-badge.female {
+      background-color: rgba(206, 9, 28, 0.15);
+      color: var(--primary-color);
+    }
+
+    .language-badge {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background-color: rgba(0, 0, 0, 0.05);
+      border-radius: 50px;
+      color: #495057;
+    }
+
+    /* Audio container */
+    #audio-container {
+      background-color: var(--light-color);
+      border-radius: 12px;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .audio-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #6c757d;
+      padding: 2rem;
+    }
+
+    .audio-placeholder i {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: #ced4da;
+    }
+
+    .audio-placeholder p {
+      margin-bottom: 0;
+    }
+
+    /* Search container */
+    .search-container {
+      max-width: 300px;
+      width: 100%;
+    }
+
+    .search-container .input-group {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      overflow: hidden;
+    }
+
+    .search-container .input-group-text {
+      background-color: transparent;
+      border: none;
+      color: white;
+    }
+
+    .search-container .form-control {
+      background-color: transparent;
+      border: none;
+      color: white;
+    }
+
+    .search-container .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Improved Speaker Selection Styling */
+    .speaker-selection-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-add-speaker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(206, 9, 28, 0.25);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .btn-add-speaker:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+      z-index: -1;
+    }
+
+    .btn-add-speaker:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 14px rgba(206, 9, 28, 0.3);
+      background-color: var(--primary-hover);
+    }
+
+    .btn-add-speaker:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 8px rgba(206, 9, 28, 0.2);
+    }
+
+    .btn-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .btn-text {
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* Fix table scrolling */
+    .table-responsive {
+      max-height: 500px; /* Set a maximum height */
+      overflow-y: auto; /* Enable vertical scrolling */
+      overflow-x: auto; /* Enable horizontal scrolling if needed */
+      position: relative;
+    }
+
+    /* Fix header position */
+    .modern-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: var(--light-color);
+    }
+
+    /* Ensure thead has proper styling when sticky */
+    .modern-table thead th {
+      background-color: var(--light-color);
+      box-shadow: 0 1px 0 #f0f0f0;
+    }
+
+    /* Make sure the container has enough height to show scrollbar */
+    .card.border-0.rounded-4.mt-4 {
+      max-height: calc(100vh - 200px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Make the table body take available space */
+    .card-body.table-container {
+      flex: 1;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    /* Fix for gradient backgrounds */
+    .bg-gradient-primary {
+      background: linear-gradient(135deg, #ce091c 0%, #3a0ca3 100%) !important;
+    }
+
+    .bg-gradient-success {
+      background: linear-gradient(135deg, #ce091c 0%, #4895ef 100%) !important;
+    }
+
+    .bg-gradient-dark {
+      background: linear-gradient(135deg, #ce091c 0%, #1a1a2e 100%) !important;
+    }
+
+    /* Ensure buttons have the right colors */
+    .btn-primary {
+      background-color: #ce091c !important;
+    }
+
+    .btn-success {
+      background-color: #10b981 !important;
+    }
+
+    /* Ensure form elements have proper styling */
+    .form-check-input:checked {
+      background-color: #ce091c !important;
+      border-color: #ce091c !important;
+    }
+
+    .form-range::-webkit-slider-thumb {
+      background-color: #ce091c !important;
+    }
+
+    .form-range::-moz-range-thumb {
+      background-color: #ce091c !important;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 5px;
+    }
+
+    /* Responsive adjustments for speaker selection */
+    @media (min-width: 768px) {
+      .speaker-selection-container {
+        flex-direction: row;
+        align-items: stretch;
+      }
+
+      .custom-input-group {
+        flex: 1;
+      }
+
+      .btn-add-speaker {
+        min-width: 200px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .btn-add-speaker {
+        width: 100%;
+        margin-top: 8px;
+      }
+    }
+  </style>
+
+  <!-- Add this script to initialize tooltips and handle UUID copying -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+
+      // Handle UUID copying
+      document.querySelectorAll('.uuid-cell').forEach(cell => {
+        cell.addEventListener('click', function() {
+          const text = this.getAttribute('title');
+          navigator.clipboard.writeText(text).then(() => {
+            // Show copied notification
+            const tooltip = bootstrap.Tooltip.getInstance(this);
+            const originalTitle = this.getAttribute('data-bs-original-title');
+
+            this.setAttribute('data-bs-original-title', 'Copied!');
+            tooltip.show();
+
+            // Reset tooltip after 1 second
+            setTimeout(() => {
+              this.setAttribute('data-bs-original-title', originalTitle);
+            }, 1000);
+          });
+        });
+      });
+
+      // Handle file input change
+      document.querySelector('.file-upload-input')?.addEventListener('change', function() {
+        const fileName = this.files[0]?.name || 'Choose a file or drag it here';
+        this.closest('.modern-file-upload').querySelector('.file-name').textContent = fileName;
+      });
+
+      // Add value display for range inputs
+      document.querySelectorAll('.form-range').forEach(range => {
+        range.addEventListener('input', function() {
+          const valueDisplay = this.closest('.mb-4').querySelector('.value-display');
+          if (valueDisplay) {
+            valueDisplay.textContent = this.value;
+          }
+        });
+      });
+    });
+  </script>

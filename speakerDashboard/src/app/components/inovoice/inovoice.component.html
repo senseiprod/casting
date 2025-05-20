@@ -1,0 +1,359 @@
+<main class="content p-4 fade-in">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-dark fw-bold">{{ 'INVOICES.TITLE' | translate }}</h1>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">{{ 'INVOICES.LOADING' | translate }}</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadInvoices()">
+      {{ 'INVOICES.RETRY' | translate }}
+    </button>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section mb-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label for="statusFilter" class="form-label">{{ 'INVOICES.STATUS' | translate }}</label>
+        <select class="form-select" id="statusFilter" [(ngModel)]="statusFilter">
+          <option value="">{{ 'INVOICES.ALL_STATUSES' | translate }}</option>
+          <option value="PAYEE">{{ 'INVOICES.PAID' | translate }}</option>
+          <option value="EN_ATTENTE">{{ 'INVOICES.PENDING' | translate }}</option>
+          <option value="EN_RETARD">{{ 'INVOICES.OVERDUE' | translate }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="dateFilter" class="form-label">Date Range</label>
+        <select class="form-select" id="dateFilter" [(ngModel)]="dateFilter">
+          <option value="all">All Time</option>
+          <option value="month">This Month</option>
+          <option value="quarter">This Quarter</option>
+          <option value="year">This Year</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="searchFilter" class="form-label">Search</label>
+        <div class="input-group">
+          <input type="text" class="form-control" id="searchFilter" placeholder="Search invoices..." [(ngModel)]="searchFilter">
+          <button class="btn btn-primary" type="button">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice Stats -->
+  <div class="row mb-4">
+    <!-- Total Invoices -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card shadow h-100 py-2 border-left-primary">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-uppercase mb-1 text-primary">
+                Total Invoices
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ totalInvoices }}</div>
+              <div class="text-xs text-muted mt-2">
+                Total: {{ formatCurrency(totalAmount) }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-receipt fs-2 text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paid Invoices -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card shadow h-100 py-2 border-left-success">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-uppercase mb-1 text-success">
+                Paid Invoices
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ paidInvoices }}</div>
+              <div class="text-xs text-muted mt-2">
+                Total: {{ formatCurrency(paidAmount) }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-check-circle fs-2 text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Invoices -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card shadow h-100 py-2 border-left-warning">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-uppercase mb-1 text-warning">
+                Pending Invoices
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pendingInvoices }}</div>
+              <div class="text-xs text-muted mt-2">
+                Total: {{ formatCurrency(pendingAmount) }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-hourglass-split fs-2 text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overdue Invoices -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card shadow h-100 py-2 border-left-danger">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-uppercase mb-1 text-danger">
+                Overdue Invoices
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ overdueInvoices }}</div>
+              <div class="text-xs text-muted mt-2">
+                Total: {{ formatCurrency(overdueAmount) }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-exclamation-circle fs-2 text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoices Table -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 fw-bold text-primary">All Invoices</h6>
+    </div>
+    <div class="card-body">
+      <div *ngIf="invoices.length === 0 && !loading" class="text-center py-5">
+        <i class="bi bi-receipt fs-1 text-muted mb-3"></i>
+        <p class="mb-0">No invoices available</p>
+      </div>
+
+      <div *ngIf="invoices.length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>{{ 'INVOICES.NUMBER' | translate }}</th>
+            <th>{{ 'INVOICES.ISSUE_DATE' | translate }}</th>
+            <th>{{ 'INVOICES.PAYMENT_DATE' | translate }}</th>
+            <th>{{ 'INVOICES.AMOUNT' | translate }}</th>
+            <th>{{ 'INVOICES.STATUS_LABEL' | translate }}</th>
+            <th>{{ 'INVOICES.ACTIONS' | translate }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let invoice of invoices">
+            <td>{{ invoice.code }}</td>
+            <td>{{ formatDate(invoice.dateEmission) }}</td>
+            <td>{{ invoice.datePaiement ? formatDate(invoice.datePaiement) : 'Not paid' }}</td>
+            <td>{{ formatCurrency(invoice.montant) }}</td>
+            <td><span class="invoice-status" [ngClass]="getStatusClass(invoice.statut)">{{ getStatusLabel(invoice.statut) }}</span></td>
+            <td>
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#viewInvoiceModal" (click)="viewInvoice(invoice)">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="downloadInvoice(invoice)">
+                  <i class="bi bi-download"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav *ngIf="invoices.length > 0" aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</main>
+
+<!-- View Invoice Modal -->
+<div class="modal fade" id="viewInvoiceModal" tabindex="-1" aria-labelledby="viewInvoiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="selectedInvoice">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="viewInvoiceModalLabel">Invoice #{{ selectedInvoice.code }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="invoice-preview">
+          <div class="invoice-header d-flex justify-content-between align-items-start">
+            <div>
+              <img src="/placeholder.svg?height=60&width=150" alt="Logo" class="invoice-logo mb-3">
+              <div class="invoice-title">INVOICE</div>
+              <div>#{{ selectedInvoice.code }}</div>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold">Speaker Invoice</div>
+              <div>Professional Voice Artist</div>
+              <div>UUID: {{ selectedInvoice.speakerUuid }}</div>
+            </div>
+          </div>
+
+          <div class="row invoice-details mt-4">
+            <div class="col-md-6">
+              <div class="invoice-details-label">Invoice Details:</div>
+              <div><strong>Invoice Number:</strong> {{ selectedInvoice.code }}</div>
+              <div><strong>UUID:</strong> {{ selectedInvoice.uuid }}</div>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <div class="mb-3">
+                <div class="invoice-details-label">Issue Date:</div>
+                <div>{{ formatDate(selectedInvoice.dateEmission) }}</div>
+              </div>
+              <div class="mb-3">
+                <div class="invoice-details-label">Payment Date:</div>
+                <div>{{ selectedInvoice.datePaiement ? formatDate(selectedInvoice.datePaiement) : 'Not paid' }}</div>
+              </div>
+              <div>
+                <div class="invoice-details-label">Status:</div>
+                <div><span class="invoice-status" [ngClass]="getStatusClass(selectedInvoice.statut)">{{ getStatusLabel(selectedInvoice.statut) }}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="invoice-total mt-4">
+            <div class="invoice-total-row invoice-total-grand">
+              <div class="invoice-total-label">Total Amount:</div>
+              <div class="invoice-total-value">{{ formatCurrency(selectedInvoice.montant) }}</div>
+            </div>
+          </div>
+
+          <div class="invoice-pdf mt-4" *ngIf="selectedInvoice.pdfData">
+            <div class="fw-bold mb-2">Invoice PDF:</div>
+            <div class="alert alert-info">
+              <i class="bi bi-file-earmark-pdf me-2"></i>
+              PDF document is available for this invoice.
+            </div>
+          </div>
+
+          <div class="invoice-pdf mt-4" *ngIf="!selectedInvoice.pdfData">
+            <div class="fw-bold mb-2">Invoice PDF:</div>
+            <div class="alert alert-warning">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              No PDF document available for this invoice.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline-primary" (click)="downloadInvoice(selectedInvoice)" *ngIf="selectedInvoice.pdfData">
+          <i class="bi bi-download me-1"></i> Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Invoice Modal -->
+<div class="modal fade" id="createInvoiceModal" tabindex="-1" aria-labelledby="createInvoiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="createInvoiceModalLabel">Create New Invoice</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="newInvoiceForm">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="invoiceDate" class="form-label">Invoice Date</label>
+              <input type="date" class="form-control" id="invoiceDate" formControlName="dateEmission" required>
+              <div *ngIf="newInvoiceForm.get('dateEmission')?.invalid && newInvoiceForm.get('dateEmission')?.touched" class="text-danger small mt-1">
+                Invoice date is required
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="paymentDate" class="form-label">Payment Date (Optional)</label>
+              <input type="date" class="form-control" id="paymentDate" formControlName="datePaiement">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="invoiceAmount" class="form-label">Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="invoiceAmount" formControlName="montant" min="0" step="0.01" required>
+              </div>
+              <div *ngIf="newInvoiceForm.get('montant')?.invalid && newInvoiceForm.get('montant')?.touched" class="text-danger small mt-1">
+                Amount is required and must be greater than 0
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="invoiceStatus" class="form-label">Status</label>
+              <select class="form-select" id="invoiceStatus" formControlName="statut">
+                <option value="EN_ATTENTE">Pending</option>
+                <option value="PAYEE">Paid</option>
+                <option value="EN_RETARD">Overdue</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="invoicePdf" class="form-label">Invoice PDF</label>
+            <input type="file" class="form-control" id="invoicePdf" accept=".pdf" (change)="onFileSelected($event)" required>
+            <div *ngIf="!selectedFile && newInvoiceForm.touched" class="text-danger small mt-1">
+              PDF file is required
+            </div>
+            <div *ngIf="selectedFile" class="mt-2">
+              <span class="badge bg-success">
+                <i class="bi bi-file-earmark-pdf me-1"></i>
+                {{ selectedFile.name }} ({{ (selectedFile.size / 1024).toFixed(2) }} KB)
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="createInvoice()" [disabled]="submitting">
+          <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          {{ submitting ? 'Creating...' : 'Create Invoice' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

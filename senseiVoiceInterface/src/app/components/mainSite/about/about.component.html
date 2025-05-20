@@ -1,0 +1,124 @@
+<div class="coming-soon">
+  <div class="left-panel">
+    <div class="logo">VOIX<span>TALENT ARTISTIQUE</span></div>
+    <h1 class="title">Coming Soon</h1>
+    <p class="subtitle">Nous travaillons dur pour vous offrir une expérience de voix off parfaite. Notre site web est en construction, mais il sera bientôt disponible. Inscrivez-vous pour être informé de sa mise en ligne !</p>
+
+    <div class="countdown">
+      <div class="countdown-item">
+        <div class="countdown-number" id="days">00</div>
+        <div class="countdown-label">Days</div>
+      </div>
+      <div class="countdown-item">
+        <div class="countdown-number" id="hours">00</div>
+        <div class="countdown-label">Hours</div>
+      </div>
+      <div class="countdown-item">
+        <div class="countdown-number" id="minutes">00</div>
+        <div class="countdown-label">Minutes</div>
+      </div>
+      <div class="countdown-item">
+        <div class="countdown-number" id="seconds">00</div>
+        <div class="countdown-label">Seconds</div>
+      </div>
+    </div>
+
+    <div class="subscribe-form">
+      <div class="input-group">
+        <input type="email" class="form-control" placeholder="Enter your email address">
+        <button class="btn btn-primary" type="button">Notify Me</button>
+      </div>
+    </div>
+
+    <div class="social-links">
+      <h5>Follow Us</h5>
+      <div class="social-icons">
+        <div class="social-icon">
+          <i class="fab fa-facebook-f"></i>
+        </div>
+        <div class="social-icon">
+          <i class="fab fa-twitter"></i>
+        </div>
+        <div class="social-icon">
+          <i class="fab fa-instagram"></i>
+        </div>
+        <div class="social-icon">
+          <i class="fab fa-linkedin-in"></i>
+        </div>
+        <div class="social-icon">
+          <i class="fab fa-youtube"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="shape-1"></div>
+    <div class="shape-2"></div>
+  </div>
+
+  <div class="right-panel">
+    <div class="mic-animation">
+      <div class="mic-wave"></div>
+      <div class="mic-wave"></div>
+      <div class="mic-wave"></div>
+      <div class="mic">
+        <img src="assets/img/Fichier 2.svg" alt="Application mobile voix" class="device-image" style="width:100px;hieght:100px">
+      </div>
+    </div>
+
+    <div class="sound-bars">
+      <div class="sound-bar"></div>
+      <div class="sound-bar"></div>
+      <div class="sound-bar"></div>
+      <div class="sound-bar"></div>
+      <div class="sound-bar"></div>
+      <div class="sound-bar"></div>
+      <div class="sound-bar"></div>
+    </div>
+
+    <div class="shape-3"></div>
+  </div>
+</div>
+
+
+<script>
+  // Countdown Timer
+  const countdownDate = new Date();
+  countdownDate.setDate(countdownDate.getDate() + 30); // Launch in 30 days
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = countdownDate - now;
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById("days").innerHTML = days.toString().padStart(2, '0');
+    document.getElementById("hours").innerHTML = hours.toString().padStart(2, '0');
+    document.getElementById("minutes").innerHTML = minutes.toString().padStart(2, '0');
+    document.getElementById("seconds").innerHTML = seconds.toString().padStart(2, '0');
+
+    if (distance < 0) {
+      clearInterval(countdownInterval);
+      document.getElementById("days").innerHTML = "00";
+      document.getElementById("hours").innerHTML = "00";
+      document.getElementById("minutes").innerHTML = "00";
+      document.getElementById("seconds").innerHTML = "00";
+    }
+  }
+
+  updateCountdown();
+  const countdownInterval = setInterval(updateCountdown, 1000);
+
+  // Form submission
+  document.querySelector('.btn-primary').addEventListener('click', function() {
+    const email = document.querySelector('.form-control').value;
+    if (email && /^\S+@\S+\.\S+$/.test(email)) {
+      alert('Thank you for subscribing! We will notify you when we launch.');
+      document.querySelector('.form-control').value = '';
+    } else {
+      alert('Please enter a valid email address.');
+    }
+  });
+</script>

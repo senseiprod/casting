@@ -1,0 +1,269 @@
+<div class="calendar-container">
+    <h1 class="calendar-title">Studio Reservation Calendar</h1>
+    <div class="calendar-header">
+
+
+      <button (click)="previousMonth()">&lt;</button>
+      <h2>{{ monthNames[currentMonth] }} {{ currentYear }}</h2>
+      <button (click)="nextMonth()">&gt;</button>
+    </div>
+
+    <div class="calendar-weekdays">
+      <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+    </div>
+
+    <div class="calendar-days">
+      <div
+        *ngFor="let day of calendarDays"
+        class="calendar-day"
+        [class.current-month]="day.isCurrentMonth"
+        [class.today]="day.isToday"
+        [class.has-reservations]="hasReservations(day)"
+        [class.selected]="selectedDate && day.date.getTime() === selectedDate.getTime()"
+        (click)="selectDate(day)"
+      >
+        <div class="day-number">{{ day.date.getDate() }}</div>
+        <div *ngIf="hasReservations(day)" class="reservation-indicator">
+          {{ getReservationCount(day) }}
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-indicator">
+      Loading...
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="selectedDate && !isLoading && !errorMessage" class="selected-date-info">
+      <h3>Reservations for {{ formatDateForDisplay(selectedDate) }}</h3>
+
+      <div *ngIf="selectedDateReservations.length === 0" class="no-reservations">
+        No reservations for this date
+      </div>
+
+      <div *ngIf="selectedDateReservations.length > 0" class="reservations-list">
+        <h4>Reservation Details:</h4>
+        <div *ngFor="let reservation of selectedDateReservations" class="reservation-item">
+          <div class="reservation-time">
+            {{ formatTime(reservation.heureDebut) }} - {{ formatTime(reservation.heureFin) }}
+          </div>
+          <div class="reservation-service">
+            <strong>Service:</strong> {{ reservation.service }}
+          </div>
+
+          <div class="reservation-user-details" *ngIf="reservation.user">
+            <h5>Client Information</h5>
+            <div class="user-name">
+              <strong>Name:</strong> {{ getUserFullName(reservation.user) }}
+            </div>
+            <div class="user-phone">
+              <strong>Phone:</strong> {{ getUserPhone(reservation.user) }}
+            </div>
+            <div class="user-email">
+              <strong>Email:</strong> {{ getUserEmail(reservation.user) }}
+            </div>
+            <div class="user-role">
+              <strong>Role:</strong> {{ getUserRole(reservation.user) }}
+            </div>
+            <div class="user-id">
+              <small>ID: {{ reservation.user.uuid.substring(0, 8) }}...</small>
+            </div>
+          </div>
+
+          <div class="no-user-info" *ngIf="!reservation.user">
+            <p>User information not available</p>
+            <small>User ID: {{ reservation.userUuid.substring(0, 8) }}...</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+
+.calendar-title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #c80c22;
+  font-size: 24px;
+}
+    .calendar-container {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .calendar-header button {
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-gap: 5px;
+    }
+
+    .calendar-day {
+      height: 80px;
+      border: 1px solid #ddd;
+      padding: 5px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .calendar-day:hover {
+      background-color: #f9f9f9;
+    }
+
+    .day-number {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .current-month {
+      background-color: white;
+    }
+
+    .today {
+      background-color: #e6f7ff;
+      font-weight: bold;
+    }
+
+    .has-reservations {
+      background-color: #f0f7ee;
+    }
+
+    .selected {
+      background-color: #e6f0ff;
+      border: 2px solid #4a89dc;
+    }
+
+    .reservation-indicator {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background-color: #e8c5c1;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .selected-date-info {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .loading-indicator {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+
+    .error-message {
+      text-align: center;
+      margin-top: 20px;
+      color: #d9534f;
+      padding: 10px;
+      background-color: #f9f2f2;
+      border-radius: 4px;
+    }
+
+    .no-reservations {
+      color: #666;
+      font-style: italic;
+      margin: 10px 0;
+    }
+
+    .reservations-list h4 {
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .reservation-item {
+      padding: 15px;
+      margin: 15px 0;
+      background-color: #f9f9f9;
+      border-left: 3px solid #dd789a;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .reservation-time {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .reservation-service {
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ddd;
+    }
+
+    .reservation-user-details {
+      background-color: #f0f7ff;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    .reservation-user-details h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #c1252a;
+      border-bottom: 1px solid #d0e0ff;
+      padding-bottom: 5px;
+    }
+
+    .user-name, .user-phone, .user-email, .user-role {
+      margin-bottom: 8px;
+    }
+
+    .user-id {
+      color: #888;
+      font-size: 12px;
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    .no-user-info {
+      background-color: #f9f0f0;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      color: #d9534f;
+      text-align: center;
+    }
+  </style>

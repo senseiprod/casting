@@ -1,0 +1,595 @@
+{
+  "tabs": {
+    "freeTest": "PRUEBA GRATUITA",
+    "audioRequest": "SOLICITUD DE AUDIO",
+    "listVoice": "VIEW LISTA DE VOCES"
+  },
+  "charLimit": {
+    "title": "Límite de caracteres excedido",
+    "message": "Has superado el límite gratuito de 100 caracteres para la generación de voz.",
+    "paidNotice": "Los caracteres adicionales se cobrarán según nuestra tarificación.",
+    "freeChars": "Caracteres gratuitos",
+    "yourChars": "Tu texto",
+    "paidChars": "Caracteres de pago",
+    "estimatedCost": "Costo estimado",
+    "cancel": "Cancelar y recortar",
+    "continue": "Continuar y pagar"
+  },
+  "voiceSelection": {
+    "title": "Selección de Voz",
+    "searchPlaceholder": "Buscar por nombre de voz",
+    "filters": {
+      "allTypes": "Todos los Tipos",
+      "ai": "IA",
+      "cloned": "Clonada",
+      "premade": "Prefabricada",
+      "professional": "Profesional",
+      "allLanguages": "Todos los Idiomas",
+      "english": "Inglés",
+      "french": "Francés",
+      "arabic": "Árabe",
+      "allGenders": "Todos los Géneros",
+      "male": "Masculino",
+      "female": "Femenino",
+      "allAges": "Todas las Edades",
+      "young": "Joven",
+      "adult": "Adulto",
+      "senior": "Mayor",
+      "resetAll": "Restablecer Todo"
+    },
+    "buttons": {
+      "original": "Original",
+      "cloned": "Clonada",
+      "useVoice": "Usar Voz"
+    },
+    "attributes": "Atributos",
+    "language": "Idioma (3 soportados)",
+    "applyToProject": "Aplicar al proyecto"
+  },
+  "projectSelection": {
+    "title": "Selección de Proyecto",
+    "selectProject": "Seleccione un proyecto para añadir este audio:",
+    "noProjects": "Aún no tiene proyectos. Cree primero un proyecto para guardar su audio generado.",
+    "selectedProject": "Proyecto Seleccionado:",
+    "remove": "Eliminar",
+    "changeProject": "Cambiar Proyecto",
+    "selectProjectBtn": "Seleccionar Proyecto",
+    "cancel": "Cancelar",
+    "createNew": "Crear Nuevo Proyecto"
+  },
+  "voiceControls": {
+    "format": "Formato",
+    "emotion": "Emoción",
+    "speed": "Velocidad:",
+    "sampleRate": "Tasa de Muestreo:",
+    "temperature": "Temperatura:"
+  },
+  "characterLimit": {
+    "warning": "La prueba gratuita está limitada a 100 caracteres. Su texto será truncado."
+  },
+  "info": {
+    "price": "Precio:",
+    "characters": "Caracteres:",
+    "total": "Total:"
+  },
+  "generation": {
+    "success": "Voz generada con éxito",
+    "andSavedTo": "y guardada en el proyecto"
+  },
+  "checkout": {
+    "proceedToCheckout": "Proceder al Pago",
+    "pricingInformation": "Información de Precios",
+    "pricePerCharacter": "Precio por carácter:",
+    "totalCharacters": "Total de caracteres:",
+    "totalPrice": "Precio total:"
+  },
+  "emotions": {
+    "neutral": "Neutral",
+    "happy": "Feliz",
+    "sad": "Triste",
+    "angry": "Enojado"
+  },
+  "requestManagement": {
+    "pageTitle": "Gestión de Solicitudes",
+    "newRequest": "Nueva Solicitud",
+    "modal": {
+      "createTitle": "Crear Nueva Solicitud",
+      "formFields": {
+        "title": {
+          "label": "Título de la Solicitud*",
+          "placeholder": "Ingrese el título de la solicitud",
+          "error": "El título de la solicitud es obligatorio"
+        },
+        "type": {
+          "label": "Tipo de Solicitud*",
+          "placeholder": "Seleccione el tipo de solicitud",
+          "error": "El tipo de solicitud es obligatorio",
+          "options": {
+            "studio": "Grabación en Estudio",
+            "podcast": "Aparición en Podcast",
+            "speaker": "Solicitud de Ponente"
+          }
+        },
+        "description": {
+          "label": "Descripción de la Solicitud*",
+          "placeholder": "Describa su solicitud en detalle",
+          "error": "La descripción de la solicitud es obligatoria"
+        },
+        "preferredDate": {
+          "label": "Fecha Preferida*",
+          "error": "La fecha preferida es obligatoria"
+        },
+        "duration": {
+          "label": "Duración Estimada*",
+          "placeholder": "ej., 1 hora, 2 días",
+          "error": "La duración es obligatoria"
+        },
+        "location": {
+          "label": "Ubicación",
+          "placeholder": "ej., Estudio A, Remoto, Centro de Conferencias"
+        },
+        "notes": {
+          "label": "Notas Adicionales",
+          "placeholder": "Cualquier información o requisito adicional"
+        }
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "submit": "Enviar Solicitud"
+      }
+    },
+    "requestTypes": {
+      "studio": {
+        "title": "Grabación en Estudio",
+        "description": "Solicite tiempo de estudio para grabaciones de voz, audiolibros, comerciales y más.",
+        "button": "Nueva Solicitud de Estudio"
+      },
+      "podcast": {
+        "title": "Aparición en Podcast",
+        "description": "Solicite aparecer como invitado en nuestros podcasts o proponga una colaboración de podcast.",
+        "button": "Nueva Solicitud de Podcast"
+      },
+      "speaker": {
+        "title": "Solicitud de Ponente",
+        "description": "Solicite un ponente profesional para su evento, conferencia o formación corporativa.",
+        "button": "Nueva Solicitud de Ponente"
+      }
+    },
+    "filters": {
+      "search": "Buscar solicitudes...",
+      "types": {
+        "all": "Todos los Tipos",
+        "studio": "Grabación en Estudio",
+        "podcast": "Podcast",
+        "speaker": "Ponente"
+      },
+      "status": {
+        "all": "Todos los Estados",
+        "pending": "Pendiente",
+        "approved": "Aprobado",
+        "inProgress": "En Progreso",
+        "completed": "Completado",
+        "rejected": "Rechazado"
+      },
+      "sort": {
+        "newest": "Más Recientes Primero",
+        "oldest": "Más Antiguos Primero"
+      }
+    },
+    "requestsList": {
+      "title": "Sus Solicitudes",
+      "total": "Total",
+      "table": {
+        "id": "ID de Solicitud",
+        "title": "Título",
+        "type": "Tipo",
+        "createdDate": "Fecha de Creación",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "noRequests": {
+        "message": "No se encontraron solicitudes que coincidan con sus filtros.",
+        "button": "Crear Nueva Solicitud"
+      },
+      "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente"
+      }
+    },
+    "detailsModal": {
+      "title": "Detalles de la Solicitud",
+      "requestInfo": {
+        "title": "Información de la Solicitud",
+        "id": "ID de Solicitud:",
+        "title": "Título:",
+        "type": "Tipo:",
+        "createdDate": "Fecha de Creación:",
+        "status": "Estado:",
+        "scheduledDate": "Fecha Programada:",
+        "duration": "Duración:",
+        "location": "Ubicación:"
+      },
+      "description": {
+        "title": "Descripción"
+      },
+      "notes": {
+        "title": "Notas Adicionales"
+      },
+      "scheduleInfo": {
+        "title": "Información de Programación",
+        "approved": "Su solicitud ha sido aprobada y programada para el",
+        "inProgress": "Su sesión está actualmente en progreso. Comenzó el",
+        "completed": "Su sesión se completó el"
+      },
+      "rejectionInfo": {
+        "title": "Información de Rechazo",
+        "message": "Lo sentimos, pero su solicitud no pudo ser atendida en este momento. Por favor, contacte con soporte para más información."
+      },
+      "buttons": {
+        "close": "Cerrar",
+        "edit": "Editar Solicitud",
+        "download": "Descargar Archivos",
+        "contact": "Contactar Soporte"
+      }
+    },
+    "stats": {
+      "totalRequests": "Total de Solicitudes",
+      "completed": "Completadas",
+      "inProgress": "En Progreso",
+      "pending": "Pendientes"
+    }
+  },
+  "contactPage": {
+    "header": {
+      "title": "Ponte en contacto",
+      "description": "¿Listo para dar vida a tu proyecto con la voz perfecta? Estamos aquí para ayudarte a crear experiencias de audio impactantes que resonarán con tu audiencia."
+    },
+    "form": {
+      "title": "Envíanos un mensaje",
+      "name": {
+        "label": "Tu nombre",
+        "placeholder": "Tu nombre"
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "Correo electrónico"
+      },
+      "subject": {
+        "label": "Asunto",
+        "placeholder": "Asunto"
+      },
+      "message": {
+        "label": "Tu mensaje",
+        "placeholder": "Tu mensaje"
+      },
+      "button": "Enviar mensaje"
+    },
+    "contactInfo": {
+      "title": "Información de contacto",
+      "address": {
+        "line1": "9 Rue abou Moussa El Jazouli,",
+        "line2": "1er piso N° 1, Maarif,",
+        "line3": "Casablanca, Marruecos"
+      },
+      "phone": {
+        "label": "Teléfono",
+        "number1": "+2125 20 09 39 90",
+        "number2": "+2126 64 51 75 17"
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "address1": "contact@senseiprod.ma",
+        "address2": "sensei.senseiprod@gmail.com"
+      },
+      "social": {
+        "title": "Síguenos",
+        "facebook": "Facebook",
+        "twitter": "Twitter",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube"
+      }
+    },
+    "map": {
+      "title": "Encuéntranos en el mapa"
+    }
+  },
+  "landingPage": {
+    "hero": {
+      "expertise": "10 años de experiencia dando voz a tus proyectos",
+      "mainHeading": "TU VOZ, EN UN SEGUNDO.",
+      "subheading": "Monetiza tu talento o encuentra la voz perfecta con un clic."
+    },
+    "profiles": {
+      "artist": "Artista",
+      "textAnalysis": "análisis de texto activado"
+    },
+    "navigation": {
+      "speakers": "Locutores",
+      "celebrities": "Celebridades",
+      "advertisers": "Anunciantes",
+      "creators": "Creadores"
+    },
+    "aiSection": {
+      "title": "LA IA AL SERVICIO DEL HUMANO",
+      "contentTitle": "Excelencia vocal, instantánea y a medida.",
+      "description1": "Nuestra plataforma te proporciona voces humanas auténticas, grabadas por profesionales y listas para ser generadas bajo demanda gracias a la tecnología de clonación de voz de alta precisión.",
+      "features": {
+        "feature1": {
+          "title": "Rápido y eficiente:",
+          "description": "Genera la voz perfecta en segundos."
+        },
+        "feature2": {
+          "title": "Calidad 100% humana:",
+          "description": "La emoción y naturalidad de una voz real, sin compromisos."
+        },
+        "feature3": {
+          "title": "Personalización avanzada:",
+          "description": "Ajusta el tono, el ritmo y la emoción según tus necesidades."
+        },
+        "feature4": {
+          "title": "Costo optimizado:",
+          "description": "Un presupuesto controlado para una producción más rápida y rentable."
+        }
+      },
+      "description2": "Ya seas creador, anunciante o productor, accede a voces profesionales, auténticas y totalmente personalizables, listas para dar vida a tus proyectos.",
+      "signUp": "REGISTRARSE"
+    },
+    "voiceTypes": {
+      "title": "La voz que da vida a tu proyecto",
+      "subtitle": "Auténtica y humana o IA ultra-realista.",
+      "human": {
+        "title": "Voz Humana",
+        "description": "Voces auténticas, grabadas por talentos reales y disponibles instantáneamente gracias a nuestra avanzada tecnología de clonación"
+      },
+      "ai": {
+        "title": "Voz IA",
+        "description": "Una inteligencia artificial de vanguardia para generar voces naturales y expresivas, adaptadas a todos nuestros proyectos"
+      },
+      "whyUse": "Por qué usar"
+    },
+    "benefits": {
+      "benefit1": {
+        "title": "Una amplia selección de voces profesionales:",
+        "description": "Accede a un banco de voces humanas clonadas y voces de IA ultra-realistas para todos tus proyectos."
+      },
+      "benefit2": {
+        "title": "Velocidad y eficiencia:",
+        "description": "Genera y personaliza una voz en segundos, sin tener que organizar una grabación en estudio."
+      },
+      "benefit3": {
+        "title": "Calidad de sonido impecable:",
+        "description": "Nuestras voces son grabadas por profesionales en los estudios profesionales de SENSEI PROD y optimizadas con tecnología de vanguardia."
+      },
+      "benefit4": {
+        "title": "Personalización avanzada:",
+        "description": "Ajusta el tono, el ritmo y la emoción para un resultado perfectamente adaptado a tu proyecto."
+      },
+      "benefit5": {
+        "title": "Optimización del presupuesto:",
+        "description": "Disfruta de tarifas ventajosas garantizando una calidad premium."
+      }
+    },
+    "banner": {
+      "text": "CastingVoixOff.ma es la solución ideal para una voz potente y profesional, al instante. Ya seas anunciante, creador de contenido o estudio de producción"
+    }
+  },
+  "signupPage": {
+    "title": "Crear Su Cuenta",
+    "subtitle": "Únase a nuestra plataforma y acceda a servicios de voz profesionales",
+    "firstName": "Nombre*",
+    "lastName": "Apellido*",
+    "companyName": "Nombre de la Empresa/Organización*",
+    "email": "Dirección de Correo Electrónico*",
+    "phone": "Número de Teléfono (Opcional)",
+    "password": "Contraseña*",
+    "confirmPassword": "Confirmar Contraseña*",
+    "passwordStrength": "Fortaleza de la contraseña",
+    "passwordRequirements": {
+      "title": "La contraseña debe contener:",
+      "chars": "Al menos 8 caracteres",
+      "letters": "Letras mayúsculas y minúsculas",
+      "number": "Al menos un número",
+      "special": "Al menos un carácter especial"
+    },
+    "agreeTerms": "Acepto los",
+    "termsOfService": "Términos de Servicio",
+    "and": "y",
+    "privacyPolicy": "Política de Privacidad",
+    "createAccount": "Crear Cuenta",
+    "creatingAccount": "Creando Cuenta...",
+    "alreadyHaveAccount": "¿Ya tiene una cuenta?",
+    "logIn": "Iniciar Sesión",
+    "enterYourFirst": "Ingrese su nombre",
+    "enterYourLast": "Ingrese su apellido",
+    "enterYourCompany": "Ingrese el nombre de su empresa u organización",
+    "enterYourEmail": "Ingrese su dirección de correo electrónico",
+    "enterYourPhone": "Ingrese su número de teléfono",
+    "createStrongPassword": "Cree una contraseña fuerte",
+    "confirmYourPassword": "Confirme su contraseña",
+    "accountCreated": "¡Cuenta creada con éxito! Redirigiendo a la página de inicio de sesión..."
+  },
+  "voiceCasting": {
+    "title": "ENCUENTRA LA VOZ PERFECTA EN EL IDIOMA ADECUADO PARA TU AUDIENCIA",
+    "description": "Nuestra plataforma ofrece una amplia selección de voces en varios idiomas, listas para ser utilizadas en tus proyectos publicitarios, videos, podcasts, e-learning y más.",
+    "filters": {
+      "activeFilters": "Filtros activos:",
+      "accent": "Acento",
+      "age": "Edad",
+      "gender": "Género",
+      "category": "Categoría",
+      "voicesPerPage": "Voces por página",
+      "reset": "Reiniciar"
+    },
+    "noVoicesFound": "No se encontraron voces con los filtros seleccionados. Por favor, prueba con otros criterios.",
+    "loading": "Cargando voces...",
+    "voicesFound": "voces encontradas",
+    "page": "Página",
+    "generate": "Generar"
+  },
+  "projectManagement": {
+    "filters": {
+      "search": "Buscar proyectos o archivos de audio...",
+      "projectTypes": {
+        "all": "Todos los Tipos de Proyectos",
+        "commercial": "Comercial",
+        "explainer": "Video Explicativo",
+        "podcast": "Podcast",
+        "eLearning": "E-Learning",
+        "ivr": "Sistema IVR",
+        "audiobook": "Audiolibro",
+        "other": "Otro"
+      },
+      "status": {
+        "all": "Todos los Estados",
+        "completed": "Completado",
+        "inProgress": "En Progreso",
+        "pending": "Pendiente",
+        "rejected": "Rechazado"
+      },
+      "sort": {
+        "dateDesc": "Fecha (Más Reciente)",
+        "dateAsc": "Fecha (Más Antiguo)",
+        "nameAsc": "Nombre (A-Z)",
+        "nameDesc": "Nombre (Z-A)"
+      },
+      "newProject": "Nuevo Proyecto"
+    },
+    "loading": {
+      "projects": "Cargando sus proyectos...",
+      "projectDetails": "Cargando detalles del proyecto..."
+    },
+    "error": {
+      "retry": "Reintentar"
+    },
+    "projects": {
+      "title": "Sus Proyectos",
+      "total": "Total",
+      "noProjects": {
+        "title": "No se encontraron proyectos",
+        "message": "Intente ajustar sus filtros o cree un nuevo proyecto",
+        "button": "Crear Nuevo Proyecto"
+      },
+      "details": {
+        "title": "Detalles del Proyecto",
+        "id": "ID del Proyecto:",
+        "code": "Código:",
+        "created": "Creado:",
+        "description": "Descripción:",
+        "noDescription": "No se proporcionó descripción",
+        "buttons": {
+          "edit": "Editar Proyecto",
+          "share": "Compartir"
+        }
+      },
+      "audioFiles": {
+        "title": "Archivos de Audio",
+        "noFiles": "Aún no hay archivos de audio disponibles para este proyecto.",
+        "unknownVoice": "Voz Sin Nombre",
+        "buttons": {
+          "download": "Descargar",
+          "more": "Más",
+          "generateNew": "Generar Nuevo Audio"
+        },
+        "processing": "El audio está siendo procesado",
+        "unknownLanguage": "Idioma desconocido",
+        "created": "Creado:",
+        "showMore": "Mostrar más",
+        "showLess": "Mostrar menos"
+      },
+      "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente"
+      }
+    },
+    "recentAudio": {
+      "title": "Audio Generado Recientemente",
+      "viewAll": "Ver Todo",
+      "table": {
+        "text": "Texto",
+        "voice": "Voz",
+        "project": "Proyecto",
+        "language": "Idioma",
+        "createdDate": "Fecha de Creación",
+        "actions": "Acciones"
+      },
+      "unknown": "Desconocido",
+      "buttons": {
+        "play": "Reproducir",
+        "download": "Descargar",
+        "share": "Compartir"
+      }
+    },
+    "newProjectModal": {
+      "title": "Crear Nuevo Proyecto",
+      "form": {
+        "name": {
+          "label": "Nombre del Proyecto*",
+          "placeholder": "Ingrese el nombre del proyecto",
+          "error": "El nombre del proyecto es obligatorio"
+        },
+        "type": {
+          "label": "Tipo de Proyecto*",
+          "placeholder": "Seleccione el tipo de proyecto",
+          "error": "El tipo de proyecto es obligatorio"
+        },
+        "description": {
+          "label": "Descripción del Proyecto*",
+          "placeholder": "Describa su proyecto",
+          "error": "La descripción del proyecto es obligatoria"
+        },
+        "dueDate": {
+          "label": "Fecha de Vencimiento"
+        }
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Crear Proyecto",
+        "creating": "Creando..."
+      }
+    },
+    "audioPlayerModal": {
+      "title": "Reproductor de Audio",
+      "unknownProject": "Proyecto Desconocido",
+      "buttons": {
+        "download": "Descargar",
+        "close": "Cerrar"
+      }
+    }
+  },
+  "loginPage": {
+    "welcome": {
+      "title": "Bienvenido de nuevo",
+      "message": "Gracias por regresar, por favor inicia sesión en tu cuenta completando este formulario:"
+    },
+    "form": {
+      "email": {
+        "label": "Dirección de correo electrónico",
+        "placeholder": "nombregenial@nombre.com",
+        "errors": {
+          "required": "El correo electrónico es obligatorio",
+          "invalid": "Por favor, introduce un correo electrónico válido"
+        }
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "••••••••••••••",
+        "errors": {
+          "required": "La contraseña es obligatoria"
+        },
+        "show": "Mostrar contraseña",
+        "hide": "Ocultar contraseña"
+      },
+      "rememberMe": "Recuérdame",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "buttons": {
+        "login": "INICIAR SESIÓN",
+        "signup": "REGISTRARSE"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "Correo electrónico o contraseña incorrectos",
+      "serverError": "Error del servidor. Por favor, inténtalo más tarde."
+    }
+  }
+}

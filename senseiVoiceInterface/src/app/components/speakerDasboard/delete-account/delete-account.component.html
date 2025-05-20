@@ -1,0 +1,131 @@
+<div class="delete-account-container">
+  <div class="delete-account-header">
+    <h2>Delete Your Account</h2>
+    <p class="text-muted">We're sorry to see you go. Please provide some information before we process your account deletion.</p>
+  </div>
+
+  <div class="delete-account-form">
+    <form [formGroup]="deleteAccountForm" (ngSubmit)="onSubmit()">
+      <!-- Reason for deletion -->
+      <div class="mb-4">
+        <label class="form-label fw-bold">Why are you deleting your account?</label>
+        <div class="reason-options">
+          <div class="form-check mb-2" *ngFor="let reason of deletionReasons">
+            <input
+              class="form-check-input"
+              type="radio"
+              [id]="reason.id"
+              [value]="reason.id"
+              formControlName="reason">
+            <label class="form-check-label" [for]="reason.id">
+              {{ reason.text }}
+            </label>
+          </div>
+        </div>
+        <div *ngIf="deleteAccountForm.get('reason')?.invalid && deleteAccountForm.get('reason')?.touched" class="text-danger mt-1">
+          Please select a reason
+        </div>
+      </div>
+
+      <!-- Other reason text field (shown only when "Other" is selected) -->
+      <div class="mb-4" *ngIf="isOtherReasonSelected">
+        <label for="otherReason" class="form-label">Please specify your reason</label>
+        <input
+          type="text"
+          id="otherReason"
+          class="form-control"
+          formControlName="otherReason"
+          placeholder="Tell us why you're leaving...">
+      </div>
+
+      <!-- Additional feedback -->
+      <div class="mb-4">
+        <label for="feedback" class="form-label">Additional feedback (optional)</label>
+        <textarea
+          id="feedback"
+          class="form-control"
+          formControlName="feedback"
+          rows="3"
+          placeholder="Is there anything we could have done better?"></textarea>
+      </div>
+
+      <!-- Data handling options -->
+      <div class="mb-4">
+        <label class="form-label fw-bold">What would you like us to do with your data?</label>
+        <div class="form-check mb-2">
+          <input
+            class="form-check-input"
+            type="radio"
+            id="deleteData"
+            value="delete"
+            formControlName="dataHandling">
+          <label class="form-check-label" for="deleteData">
+            <span class="fw-medium">Delete all my data</span>
+            <p class="text-muted mb-0 small">We'll permanently delete all your personal information, voice samples, and account history.</p>
+          </label>
+        </div>
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            id="anonymizeData"
+            value="anonymize"
+            formControlName="dataHandling">
+          <label class="form-check-label" for="anonymizeData">
+            <span class="fw-medium">Anonymize my data</span>
+            <p class="text-muted mb-0 small">We'll remove your personal information but keep anonymized usage data for service improvement.</p>
+          </label>
+        </div>
+      </div>
+
+      <!-- Password confirmation -->
+      <div class="mb-4">
+        <label for="password" class="form-label fw-bold">Confirm your password</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="Enter your current password">
+        <div *ngIf="deleteAccountForm.get('password')?.invalid && deleteAccountForm.get('password')?.touched" class="text-danger mt-1">
+          Password is required to confirm deletion
+        </div>
+      </div>
+
+      <!-- Final confirmation -->
+      <div class="mb-4 confirmation-box">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="confirmation"
+            formControlName="confirmation">
+          <label class="form-check-label" for="confirmation">
+            I understand that deleting my account is permanent and cannot be undone. All my data will be processed according to my selection above.
+          </label>
+        </div>
+        <div *ngIf="deleteAccountForm.get('confirmation')?.invalid && deleteAccountForm.get('confirmation')?.touched" class="text-danger mt-1">
+          You must confirm that you understand the consequences of account deletion
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="delete-account-actions">
+        <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-danger"
+          [disabled]="deleteAccountForm.invalid || isSubmitting">
+          <i class="bi bi-trash me-1"></i>
+          <span *ngIf="!isSubmitting">Request Account Deletion</span>
+          <span *ngIf="isSubmitting">
+            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            Processing...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

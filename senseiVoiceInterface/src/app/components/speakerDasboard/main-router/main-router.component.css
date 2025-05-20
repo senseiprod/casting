@@ -1,0 +1,7 @@
+.geex-content__header__popup {
+  display: none;
+}
+
+.geex-content__header__popup.show {
+  display: block;
+}

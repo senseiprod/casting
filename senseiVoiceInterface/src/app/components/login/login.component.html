@@ -1,0 +1,83 @@
+<div class="login-container">
+  <!-- Left Side - Form Container -->
+  <div class="login-form-side">
+    <div class="logo">
+      <img src="assets/img/LOGO NOIR (2).png" alt="Casting Voixoff.ma Logo">
+    </div>
+
+    <div class="welcome-text">
+      <h1>{{ 'loginPage.welcome.title' | translate }}</h1>
+      <p>{{ 'loginPage.welcome.message' | translate }}</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">{{ 'loginPage.form.email.label' | translate }}</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          [placeholder]="'loginPage.form.email.placeholder' | translate"
+          [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}"
+        >
+        <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          <span *ngIf="loginForm.get('email')?.errors?.['required']">{{ 'loginPage.form.email.errors.required' | translate }}</span>
+          <span *ngIf="loginForm.get('email')?.errors?.['email']">{{ 'loginPage.form.email.errors.invalid' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">{{ 'loginPage.form.password.label' | translate }}</label>
+        <div class="password-input-container">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            [placeholder]="'loginPage.form.password.placeholder' | translate"
+            [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
+          >
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? ('loginPage.form.password.hide' | translate) : ('loginPage.form.password.show' | translate)"
+          >
+            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <span *ngIf="loginForm.get('password')?.errors?.['required']">{{ 'loginPage.form.password.errors.required' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <div class="remember-me">
+          <input type="checkbox" id="remember" class="custom-checkbox">
+          <label for="remember">{{ 'loginPage.form.rememberMe' | translate }}</label>
+        </div>
+        <a href="reset" class="forgot-password">{{ 'loginPage.form.forgotPassword' | translate }}</a>
+      </div>
+
+      <div class="alert alert-danger" *ngIf="loginError">
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ errorMessage | translate }}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-login" [disabled]="isSubmitting">
+          <span *ngIf="!isSubmitting">{{ 'loginPage.form.buttons.login' | translate }}</span>
+          <div class="spinner" *ngIf="isSubmitting">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+          </div>
+        </button>
+        <button type="button" class="btn-signup" routerLink="/signup">{{ 'loginPage.form.buttons.signup' | translate }}</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Right Side - Image Container -->
+  <div class="login-image-side">
+
+  </div>
+</div>

@@ -1,0 +1,91 @@
+<!-- Sidebar Toggle Button (visible on all screen sizes) -->
+<button class="sidebar-toggle" id="sidebarToggle" type="button">
+  <i class="bi bi-list"></i>
+</button>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header d-flex justify-content-between align-items-center">
+    <div class="sidebar-brand">
+      <img src="assets/img/CASTINGVOIXOFF_Plan de travail 1 copie 3.png" style="width: 120px;margin-left: -30px">
+      <span class="brand-text"><img src="assets/img/LOGO NOIR.png" style="width: 120px;"></span>
+    </div>
+    <button class="close-sidebar" id="closeSidebar">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="py-3 px-3 mt-2">
+    <div class="d-flex align-items-center">
+      <img [src]="profilePhotoUrl || 'assets/img/images.png'" alt="Profile Photo">
+      <div class="profile-info">
+        <div class="text-white fw-bold">{{speaker.nom}}</div>
+        <div class="text-white-50 small">{{speaker.prenom}}</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sidebar-divider">
+
+  <div class="nav flex-column">
+    <div class="nav-item">
+      <a routerLink="dashboard" class="nav-link active">
+        <i class="bi bi-speedometer2"></i>
+        <span class="nav-text">{{ 'navigation.dashboard' | translate }}</span>
+      </a>
+    </div>
+
+    <div class="nav-item">
+      <a routerLink="request" class="nav-link">
+        <i class="bi bi-list-check"></i>
+        <span class="nav-text">{{ 'navigation.requests' | translate }}</span>
+      </a>
+    </div>
+
+    <div class="nav-item">
+      <a routerLink="earning" class="nav-link">
+        <i class="bi bi-graph-up"></i>
+        <span class="nav-text">{{ 'navigation.earnings' | translate }}</span>
+      </a>
+    </div>
+
+    <div class="nav-item">
+      <a routerLink="invoice" class="nav-link">
+        <i class="bi bi-receipt"></i>
+        <span class="nav-text">{{ 'navigation.invoices' | translate }}</span>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a routerLink="actions" class="nav-link">
+        <i class="bi bi-receipt"></i>
+        <span class="nav-text">{{ 'navigation.actions' | translate }}</span>
+      </a>
+    </div>
+
+    <hr class="sidebar-divider">
+
+    <div class="nav-item">
+      <a routerLink="setting" class="nav-link">
+        <i class="bi bi-gear"></i>
+        <span class="nav-text">{{ 'navigation.settings' | translate }}</span>
+      </a>
+    </div>
+
+    <div class="nav-item">
+      <a routerLink="support" class="nav-link">
+        <i class="bi bi-question-circle"></i>
+        <span class="nav-text">Help & Support</span>
+      </a>
+    </div>
+
+    <div class="nav-item">
+      <a routerLink="login" (click)="logout()" class="nav-link">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="nav-text">{{ 'navigation.logout' | translate }}</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar Overlay (for mobile only) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>

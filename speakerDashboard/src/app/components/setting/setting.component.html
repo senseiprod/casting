@@ -1,0 +1,247 @@
+<main class="content p-4 fade-in">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-dark fw-bold">Settings</h1>
+    <div>
+      <button class="btn btn-outline-primary me-2" (click)="updateGeneralSettings()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset to Default
+      </button>
+      <button class="btn btn-primary" (click)="updateGeneralSettings()">
+        <i class="bi bi-check-lg me-1"></i> Save Changes
+      </button>
+    </div>
+  </div>
+
+  <!-- Delete Account Form Modal -->
+  <div class="delete-account-modal" *ngIf="showDeleteAccountForm">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container">
+      <app-delete-account-form
+        (cancel)="cancelDeleteAccount()"
+        (submitRequest)="processDeleteAccountRequest($event)">
+      </app-delete-account-form>
+    </div>
+  </div>
+
+  <!-- Settings Content -->
+  <div class="row" *ngIf="!showDeleteAccountForm">
+    <div class="col-lg-3">
+      <!-- Settings Navigation -->
+      <div class="card shadow mb-4">
+        <div class="card-body p-0">
+          <div class="settings-nav">
+            <div class="settings-nav-item" [ngClass]="{'active': activeTab === 'general'}" (click)="setActiveTab('general')">
+              <i class="bi bi-sliders"></i>
+              <span>General</span>
+            </div>
+            <div class="settings-nav-item" [ngClass]="{'active': activeTab === 'notifications'}" (click)="setActiveTab('notifications')">
+              <i class="bi bi-bell"></i>
+              <span>Notifications</span>
+            </div>
+            <div class="settings-nav-item" [ngClass]="{'active': activeTab === 'security'}" (click)="setActiveTab('security')">
+              <i class="bi bi-shield-check"></i>
+              <span>Security</span>
+            </div>
+            <div class="settings-nav-item danger" (click)="deleteAccount()">
+              <i class="bi bi-trash"></i>
+              <span>Delete Account</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-9">
+      <!-- General Settings -->
+      <div *ngIf="activeTab === 'general'" class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 fw-bold text-primary">General Settings</h6>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="updateGeneralSettings()">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="language" class="form-label">Language</label>
+                <select class="form-select" id="language" [(ngModel)]="generalSettings.language" name="language">
+                  <option value="english">English</option>
+                  <option value="spanish">Spanish</option>
+                  <option value="french">French</option>
+                  <option value="german">German</option>
+                  <option value="chinese">Chinese</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="timezone" class="form-label">Timezone</label>
+                <select class="form-select" id="timezone" [(ngModel)]="generalSettings.timezone" name="timezone">
+                  <option value="America/New_York">Eastern Time (ET)</option>
+                  <option value="America/Chicago">Central Time (CT)</option>
+                  <option value="America/Denver">Mountain Time (MT)</option>
+                  <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                  <option value="Europe/London">Greenwich Mean Time (GMT)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="dateFormat" class="form-label">Date Format</label>
+                <select class="form-select" id="dateFormat" [(ngModel)]="generalSettings.dateFormat" name="dateFormat">
+                  <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                  <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="timeFormat" class="form-label">Time Format</label>
+                <select class="form-select" id="timeFormat" [(ngModel)]="generalSettings.timeFormat" name="timeFormat">
+                  <option value="12h">12-hour (AM/PM)</option>
+                  <option value="24h">24-hour</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="autoSave" [(ngModel)]="generalSettings.autoSave" name="autoSave">
+                <label class="form-check-label" for="autoSave">Auto-save changes</label>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="darkMode" [(ngModel)]="generalSettings.darkMode" name="darkMode">
+                <label class="form-check-label" for="darkMode">Dark Mode</label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <!-- Notification Settings -->
+      <div *ngIf="activeTab === 'notifications'" class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 fw-bold text-primary">Notification Settings</h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted mb-4">Choose how you want to be notified about activities and updates.</p>
+
+          <div class="table-responsive">
+            <table class="table notification-table">
+              <thead>
+              <tr>
+                <th>Notification</th>
+                <th class="text-center">Email</th>
+                <th class="text-center">SMS</th>
+                <th class="text-center">Push</th>
+              </tr>
+              </thead>
+              <tbody>
+              <ng-container *ngFor="let category of ['Projects', 'Payments', 'Account', 'Marketing']">
+                <tr class="notification-category">
+                  <td colspan="4">{{ category }}</td>
+                </tr>
+                <tr *ngFor="let notification of notificationSettings">
+                  <td>{{ notification.description }}</td>
+                  <td class="text-center">
+                    <div class="form-check form-switch d-flex justify-content-center">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="notification.email">
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="form-check form-switch d-flex justify-content-center">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="notification.sms">
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="form-check form-switch d-flex justify-content-center">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="notification.push">
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+              </tbody>
+            </table>
+          </div>
+
+          <button type="button" class="btn btn-primary mt-3" (click)="updateNotificationSettings()">Save Notification Settings</button>
+        </div>
+      </div>
+
+
+      <!-- Security Settings -->
+      <div *ngIf="activeTab === 'security'" class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 fw-bold text-primary">Security Settings</h6>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <h5 class="h6 fw-bold">Two-Factor Authentication</h5>
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <p class="mb-0">Add an extra layer of security to your account</p>
+                <p class="text-muted small mb-0">{{ securitySettings.twoFactorAuth ? 'Currently enabled' : 'Currently disabled' }}</p>
+              </div>
+              <button class="btn btn-sm" [ngClass]="securitySettings.twoFactorAuth ? 'btn-danger' : 'btn-primary'" (click)="toggleTwoFactorAuth()">
+                {{ securitySettings.twoFactorAuth ? 'Disable' : 'Enable' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5 class="h6 fw-bold">Security Preferences</h5>
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="loginNotifications" [(ngModel)]="securitySettings.loginNotifications" name="loginNotifications">
+                <label class="form-check-label" for="loginNotifications">Email me when there's a new login to my account</label>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="sessionTimeout" class="form-label">Session Timeout</label>
+                <select class="form-select" id="sessionTimeout" [(ngModel)]="securitySettings.sessionTimeout" name="sessionTimeout">
+                  <option value="15m">15 minutes</option>
+                  <option value="30m">30 minutes</option>
+                  <option value="1h">1 hour</option>
+                  <option value="4h">4 hours</option>
+                  <option value="8h">8 hours</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="passwordExpiry" class="form-label">Password Expiry</label>
+                <select class="form-select" id="passwordExpiry" [(ngModel)]="securitySettings.passwordExpiry" name="passwordExpiry">
+                  <option value="30d">30 days</option>
+                  <option value="60d">60 days</option>
+                  <option value="90d">90 days</option>
+                  <option value="180d">180 days</option>
+                  <option value="never">Never</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5 class="h6 fw-bold">Change Password</h5>
+            <form (ngSubmit)="changePassword()">
+              <div class="mb-3">
+                <label for="currentPassword" class="form-label">Current Password</label>
+                <input type="password" class="form-control" id="currentPassword" [(ngModel)]="passwordForm.currentPassword" name="currentPassword">
+              </div>
+              <div class="mb-3">
+                <label for="newPassword" class="form-label">New Password</label>
+                <input type="password" class="form-control" id="newPassword" [(ngModel)]="passwordForm.newPassword" name="newPassword">
+              </div>
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                <input type="password" class="form-control" id="confirmPassword" [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword">
+              </div>
+              <button type="submit" class="btn btn-primary">Change Password</button>
+            </form>
+          </div>
+          <button type="button" class="btn btn-primary" (click)="updateSecuritySettings()">Save Security Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

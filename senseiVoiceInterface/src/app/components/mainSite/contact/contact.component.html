@@ -1,0 +1,128 @@
+<header class="header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6" style="margin-left:100px">
+        <div class="header-content">
+          <h1 class="fade-in">{{ 'contactPage.header.title' | translate }}</h1>
+          <p class="fade-in-up">{{ 'contactPage.header.description' | translate }}</p>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="mic-animation fade-in">
+          <div class="mic-wave"></div>
+          <div class="mic-wave"></div>
+          <div class="mic-wave"></div>
+          <div class="mic">
+            <img src="assets/img/Fichier 1.svg" alt="Application mobile voix" class="device-image" style="width:100px;hieght:100px">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="header-shape"></div>
+  <div class="header-shape-2"></div>
+  <div class="sound-wave"></div>
+</header>
+
+<!-- Contact Section -->
+<section class="contact-section">
+  <div class="container">
+    <div class="contact-card">
+      <div class="row g-0">
+        <div class="col-lg-7">
+          <div class="contact-form fade-in-right">
+            <h3>{{ 'contactPage.form.title' | translate }}</h3>
+            <form>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="text" class="form-control" id="name" [placeholder]="'contactPage.form.name.placeholder' | translate">
+                    <label for="name">{{ 'contactPage.form.name.label' | translate }}</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="email" class="form-control" id="email" [placeholder]="'contactPage.form.email.placeholder' | translate">
+                    <label for="email">{{ 'contactPage.form.email.label' | translate }}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-floating">
+                <input type="text" class="form-control" id="subject" [placeholder]="'contactPage.form.subject.placeholder' | translate">
+                <label for="subject">{{ 'contactPage.form.subject.label' | translate }}</label>
+              </div>
+              <div class="form-floating">
+                <textarea class="form-control" id="message" [placeholder]="'contactPage.form.message.placeholder' | translate" style="height: 150px"></textarea>
+                <label for="message">{{ 'contactPage.form.message.label' | translate }}</label>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane me-2"></i> {{ 'contactPage.form.button' | translate }}
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="contact-info fade-in-left">
+            <h3>{{ 'contactPage.contactInfo.title' | translate }}</h3>
+            <div class="contact-info-item">
+              <div class="contact-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="contact-details">
+                <h5>{{ 'contactPage.contactInfo.address.line1' | translate }}</h5>
+                <p>{{ 'contactPage.contactInfo.address.line2' | translate }} <br>{{ 'contactPage.contactInfo.address.line3' | translate }}</p>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="contact-icon">
+                <i class="fas fa-phone-alt"></i>
+              </div>
+              <div class="contact-details">
+                <p>{{ 'contactPage.contactInfo.phone.number1' | translate }}<br>{{ 'contactPage.contactInfo.phone.number2' | translate }}</p>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-details">
+                <p>{{ 'contactPage.contactInfo.email.address1' | translate }}<br>{{ 'contactPage.contactInfo.email.address2' | translate }}</p>
+              </div>
+            </div>
+            <div class="social-links">
+              <h5>{{ 'contactPage.contactInfo.social.title' | translate }}</h5>
+              <div class="social-icons">
+                <div class="social-icon" title="{{ 'contactPage.contactInfo.social.facebook' | translate }}">
+                  <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="social-icon" title="{{ 'contactPage.contactInfo.social.twitter' | translate }}">
+                  <i class="fab fa-twitter"></i>
+                </div>
+                <div class="social-icon" title="{{ 'contactPage.contactInfo.social.instagram' | translate }}">
+                  <i class="fab fa-instagram"></i>
+                </div>
+                <div class="social-icon" title="{{ 'contactPage.contactInfo.social.linkedin' | translate }}">
+                  <i class="fab fa-linkedin-in"></i>
+                </div>
+                <div class="social-icon" title="{{ 'contactPage.contactInfo.social.youtube' | translate }}">
+                  <i class="fab fa-youtube"></i>
+                </div>
+              </div>
+            </div>
+            <div class="contact-shape"></div>
+            <div class="contact-shape-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+  <div class="container">
+    <div class="map-card fade-in-up">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3323.7798553393845!2d-7.638993115202833!3d33.585064680735655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzPCsDM1JzA2LjIiTiA3wrAzOCcyOC4zIlc!5e0!3m2!1sar!2sma!4v1744303289335!5m2!1sar!2sma" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,91 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Réserver un Speaker</h2>
+      <button class="close-button" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body" *ngIf="speaker">
+      <div class="speaker-info">
+        <div class="speaker-avatar">
+          <img [src]="speaker.photoUrl || '/assets/img/avatar men.png'" alt="{{ speaker.prenom }} {{ speaker.nom }}">
+        </div>
+        <div class="speaker-details">
+          <h3>{{ speaker.prenom }} {{ speaker.nom }}</h3>
+          <p *ngIf="speaker.role">{{ speaker.role }}</p>
+        </div>
+      </div>
+
+      <form [formGroup]="reservationForm" (ngSubmit)="submitReservation()">
+        <div class="form-group">
+          <label for="date">Date de réservation</label>
+          <input
+            type="date"
+            id="date"
+            formControlName="date"
+            [min]="minDate"
+            class="form-control"
+          >
+          <div class="error-message" *ngIf="reservationForm.get('date')?.invalid && reservationForm.get('date')?.touched">
+            Veuillez sélectionner une date valide.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="time">Heure de réservation</label>
+          <input
+            type="time"
+            id="time"
+            formControlName="time"
+            class="form-control"
+          >
+          <div class="error-message" *ngIf="reservationForm.get('time')?.invalid && reservationForm.get('time')?.touched">
+            Veuillez sélectionner une heure valide.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="durationMinutes">Durée d'enregistrement (minutes)</label>
+          <input
+            type="number"
+            id="durationMinutes"
+            formControlName="durationMinutes"
+            min="5"
+            max="240"
+            class="form-control"
+          >
+          <div class="error-message" *ngIf="reservationForm.get('durationMinutes')?.invalid && reservationForm.get('durationMinutes')?.touched">
+            La durée doit être entre 5 et 240 minutes.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="voiceOverType">Type de voix off</label>
+          <select
+            id="voiceOverType"
+            formControlName="voiceOverType"
+            class="form-control"
+          >
+            <option *ngFor="let type of voiceOverTypes" [value]="type.id">{{ type.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Notes supplémentaires</label>
+          <textarea
+            id="notes"
+            formControlName="notes"
+            rows="3"
+            class="form-control"
+            placeholder="Informations complémentaires pour votre réservation..."
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-button" (click)="closeModal()">Annuler</button>
+          <button type="submit" class="submit-button">Confirmer la réservation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

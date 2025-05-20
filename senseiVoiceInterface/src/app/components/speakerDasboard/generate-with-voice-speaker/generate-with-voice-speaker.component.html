@@ -1,0 +1,523 @@
+<div class="container py-4" style="margin-top:-550px">
+  <div class="content">
+    <!-- Tab Navigation -->
+    <ul class="nav tab-nav" id="myTab" role="tablist" *ngIf="showVoice" >
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="activeTab === 'free'" id="tab1-tab" (click)="setActiveTab('free')" type="button" role="tab" aria-controls="tab1" aria-selected="activeTab === 'free'">{{ 'tabs.freeTest' | translate }}</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="activeTab === 'request'" id="tab2-tab" (click)="setActiveTab('request')" type="button" role="tab" aria-controls="tab2" aria-selected="activeTab === 'request'">{{ 'tabs.audioRequest' | translate }}</button>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="toggleVoiceSelection()">
+          <i class="bi bi-music-note me-1"></i> {{ 'tabs.listVoice' | translate }}
+        </a>
+      </li>
+    </ul>
+
+    <!-- Voice Selection Section (Common for both tabs) -->
+    <div *ngIf="showVoiceSelection" class="card shadow mb-4">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 fw-bold text-white">{{ 'voiceSelection.title' | translate }}</h6>
+        <button type="button" class="btn-close btn-close-white" (click)="closeModal()"></button>
+      </div>
+      <div class="card-body">
+        <!-- Search and Filters -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-2">
+            <input type="text" class="form-control" [placeholder]="'voiceSelection.searchPlaceholder' | translate" [(ngModel)]="filters.search" (input)="applyFilters()">
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="filters.type" (change)="applyFilters()">
+              <option value="">{{ 'voiceSelection.filters.allTypes' | translate }}</option>
+              <option value="AI">{{ 'voiceSelection.filters.ai' | translate }}</option>
+              <option value="Cloned">{{ 'voiceSelection.filters.cloned' | translate }}</option>
+              <option value="premade">{{ 'voiceSelection.filters.premade' | translate }}</option>
+              <option value="professional">{{ 'voiceSelection.filters.professional' | translate }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="filters.language" (change)="applyFilters()">
+              <option value="">{{ 'voiceSelection.filters.allLanguages' | translate }}</option>
+              <option value="en">{{ 'voiceSelection.filters.english' | translate }}</option>
+              <option value="fr">{{ 'voiceSelection.filters.french' | translate }}</option>
+              <option value="ar">{{ 'voiceSelection.filters.arabic' | translate }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="filters.gender" (change)="applyFilters()">
+              <option value="">{{ 'voiceSelection.filters.allGenders' | translate }}</option>
+              <option value="Male">{{ 'voiceSelection.filters.male' | translate }}</option>
+              <option value="Female">{{ 'voiceSelection.filters.female' | translate }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="filters.ageZone" (change)="applyFilters()">
+              <option value="">{{ 'voiceSelection.filters.allAges' | translate }}</option>
+              <option value="young">{{ 'voiceSelection.filters.young' | translate }}</option>
+              <option value="middle_aged">{{ 'voiceSelection.filters.adult' | translate }}</option>
+              <option value="old">{{ 'voiceSelection.filters.senior' | translate }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-outline-primary w-100" (click)="resetFilters()">{{ 'voiceSelection.filters.resetAll' | translate }}</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Voice List -->
+          <div class="col-md-8">
+            <h5 class="mb-3">{{filters.language || ('voiceSelection.filters.allLanguages' | translate)}}</h5>
+
+            <!-- Voice Cards -->
+            <div class="voice-card" *ngFor="let voice of filteredVoices | paginate: { itemsPerPage: 3, currentPage: currentPage }"
+                 [class.selected]="selectedVoice && selectedVoice.id === voice.id"
+                 (click)="selectVoice(voice)">
+              <div class="row align-items-center">
+                <div class="col-md-6 d-flex align-items-center">
+                  <img [src]="voice.avatar" alt="{{ voice.name }}" class="avatar me-3">
+                  <div>
+                    <h5 class="mb-1">{{ voice.name }}</h5>
+                    <div>
+                      <span class="badge-gen me-2">{{ voice.type }}</span>
+                      <span class="badge-native">{{ voice.language }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-2">
+                    <button class="use-voice-btn me-2" (click)="playOriginalVoice(voice); $event.stopPropagation();">
+                      <i class="fas fa-play me-1"></i> {{ 'voiceSelection.buttons.original' | translate }}
+                    </button>
+                    <button class="use-voice-btn" (click)="playClonedVoice(voice); $event.stopPropagation();">
+                      <i class="fas fa-play me-1"></i> {{ 'voiceSelection.buttons.cloned' | translate }}
+                    </button>
+                  </div>
+                  <span class="small text-muted">{{ voice.gender }} - {{ voice.ageZone }}</span>
+                </div>
+                <div class="col-md-2 text-end">
+                  <i class="far fa-heart heart-icon me-3 fs-5"></i>
+                  <button class="use-voice-btn" (click)="selectVoice(voice); $event.stopPropagation();">{{ 'voiceSelection.buttons.useVoice' | translate }}</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pagination -->
+            <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="col-md-4" *ngIf="selectedVoice">
+            <div class="sidebar">
+              <div class="d-flex align-items-center mb-4">
+                <img [src]="selectedVoice.avatar" alt="{{ selectedVoice.name }}" class="avatar me-3">
+                <div>
+                  <h5 class="mb-1">
+                    {{ selectedVoice.name }}
+                    <i class="far fa-heart heart-icon ms-2"></i>
+                  </h5>
+                  <div>
+                    <span class="badge-gen me-2">{{ selectedVoice.type }}</span>
+                    <span class="badge-native">{{ selectedVoice.language }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <h6 class="mb-3 fw-bold">{{ 'voiceSelection.attributes' | translate }}</h6>
+              <div class="mb-4">
+                <span class="attribute-badge">{{ selectedVoice.ageZone }}</span>
+                <span class="attribute-badge">{{ selectedVoice.gender }}</span>
+              </div>
+
+              <h6 class="mb-3 fw-bold">{{ 'voiceSelection.language' | translate }}</h6>
+              <div class="mb-4">
+                <button class="btn btn-light d-flex align-items-center w-100 mb-3">
+                  <img src="https://flagcdn.com/w20/us.png" alt="US Flag" class="flag-icon">
+                  English - US & Canada
+                  <i class="fas fa-chevron-down ms-auto"></i>
+                </button>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="checkbox" id="applyToProject">
+                  <label class="form-check-label" for="applyToProject">
+                    {{ 'voiceSelection.applyToProject' | translate }}
+                  </label>
+                </div>
+                <button class="use-voice-btn primary" (click)="closeModal()">{{ 'voiceSelection.buttons.useVoice' | translate }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Selection Section (Common for both tabs) -->
+    <div *ngIf="selectedVoice && showProjectSelection" class="card shadow mb-4">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 fw-bold text-white">{{ 'projectSelection.title' | translate }}</h6>
+        <button type="button" class="btn-close btn-close-white" (click)="toggleProjectSelection()"></button>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <h5>{{ 'projectSelection.selectProject' | translate }}</h5>
+          <div class="alert alert-info" *ngIf="projects.length === 0">
+            <i class="bi bi-info-circle me-2"></i>
+            {{ 'projectSelection.noProjects' | translate }}
+          </div>
+
+          <div class="list-group mt-3">
+            <a href="javascript:void(0)"
+               *ngFor="let project of projects"
+               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+               [class.active]="selectedProject && selectedProject.uuid === project.uuid"
+               (click)="selectProject(project)">
+              <div>
+                <h6 class="mb-1">{{ project.name }}</h6>
+                <small>{{ project.dateCreation | date }}</small>
+              </div>
+              <span class="badge bg-primary rounded-pill" *ngIf="selectedProject && selectedProject.uuid === project.uuid">
+                <i class="bi bi-check"></i>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer bg-light" *ngIf="selectedProject">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-folder2-open me-2 text-primary"></i>
+          <div>
+            <strong>{{ 'projectSelection.selectedProject' | translate }}</strong> {{ selectedProject.name }}
+            <button class="btn btn-sm btn-link text-danger p-0 ms-2" (click)="selectedProject = null">
+              <i class="bi bi-x-circle"></i> {{ 'projectSelection.remove' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="myTabContent">
+      <!-- Free Test Tab Content -->
+      <div [hidden]="activeTab !== 'free'" class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+        <div class="content-box">
+          <!-- Voice Controls -->
+          <div class="content-box">
+            <div class="row g-3 mb-4">
+              <!-- Format Selection -->
+              <div class="col-md-2">
+                <label for="formatSelect" class="form-label">{{ 'voiceControls.format' | translate }}</label>
+                <select class="form-select" id="formatSelect">
+                  <option value="mp3">MP3</option>
+                  <option value="wav">WAV</option>
+                </select>
+              </div>
+
+              <!-- Emotion Selection -->
+              <div class="col-md-2">
+                <label for="emotionSelect" class="form-label">{{ 'voiceControls.emotion' | translate }}</label>
+                <select class="form-select" id="emotionSelect" [(ngModel)]="selectedEmotion">
+                  <option *ngFor="let emotion of ['Neutral', 'Happy', 'Sad', 'Angry']" [value]="emotion">
+                    {{ 'emotions.' + emotion.toLowerCase() | translate }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Speed Range -->
+              <div class="col-md-2">
+                <label for="speedRange" class="form-label d-flex justify-content-between">
+                  <span>{{ 'voiceControls.speed' | translate }}</span>
+                  <span class="fw-bold text-primary">{{ vitess }}</span>
+                </label>
+                <input type="range" class="form-range" id="speedRange" min="0.1" max="5" step="0.1" [(ngModel)]="vitess">
+              </div>
+
+              <!-- Sample Rate Range -->
+              <div class="col-md-3">
+                <label for="sampleRateRange" class="form-label d-flex justify-content-between">
+                  <span>{{ 'voiceControls.sampleRate' | translate }}</span>
+                  <span class="fw-bold text-primary">{{ rate }}</span>
+                </label>
+                <input type="range" class="form-range" id="sampleRateRange" min="8000" max="48000" step="1000" [(ngModel)]="rate">
+              </div>
+
+              <!-- Temperature Range -->
+              <div class="col-md-3">
+                <label for="temperatureRange" class="form-label d-flex justify-content-between">
+                  <span>{{ 'voiceControls.temperature' | translate }}</span>
+                  <span class="fw-bold text-primary">{{ temperature }}</span>
+                </label>
+                <input type="range" class="form-range" id="temperatureRange" min="0" max="2" step="0.1" [(ngModel)]="temperature">
+              </div>
+            </div>
+
+            <!-- Text Area with Character Limit -->
+            <div class="position-relative">
+              <textarea
+                class="voice-text mb-4"
+                [(ngModel)]="actionData.text"
+                [class.text-danger]="isTextOverLimit()"
+                (input)="limitText()">
+              </textarea>
+              <div class="character-limit-warning" *ngIf="isTextOverLimit()">
+                <div class="alert alert-warning">
+                  <i class="bi bi-exclamation-triangle me-2"></i>
+                  {{ 'characterLimit.warning' | translate }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Language and Info -->
+            <div class="d-flex align-items-center mb-4 flex-wrap">
+              <div class="d-flex align-items-center me-3 mb-2">
+                <button class="btn btn-light rounded-pill d-flex align-items-center me-2">
+                  <span class="d-none d-sm-inline">{{ filters.language || ('voiceSelection.filters.english' | translate) }}</span>
+                  <i class="bi bi-chevron-down ms-2"></i>
+                </button>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2">
+                <button class="action-btn mb-2">
+                  <i class="bi bi-tag me-1"></i> {{ 'info.price' | translate }} {{ price }}
+                </button>
+                <button class="action-btn mb-2">
+                  <i class="bi bi-text-paragraph me-1"></i> {{ 'info.characters' | translate }} {{ actionData.text.length }}
+                </button>
+                <button class="action-btn mb-2">
+                  <i class="bi bi-calculator me-1"></i> {{ 'info.total' | translate }} {{ price * actionData.text.length }}
+                </button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Voice Selection, Project Selection and Play Button -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <div class="voice-selector" (click)="toggleVoiceSelection()">
+                <button type="button" class="avatar">
+                  {{ selectedVoice?.name?.charAt(0) || 'S' }}
+                </button>
+                <span class="ms-2 fw-bold">{{ selectedVoice?.name || ('voiceSelection.title' | translate) }}</span>
+                <i class="bi bi-chevron-down ms-2"></i>
+              </div>
+
+              <div class="d-flex align-items-center">
+                <span class="me-3 text-muted" [class.text-danger]="isTextOverLimit()">
+                  {{ actionData.text.length }}/{{ freeTestCharLimit }}
+                </span>
+
+                <!-- Project selection button -->
+                <button class="btn btn-outline-primary me-2" (click)="toggleProjectSelection()" *ngIf="!showProjectSelection">
+                  <i class="bi bi-folder2 me-1"></i>
+                  {{ selectedProject ? ('projectSelection.changeProject' | translate) : ('projectSelection.selectProjectBtn' | translate) }}
+                </button>
+
+                <!-- Generate button -->
+                <button class="play-btn-1" (click)="generateSpeech()" [disabled]="isGenerating || !selectedVoice">
+                  <i class="bi" [ngClass]="isGenerating ? 'bi-hourglass-split' : 'bi-play-fill'"></i>
+                </button>
+
+                <audio *ngIf="audioUrl" [src]="audioUrl" controls oncontextmenu="return false;" preload="none"></audio>
+              </div>
+            </div>
+
+            <!-- Generation Status Messages -->
+            <div class="mt-3" *ngIf="generationSuccess || generationError">
+              <div class="alert alert-success" *ngIf="generationSuccess">
+                <i class="bi bi-check-circle me-2"></i>
+                {{ 'generation.success' | translate }}
+                <span *ngIf="selectedProject">{{ 'generation.andSavedTo' | translate }} "{{ selectedProject.name }}"</span>!
+              </div>
+
+              <div class="alert alert-danger" *ngIf="generationError">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ generationError }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Request Tab Content -->
+      <div [hidden]="activeTab !== 'request'" class="tab-pane fade show active" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+        <div class="content-box">
+          <!-- Voice Controls -->
+          <div class="content-box">
+            <div class="row g-3 mb-4">
+              <!-- Format Selection -->
+              <div class="col-md-2">
+                <label for="formatSelect2" class="form-label">{{ 'voiceControls.format' | translate }}</label>
+                <select class="form-select" id="formatSelect2">
+                  <option value="mp3">MP3</option>
+                  <option value="wav">WAV</option>
+                </select>
+              </div>
+
+              <!-- Emotion Selection -->
+              <div class="col-md-2">
+                <label for="emotionSelect2" class="form-label">{{ 'voiceControls.emotion' | translate }}</label>
+                <select class="form-select" id="emotionSelect2" [(ngModel)]="selectedEmotion">
+                  <option *ngFor="let emotion of emotions" [value]="emotion">
+                    {{ 'emotions.' + emotion.toLowerCase() | translate }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Speed Range -->
+              <div class="col-md-2">
+                <label for="speedRange2" class="form-label d-flex justify-content-between">
+                  <span>{{ 'voiceControls.speed' | translate }}</span>
+                  <span class="fw-bold text-primary">{{ vitess }}</span>
+                </label>
+                <input type="range" class="form-range" id="speedRange2" min="0.1" max="5" step="0.1" [(ngModel)]="vitess">
+              </div>
+
+              <!-- Sample Rate Range -->
+              <div class="col-md-3">
+                <label for="sampleRateRange2" class="form-label d-flex justify-content-between">
+                  <span>{{ 'voiceControls.sampleRate' | translate }}</span>
+                  <span class="fw-bold text-primary">{{ rate }}</span>
+                </label>
+                <input type="range" class="form-range" id="sampleRateRange2" min="8000" max="48000" step="1000" [(ngModel)]="rate">
+              </div>
+
+              <!-- Temperature Range -->
+              <div class="col-md-3">
+                <label for="temperatureRange2" class="form-label d-flex justify-content-between">
+                  <span>{{ 'voiceControls.temperature' | translate }}</span>
+                  <span class="fw-bold text-primary">{{ temperature }}</span>
+                </label>
+                <input type="range" class="form-range" id="temperatureRange2" min="0" max="2" step="0.1" [(ngModel)]="temperature">
+              </div>
+            </div>
+
+            <!-- Text Area (No character limit for audio request) -->
+            <textarea class="voice-text mb-4" [(ngModel)]="actionData.text"></textarea>
+
+            <!-- Language and Info -->
+            <div class="d-flex align-items-center mb-4 flex-wrap">
+              <div class="d-flex align-items-center me-3 mb-2">
+                <button class="btn btn-light rounded-pill d-flex align-items-center me-2">
+                  <span class="d-none d-sm-inline">{{ filters.language || ('voiceSelection.filters.english' | translate) }}</span>
+                  <i class="bi bi-chevron-down ms-2"></i>
+                </button>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2">
+                <button class="action-btn mb-2">
+                  <i class="bi bi-tag me-1"></i> {{ 'info.price' | translate }} {{ price }}
+                </button>
+                <button class="action-btn mb-2">
+                  <i class="bi bi-text-paragraph me-1"></i> {{ 'info.characters' | translate }} {{ actionData.text.length }}
+                </button>
+                <button class="action-btn mb-2">
+                  <i class="bi bi-calculator me-1"></i> {{ 'info.total' | translate }} {{ price * actionData.text.length }}
+                </button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Voice Selection and Checkout Button -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <div class="voice-selector" (click)="toggleVoiceSelection()">
+                <button type="button" class="avatar">
+                  {{ selectedVoice?.name?.charAt(0) || 'S' }}
+                </button>
+                <span class="ms-2 fw-bold">{{ selectedVoice?.name || ('voiceSelection.title' | translate) }}</span>
+                <i class="bi bi-chevron-down ms-2"></i>
+              </div>
+
+              <div class="d-flex align-items-center">
+                <span class="me-3 text-muted">{{ actionData.text.length }} {{ 'info.characters' | translate }}</span>
+
+                <!-- Proceed to checkout button -->
+                <button class="btn btn-primary" (click)="generateSpeech()" [disabled]="!selectedVoice || actionData.text.length === 0">
+                  <i class="bi bi-cart me-1"></i> {{ 'checkout.proceedToCheckout' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Pricing Information -->
+            <div class="mt-4 p-3 bg-light rounded">
+              <h5 class="mb-3">{{ 'checkout.pricingInformation' | translate }}</h5>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ 'checkout.pricePerCharacter' | translate }}</span>
+                    <span class="fw-bold">{{ price }}</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ 'checkout.totalCharacters' | translate }}</span>
+                    <span class="fw-bold">{{ actionData.text.length }}</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ 'checkout.totalPrice' | translate }}</span>
+                    <span class="fw-bold text-primary">{{ price * actionData.text.length }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Voice Selection Modal -->
+<div class="modal fade" id="voiceSelectionModal" tabindex="-1" aria-labelledby="voiceSelectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="voiceSelectionModalLabel">{{ 'voiceSelection.title' | translate }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-center">{{ 'voiceSelection.selectProject' | translate }}</p>
+        <!-- Modal content would be populated dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Project Selection Modal -->
+<div class="modal fade" id="projectSelectionModal" tabindex="-1" aria-labelledby="projectSelectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="projectSelectionModalLabel">{{ 'projectSelection.title' | translate }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info" *ngIf="projects.length === 0">
+          <i class="bi bi-info-circle me-2"></i>
+          {{ 'projectSelection.noProjects' | translate }}
+        </div>
+
+        <div class="list-group">
+          <a href="javascript:void(0)"
+             *ngFor="let project of projects"
+             class="list-group-item list-group-item-action"
+             (click)="selectProject(project)">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">{{ project.name }}</h5>
+              <small>{{ project.dateCreation | date }}</small>
+            </div>
+            <p class="mb-1">{{ project.description }}</p>
+          </a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'projectSelection.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" routerLink="/projects/new">{{ 'projectSelection.createNew' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>

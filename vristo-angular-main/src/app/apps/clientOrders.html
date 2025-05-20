@@ -1,0 +1,668 @@
+<style>
+    /* Modern Variables */
+    :root {
+      --primary-color: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #dbeafe;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --text-dark: #1f2937;
+      --text-medium: #4b5563;
+      --text-light: #9ca3af;
+      --background-light: #f9fafb;
+      --background-white: #ffffff;
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --border-radius: 12px;
+      --transition: all 0.3s ease;
+    }
+
+    /* Base styles */
+    .statistics-container {
+      padding: 2rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      font-family: 'Inter', 'Roboto', 'Segoe UI', sans-serif;
+      color: var(--text-dark);
+      background-color: var(--background-light);
+      border-radius: var(--border-radius);
+    }
+
+    /* Header with improved styling */
+    .dashboard-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dashboard-title {
+      margin: 0;
+    }
+
+    .dashboard-title h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .dashboard-title .subtitle {
+      font-size: 1rem;
+      color: var(--text-medium);
+      margin-top: 0.5rem;
+    }
+
+    .time-filter {
+      display: flex;
+      background: var(--background-white);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .time-filter button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--text-medium);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .time-filter button.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    /* Stats cards with improved layout and animations */
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stats-card {
+      background: var(--background-white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stats-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--primary-color);
+      opacity: 0.7;
+    }
+
+    .stats-card:nth-child(2)::before {
+      background: var(--success-color);
+    }
+
+    .stats-card:nth-child(3)::before {
+      background: var(--danger-color);
+    }
+
+    .stats-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1.25rem;
+      background: var(--primary-light);
+      color: var(--primary-color);
+    }
+
+    .stats-card:nth-child(2) .card-icon {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success-color);
+    }
+
+    .stats-card:nth-child(3) .card-icon {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+    }
+
+    .card-icon i {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      flex: 1;
+    }
+
+    .card-content h3 {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-medium);
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+
+    .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: baseline;
+    }
+
+    .trend-indicator {
+      font-size: 0.875rem;
+      margin-left: 0.5rem;
+      font-weight: 500;
+    }
+
+    .trend-up {
+      color: var(--success-color);
+    }
+
+    .trend-down {
+      color: var(--danger-color);
+    }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--text-light);
+      margin: 0;
+    }
+
+    /* Stats details with improved visuals */
+    .stats-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .details-panel {
+      background: var(--background-white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 1.5rem;
+    }
+
+    .details-panel h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0 0 1.25rem 0;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .info-icon {
+      color: var(--text-light);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .rate-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .rate-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.75rem;
+    }
+
+    .rate-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .rate-change {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .positive-change {
+      color: var(--success-color);
+    }
+
+    .negative-change {
+      color: var(--danger-color);
+    }
+
+    .rate-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .rate-progress {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease-in-out;
+    }
+
+    .conversion-progress {
+      background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    }
+
+    .abandonment-progress {
+      background: linear-gradient(90deg, var(--danger-color), #dc2626);
+    }
+
+    .rate-desc {
+      font-size: 0.875rem;
+      color: var(--text-medium);
+      margin: 0.5rem 0 0 0;
+    }
+
+    /* Chart container with improved styling */
+    .chart-container {
+      background: var(--background-white);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-header h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-dark);
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      font-size: 0.875rem;
+      color: var(--text-medium);
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      margin-right: 0.5rem;
+    }
+
+    .legend-tests {
+      background-color: var(--primary-color);
+    }
+
+    .legend-orders {
+      background-color: var(--success-color);
+    }
+
+    .legend-abandons {
+      background-color: var(--danger-color);
+    }
+
+    .chart-desc {
+      font-size: 0.875rem;
+      color: var(--text-medium);
+      margin: 0 0 1rem 0;
+    }
+
+    /* Improved placeholder chart */
+    .placeholder-chart {
+      height: 300px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      padding-left: 3rem;
+      padding-bottom: 2.5rem;
+    }
+
+    .chart-axis-y {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 2.5rem;
+      width: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-right: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    .axis-label {
+      transform: translateY(50%);
+    }
+
+    .chart-axis-x {
+      position: absolute;
+      left: 3rem;
+      right: 0;
+      bottom: 0;
+      height: 2.5rem;
+    }
+
+    .chart-grid {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      align-items: flex-end;
+      position: relative;
+    }
+
+    .grid-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #e5e7eb;
+    }
+
+    .grid-line:nth-child(1) { bottom: 0%; }
+    .grid-line:nth-child(2) { bottom: 25%; }
+    .grid-line:nth-child(3) { bottom: 50%; }
+    .grid-line:nth-child(4) { bottom: 75%; }
+    .grid-line:nth-child(5) { bottom: 100%; }
+
+    .chart-bar-group {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 100%;
+      position: relative;
+      padding: 0 1rem;
+    }
+
+    .chart-bar {
+      width: 8px;
+      height: 0;
+      border-radius: 4px 4px 0 0;
+      transition: height 1s ease-in-out;
+    }
+
+    .bar-tests {
+      background-color: var(--primary-color);
+      height: 65%;
+      margin-right: 4px;
+    }
+
+    .bar-orders {
+      background-color: var(--success-color);
+      height: 40%;
+      margin-right: 4px;
+    }
+
+    .bar-abandons {
+      background-color: var(--danger-color);
+      height: 25%;
+    }
+
+    .month-label {
+      position: absolute;
+      bottom: -2rem;
+      font-size: 0.75rem;
+      color: var(--text-medium);
+      text-align: center;
+      width: 100%;
+    }
+
+    /* Improved empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      background: var(--background-white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      color: var(--text-light);
+      margin-bottom: 1.5rem;
+      opacity: 0.5;
+    }
+
+    .empty-state h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin: 0 0 0.75rem 0;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      color: var(--text-medium);
+      margin: 0 auto;
+      max-width: 400px;
+    }
+
+    .empty-state button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .empty-state button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .statistics-container {
+        padding: 1rem;
+      }
+
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .stats-cards, .stats-details {
+        grid-template-columns: 1fr;
+      }
+
+      .placeholder-chart {
+        height: 250px;
+      }
+    }
+  </style>
+
+<div class="statistics-container">
+    <div class="dashboard-header">
+      <div class="dashboard-title">
+        <h1>{{ 'statistics' | translate }}</h1>
+        <p class="subtitle">{{ 'performance_overview' | translate }}</p>
+      </div>
+      <div class="time-filter">
+        <button>{{ '7_days' | translate }}</button>
+        <button class="active">{{ '30_days' | translate }}</button>
+        <button>{{ '3_months' | translate }}</button>
+        <button>{{ '1_year' | translate }}</button>
+      </div>
+    </div>
+
+    <div class="stats-cards">
+      <div class="stats-card">
+        <div class="card-icon">
+          <i class="fas fa-flask"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ 'free_tests' | translate }}</h3>
+          <div class="card-value">
+            {{ getTotalTestsGratuits() }}
+            <span class="trend-indicator trend-up">
+              <i class="fas fa-arrow-up"></i> 0%
+            </span>
+          </div>
+          <p class="card-desc">{{ 'free_tests_desc' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="stats-card">
+        <div class="card-icon">
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ 'orders_completed' | translate }}</h3>
+          <div class="card-value">
+            {{ getTotalCommandes() }}
+            <span class="trend-indicator trend-up">
+              <i class="fas fa-arrow-up"></i> 0%
+            </span>
+          </div>
+          <p class="card-desc">{{ 'orders_completed_desc' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="stats-card">
+        <div class="card-icon">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ 'abandoned_at_payment' | translate }}</h3>
+          <div class="card-value">
+            {{ getTotalAbandons() }}
+            <span class="trend-indicator trend-down">
+              <i class="fas fa-arrow-down"></i> 0%
+            </span>
+          </div>
+          <p class="card-desc">{{ 'abandoned_at_payment_desc' | translate }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-details">
+      <div class="details-panel">
+        <h2>
+          {{ 'conversion_rate' | translate }}
+          <span class="info-icon"><i class="fas fa-info-circle"></i></span>
+        </h2>
+        <div class="rate-container">
+          <div class="rate-header">
+            <div class="rate-value">{{ getConversionRate() }}</div>
+            <div class="rate-change positive-change">
+              <i class="fas fa-arrow-up"></i> 0%
+            </div>
+          </div>
+          <div class="rate-bar">
+            <div class="rate-progress conversion-progress" [style.width]="getConversionRate()"></div>
+          </div>
+          <p class="rate-desc">{{ 'conversion_rate_desc' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="details-panel">
+        <h2>
+          {{ 'abandonment_rate' | translate }}
+          <span class="info-icon"><i class="fas fa-info-circle"></i></span>
+        </h2>
+        <div class="rate-container">
+          <div class="rate-header">
+            <div class="rate-value">{{ getAbandonmentRate() }}</div>
+            <div class="rate-change negative-change">
+              <i class="fas fa-arrow-up"></i> 0%
+            </div>
+          </div>
+          <div class="rate-bar">
+            <div class="rate-progress abandonment-progress" [style.width]="getAbandonmentRate()"></div>
+          </div>
+          <p class="rate-desc">{{ 'abandonment_rate_desc' | translate }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-header">
+        <h2>{{ 'monthly_trends' | translate }}</h2>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <span class="legend-color legend-tests"></span>
+            {{ 'tests' | translate }}
+          </div>
+          <div class="legend-item">
+            <span class="legend-color legend-orders"></span>
+            {{ 'orders' | translate }}
+          </div>
+          <div class="legend-item">
+            <span class="legend-color legend-abandons"></span>
+            {{ 'abandons' | translate }}
+          </div>
+        </div>
+      </div>
+      <p class="chart-desc">{{ 'metric_evolution_desc' | translate }}</p>
+      <div class="placeholder-chart">
+        <div class="chart-axis-y">
+          <span class="axis-label">100</span>
+          <span class="axis-label">75</span>
+          <span class="axis-label">50</span>
+          <span class="axis-label">25</span>
+          <span class="axis-label">0</span>
+        </div>
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+        <div class="chart-grid">
+          <div class="chart-bar-group" *ngFor="let month of ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin']">
+            <div class="chart-bar bar-tests"></div>
+            <div class="chart-bar bar-orders"></div>
+            <div class="chart-bar bar-abandons"></div>
+            <span class="month-label">{{month}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h2>{{ 'no_data_available' | translate }}</h2>
+      <p>{{ 'detailed_statistics' | translate }}</p>
+      <button>{{ 'print_report' | translate }}</button>
+    </div>
+  </div>
+

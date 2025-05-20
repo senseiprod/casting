@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login or Sign Up</title>
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+
+            const formData = {
+                nom: document.getElementById("nom").value,
+                prenom: document.getElementById("prenom").value,
+                email: document.getElementById("email").value,
+                motDePasse: document.getElementById("motDePasse").value
+            };
+
+            fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert("Client registered! Please check your email for verification.");
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</head>
+<body>
+<h2>Login or Sign Up</h2>
+
+<!-- Sign Up Form -->
+<form id="signupForm" onsubmit="submitForm(event)">
+    <label for="nom">First Name:</label>
+    <input type="text" name="nom" id="nom" required>
+
+    <label for="prenom">Last Name:</label>
+    <input type="text" name="prenom" id="prenom" required>
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" id="email" required>
+
+    <label for="motDePasse">Password:</label>
+    <input type="password" name="motDePasse" id="motDePasse" required>
+
+    <button type="submit">Sign Up</button>
+</form>
+
+<h3>Or Sign Up with</h3>
+
+<!-- Sign Up with Google OAuth -->
+<a href="/oauth2/authorization/google">
+    <button>Sign Up with Google</button>
+</a>
+
+<p>Already have an account? <a href="/login2">Login</a></p>
+</body>
+</html>

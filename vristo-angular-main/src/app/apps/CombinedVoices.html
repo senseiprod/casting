@@ -1,0 +1,1873 @@
+<div class="container-fluid py-4">
+    <!-- Header and Filters -->
+    <div class="voices-header">
+      <div class="header-left">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <i class="bi bi-soundwave"></i>
+          </div>
+          <h2>Voice Library</h2>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <i class="bi bi-search"></i>
+            <input
+              type="text"
+              placeholder="Search voices..."
+              [(ngModel)]="searchQuery"
+              (input)="applyFilters()"
+              class="search-input">
+          </div>
+        </div>
+
+        <div class="filter-dropdown">
+          <button class="filter-btn" (click)="toggleFiltersPanel()">
+            <i class="bi bi-sliders"></i>
+            <span>Filters</span>
+            <span class="filter-count" *ngIf="activeFiltersCount > 0">{{ activeFiltersCount }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Panel -->
+    <div class="filters-panel" [class.show]="showFiltersPanel">
+      <div class="filters-panel-header">
+        <h3>Filter Voices</h3>
+        <button class="close-filters-btn" (click)="toggleFiltersPanel()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="filters-panel-body">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <h4 class="filter-group-title">Voice Type</h4>
+            <div class="voice-type-selector">
+              <button
+                *ngFor="let type of ['all', 'elevenlabs', 'elevenlabs-standard', 'playht']"
+                [class.active]="selectedVoiceType === type"
+                (click)="selectVoiceType(type)"
+                class="voice-type-btn">
+                {{ type === 'all' ? 'All Types' :
+                   type === 'elevenlabs' ? 'ElevenLabs' :
+                   type === 'elevenlabs-standard' ? 'Standard' : 'PlayHT' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group-title">Language</h4>
+            <div class="select-wrapper">
+              <i class="bi bi-translate"></i>
+              <select [(ngModel)]="selectedLanguage" (change)="onLanguageChange(selectedLanguage)" class="filter-select">
+                <option value="all">All Languages</option>
+                <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group-title">Gender</h4>
+            <div class="select-wrapper">
+              <i class="bi bi-gender-ambiguous"></i>
+              <select [(ngModel)]="selectedGender" (change)="applyFilters()" class="filter-select">
+                <option value="all">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group-title">Age</h4>
+            <div class="select-wrapper">
+              <i class="bi bi-calendar"></i>
+              <select [(ngModel)]="selectedAge" (change)="applyFilters()" class="filter-select">
+                <option value="all">All Ages</option>
+                <option value="young">Young</option>
+                <option value="middle_aged">Middle-aged</option>
+                <option value="old">Old</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h4 class="filter-group-title">Use Case</h4>
+            <div class="select-wrapper">
+              <i class="bi bi-tag"></i>
+              <select [(ngModel)]="selectedUseCase" (change)="applyFilters()" class="filter-select">
+                <option value="all">All Use Cases</option>
+                <option *ngFor="let useCase of useCases" [value]="useCase">{{ formatUseCase(useCase) }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="filters-actions">
+          <button class="reset-filters-btn" (click)="resetFilters()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+            Reset All Filters
+          </button>
+
+          <button class="apply-filters-btn" (click)="applyFilters(); toggleFiltersPanel()">
+            <i class="bi bi-check-lg"></i>
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="loading-animation">
+        <div class="loading-circle outer"></div>
+        <div class="loading-circle inner"></div>
+      </div>
+      <p>Loading voices...</p>
+    </div>
+
+    <!-- No Results State -->
+    <div *ngIf="paginatedVoices.length === 0 && !loading" class="no-results">
+      <div class="no-results-icon">
+        <i class="bi bi-search"></i>
+      </div>
+      <h2>No Voices Found</h2>
+      <p>Try adjusting your search terms or filters</p>
+      <button class="reset-btn" (click)="resetFilters()">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        Reset All Filters
+      </button>
+    </div>
+
+    <!-- Voices Table -->
+    <div *ngIf="!loading && paginatedVoices.length > 0" class="voices-table-container">
+      <table class="voices-table">
+        <thead>
+          <tr>
+            <th class="th-expand"></th>
+            <th class="th-name">Name</th>
+            <th class="th-type">Type</th>
+            <th class="th-gender">Gender</th>
+            <th class="th-language">Language</th>
+            <th class="th-age">Age</th>
+            <th class="th-use-case">Use Case</th>
+            <th class="th-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let voice of paginatedVoices; let i = index">
+            <!-- Table Row -->
+            <tr
+              [class.expanded]="expandedVoiceId === voice.voice_id"
+              (click)="toggleVoiceExpand(voice.voice_id)"
+              class="voice-row">
+              <td class="td-expand">
+                <button class="expand-btn">
+                  <i [class]="expandedVoiceId === voice.voice_id ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                </button>
+              </td>
+              <td class="td-name">
+                <div class="voice-name-cell">
+                  <div class="voice-avatar small">
+                    <i class="bi bi-person"></i>
+                  </div>
+                  <span>{{ voice.name }}</span>
+                </div>
+              </td>
+              <td class="td-type">
+                <span class="voice-badge type-badge" [class]="voice.type_voice">
+                  {{ voice.type_voice }}
+                </span>
+              </td>
+              <td class="td-gender">
+                <span class="voice-badge gender-badge" [class]="voice.gender?.toLowerCase()">
+                  {{ voice.gender || 'N/A' }}
+                </span>
+              </td>
+              <td class="td-language">{{ voice.language || 'N/A' }}</td>
+              <td class="td-age">{{ voice.age || 'N/A' }}</td>
+              <td class="td-use-case">{{ voice.use_case || 'N/A' }}</td>
+              <td class="td-actions">
+                <div class="action-buttons">
+                  <button
+                    class="preview-btn"
+                    [class.playing]="voice.isPlaying"
+                    [disabled]="voice.isLoading"
+                    (click)="togglePlayPreview(voice); $event.stopPropagation()">
+                    <div class="btn-content">
+                      <div class="icon-container">
+                        <div *ngIf="voice.isLoading" class="loading-spinner"></div>
+                        <i *ngIf="!voice.isLoading" class="bi" [ngClass]="voice.isPlaying ? 'bi-pause' : 'bi-play'"></i>
+                      </div>
+                      <span class="btn-label">{{ voice.isPlaying ? 'Pause' : 'Preview' }}</span>
+                    </div>
+                  </button>
+
+                  <button
+                    class="synthesize-btn"
+                    (click)="onSynthesizeClick(voice); $event.stopPropagation()">
+                    <i class="bi bi-soundwave"></i>
+                    <span class="btn-label">Synthesize</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Expanded Row -->
+            <tr *ngIf="expandedVoiceId === voice.voice_id" class="expanded-row">
+              <td colspan="8">
+                <div class="expanded-content">
+                  <div class="expanded-content-grid">
+                    <div class="voice-details-card">
+                      <div class="card-header">
+                        <h3>Voice Details</h3>
+                      </div>
+                      <div class="card-body">
+                        <div class="voice-info-grid">
+                          <div class="info-item">
+                            <span class="info-label">Voice ID</span>
+                            <code class="info-value id-value">{{ voice.voice_id }}</code>
+                          </div>
+                          <div class="info-item">
+                            <span class="info-label">Type</span>
+                            <span class="info-value">{{ voice.type_voice }}</span>
+                          </div>
+                          <div class="info-item">
+                            <span class="info-label">Gender</span>
+                            <span class="info-value">{{ voice.gender || 'N/A' }}</span>
+                          </div>
+                          <div class="info-item">
+                            <span class="info-label">Language</span>
+                            <span class="info-value">{{ voice.language || 'N/A' }}</span>
+                          </div>
+                          <div class="info-item">
+                            <span class="info-label">Accent</span>
+                            <span class="info-value">{{ voice.accent || 'N/A' }}</span>
+                          </div>
+                          <div class="info-item">
+                            <span class="info-label">Age</span>
+                            <span class="info-value">{{ voice.age || 'N/A' }}</span>
+                          </div>
+                          <div class="info-item">
+                            <span class="info-label">Use Case</span>
+                            <span class="info-value">{{ voice.use_case || 'N/A' }}</span>
+                          </div>
+                        </div>
+
+                        <div class="voice-description">
+                          <h4>Description</h4>
+                          <p>{{ voice.description || 'No description available.' }}</p>
+                        </div>
+
+                        <div class="voice-actions">
+                          <button
+                            class="preview-btn large"
+                            [class.playing]="voice.isPlaying"
+                            [disabled]="voice.isLoading"
+                            (click)="togglePlayPreview(voice)">
+                            <div class="btn-content">
+                              <div class="icon-container">
+                                <div *ngIf="voice.isLoading" class="loading-spinner"></div>
+                                <i *ngIf="!voice.isLoading" class="bi" [ngClass]="voice.isPlaying ? 'bi-pause' : 'bi-play'"></i>
+                              </div>
+                              <span>{{ voice.isLoading ? 'Loading...' : (voice.isPlaying ? 'Pause' : 'Preview') }}</span>
+                            </div>
+                          </button>
+
+                          <button class="synthesize-btn large" (click)="onSynthesizeClick(voice)">
+                            <i class="bi bi-soundwave"></i>
+                            <span>Synthesize</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination-container">
+      <button
+        class="pagination-btn prev"
+        [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <button
+        class="pagination-btn page-number"
+        [class.active]="currentPage === 1"
+        (click)="onPageChange(1)">
+        1
+      </button>
+
+      <span *ngIf="currentPage > 4" class="pagination-ellipsis">...</span>
+
+      <button
+        *ngFor="let page of getPaginationRange()"
+        class="pagination-btn page-number"
+        [class.active]="currentPage === page"
+        (click)="onPageChange(page)">
+        {{ page }}
+      </button>
+
+      <span *ngIf="currentPage < totalPages - 3" class="pagination-ellipsis">...</span>
+
+      <button
+        *ngIf="totalPages > 1"
+        class="pagination-btn page-number"
+        [class.active]="currentPage === totalPages"
+        (click)="onPageChange(totalPages)">
+        {{ totalPages }}
+      </button>
+
+      <button
+        class="pagination-btn next"
+        [disabled]="currentPage === totalPages"
+        (click)="onPageChange(currentPage + 1)">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Synthesize Panel -->
+    <div *ngIf="selectedVoice && showSynthesizeForm" class="synthesize-panel">
+      <div class="synthesize-header">
+        <div class="header-content">
+          <div class="header-icon">
+            <i class="bi bi-music-note-beamed"></i>
+          </div>
+          <div class="header-text">
+            <h2>Synthesize Speech</h2>
+            <p>Create speech with {{ selectedVoice.name }}</p>
+          </div>
+        </div>
+        <button class="close-btn" (click)="showSynthesizeForm = false">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="synthesize-content">
+        <div class="selected-voice-summary">
+          <div class="voice-avatar large">
+            <i class="bi bi-person"></i>
+          </div>
+          <div class="voice-details">
+            <h3>{{ selectedVoice.name }}</h3>
+            <div class="voice-badges">
+              <span class="voice-badge" [class]="selectedVoice.type_voice">{{ selectedVoice.type_voice }}</span>
+              <span class="voice-badge" [class]="selectedVoice.gender?.toLowerCase()">{{ selectedVoice.gender }}</span>
+              <span class="voice-badge language">{{ selectedVoice.language }}</span>
+              <span class="voice-badge accent">{{ selectedVoice.accent || 'No accent' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <form [formGroup]="synthesizeForm" class="synthesize-form">
+          <div class="form-section text-input-section">
+            <label for="text">Text to speak <span class="required">*</span></label>
+            <textarea
+              id="text"
+              formControlName="text"
+              placeholder="Enter the text to be synthesized..."
+              rows="5"
+              class="text-input"></textarea>
+            <div *ngIf="synthesizeForm.get('text')?.invalid && synthesizeForm.get('text')?.touched" class="error-message">
+              <i class="bi bi-exclamation-circle"></i>
+              Text is required
+            </div>
+          </div>
+
+          <div class="form-section output-format-section">
+            <label for="output_format">Output Format</label>
+            <div class="select-wrapper">
+              <i class="bi bi-file-earmark-music"></i>
+              <select id="output_format" formControlName="output_format" class="format-select">
+                <option *ngFor="let format of outputFormats" [value]="format.value">
+                  {{ format.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ElevenLabs specific controls -->
+          <div *ngIf="selectedVoice.type_voice !== 'playht'" class="voice-parameters">
+            <h3 class="parameters-title">Voice Parameters</h3>
+
+            <div class="parameters-grid">
+              <div class="parameter-item">
+                <div class="parameter-header">
+                  <label for="stability">Stability</label>
+                  <span class="parameter-value">{{ synthesizeForm.get('stability')?.value }}</span>
+                </div>
+                <div class="slider-container">
+                  <input
+                    type="range"
+                    id="stability"
+                    formControlName="stability"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    class="parameter-slider">
+                  <div class="slider-labels">
+                    <span>Less stable</span>
+                    <span>More stable</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="parameter-item">
+                <div class="parameter-header">
+                  <label for="similarity_boost">Similarity Boost</label>
+                  <span class="parameter-value">{{ synthesizeForm.get('similarity_boost')?.value }}</span>
+                </div>
+                <div class="slider-container">
+                  <input
+                    type="range"
+                    id="similarity_boost"
+                    formControlName="similarity_boost"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    class="parameter-slider">
+                  <div class="slider-labels">
+                    <span>Less similar</span>
+                    <span>More similar</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="parameter-item">
+                <div class="parameter-header">
+                  <label for="style_guidance">Style</label>
+                  <span class="parameter-value">{{ synthesizeForm.get('style_guidance')?.value }}</span>
+                </div>
+                <div class="slider-container">
+                  <input
+                    type="range"
+                    id="style_guidance"
+                    formControlName="style_guidance"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    class="parameter-slider">
+                  <div class="slider-labels">
+                    <span>Less style</span>
+                    <span>More style</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="parameter-item switch-item">
+                <div class="switch-container">
+                  <label class="switch">
+                    <input type="checkbox" formControlName="use_speaker_boost">
+                    <span class="slider round"></span>
+                  </label>
+                  <span class="switch-label">Use Speaker Boost</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PlayHT specific controls -->
+          <div *ngIf="selectedVoice.type_voice === 'playht'" class="voice-parameters">
+            <h3 class="parameters-title">Voice Parameters</h3>
+
+            <div class="parameters-grid">
+              <div class="parameter-item">
+                <label for="quality">Quality</label>
+                <div class="select-wrapper">
+                  <i class="bi bi-stars"></i>
+                  <select id="quality" formControlName="quality" class="parameter-select">
+                    <option value="draft">Draft</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="premium">Premium</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="parameter-item">
+                <div class="parameter-header">
+                  <label for="speed">Speed</label>
+                  <span class="parameter-value">{{ synthesizeForm.get('speed')?.value }}x</span>
+                </div>
+                <div class="slider-container">
+                  <input
+                    type="range"
+                    id="speed"
+                    formControlName="speed"
+                    min="0.5"
+                    max="2.0"
+                    step="0.1"
+                    class="parameter-slider">
+                  <div class="slider-labels">
+                    <span>Slower</span>
+                    <span>Faster</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="parameter-item">
+                <div class="parameter-header">
+                  <label for="temperature">Temperature</label>
+                  <span class="parameter-value">{{ synthesizeForm.get('temperature')?.value }}</span>
+                </div>
+                <div class="slider-container">
+                  <input
+                    type="range"
+                    id="temperature"
+                    formControlName="temperature"
+                    min="0.0"
+                    max="2.0"
+                    step="0.1"
+                    class="parameter-slider">
+                  <div class="slider-labels">
+                    <span>More predictable</span>
+                    <span>More variable</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="parameter-item">
+                <label for="emotion">Emotion</label>
+                <div class="select-wrapper">
+                  <i class="bi bi-emoji-smile"></i>
+                  <select id="emotion" formControlName="emotion" class="parameter-select">
+                    <option value="">None</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="happy">Happy</option>
+                    <option value="sad">Sad</option>
+                    <option value="angry">Angry</option>
+                    <option value="fearful">Fearful</option>
+                    <option value="disgusted">Disgusted</option>
+                    <option value="surprised">Surprised</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="synthesize-submit-btn"
+            [disabled]="synthesizeForm.invalid"
+            (click)="synthesizeSpeech()">
+            <i class="bi bi-play-fill"></i>
+            Synthesize
+          </button>
+        </form>
+
+        <div id="audio-container" class="audio-preview-container">
+          <div class="audio-placeholder">
+            <div class="audio-icon">
+              <i class="bi bi-volume-up"></i>
+            </div>
+            <h3>Audio Preview</h3>
+            <p>Audio will appear here after synthesis</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+  /* Base Styles */
+  :host {
+    --primary-red: #c1282a;
+    --primary-blue: #c80c22;
+    --primary-red-light: rgba(98, 0, 234, 0.1);
+    --primary-blue-light: rgba(55, 0, 179, 0.1);
+    --primary-red-hover: #dd789a;
+    --primary-blue-hover: #dd789a;
+    --text-dark: #333;
+    --text-medium: #666;
+    --text-light: #999;
+    --border-light: #e5e5e5;
+    --bg-light: #f8f9fa;
+    --white: #fff;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+    --transition: all 0.3s ease;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+  }
+
+  /* Header and Filters */
+  .voices-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background-color: var(--primary-red);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .voices-header h2 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--primary-blue);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .search-container {
+    width: 300px;
+  }
+
+  .search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: var(--white);
+    border-radius: var(--radius-full);
+    padding: 8px 16px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+  }
+
+  .search-input-wrapper:focus-within {
+    box-shadow: var(--shadow-md);
+  }
+
+  .search-input-wrapper i {
+    color: var(--primary-red);
+    margin-right: 8px;
+  }
+
+  .search-input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    font-size: 14px;
+  }
+
+  .filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--white);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .filter-btn:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .filter-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: var(--primary-red);
+    color: var(--white);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Filters Panel */
+  .filters-panel {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 24px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, margin-bottom 0.3s ease;
+  }
+
+  .filters-panel.show {
+    max-height: 500px;
+    margin-bottom: 24px;
+  }
+
+  .filters-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .filters-panel-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-blue);
+  }
+
+  .close-filters-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background-color: var(--bg-light);
+    color: var(--text-medium);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .close-filters-btn:hover {
+    background-color: var(--border-light);
+    color: var(--text-dark);
+  }
+
+  .filters-panel-body {
+    padding: 24px;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-group-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--primary-blue);
+  }
+
+  .voice-type-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .voice-type-btn {
+    background-color: var(--bg-light);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-medium);
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .voice-type-btn.active {
+    background-color: var(--primary-red);
+    color: var(--white);
+  }
+
+  .select-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    transition: var(--transition);
+  }
+
+  .select-wrapper:focus-within {
+    background-color: var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .select-wrapper i {
+    color: var(--primary-red);
+    margin-right: 8px;
+  }
+
+  .filter-select {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    font-size: 14px;
+    appearance: none;
+    padding-right: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+  }
+
+  .filters-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .reset-filters-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .reset-filters-btn:hover {
+    background-color: var(--border-light);
+  }
+
+  .apply-filters-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--primary-red);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .apply-filters-btn:hover {
+    background-color: var(--primary-red-hover);
+  }
+
+  /* Loading State */
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 0;
+  }
+
+  .loading-animation {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 16px;
+  }
+
+  .loading-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid transparent;
+  }
+
+  .loading-circle.outer {
+    width: 60px;
+    height: 60px;
+    border-top-color: var(--primary-red-light);
+    animation: spin 1.5s linear infinite;
+  }
+
+  .loading-circle.inner {
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    left: 10px;
+    border-right-color: var(--primary-red);
+    animation: spin 1s linear infinite reverse;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading-container p {
+    color: var(--text-medium);
+    font-weight: 500;
+  }
+
+  /* No Results */
+  .no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 64px 32px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+  }
+
+  .no-results-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-full);
+    background-color: var(--primary-red-light);
+    color: var(--primary-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+
+  .no-results h2 {
+    margin: 0 0 8px;
+    color: var(--primary-blue);
+  }
+
+  .no-results p {
+    color: var(--text-medium);
+    margin: 0 0 24px;
+  }
+
+  .reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--primary-red);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .reset-btn:hover {
+    background-color: var(--primary-red-hover);
+  }
+
+  /* Voices Table */
+  .voices-table-container {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+
+  .voices-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .voices-table th,
+  .voices-table td {
+    padding: 16px;
+    text-align: left;
+  }
+
+  .voices-table th {
+    background-color: var(--primary-blue);
+    color: var(--white);
+    font-weight: 500;
+    font-size: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .voices-table th:first-child {
+    border-top-left-radius: var(--radius-lg);
+  }
+
+  .voices-table th:last-child {
+    border-top-right-radius: var(--radius-lg);
+  }
+
+  .th-expand {
+    width: 40px;
+  }
+
+  .th-name {
+    width: 20%;
+  }
+
+  .th-type,
+  .th-gender,
+  .th-language,
+  .th-age,
+  .th-use-case {
+    width: 12%;
+  }
+
+  .th-actions {
+    width: 120px;
+  }
+
+  .voice-row {
+    border-bottom: 1px solid var(--border-light);
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .voice-row:hover {
+    background-color: var(--bg-light);
+  }
+
+  .voice-row.expanded {
+    background-color: var(--primary-blue-light);
+  }
+
+  .td-expand {
+    width: 40px;
+  }
+
+  .expand-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-full);
+    background-color: var(--bg-light);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .voice-row.expanded .expand-btn {
+    background-color: var(--primary-blue);
+    color: var(--white);
+  }
+
+  .voice-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .voice-avatar.small {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background-color: var(--primary-red-light);
+    color: var(--primary-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .voice-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .voice-badge.type-badge {
+    background-color: var(--primary-blue-light);
+    color: var(--primary-blue);
+  }
+
+  .voice-badge.type-badge.elevenlabs {
+    background-color: var(--primary-red-light);
+    color: var(--primary-red);
+  }
+
+  .voice-badge.gender-badge {
+    background-color: var(--primary-blue-light);
+    color: var(--primary-blue);
+  }
+
+  .voice-badge.gender-badge.female {
+    background-color: var(--primary-red-light);
+    color: var(--primary-red);
+  }
+
+  .action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .preview-btn,
+  .synthesize-btn {
+    min-width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 0 12px;
+  }
+
+  .btn-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+  }
+
+  .btn-label {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .preview-btn {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+  }
+
+  .preview-btn:hover {
+    background-color: var(--border-light);
+  }
+
+  .preview-btn.playing {
+    background-color: var(--primary-blue);
+    color: var(--white);
+  }
+
+  .preview-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .synthesize-btn {
+    background-color: var(--primary-red);
+    color: var(--white);
+  }
+
+  .synthesize-btn:hover {
+    background-color: var(--primary-red-hover);
+  }
+
+  .loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--white);
+    animation: spin 1s linear infinite;
+  }
+
+  /* Expanded Row */
+  .expanded-row {
+    background-color: var(--primary-blue-light);
+  }
+
+  .expanded-content {
+    padding: 24px;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .expanded-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .voice-details-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .card-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-blue);
+  }
+
+  .card-body {
+    padding: 24px;
+  }
+
+  .voice-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-label {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .info-value {
+    font-size: 14px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .id-value {
+    font-family: monospace;
+    font-size: 12px;
+    background-color: var(--bg-light);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+
+  .voice-description {
+    margin-bottom: 24px;
+  }
+
+  .voice-description h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin: 0 0 8px;
+  }
+
+  .voice-description p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-medium);
+    line-height: 1.5;
+  }
+
+  .voice-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .preview-btn.large,
+  .synthesize-btn.large {
+    width: auto;
+    height: auto;
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    border: none;
+    background-color: var(--white);
+    color: var(--text-dark);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .pagination-btn:hover {
+    background-color: var(--bg-light);
+  }
+
+  .pagination-btn.active {
+    background-color: var(--primary-red);
+    color: var(--white);
+  }
+
+  .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--text-medium);
+  }
+
+  /* Synthesize Panel */
+  .synthesize-panel {
+    margin-top: 32px;
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .synthesize-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: var(--primary-blue);
+    color: var(--white);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .header-text h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .header-text p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  .close-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .close-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .synthesize-content {
+    padding: 24px;
+  }
+
+  .selected-voice-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+  }
+
+  .voice-avatar.large {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+
+  .voice-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .synthesize-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-section label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-blue);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .required {
+    color: var(--primary-red);
+  }
+
+  .text-input {
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-size: 14px;
+    resize: none;
+    transition: var(--transition);
+  }
+
+  .text-input:focus {
+    outline: none;
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 2px var(--primary-red-light);
+  }
+
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary-red);
+    font-size: 12px;
+  }
+
+  .format-select,
+  .parameter-select {
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    font-size: 14px;
+    width: 100%;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: var(--transition);
+  }
+
+  .format-select:focus,
+  .parameter-select:focus {
+    outline: none;
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 2px var(--primary-red-light);
+  }
+
+  .voice-parameters {
+    background-color: var(--bg-light);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+
+  .parameters-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .parameters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .parameter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .parameter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .parameter-header label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+
+  .parameter-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary-red);
+    background-color: var(--primary-red-light);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+  }
+
+  .slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .parameter-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background-color: var(--border-light);
+    outline: none;
+  }
+
+  .parameter-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--primary-red);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .parameter-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+
+  .parameter-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--primary-red);
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+  }
+
+  .parameter-slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .switch-item {
+    justify-content: center;
+  }
+
+  .switch-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-light);
+    transition: var(--transition);
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--white);
+    transition: var(--transition);
+  }
+
+  input:checked + .slider {
+    background-color: var(--primary-red);
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-red);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(20px);
+  }
+
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  .switch-label {
+    font-size: 14px;
+    color: var(--text-dark);
+  }
+
+  .synthesize-submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--primary-red);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 16px;
+  }
+
+  .synthesize-submit-btn:hover {
+    background-color: var(--primary-red-hover);
+  }
+
+  .synthesize-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .audio-preview-container {
+    margin-top: 32px;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+  }
+
+  .audio-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .audio-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-full);
+    background-color: var(--primary-red-light);
+    color: var(--primary-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 16px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .audio-placeholder h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-blue);
+  }
+
+  .audio-placeholder p {
+    margin: 0;
+    color: var(--text-medium);
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 1200px) {
+    .voices-table th,
+    .voices-table td {
+      padding: 12px;
+    }
+
+    .th-use-case,
+    .td-use-case {
+      display: none;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .th-age,
+    .td-age {
+      display: none;
+    }
+
+    .voice-info-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .preview-btn,
+    .synthesize-btn {
+      width: 36px;
+      padding: 0;
+    }
+
+    .btn-label {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .voices-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-right {
+      width: 100%;
+    }
+
+    .search-container {
+      width: 100%;
+    }
+
+    .th-language,
+    .td-language {
+      display: none;
+    }
+
+    .parameters-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .filters-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .th-gender,
+    .td-gender {
+      display: none;
+    }
+
+    .voice-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+  </style>

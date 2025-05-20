@@ -1,0 +1,456 @@
+<!-- Transactions Component -->
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">{{ 'speaker_transactions' | translate }}</h1>
+        <p class="text-gray-500">{{ 'Manage speaker payouts and invoices' | translate }}</p>
+      </div>
+      <div class="mt-4 md:mt-0">
+        <div class="relative">
+          <input type="text" placeholder="{{'search_speakers...' | translate}}" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ce091c] focus:border-transparent">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions Table Section -->
+    <div id="transactions-section" class="mb-10">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'speaker' | translate }}</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'Date' | translate }}</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'Amount' | translate }}</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'Status' | translate }}</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'invoice' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <!-- Speaker 1 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="h-10 w-10 flex-shrink-0">
+                    <img class="h-10 w-10 rounded-full" src="/placeholder.svg?height=40&width=40" alt="Speaker avatar">
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">Youness</div>
+                    <div class="text-sm text-gray-500">Youness&#64;example.com</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                Mar 15, 2025
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">0</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  {{ 'Paid' | translate }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <a href="#" target="_blank" class="text-[#ce091c] hover:text-[#a00717] flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  {{ 'view_pdf' | translate }}
+                </a>
+              </td>
+            </tr>
+
+            <!-- Speaker 2 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="h-10 w-10 flex-shrink-0">
+                    <img class="h-10 w-10 rounded-full" src="/placeholder.svg?height=40&width=40" alt="Speaker avatar">
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">Saad</div>
+                    <div class="text-sm text-gray-500">saad&#64;example.com</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                Mar 10, 2025
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">$0</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                  {{ 'Pending' | translate }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <a href="#" target="_blank" class="text-[#ce091c] hover:text-[#a00717] flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  {{ 'view_pdf' | translate }}
+                </a>
+              </td>
+            </tr>
+
+            <!-- Speaker 3 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="h-10 w-10 flex-shrink-0">
+                    <img class="h-10 w-10 rounded-full" src="/placeholder.svg?height=40&width=40" alt="Speaker avatar">
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">Abdessadeq</div>
+                    <div class="text-sm text-gray-500">abdessadeq&#64;example.com</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                Mar 5, 2025
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">$0</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  {{ 'Paid' | translate }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <a href="#" target="_blank" class="text-[#ce091c] hover:text-[#a00717] flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  {{ 'view_pdf' | translate }}
+                </a>
+              </td>
+            </tr>
+
+            <!-- Speaker 4 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="h-10 w-10 flex-shrink-0">
+                    <img class="h-10 w-10 rounded-full" src="/placeholder.svg?height=40&width=40" alt="Speaker avatar">
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">Sara</div>
+                    <div class="text-sm text-gray-500">sara&#64;example.com</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                April 08, 2025
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">0</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full rounded-full bg-green-100 text-green-800">
+                  {{ 'Paid' | translate }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <a href="#" target="_blank" class="text-gray-400 cursor-not-allowed flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  {{ 'Unavailable' | translate }}
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between mt-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+          <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            {{ 'Previous' | translate }}
+          </a>
+          <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            {{ 'Next' | translate }}
+          </a>
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700">
+              {{ 'Showing' | translate }} <span class="font-medium">1</span> {{ 'to' | translate }} <span class="font-medium">4</span> {{ 'of' | translate }} <span class="font-medium">12</span> {{ 'results' | translate }}
+            </p>
+          </div>
+          <div>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">{{ 'Previous' | translate }}</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+              <a href="#" aria-current="page" class="z-10 bg-[#ce091c] border-[#ce091c] text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                1
+              </a>
+              <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                2
+              </a>
+              <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                3
+              </a>
+              <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                ...
+              </span>
+              <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                8
+              </a>
+              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">{{ 'Next' | translate }}</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Section (Hidden by default) -->
+    <div id="statistics-section" >
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Total Earnings Card -->
+        <div class="bg-white rounded-lg shadow p-6 border border-gray-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-[#ce091c] bg-opacity-10 mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#ce091c]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm">{{ 'total_profit' | translate }}</p>
+              <h3 class="text-2xl font-bold text-gray-800">$0</h3>
+              <p class="text-green-500 text-sm flex items-center mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                0% {{ 'from last month' | translate }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Speakers Card -->
+        <div class="bg-white rounded-lg shadow p-6 border border-gray-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-blue-100 mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm">{{ 'Active Speakers' | translate }}</p>
+              <h3 class="text-2xl font-bold text-gray-800">6</h3>
+              <p class="text-green-500 text-sm flex items-center mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                100% {{ 'from last month' | translate }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Payments Card -->
+        <div class="bg-white rounded-lg shadow p-6 border border-gray-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-yellow-100 mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm">{{ 'pending_payments' | translate }}</p>
+              <h3 class="text-2xl font-bold text-gray-800">$0</h3>
+              <p class="text-red-500 text-sm flex items-center mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                0% {{ 'from last month' | translate }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Performers -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">{{ 'Top Performing Speakers' | translate }}</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'speaker' | translate }}</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'Revenue Generated' | translate }}</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'Audience Reach' | translate }}</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'Growth' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <!-- Speaker 1 -->
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="h-10 w-10 flex-shrink-0">
+                      <img class="h-10 w-10 rounded-full" src="/placeholder.svg?height=40&width=40" alt="Speaker avatar">
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">Saad</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">$0</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">0</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                      <div class="bg-[#ce091c] h-2.5 rounded-full" style="width: 85%"></div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-900">0%</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Speaker 2 -->
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="h-10 w-10 flex-shrink-0">
+                      <img class="h-10 w-10 rounded-full" src="/placeholder.svg?height=40&width=40" alt="Speaker avatar">
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">Sara</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">$0</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">0</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                      <div class="bg-[#ce091c] h-2.5 rounded-full" style="width: 72%"></div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-900">0%</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Speaker 3 -->
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="h-10 w-10 flex-shrink-0">
+                      <img class="h-10 w-10 rounded-full" src="/placeholder.svg?height=40&width=40" alt="Speaker avatar">
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">Abdessadeq</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">$0</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">0</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                      <div class="bg-[#ce091c] h-2.5 rounded-full" style="width: 68%"></div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-900">0%</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Revenue Chart -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-800">{{ 'Revenue Generated By Speakers Over Time' | translate }}</h2>
+          <div>
+            <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#ce091c] focus:border-[#ce091c] p-2">
+              <option>{{ 'last_30_days' | translate }}</option>
+              <option>{{ 'last_90_days' | translate }}</option>
+              <option>{{ 'last_12_months' | translate }}</option>
+              <option>{{ 'All time' | translate }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Placeholder for Chart -->
+        <div class="h-64 bg-gray-50 rounded-lg border border-dashed border-gray-300 flex items-center justify-center">
+          <div class="text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <p class="text-gray-500">{{'Revenue chart will be displayed here' | translate }}</p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simple JavaScript to toggle between tabs -->
+  <script>
+    // This script will be handled by your Angular app
+    // It's included here for demonstration purposes only
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.border-b a');
+      const transactionsSection = document.getElementById('transactions-section');
+      const statisticsSection = document.getElementById('statistics-section');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          // Remove active class from all tabs
+          tabs.forEach(t => {
+            t.classList.remove('text-[#ce091c]', 'border-b-2', 'border-[#ce091c]');
+            t.classList.add('text-gray-500');
+          });
+
+          // Add active class to clicked tab
+          this.classList.add('text-[#ce091c]', 'border-b-2', 'border-[#ce091c]');
+          this.classList.remove('text-gray-500');
+
+          // Show/hide sections based on tab
+          if (this.textContent.trim() === 'Transactions') {
+            transactionsSection.classList.remove('hidden');
+            statisticsSection.classList.add('hidden');
+          } else if (this.textContent.trim() === 'Statistics') {
+            transactionsSection.classList.add('hidden');
+            statisticsSection.classList.remove('hidden');
+          }
+        });
+      });
+    });
+  </script>
+

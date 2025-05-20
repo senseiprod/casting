@@ -1,0 +1,277 @@
+<main class="content p-4 fade-in">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-dark fw-bold">{{ 'VOICE_ACTIONS.TITLE' | translate }}</h1>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">{{ 'VOICE_ACTIONS.LOADING' | translate }}</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadActions()">Retry</button>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section mb-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label for="statusFilter" class="form-label">{{ 'VOICE_ACTIONS.STATUS' | translate }}</label>
+        <select class="form-select" id="statusFilter" [(ngModel)]="statusFilter">
+          <option value="">{{ 'VOICE_ACTIONS.STATUS' | translate }}</option>
+          <option value="EN_ATTENTE">{{ 'VOICE_ACTIONS.PENDING' | translate }}</option>
+          <option value="EN_COURS">{{ 'VOICE_ACTIONS.IN_PROGRESS' | translate }}</option>
+          <option value="TERMINEE">{{ 'VOICE_ACTIONS.COMPLETED' | translate }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="languageFilter" class="form-label">Language</label>
+        <select class="form-select" id="languageFilter" [(ngModel)]="languageFilter">
+          <option value="">All Languages</option>
+          <option *ngFor="let language of getUniqueLanguages()" [value]="language">{{ language }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="searchFilter" class="form-label">Search</label>
+        <div class="input-group">
+          <input type="text" class="form-control" id="searchFilter" placeholder="Search actions..." [(ngModel)]="searchFilter">
+          <button class="btn btn-primary" type="button">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Stats -->
+  <div class="row mb-4">
+    <!-- Total Actions -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card shadow h-100 py-2 border-left-primary">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-uppercase mb-1 text-primary">
+                {{ 'VOICE_ACTIONS.TOTAL' | translate }}
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ totalActions }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-mic fs-2 text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Actions -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card shadow h-100 py-2 border-left-warning">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-uppercase mb-1 text-warning">
+                Pending Actions
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pendingActions }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-hourglass-split fs-2 text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- In Progress Actions -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card shadow h-100 py-2 border-left-info">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-uppercase mb-1 text-info">
+                In Progress
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ inProgressActions }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-play-circle fs-2 text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Actions -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card shadow h-100 py-2 border-left-success">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-uppercase mb-1 text-success">
+                Completed
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ completedActions }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-check-circle fs-2 text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions Table -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 fw-bold text-primary">Voice Actions</h6>
+    </div>
+    <div class="card-body">
+      <div *ngIf="applyFilters().length === 0 && !loading" class="text-center py-5">
+        <i class="bi bi-mic-mute fs-1 text-muted mb-3"></i>
+        <p class="mb-0">No voice actions available</p>
+      </div>
+
+      <div *ngIf="applyFilters().length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>{{ 'VOICE_ACTIONS.CODE' | translate }}</th>
+            <th>{{ 'VOICE_ACTIONS.TEXT' | translate }}</th>
+            <th>{{ 'VOICE_ACTIONS.LANGUAGE' | translate }}</th>
+            <th>{{ 'VOICE_ACTIONS.DATE_CREATED' | translate }}</th>
+            <th>{{ 'VOICE_ACTIONS.STATUS' | translate }}</th>
+            <th>{{ 'VOICE_ACTIONS.ACTIONS' | translate }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let action of applyFilters()">
+            <td>{{ action.code }}</td>
+            <td>
+              <div class="text-truncate" style="max-width: 250px;">{{ action.text }}</div>
+            </td>
+            <td>{{ action.language }}</td>
+            <td>{{ formatDate(action.dateCreation) }}</td>
+            <td><span class="action-status" [ngClass]="getStatusClass(action.statutAction)">{{ getStatusLabel(action.statutAction) }}</span></td>
+            <td>
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#viewActionModal" (click)="viewAction(action)">
+                  <i class="bi bi-eye"></i>
+                </button>
+
+                <button *ngIf="action.statutAction === 'EN_ATTENTE'" type="button" class="btn btn-sm btn-success" (click)="validateAction(action)" [disabled]="processing">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+
+                <button *ngIf="action.statutAction === 'EN_ATTENTE'" type="button" class="btn btn-sm btn-danger" (click)="rejectAction(action)" [disabled]="processing">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+
+                <button *ngIf="action.statutAction === 'EN_COURS'" type="button" class="btn btn-sm btn-outline-primary" (click)="sendNotification(action)" [disabled]="processing">
+                  <i class="bi bi-bell"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav *ngIf="applyFilters().length > 0" aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</main>
+
+<!-- View Action Modal -->
+<div class="modal fade" id="viewActionModal" tabindex="-1" aria-labelledby="viewActionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="selectedAction">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="viewActionModalLabel">
+          {{ 'VOICE_ACTIONS.TITLE' | translate }} #{{ selectedAction.code }}
+        </h5>        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="closeActionModal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="action-preview">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6 class="fw-bold">Action Details</h6>
+              <div class="mb-2"><strong>{{ 'VOICE_ACTIONS.CODE' | translate }}:</strong> {{ selectedAction.code }}</div>
+              <div class="mb-2"><strong>{{ 'VOICE_ACTIONS.TEXT' | translate }}:</strong> {{ selectedAction.text.length }}</div>
+              <div class="mb-2"><strong>{{ 'VOICE_ACTIONS.LANGUAGE' | translate }}:</strong> {{ selectedAction.language }}</div>
+              <div class="mb-2"><strong>{{ 'VOICE_ACTIONS.DATE_CREATED' | translate }}:</strong> {{ formatDate(selectedAction.dateCreation) }}</div>
+              <div class="mb-2">
+                <strong>Status:</strong>
+                <span class="action-status ms-2" [ngClass]="getStatusClass(selectedAction.statutAction)">
+                  {{ getStatusLabel(selectedAction.statutAction) }}
+                </span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h6 class="fw-bold">{{ 'VOICE_ACTIONS.CLIENT_INFO' | translate }}</h6>
+              <div class="mb-2"><strong> {{ 'VOICE_ACTIONS.NAME' | translate }}:</strong> {{ client.nom}} {{ client.prenom}}</div>
+              <div class="mb-2"><strong>{{ 'VOICE_ACTIONS.EMAIL' | translate }}:</strong> {{ client.email }}</div>
+              <div class="mb-2"><strong>{{ 'VOICE_ACTIONS.PHONE' | translate }}:</strong> {{ client.phone }}</div>
+            </div>
+          </div>
+
+          <div class="text-content p-3 bg-light rounded mb-4">
+            <h6 class="fw-bold mb-3">{{ 'VOICE_ACTIONS.TEXT_TO_VOICE' | translate }}</h6>
+            <p class="mb-0">{{ selectedAction.text }}</p>
+          </div>
+
+          <div *ngIf="selectedAction.statutAction === 'EN_ATTENTE'" class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            This action is pending your approval. Please review the text and accept or reject it.
+          </div>
+
+          <div *ngIf="selectedAction.statutAction === 'EN_COURS'" class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            This action is in progress. You can notify the client when you have updates.
+          </div>
+
+          <div *ngIf="selectedAction.statutAction === 'TERMINEE'" class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>
+            This action has been completed successfully.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+        <button *ngIf="selectedAction.statutAction === 'EN_ATTENTE'" type="button" class="btn btn-success" (click)="validateAction(selectedAction)" [disabled]="processing">
+          <i class="bi bi-check-lg me-1"></i> {{ 'VOICE_ACTIONS.VALIDATE' | translate }}
+        </button>
+
+        <button *ngIf="selectedAction.statutAction === 'EN_ATTENTE'" type="button" class="btn btn-danger" (click)="rejectAction(selectedAction)" [disabled]="processing">
+          <i class="bi bi-x-lg me-1"></i> {{ 'VOICE_ACTIONS.REJECT' | translate }}
+        </button>
+
+        <button *ngIf="selectedAction.statutAction === 'EN_COURS'" type="button" class="btn btn-primary" (click)="sendNotification(selectedAction)" [disabled]="processing">
+          <i class="bi bi-bell me-1"></i> {{ 'VOICE_ACTIONS.NOTIFY' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

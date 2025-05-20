@@ -1,0 +1,647 @@
+<main class="content p-4 fade-in">
+  <!-- Checkout Steps -->
+  <div class="checkout-steps mb-4" *ngIf="!orderComplete">
+    <div class="step" [ngClass]="{'active': currentStep >= 1, 'completed': currentStep > 1}">
+      <div class="step-icon">
+        <i class="bi" [ngClass]="currentStep > 1 ? 'bi-check-lg' : 'bi-1-circle'"></i>
+      </div>
+      <div class="step-label">Billing</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step" [ngClass]="{'active': currentStep >= 2, 'completed': currentStep > 2}">
+      <div class="step-icon">
+        <i class="bi" [ngClass]="currentStep > 2 ? 'bi-check-lg' : 'bi-2-circle'"></i>
+      </div>
+      <div class="step-label">Payment</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step" [ngClass]="{'active': currentStep >= 3}">
+      <div class="step-icon">
+        <i class="bi bi-3-circle"></i>
+      </div>
+      <div class="step-label">Review</div>
+    </div>
+  </div>
+
+  <!-- Order Complete Message -->
+  <div *ngIf="orderComplete" class="order-complete fade-in">
+    <div class="card shadow">
+      <div class="card-body text-center p-5">
+        <div class="success-icon mb-4">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h2 class="mb-3">Thank You for Your Order!</h2>
+        <p class="lead mb-4">Your order has been placed successfully.</p>
+        <div class="order-details mb-4">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Order Number:</span>
+                <span class="fw-bold">{{ getOrderNumber() }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Date:</span>
+                <span>10</span>
+              </div>
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Total Amount:</span>
+                <span class="fw-bold">${{ formatCurrency(total) }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Payment Method:</span>
+                <span>
+                  <i class="bi" [ngClass]="paymentMethod === 'credit-card' ? 'bi-credit-card' : paymentMethod === 'paypal' ? 'bi-paypal' : 'bi-bank'"></i>
+                  {{ paymentMethod === 'credit-card' ? 'Credit Card' : paymentMethod === 'paypal' ? 'PayPal' : 'Bank Transfer' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="mb-4">
+          We've sent a confirmation email to <strong>{{ billingForm.get('email')?.value }}</strong> with all the details of your order.
+        </p>
+        <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+          <a routerLink="/dashboard" class="btn btn-primary">
+            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+          </a>
+          <a routerLink="/projects" class="btn btn-outline-primary">
+            <i class="bi bi-collection me-2"></i>View My Projects
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Form -->
+  <div class="row" *ngIf="!orderComplete">
+    <!-- Left Column - Form -->
+    <div class="col-lg-8 mb-4 mb-lg-0">
+      <!-- Billing Information (Step 1) -->
+      <div class="card shadow mb-4" *ngIf="currentStep === 1">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 fw-bold">Billing Information</h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="billingForm">
+            <div class="row g-3">
+              <!-- First Name -->
+              <div class="col-md-6">
+                <label for="firstName" class="form-label">First Name*</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  formControlName="firstName"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': billingForm.get('firstName')?.invalid && billingForm.get('firstName')?.touched}"
+                >
+                <div *ngIf="billingForm.get('firstName')?.invalid && billingForm.get('firstName')?.touched" class="invalid-feedback">
+                  First name is required
+                </div>
+              </div>
+
+              <!-- Last Name -->
+              <div class="col-md-6">
+                <label for="lastName" class="form-label">Last Name*</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  formControlName="lastName"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': billingForm.get('lastName')?.invalid && billingForm.get('lastName')?.touched}"
+                >
+                <div *ngIf="billingForm.get('lastName')?.invalid && billingForm.get('lastName')?.touched" class="invalid-feedback">
+                  Last name is required
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email Address*</label>
+                <input
+                  type="email"
+                  id="email"
+                  formControlName="email"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': billingForm.get('email')?.invalid && billingForm.get('email')?.touched}"
+                >
+                <div *ngIf="billingForm.get('email')?.invalid && billingForm.get('email')?.touched" class="invalid-feedback">
+                  <span *ngIf="billingForm.get('email')?.errors?.['required']">Email is required</span>
+                  <span *ngIf="billingForm.get('email')?.errors?.['email']">Please enter a valid email address</span>
+                </div>
+              </div>
+
+              <!-- Phone -->
+              <div class="col-md-6">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  formControlName="phone"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': billingForm.get('phone')?.invalid && billingForm.get('phone')?.touched}"
+                >
+                <div *ngIf="billingForm.get('phone')?.invalid && billingForm.get('phone')?.touched" class="invalid-feedback">
+                  Please enter a valid phone number
+                </div>
+              </div>
+
+              <!-- Company -->
+              <div class="col-12">
+                <label for="company" class="form-label">Company/Organization</label>
+                <input
+                  type="text"
+                  id="company"
+                  formControlName="company"
+                  class="form-control"
+                >
+              </div>
+
+              <!-- Address Line 1 -->
+              <div class="col-12">
+                <label for="address1" class="form-label">Address Line 1*</label>
+                <input
+                  type="text"
+                  id="address1"
+                  formControlName="address1"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': billingForm.get('address1')?.invalid && billingForm.get('address1')?.touched}"
+                >
+                <div *ngIf="billingForm.get('address1')?.invalid && billingForm.get('address1')?.touched" class="invalid-feedback">
+                  Address is required
+                </div>
+              </div>
+
+              <!-- Address Line 2 -->
+              <div class="col-12">
+                <label for="address2" class="form-label">Address Line 2</label>
+                <input
+                  type="text"
+                  id="address2"
+                  formControlName="address2"
+                  class="form-control"
+                >
+              </div>
+
+              <!-- City -->
+              <div class="col-md-6">
+                <label for="city" class="form-label">City*</label>
+                <input
+                  type="text"
+                  id="city"
+                  formControlName="city"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': billingForm.get('city')?.invalid && billingForm.get('city')?.touched}"
+                >
+                <div *ngIf="billingForm.get('city')?.invalid && billingForm.get('city')?.touched" class="invalid-feedback">
+                  City is required
+                </div>
+              </div>
+
+              <!-- State/Province -->
+              <div class="col-md-6">
+                <label for="state" class="form-label">State/Province*</label>
+                <select
+                  id="state"
+                  formControlName="state"
+                  class="form-select"
+                  [ngClass]="{'is-invalid': billingForm.get('state')?.invalid && billingForm.get('state')?.touched}"
+                >
+                  <option value="" selected>Select State</option>
+                  <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+                </select>
+                <div *ngIf="billingForm.get('state')?.invalid && billingForm.get('state')?.touched" class="invalid-feedback">
+                  State is required
+                </div>
+              </div>
+
+              <!-- Zip/Postal Code -->
+              <div class="col-md-6">
+                <label for="zipCode" class="form-label">Zip/Postal Code*</label>
+                <input
+                  type="text"
+                  id="zipCode"
+                  formControlName="zipCode"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': billingForm.get('zipCode')?.invalid && billingForm.get('zipCode')?.touched}"
+                >
+                <div *ngIf="billingForm.get('zipCode')?.invalid && billingForm.get('zipCode')?.touched" class="invalid-feedback">
+                  <span *ngIf="billingForm.get('zipCode')?.errors?.['required']">Zip code is required</span>
+                  <span *ngIf="billingForm.get('zipCode')?.errors?.['pattern']">Please enter a valid zip code</span>
+                </div>
+              </div>
+
+              <!-- Country -->
+              <div class="col-md-6">
+                <label for="country" class="form-label">Country*</label>
+                <select
+                  id="country"
+                  formControlName="country"
+                  class="form-select"
+                  [ngClass]="{'is-invalid': billingForm.get('country')?.invalid && billingForm.get('country')?.touched}"
+                >
+                  <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+                </select>
+                <div *ngIf="billingForm.get('country')?.invalid && billingForm.get('country')?.touched" class="invalid-feedback">
+                  Country is required
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between py-3">
+          <button type="button" class="btn btn-outline-secondary" routerLink="/cart">
+            <i class="bi bi-arrow-left me-2"></i>Back to Cart
+          </button>
+          <button type="button" class="btn btn-primary" (click)="nextStep()" [disabled]="billingForm.invalid">
+            Continue to Payment<i class="bi bi-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Payment Method (Step 2) -->
+      <div class="card shadow mb-4" *ngIf="currentStep === 2">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 fw-bold">Payment Method</h5>
+        </div>
+        <div class="card-body">
+          <!-- Payment Options -->
+          <div class="payment-options mb-4">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="payment-option" [ngClass]="{'active': paymentMethod === 'credit-card'}" (click)="setPaymentMethod('credit-card')">
+                  <div class="payment-option-icon">
+                    <i class="bi bi-credit-card"></i>
+                  </div>
+                  <div class="payment-option-label">Credit Card</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="payment-option" [ngClass]="{'active': paymentMethod === 'paypal'}" (click)="setPaymentMethod('paypal')">
+                  <div class="payment-option-icon">
+                    <i class="bi bi-paypal"></i>
+                  </div>
+                  <div class="payment-option-label">PayPal</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="payment-option" [ngClass]="{'active': paymentMethod === 'bank-transfer'}" (click)="setPaymentMethod('bank-transfer')">
+                  <div class="payment-option-icon">
+                    <i class="bi bi-bank"></i>
+                  </div>
+                  <div class="payment-option-label">Bank Transfer</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Credit Card Form -->
+          <div *ngIf="paymentMethod === 'credit-card'">
+            <form [formGroup]="paymentForm">
+              <div class="row g-3">
+                <!-- Card Holder Name -->
+                <div class="col-12">
+                  <label for="cardName" class="form-label">Cardholder Name*</label>
+                  <input
+                    type="text"
+                    id="cardName"
+                    formControlName="cardName"
+                    class="form-control"
+                    [ngClass]="{'is-invalid': paymentForm.get('cardName')?.invalid && paymentForm.get('cardName')?.touched}"
+                    placeholder="Name as it appears on card"
+                  >
+                  <div *ngIf="paymentForm.get('cardName')?.invalid && paymentForm.get('cardName')?.touched" class="invalid-feedback">
+                    Cardholder name is required
+                  </div>
+                </div>
+
+                <!-- Card Number -->
+                <div class="col-12">
+                  <label for="cardNumber" class="form-label">Card Number*</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      id="cardNumber"
+                      formControlName="cardNumber"
+                      class="form-control"
+                      [ngClass]="{'is-invalid': paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched}"
+                      placeholder="1234 5678 9012 3456"
+                      maxlength="16"
+                    >
+                    <span class="input-group-text">
+                      <i class="bi" [ngClass]="
+                        getCardType(paymentForm.get('cardNumber')?.value) === 'visa' ? 'bi-credit-card' :
+                        getCardType(paymentForm.get('cardNumber')?.value) === 'mastercard' ? 'bi-credit-card' :
+                        getCardType(paymentForm.get('cardNumber')?.value) === 'amex' ? 'bi-credit-card' :
+                        getCardType(paymentForm.get('cardNumber')?.value) === 'discover' ? 'bi-credit-card' : 'bi-credit-card'
+                      "></i>
+                    </span>
+                    <div *ngIf="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched" class="invalid-feedback">
+                      <span *ngIf="paymentForm.get('cardNumber')?.errors?.['required']">Card number is required</span>
+                      <span *ngIf="paymentForm.get('cardNumber')?.errors?.['pattern']">Please enter a valid card number</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Expiry Date -->
+                <div class="col-md-6">
+                  <label class="form-label">Expiration Date*</label>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <select
+                        id="expiryMonth"
+                        formControlName="expiryMonth"
+                        class="form-select"
+                        [ngClass]="{'is-invalid': paymentForm.get('expiryMonth')?.invalid && paymentForm.get('expiryMonth')?.touched}"
+                      >
+                        <option value="" selected>Month</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                      </select>
+                      <div *ngIf="paymentForm.get('expiryMonth')?.invalid && paymentForm.get('expiryMonth')?.touched" class="invalid-feedback">
+                        Month is required
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <select
+                        id="expiryYear"
+                        formControlName="expiryYear"
+                        class="form-select"
+                        [ngClass]="{'is-invalid': paymentForm.get('expiryYear')?.invalid && paymentForm.get('expiryYear')?.touched}"
+                      >
+                        <option value="" selected>Year</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                      </select>
+                      <div *ngIf="paymentForm.get('expiryYear')?.invalid && paymentForm.get('expiryYear')?.touched" class="invalid-feedback">
+                        Year is required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CVV -->
+                <div class="col-md-6">
+                  <label for="cvv" class="form-label">CVV*</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      id="cvv"
+                      formControlName="cvv"
+                      class="form-control"
+                      [ngClass]="{'is-invalid': paymentForm.get('cvv')?.invalid && paymentForm.get('cvv')?.touched}"
+                      placeholder="123"
+                      maxlength="4"
+                    >
+                    <span class="input-group-text" title="3-digit code on back of card">
+                      <i class="bi bi-question-circle"></i>
+                    </span>
+                    <div *ngIf="paymentForm.get('cvv')?.invalid && paymentForm.get('cvv')?.touched" class="invalid-feedback">
+                      <span *ngIf="paymentForm.get('cvv')?.errors?.['required']">CVV is required</span>
+                      <span *ngIf="paymentForm.get('cvv')?.errors?.['pattern']">Please enter a valid CVV</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Save Payment Info -->
+                <div class="col-12">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      id="savePaymentInfo"
+                      formControlName="savePaymentInfo"
+                      class="form-check-input"
+                    >
+                    <label class="form-check-label" for="savePaymentInfo">
+                      Save this card for future payments
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- PayPal -->
+          <div *ngIf="paymentMethod === 'paypal'" class="text-center py-4">
+            <div class="paypal-logo mb-3">
+              <i class="bi bi-paypal fs-1 text-primary"></i>
+            </div>
+
+            <p class="mb-3">Click the button below to continue to PayPal for secure payment.</p>
+            <button type="button" class="btn btn-primary btn-lg">
+              <i class="bi bi-paypal me-2"></i>Pay with PayPal
+            </button>
+            <p class="small text-muted mt-3">You will be redirected to PayPal to complete your payment securely.</p>
+          </div>
+
+          <!-- Bank Transfer -->
+          <div *ngIf="paymentMethod === 'bank-transfer'" class="py-4">
+            <div class="alert alert-info mb-4">
+              <i class="bi bi-info-circle-fill me-2"></i>
+              Please use the following bank details to complete your transfer. Your order will be processed once payment is confirmed.
+            </div>
+
+            <div class="bank-details">
+              <div class="row mb-2">
+                <div class="col-md-4 fw-bold">Bank Name:</div>
+                <div class="col-md-8">First National Bank</div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-4 fw-bold">Account Name:</div>
+                <div class="col-md-8">VoiceArtist Pro LLC</div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-4 fw-bold">Account Number:</div>
+                <div class="col-md-8">1234567890</div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-4 fw-bold">Routing Number:</div>
+                <div class="col-md-8">987654321</div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-4 fw-bold">SWIFT/BIC:</div>
+                <div class="col-md-8">FNBAUS12</div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-4 fw-bold">Reference:</div>
+                <div class="col-md-8">{{ getOrderNumber() }}</div>
+              </div>
+            </div>
+
+            <div class="form-check mt-4">
+              <input type="checkbox" id="confirmTransfer" class="form-check-input">
+              <label class="form-check-label" for="confirmTransfer">
+                I confirm that I will complete the bank transfer within 3 business days
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between py-3">
+          <button type="button" class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="bi bi-arrow-left me-2"></i>Back to Billing
+          </button>
+          <button type="button" class="btn btn-primary" (click)="nextStep()">
+            Review Order<i class="bi bi-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Order Review (Step 3) -->
+      <div class="card shadow mb-4" *ngIf="currentStep === 3">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 fw-bold">Review Your Order</h5>
+        </div>
+        <div class="card-body">
+          <!-- Order Items -->
+          <div class="order-items mb-4">
+            <h6 class="fw-bold mb-3">Order Items</h6>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>Item</th>
+                  <th class="text-end">Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of orderItems">
+                  <td>
+                    <div class="fw-bold">{{ item.name }}</div>
+                    <div class="small text-muted">{{ item.description }}</div>
+                  </td>
+                  <td class="text-end">${{ formatCurrency(item.price) }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Billing Information -->
+          <div class="billing-summary mb-4">
+            <h6 class="fw-bold mb-3">Billing Information</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <p class="mb-1">
+                  <strong>{{ billingForm.get('firstName')?.value }} {{ billingForm.get('lastName')?.value }}</strong>
+                </p>
+                <p class="mb-1" *ngIf="billingForm.get('company')?.value">{{ billingForm.get('company')?.value }}</p>
+                <p class="mb-1">{{ billingForm.get('email')?.value }}</p>
+                <p class="mb-1" *ngIf="billingForm.get('phone')?.value">{{ billingForm.get('phone')?.value }}</p>
+              </div>
+              <div class="col-md-6">
+                <p class="mb-1">{{ billingForm.get('address1')?.value }}</p>
+                <p class="mb-1" *ngIf="billingForm.get('address2')?.value">{{ billingForm.get('address2')?.value }}</p>
+                <p class="mb-1">
+                  {{ billingForm.get('city')?.value }}, {{ billingForm.get('state')?.value }} {{ billingForm.get('zipCode')?.value }}
+                </p>
+                <p class="mb-1">{{ billingForm.get('country')?.value }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="payment-summary mb-4">
+            <h6 class="fw-bold mb-3">Payment Method</h6>
+            <div class="d-flex align-items-center">
+              <div class="payment-icon me-3">
+                <i class="bi" [ngClass]="
+                  paymentMethod === 'credit-card' ? 'bi-credit-card' :
+                  paymentMethod === 'paypal' ? 'bi-paypal' : 'bi-bank'
+                "></i>
+              </div>
+              <div>
+                <p class="mb-0 fw-bold">
+                  {{
+                    paymentMethod === 'credit-card' ? 'Credit Card' :
+                      paymentMethod === 'paypal' ? 'PayPal' : 'Bank Transfer'
+                  }}
+                </p>
+                <p class="mb-0 small" *ngIf="paymentMethod === 'credit-card'">
+                  **** **** **** {{ paymentForm.get('cardNumber')?.value?.slice(-4) }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="terms-conditions mb-4">
+            <div class="form-check">
+              <input type="checkbox" id="agreeTerms" class="form-check-input">
+              <label class="form-check-label" for="agreeTerms">
+                I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between py-3">
+          <button type="button" class="btn btn-outline-secondary" (click)="prevStep()">
+            <i class="bi bi-arrow-left me-2"></i>Back to Payment
+          </button>
+          <button type="button" class="btn btn-primary" (click)="submitOrder()" [disabled]="isSubmitting">
+            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            {{ isSubmitting ? 'Processing...' : 'Place Order' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Order Summary -->
+    <div class="col-lg-4">
+      <div class="card shadow order-summary">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 fw-bold">Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal</span>
+            <span>${{ formatCurrency(subtotal) }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Tax (8%)</span>
+            <span>${{ formatCurrency(tax) }}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between mb-3 fw-bold">
+            <span>Total</span>
+            <span class="text-primary">${{ formatCurrency(total) }}</span>
+          </div>
+
+          <!-- Promo Code -->
+          <div class="promo-code mb-3">
+            <label for="promoCode" class="form-label">Promo Code</label>
+            <div class="input-group">
+              <input type="text" id="promoCode" class="form-control" placeholder="Enter promo code">
+              <button class="btn btn-outline-primary" type="button">Apply</button>
+            </div>
+          </div>
+
+          <!-- Secure Checkout Notice -->
+          <div class="secure-checkout text-center mt-4">
+            <div class="d-flex justify-content-center mb-2">
+              <i class="bi bi-lock-fill me-2 text-success"></i>
+              <span class="fw-bold">Secure Checkout</span>
+            </div>
+            <p class="small text-muted mb-0">
+              Your payment information is encrypted and secure.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

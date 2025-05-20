@@ -1,0 +1,332 @@
+<div class="speaker-detail-container">
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Chargement des informations...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="error">
+    <p>{{ error }}</p>
+    <button (click)="loadSpeakerDetails()">Réessayer</button>
+  </div>
+
+  <!-- Speaker Header Section -->
+  <div class="speaker-header" *ngIf="!loading && !error">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-3">
+          <div class="speaker-avatar">
+            <div class="avatar-container">
+              <img src="{{ speaker.avatar || '/assets/img/avatar men.png' }}" alt="{{ speaker.name }}">
+              <div class="online-indicator"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="speaker-info">
+            <h1 class="speaker-name">{{ speaker.name }}</h1>
+            <h2 class="speaker-title">{{ speaker.title }}</h2>
+
+            <div class="speaker-rating">
+              <div class="stars">
+                <span *ngFor="let star of getStarArray(speaker.rating)" class="star">
+                  <span *ngIf="star === 1" class="full-star">★</span>
+                  <span *ngIf="star === 0.5" class="half-star">★</span>
+                  <span *ngIf="star === 0" class="empty-star">☆</span>
+                </span>
+              </div>
+              <span class="rating-value">{{ speaker.rating }}/5</span>
+              <span class="reviews-count">({{ speaker.projectsCompleted }} avis)</span>
+            </div>
+
+            <div class="speaker-languages">
+              <span class="label">Langues:</span>
+              <div class="language-badges">
+                <div *ngFor="let language of speaker.languages" class="language-badge">
+                  <div class="flag flag-{{ language.flag }}"></div>
+                  <span>{{ language.name }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="action-buttons">
+            <button class="btn-contact" (click)="contactSpeaker()">Contacter</button>
+            <button class="btn-hire" (click)="hireSpeaker()">Engager</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Section -->
+  <div class="main-content" *ngIf="!loading && !error">
+    <div class="container">
+      <div class="row">
+        <!-- Left Column - Speaker Details -->
+        <div class="col-md-8">
+          <!-- Tabs Navigation -->
+          <div class="content-tabs">
+            <button
+              class="tab-button"
+              [class.active]="activeTab === 'samples'"
+              (click)="setActiveTab('samples')">
+              Échantillons
+            </button>
+            <button
+              class="tab-button"
+              [class.active]="activeTab === 'about'"
+              (click)="setActiveTab('about')">
+              À propos
+            </button>
+            <button
+              class="tab-button"
+              [class.active]="activeTab === 'reviews'"
+              (click)="setActiveTab('reviews')">
+              Avis
+            </button>
+          </div>
+
+          <!-- Samples Tab Content -->
+          <div class="tab-content" *ngIf="activeTab === 'samples'">
+            <h3 class="section-title">Échantillons de voix</h3>
+
+            <!-- Current Playing Sample -->
+            <div class="current-sample" *ngIf="currentSample">
+              <div class="sample-player">
+                <div class="player-header">
+                  <div class="sample-info">
+                    <h4>{{ currentSample.title }}</h4>
+                    <p>{{ currentSample.description }}</p>
+                  </div>
+                  <div class="sample-category">{{ currentSample.category }}</div>
+                </div>
+
+                <div class="player-controls">
+                  <button class="play-pause-btn" (click)="isPlaying ? pauseSample() : playSample(currentSample)">
+                    <div [class]="isPlaying ? 'pause-icon' : 'play-icon'"></div>
+                  </button>
+
+                  <div class="progress-container">
+                    <div class="progress-bar">
+                      <div class="progress-fill" [style.width]="progressPercent + '%'"></div>
+                      <div class="progress-handle"></div>
+                    </div>
+                    <div class="time-display">
+                      <span class="current-time">{{ currentTime }}</span>
+                      <span class="total-time">{{ currentSample.duration }}</span>
+                    </div>
+                  </div>
+
+                  <div class="volume-control">
+                    <div class="volume-icon"></div>
+                    <div class="volume-slider">
+                      <div class="volume-fill" [style.width]="volumePercent + '%'"></div>
+                      <div class="volume-handle"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- No Samples Message -->
+            <div class="no-samples-message" *ngIf="speaker.samples.length === 0">
+              <p>Aucun échantillon audio disponible pour ce narrateur.</p>
+            </div>
+
+            <!-- Sample List -->
+            <div class="samples-list" *ngIf="speaker.samples.length > 0">
+              <div
+                *ngFor="let sample of speaker.samples"
+                class="sample-card"
+                [class.active]="currentSample?.id === sample.id"
+                (click)="playSample(sample)">
+
+                <div class="sample-card-content">
+                  <div class="sample-icon">
+                    <div class="play-icon"></div>
+                  </div>
+
+                  <div class="sample-details">
+                    <h4 class="sample-title">{{ sample.title }}</h4>
+                    <p class="sample-description">{{ sample.description }}</p>
+                  </div>
+
+                  <div class="sample-meta">
+                    <span class="sample-duration">{{ sample.duration }}</span>
+                    <span class="sample-category-tag">{{ sample.category }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- About Tab Content -->
+          <div class="tab-content" *ngIf="activeTab === 'about'">
+            <h3 class="section-title">À propos</h3>
+
+            <div class="about-content">
+              <div class="biography">
+                <h4>Biographie</h4>
+                <p>{{ speaker.biography }}</p>
+              </div>
+
+              <div class="specialties">
+                <h4>Spécialités</h4>
+                <div class="specialty-tags">
+                  <span *ngFor="let specialty of speaker.specialties" class="specialty-tag">
+                    {{ specialty }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="languages-detail">
+                <h4>Langues</h4>
+                <div class="language-list">
+                  <div *ngFor="let language of speaker.languages" class="language-item">
+                    <div class="language-name">
+                      <div class="flag flag-{{ language.flag }}"></div>
+                      <span>{{ language.name }}</span>
+                    </div>
+                    <div class="language-proficiency">
+                      <span class="proficiency-dots">{{ getProficiencyLevel(language.proficiency) }}</span>
+                      <span class="proficiency-label">
+                        {{ language.proficiency === 5 ? 'Natif' :
+                        language.proficiency === 4 ? 'Courant' :
+                          language.proficiency === 3 ? 'Intermédiaire' :
+                            language.proficiency === 2 ? 'Basique' : 'Débutant' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews Tab Content -->
+          <div class="tab-content" *ngIf="activeTab === 'reviews'">
+            <h3 class="section-title">Avis des clients</h3>
+
+            <div class="reviews-summary">
+              <div class="rating-summary">
+                <div class="big-rating">{{ speaker.rating }}</div>
+                <div class="stars big-stars">
+                  <span *ngFor="let star of getStarArray(speaker.rating)" class="star">
+                    <span *ngIf="star === 1" class="full-star">★</span>
+                    <span *ngIf="star === 0.5" class="half-star">★</span>
+                    <span *ngIf="star === 0" class="empty-star">☆</span>
+                  </span>
+                </div>
+                <div class="reviews-count">{{ speaker.projectsCompleted }} avis</div>
+              </div>
+
+              <div class="rating-breakdown">
+                <div class="rating-bar">
+                  <span class="rating-label">5 étoiles</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85%"></div>
+                  </div>
+                  <span class="rating-percent">85%</span>
+                </div>
+                <div class="rating-bar">
+                  <span class="rating-label">4 étoiles</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 12%"></div>
+                  </div>
+                  <span class="rating-percent">12%</span>
+                </div>
+                <div class="rating-bar">
+                  <span class="rating-label">3 étoiles</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 3%"></div>
+                  </div>
+                  <span class="rating-percent">3%</span>
+                </div>
+                <div class="rating-bar">
+                  <span class="rating-label">2 étoiles</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                  </div>
+                  <span class="rating-percent">0%</span>
+                </div>
+                <div class="rating-bar">
+                  <span class="rating-label">1 étoile</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                  </div>
+                  <span class="rating-percent">0%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reviews would go here - simplified for brevity -->
+            <div class="reviews-list">
+              <p class="text-center">Les avis détaillés seraient affichés ici</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Sidebar -->
+        <div class="col-md-4">
+          <!-- Stats Card -->
+          <div class="sidebar-card stats-card">
+            <h3 class="card-title">Statistiques</h3>
+
+            <div class="stats-item">
+              <div class="stats-icon projects-icon"></div>
+              <div class="stats-content">
+                <div class="stats-value">{{ speaker.projectsCompleted }}</div>
+                <div class="stats-label">Projets réalisés</div>
+              </div>
+            </div>
+
+            <div class="stats-item">
+              <div class="stats-icon satisfaction-icon"></div>
+              <div class="stats-content">
+                <div class="stats-value">{{ speaker.clientSatisfaction }}%</div>
+                <div class="stats-label">Satisfaction client</div>
+              </div>
+            </div>
+
+            <div class="stats-item">
+              <div class="stats-icon response-icon"></div>
+              <div class="stats-content">
+                <div class="stats-value">{{ speaker.responseTime }}</div>
+                <div class="stats-label">Temps de réponse</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pricing Card -->
+          <div class="sidebar-card pricing-card">
+            <h3 class="card-title">Tarifs</h3>
+
+            <div class="pricing-item">
+              <div class="pricing-label">Tarif horaire</div>
+              <div class="pricing-value">{{ speaker.pricing.currency }}{{ speaker.pricing.hourlyRate }}</div>
+            </div>
+
+            <div class="pricing-item">
+              <div class="pricing-label">Projet minimum</div>
+              <div class="pricing-value">{{ speaker.pricing.currency }}{{ speaker.pricing.minimumProject }}</div>
+            </div>
+
+            <div class="pricing-note" *ngIf="speaker.pricing.discountPackages">
+              <div class="note-icon"></div>
+              <div class="note-text">Remises disponibles pour les projets volumineux</div>
+            </div>
+          </div>
+
+          <!-- Back to Speakers List -->
+          <div class="sidebar-card back-card">
+            <button class="btn-back" (click)="goBackToSpeakers()">
+              <span class="back-icon">←</span> Retour à la liste des narrateurs
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

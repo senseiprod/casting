@@ -1,0 +1,466 @@
+/* Stat Cards */
+.stat-card {
+  border-left: 0.25rem solid;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.stat-card.primary {
+  border-left-color: #CB1025;
+}
+
+.stat-card.success {
+  border-left-color: #198754;
+}
+
+.stat-card.warning {
+  border-left-color: #ffc107;
+}
+
+.stat-card.info {
+  border-left-color: #0dcaf0;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  opacity: 0.3;
+}
+
+/* Transaction Items */
+.transaction-item {
+  padding: 1rem;
+  border-bottom: 1px solid #e3e6f0;
+  transition: background-color 0.2s;
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.transaction-item:hover {
+  background-color: #f8f9fc;
+}
+
+.transaction-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  color: white;
+}
+
+.transaction-icon i {
+  font-size: 1rem;
+}
+
+/* Progress Bars */
+.progress {
+  height: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: #eaecf4;
+}
+
+.progress-bar {
+  background-color: #CB1025;
+}
+
+/* Payment Method Cards */
+.payment-method-card {
+  padding: 1rem;
+  border: 1px solid #e3e6f0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-method-card:hover {
+  background-color: #f8f9fc;
+}
+
+.payment-method-card.active {
+  border-color: #CB1025;
+  background-color: rgba(203, 16, 37, 0.05);
+}
+
+.payment-method-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: rgba(203, 16, 37, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.payment-method-icon i {
+  font-size: 1.25rem;
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark Mode Support */
+body.dark-mode .stat-card {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .h5,
+body.dark-mode .fw-bold {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .transaction-item:hover,
+body.dark-mode .payment-method-card:hover {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .payment-method-card.active {
+  background-color: rgba(203, 16, 37, 0.15);
+}
+
+body.dark-mode .progress {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .chart-area .bg-light,
+body.dark-mode .chart-pie .bg-light {
+  background-color: #2d2d2d !important;
+}
+
+body.dark-mode .text-dark {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .text-muted {
+  color: #aaa !important;
+}
+
+body.dark-mode .table {
+  color: #e0e0e0;
+}
+
+body.dark-mode .table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+/* Main Content Styles */
+.content {
+  margin-left: 280px;
+  padding-top: 70px;
+  margin-top:60px;
+  background: linear-gradient(180deg, rgb(244, 247, 251) 0%, rgb(244, 247, 251) 100%);
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  min-height: 100vh;
+  transition: all 0.3s;
+}
+/* Header Styles */
+.topbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 280px;
+  height: 70px;
+  background-color: white;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  z-index: 999;
+  transition: all 0.3s;
+  padding: 0 1.5rem;
+}
+
+.topbar-divider {
+  width: 0;
+  border-right: 1px solid var(--border-color);
+  height: calc(70px - 2rem);
+  margin: auto 1rem;
+}
+
+.profile-pic {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #CB1025;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-card {
+  border-left: 0.25rem solid;
+  overflow: hidden;
+}
+
+.stat-card.primary {
+  border-left-color: #CB1025;
+}
+
+.stat-card.success {
+  border-left-color: #28a745;
+}
+
+.stat-card.warning {
+  border-left-color: #ffc107;
+}
+
+.stat-card.info {
+  border-left-color: #36b9cc;
+}
+
+.stat-card .text-xs {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.stat-card .stat-icon {
+  font-size: 2.5rem;
+  opacity: 0.3;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Table Styles */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table th {
+  font-weight: 600;
+  background-color: #f8f9fc;
+  border-top: none;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #A00D1E;
+  border-color: #A00D1E;
+}
+
+.btn-outline-primary {
+  color: #CB1025;
+  border-color: #CB1025;
+}
+
+.btn-outline-primary:hover {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .content, .topbar {
+    margin-left: 0;
+    left: 0;
+  }
+
+  .content.sidebar-open, .topbar.sidebar-open {
+    margin-left: 280px;
+  }
+
+  .topbar.sidebar-open {
+    left: 280px;
+  }
+}
+
+/* Utility Classes */
+.text-primary { color: #CB1025 !important; }
+.text-success { color: #28a745 !important; }
+.text-warning { color: #ffc107 !important; }
+.text-danger { color: #dc3545 !important; }
+.text-dark { color: #343a40 !important; }
+.bg-primary { background-color:#CB1025 !important; }
+.bg-gradient-primary {
+  background: linear-gradient(180deg, #CB1025 0%, #A00D1E 100%) !important;
+}
+.border-primary { border-color: #CB1025 !important; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CB1025;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A00D1E;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Transaction Styles */
+.transaction-item {
+  padding: 1rem;
+  border-left: 3px solid;
+  background-color: #fff;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: transform 0.2s;
+}
+
+.transaction-item:hover {
+  transform: translateX(5px);
+}
+
+.transaction-item.income {
+  border-left-color: #28a745;
+}
+
+.transaction-item.expense {
+  border-left-color: #dc3545;
+}
+
+.transaction-item.pending {
+  border-left-color: #ffc107;
+}
+
+.transaction-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-right: 1rem;
+}
+
+.transaction-icon.bg-success {
+  background-color: #28a745;
+}
+
+.transaction-icon.bg-danger {
+  background-color: #dc3545;
+}
+
+.transaction-icon.bg-warning {
+  background-color: #ffc107;
+}
+
+/* Progress bar styles */
+.progress {
+  height: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 1rem;
+}
+
+.progress-bar {
+  background-color: #CB1025;
+}
+
+/* Chart Styles */
+.chart-area {
+  height: 20rem;
+  position: relative;
+}
+
+.chart-pie {
+  height: 15rem;
+  position: relative;
+}
+
+/* Payment Method Card */
+.payment-method-card {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.payment-method-card:hover {
+  border-color: #CB1025;
+}
+
+.payment-method-card.active {
+  border-color: #CB1025;
+  background-color: rgba(203, 16, 37, 0.05);
+}
+
+.payment-method-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fc;
+  border-radius: 0.5rem;
+  margin-right: 1rem;
+  font-size: 1.5rem;
+}

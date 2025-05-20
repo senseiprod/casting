@@ -1,0 +1,191 @@
+<div class="row">
+  <div class="col-lg-8">
+    <div class="booking-form-container card">
+      <h2 class="section-title">Réservez votre séance</h2>
+
+      <!-- Availability checking indicator -->
+      <div *ngIf="isCheckingAvailability" class="availability-checking">
+        <div class="spinner-border spinner-border-sm" role="status">
+          <span class="visually-hidden">Vérification de la disponibilité...</span>
+        </div>
+        <span class="ms-2">Vérification des disponibilités...</span>
+      </div>
+
+      <!-- Success message -->
+      <div *ngIf="submissionSuccess" class="alert alert-success">
+        <i class="bi bi-check-circle me-2"></i>
+        Votre réservation a été confirmée avec succès ! Vous recevrez bientôt un email de confirmation.
+      </div>
+
+      <!-- Error message -->
+      <div *ngIf="submissionError" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ submissionError }}
+      </div>
+
+      <form [formGroup]="bookingForm" class="booking-form-full" (ngSubmit)="submitReservation()">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Prénom</label>
+            <input type="text" class="form-control" formControlName="firstName" placeholder="Votre prénom"
+                   [class.is-invalid]="isInvalidAndTouched('firstName')">
+            <div class="invalid-feedback" *ngIf="isInvalidAndTouched('firstName')">
+              {{ getErrorMessage('firstName') }}
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Nom de famille</label>
+            <input type="text" class="form-control" formControlName="lastName" placeholder="Votre nom de famille"
+                   [class.is-invalid]="isInvalidAndTouched('lastName')">
+            <div class="invalid-feedback" *ngIf="isInvalidAndTouched('lastName')">
+              {{ getErrorMessage('lastName') }}
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Email</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="Votre adresse email"
+                   [class.is-invalid]="isInvalidAndTouched('email')">
+            <div class="invalid-feedback" *ngIf="isInvalidAndTouched('email')">
+              {{ getErrorMessage('email') }}
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Téléphone</label>
+            <input type="tel" class="form-control" formControlName="phone" placeholder="Votre numéro de téléphone"
+                   [class.is-invalid]="isInvalidAndTouched('phone')">
+            <div class="invalid-feedback" *ngIf="isInvalidAndTouched('phone')">
+              {{ getErrorMessage('phone') }}
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Type de service</label>
+            <select class="form-control" formControlName="serviceType"
+                    [class.is-invalid]="isInvalidAndTouched('serviceType')">
+              <option value="">Sélectionnez un service</option>
+              <option *ngFor="let service of services" [value]="service.id">
+                {{service.name}}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="isInvalidAndTouched('serviceType')">
+              {{ getErrorMessage('serviceType') }}
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Nombre d'heures</label>
+            <select class="form-control" formControlName="duration"
+                    [class.is-invalid]="isInvalidAndTouched('duration')">
+              <option value="2">2 heures</option>
+              <option value="4">4 heures</option>
+              <option value="8">8 heures (journée complète)</option>
+              <option value="custom">Durée personnalisée</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="isInvalidAndTouched('duration')">
+              {{ getErrorMessage('duration') }}
+            </div>
+
+            <!-- Custom duration input (shown when "custom" is selected) -->
+            <div *ngIf="bookingForm.get('duration')?.value === 'custom'" class="mt-2">
+              <input type="number" class="form-control" placeholder="Nombre d'heures" min="1" max="12"
+                     (input)="selectedDuration = 60; checkAvailability()">
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Date préférée</label>
+            <input type="date" class="form-control" formControlName="date" [min]="minDate"
+                   [class.is-invalid]="isInvalidAndTouched('date')">
+            <div class="invalid-feedback" *ngIf="isInvalidAndTouched('date')">
+              {{ getErrorMessage('date') }}
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Heure préférée</label>
+            <select class="form-control" formControlName="time"
+                    [class.is-invalid]="isInvalidAndTouched('time')">
+              <option value="">Sélectionnez une heure</option>
+              <option *ngFor="let slot of timeSlots" [value]="slot.time" [disabled]="!slot.available">
+                {{slot.time}} {{!slot.available ? '(Indisponible)' : ''}}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="isInvalidAndTouched('time')">
+              {{ getErrorMessage('time') }}
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Détails du projet</label>
+          <textarea class="form-control" formControlName="details" rows="4"
+                    placeholder="Parlez-nous de votre projet et de vos besoins spécifiques"></textarea>
+        </div>
+
+        <!-- Booking summary -->
+        <div class="booking-summary" *ngIf="selectedService && bookingForm.get('time')?.value">
+          <h4>Résumé de votre réservation</h4>
+          <div class="summary-details">
+            <div class="summary-item">
+              <span class="summary-label">Service:</span>
+              <span class="summary-value">{{ selectedService.name }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Date:</span>
+              <span class="summary-value">{{ bookingForm.get('date')?.value | date:'longDate' }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Heure:</span>
+              <span class="summary-value">{{ bookingForm.get('time')?.value }} - {{ calculateEndTime(bookingForm.get('time')?.value, selectedDuration) }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Durée:</span>
+              <span class="summary-value">{{ selectedDuration / 60 }} heure(s)</span>
+            </div>
+            <div class="summary-item">
+<!--              <span class="summary-label">Prix estimé:</span>-->
+<!--              <span class="summary-value">{{ selectedService.price * (selectedDuration / 60) }}€</span>-->
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit-booking" [disabled]="isSubmitting">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ isSubmitting ? 'Traitement en cours...' : 'Demander une réservation' }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="booking-info sidebar-card">
+      <h3 class="card-title">Informations de réservation</h3>
+      <div class="info-content">
+        <p>Veuillez noter les informations suivantes concernant notre processus de réservation :</p>
+        <ul class="info-list">
+          <li>Les réservations sont confirmées dès réception d'un acompte de 50%</li>
+          <li>Les annulations effectuées moins de 48 heures avant la séance sont soumises à des frais d'annulation</li>
+          <li>Les séances commencent et se terminent aux heures prévues</li>
+          <li>Le temps supplémentaire, s'il est disponible, sera facturé au taux horaire standard</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-card sidebar-card">
+      <h3 class="card-title">Questions fréquemment posées</h3>
+      <div class="faq-item">
+        <h4 class="faq-question">Que dois-je apporter à ma séance ?</h4>
+        <p class="faq-answer">Apportez tous les instruments spécifiques que vous souhaitez utiliser, vos fichiers musicaux sur une clé USB ou un disque dur externe et toutes les pistes de référence qui pourraient aider à guider la session.</p>
+      </div>
+      <div class="faq-item">
+        <h4 class="faq-question">Comment me préparer à un enregistrement vocal ?</h4>
+        <p class="faq-answer">Restez hydraté, évitez les produits laitiers et les boissons froides avant l'enregistrement et apportez les paroles imprimées dans un grand format lisible.</p>
+      </div>
+      <div class="faq-item">
+        <h4 class="faq-question">Proposez-vous des musiciens de session ?</h4>
+        <p class="faq-answer">Oui, nous pouvons organiser des musiciens de studio moyennant un supplément. Veuillez en faire la demande lors de votre réservation..</p>
+      </div>
+    </div>
+  </div>
+</div>

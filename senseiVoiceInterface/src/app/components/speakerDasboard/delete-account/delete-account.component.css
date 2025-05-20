@@ -1,0 +1,70 @@
+.delete-account-container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.delete-account-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.delete-account-header h2 {
+  color: #CB1025;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.delete-account-form {
+  margin-bottom: 20px;
+}
+
+.reason-options {
+  margin-bottom: 10px;
+}
+
+.confirmation-box {
+  background-color: #f8f9fa;
+  border-left: 4px solid #CB1025;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.delete-account-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.delete-account-actions button {
+  padding: 10px 20px;
+}
+
+.form-check-input:checked {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.form-control:focus {
+  border-color: #CB1025;
+  box-shadow: 0 0 0 0.25rem rgba(203, 16, 37, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .delete-account-container {
+    padding: 20px;
+  }
+
+  .delete-account-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .delete-account-actions button {
+    width: 100%;
+  }
+}

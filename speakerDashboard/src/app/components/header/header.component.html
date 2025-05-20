@@ -1,0 +1,97 @@
+<!-- Header -->
+<header class="topbar d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center">
+    <div class="d-none d-md-flex">
+      <h5 class="mb-0 text-primary fw-bold">{{ 'dashboard.overview' | translate }}</h5>
+    </div>
+  </div>
+  <div class="language-selector">
+    <div class="dropdown">
+      <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-globe me-1"></i>
+        <span *ngIf="getCurrentLanguage() === 'en'">English</span>
+        <span *ngIf="getCurrentLanguage() === 'fr'">Français</span>
+        <span *ngIf="getCurrentLanguage() === 'es'">Español</span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+        <li><a class="dropdown-item" href="#" (click)="changeLanguage('en'); $event.preventDefault()">English</a></li>
+        <li><a class="dropdown-item" href="#" (click)="changeLanguage('fr'); $event.preventDefault()">Français</a></li>
+        <li><a class="dropdown-item" href="#" (click)="changeLanguage('es'); $event.preventDefault()">Español</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="d-flex align-items-center">
+    <div class="dropdown me-3">
+      <a href="#" class="position-relative text-dark" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell-fill fs-5"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+          3
+        </span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationsDropdown" style="min-width: 300px;">
+        <li><h6 class="dropdown-header bg-light py-2">{{ 'common.notifications' | translate }}</h6></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item d-flex align-items-center py-2" href="#">
+          <div class="me-3">
+            <div class="bg-primary text-white rounded-circle p-2">
+              <i class="bi bi-cash"></i>
+            </div>
+          </div>
+          <div>
+            <div class="small text-muted">April 12, 2023</div>
+            <span class="fw-bold">{{ 'notifications.newPayment' | translate }}</span>
+            <p class="mb-0 small">$250 from Acme Corp for commercial voiceover</p>
+          </div>
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item d-flex align-items-center py-2" href="#">
+          <div class="me-3">
+            <div class="bg-success text-white rounded-circle p-2">
+              <i class="bi bi-check2"></i>
+            </div>
+          </div>
+          <div>
+            <div class="small text-muted">April 11, 2023</div>
+            <span class="fw-bold">{{ 'notifications.recordingApproved' | translate }}</span>
+            <p class="mb-0 small">Your voice recording for TechStart Inc. was approved</p>
+          </div>
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item d-flex align-items-center py-2" href="#">
+          <div class="me-3">
+            <div class="bg-warning text-white rounded-circle p-2">
+              <i class="bi bi-exclamation"></i>
+            </div>
+          </div>
+          <div>
+            <div class="small text-muted">April 10, 2023</div>
+            <span class="fw-bold">{{ 'notifications.newRequest' | translate }}</span>
+            <p class="mb-0 small">EduLearn Platform has sent you a new voice request</p>
+          </div>
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-center small text-primary fw-bold py-2" href="#">{{ 'common.viewAll' | translate }}</a></li>
+      </ul>
+    </div>
+
+    <div class="topbar-divider"></div>
+
+    <div class="dropdown">
+      <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="d-flex align-items-center">
+          <img [src]="profilePhotoUrl || 'assets/img/images.png'" alt="Profile Photo">
+          <div class="profile-info">
+            <div class="text-white fw-bold">{{speaker.nom}}</div>
+            <div class="text-white-50 small">{{speaker.prenom}}</div>
+          </div>
+        </div>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" routerLink="profile"><i class="bi bi-person me-2 text-primary"></i> {{ 'common.profile' | translate }}</a></li>
+        <li><a class="dropdown-item" routerLink="setting"><i class="bi bi-gear me-2 text-primary"></i> {{ 'common.settings' | translate }}</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-box-arrow-right me-2 text-primary"></i> {{ 'common.logout' | translate }}</a></li>
+      </ul>
+    </div>
+  </div>
+</header>

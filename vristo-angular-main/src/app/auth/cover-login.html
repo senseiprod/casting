@@ -1,0 +1,211 @@
+<div class="min-h-screen w-full bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden flex items-center justify-center p-4 sm:p-6 md:p-10">
+    <!-- Background elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <img src="/assets/images/auth/bg-gradient.png" alt="" class="absolute inset-0 h-full w-full object-cover opacity-40" />
+      <div class="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-rose-900/30 mix-blend-multiply"></div>
+
+      <!-- Animated background elements -->
+      <div class="absolute top-0 left-0 w-full h-full">
+        <img src="/assets/images/auth/coming-soon-object2.png" alt="" class="absolute left-[5%] top-[5%] h-32 md:h-40 opacity-60 animate-float" />
+        <img src="/assets/images/auth/coming-soon-object3.png" alt="" class="absolute right-[5%] top-[10%] h-[200px] md:h-[300px] opacity-60 animate-float-delay" />
+        <img src="/assets/images/auth/polygon-object.svg" alt="" class="absolute bottom-[5%] right-[15%] opacity-60 animate-pulse" />
+      </div>
+    </div>
+
+    <!-- Main card container -->
+    <div class="w-full max-w-6xl relative z-10 flex flex-col lg:flex-row rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-sm bg-white/10 dark:bg-black/20">
+
+      <!-- Left side branding panel -->
+      <div class="w-full lg:w-5/12 bg-gradient-to-br from-rose-600 to-black relative overflow-hidden">
+        <!-- Overlay pattern -->
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.2)_0%,rgba(0,0,0,0)_70%)]"></div>
+
+        <!-- Logo container -->
+        <div class="relative h-full flex flex-col items-center justify-center p-8 lg:p-12">
+          <a routerLink="/" class="block w-64 lg:w-72 mb-6 transform transition-all duration-500 hover:scale-105">
+            <img src="assets/images/DOC LOGO  PNG/CASTINGVOIXOFF_Plan de travail 1 copie 2.png" alt="Logo"
+                 class="w-full drop-shadow-[0_5px_15px_rgba(255,255,255,0.5)]" />
+          </a>
+
+          <!-- Decorative elements -->
+          <div class="w-24 h-1 bg-white/30 rounded-full mb-8"></div>
+
+          <!-- Tagline -->
+          <p class="text-white/80 text-center text-lg font-light max-w-xs"> {{ 'Secure admin portal for managing your voice casting platform' | translate }}</p>
+        </div>
+
+        <!-- Mobile logo (visible on small screens) -->
+        <div class="absolute top-4 left-4 lg:hidden">
+          <a routerLink="/" class="block w-10">
+            <img src="/assets/images/logo.svg" alt="Logo" class="w-full drop-shadow-[0_2px_5px_rgba(255,255,255,0.5)]" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Right side login form -->
+      <div class="w-full lg:w-7/12 p-6 sm:p-10 flex flex-col">
+        <!-- Top bar with language selector -->
+        <div class="flex justify-end mb-6">
+          <div class="dropdown">
+            <div hlMenu>
+              <button
+                type="button"
+                hlMenuButton
+                class="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-2 text-white/90 hover:bg-white/20 transition-all duration-300"
+              >
+                <div>
+                  <img
+                    [src]="'/assets/images/flags/'+ store.locale.toUpperCase() + '.svg'"
+                    alt="language"
+                    class="h-5 w-5 rounded-full object-cover"
+                  />
+                </div>
+                <div class="text-sm font-medium uppercase">{{ store.locale }}</div>
+                <span class="shrink-0">
+                  <icon-caret-down />
+                </span>
+              </button>
+              <ul
+                *hlMenuItems
+                @toggleAnimation
+                class="top-11 grid w-[280px] grid-cols-2 gap-2 !px-2 font-medium text-slate-700 ltr:-right-14 rtl:-left-14 sm:ltr:-right-2 sm:rtl:-left-2 dark:text-white-dark/90"
+              >
+                <li *ngFor="let item of store.languageList">
+                  <button
+                    *hlMenuItem="let menuItem"
+                    type="button"
+                    class="w-full transition-colors duration-300 hover:text-rose-500"
+                    [ngClass]="{ 'bg-rose-500/10 text-rose-500': translate.currentLang === item.code }"
+                    (click)="changeLanguage(item)"
+                  >
+                    <img
+                      class="h-5 w-5 rounded-full object-cover"
+                      [src]="'/assets/images/flags/'+ item.code.toUpperCase() + '.svg'"
+                      alt=""
+                    />
+                    <span class="ltr:ml-3 rtl:mr-3">{{ item.name }}</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Login form container -->
+        <div class="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
+          <!-- Header -->
+          <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-3">
+              <span class="inline-block bg-gradient-to-r from-rose-500 to-white bg-clip-text text-transparent">{{ 'admin_login' | translate }}</span>
+            </h1>
+            <p class="text-white/70 text-sm">{{ 'Enter your credentials to access your account' | translate }}</p>
+          </div>
+
+          <!-- Form -->
+          <form class="space-y-5" (ngSubmit)="onSignIn()">
+            <!-- Email field -->
+            <div class="group">
+              <label for="Email" class="block mb-2 text-sm font-medium text-white/80">{{ 'Email_adress' | translate }}</label>
+              <div class="relative group">
+                <input
+                  id="Email"
+                  type="email"
+                  [(ngModel)]="signinData.email"
+                  name="email"
+                  placeholder="{{ 'enter your email' | translate }}"
+                  class="w-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-3.5 pl-12 text-white placeholder:text-white/40
+                         focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/20 transition-all duration-300"
+                  required
+                />
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400 text-lg">
+                  <icon-mail [fill]="true" />
+                </span>
+              </div>
+            </div>
+
+            <!-- Password field -->
+            <div class="group">
+              <label for="Password" class="block mb-2 text-sm font-medium text-white/80">{{ 'password' | translate }}</label>
+              <div class="relative group">
+                <input
+                  id="Password"
+                  type="password"
+                  [(ngModel)]="signinData.password"
+                  name="password"
+                  placeholder="{{ 'enter your password' | translate }}"
+                  class="w-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-3.5 pl-12 text-white placeholder:text-white/40
+                         focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/20 transition-all duration-300"
+                  required
+                />
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400 text-lg">
+                  <icon-lock-dots [fill]="true" />
+                </span>
+              </div>
+            </div>
+
+            <!-- Error message -->
+            <div *ngIf="errorMessage" class="text-rose-200 text-sm p-3.5 bg-rose-500/10 rounded-xl border border-rose-500/20 animate-fadeIn">
+              <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                {{ errorMessage }}
+              </span>
+            </div>
+
+            <!-- Submit button -->
+            <button
+              type="submit"
+              [disabled]="loading"
+              class="w-full py-3.5 px-4 mt-2 rounded-xl font-medium text-white uppercase tracking-wide
+                     bg-gradient-to-r from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800
+                     shadow-lg shadow-rose-500/20 hover:shadow-rose-500/30
+                     transform transition-all duration-300 hover:-translate-y-0.5 focus:ring-2 focus:ring-rose-500/50 disabled:opacity-70"
+            >
+              <span class="flex items-center justify-center gap-2">
+                <span *ngIf="loading" class="inline-block h-5 w-5 animate-spin rounded-full border-3 border-white border-t-transparent"></span>
+                {{ loading ? ('signing in...' | translate) : ('signin' | translate) }}
+              </span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center">
+          <p class="text-white/50 text-sm">© {{ currYear }} CastigVoixOff All Rights Reserved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Add these animations to your global styles or component styles */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    @keyframes float-delay {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .animate-float-delay {
+      animation: float-delay 7s ease-in-out infinite;
+    }
+
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+  </style>

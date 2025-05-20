@@ -1,0 +1,244 @@
+<main class="content p-4 fade-in">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-dark fw-bold">{{ 'DASHBOARD.TITLE' | translate }}</h1>
+    <div class="d-flex align-items-center">
+      <div class="dark-mode-toggle me-3" (click)="toggleDarkMode()" title="Toggle Dark Mode">
+        <i class="bi" [ngClass]="isDarkMode ? 'bi-sun' : 'bi-moon'"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">{{ 'DASHBOARD.LOADING' | translate }}</span>
+    </div>
+    <p class="mt-2">{{ 'DASHBOARD.LOADING' | translate }}</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadData()">{{ 'DASHBOARD.RETRY' | translate }}</button>
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <!-- Stats Cards -->
+    <div class="row">
+      <div *ngFor="let card of statCards" class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card {{card.color}} h-100">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col">
+                <div class="text-xs fw-bold text-{{card.color}} text-uppercase mb-1">
+                  {{card.title}}
+                </div>
+                <div class="h5 mb-0 fw-bold text-dark">{{card.value}}</div>
+                <div *ngIf="card.subtext" class="small mt-2" [ngClass]="{'text-success': card.isUp, 'text-danger': card.isUp === false, 'text-muted': card.isUp === undefined}">
+                  <i *ngIf="card.isUp !== undefined" class="bi" [ngClass]="card.isUp ? 'bi-arrow-up' : 'bi-arrow-down'"></i>
+                  {{card.subtext}}
+                  <span *ngIf="card.percentage !== undefined" class="ms-1">({{card.percentage}}%)</span>
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="bi {{card.icon}} stat-icon text-{{card.color}}"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity and Stats Row -->
+    <div class="row">
+      <!-- Recent Activity -->
+      <div class="col-xl-8 col-lg-7 mb-4">
+        <div class="card shadow h-100">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 fw-bold text-primary">{{ 'DASHBOARD.RECENT_ACTIVITY' | translate }}</h6>
+            <a href="#" class="btn btn-sm btn-outline-primary">{{ 'DASHBOARD.VIEW_ALL' | translate }}</a>
+          </div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+              <div *ngFor="let activity of recentActivities" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <div class="activity-icon bg-{{activity.color}} text-white me-3">
+                      <i class="bi {{activity.icon}}"></i>
+                    </div>
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <h6 class="mb-0">{{activity.title}}</h6>
+                        <span *ngIf="activity.status" class="badge bg-{{activity.statusColor}} ms-2">{{activity.status}}</span>
+                      </div>
+                      <p class="mb-0 text-muted small">{{activity.subtitle}}</p>
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <div *ngIf="activity.amount" class="fw-bold" [ngClass]="{'text-success': activity.color === 'success', 'text-danger': activity.color === 'danger'}">
+                      {{activity.amount}}
+                    </div>
+                    <small class="text-muted">{{activity.date}}</small>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="recentActivities.length === 0" class="list-group-item text-center py-5">
+                <i class="bi bi-calendar-x fs-1 text-muted mb-3"></i>
+                <p class="mb-0">{{ 'DASHBOARD.NO_ACTIVITY' | translate }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="col-xl-4 col-lg-5 mb-4">
+        <div class="card shadow h-100">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 fw-bold text-primary">{{ 'DASHBOARD.QUICK_STATS' | translate }}</h6>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="quickStatsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-calendar3 me-1"></i> {{ 'DASHBOARD.THIS_MONTH' | translate }}
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quickStatsDropdown">
+                <li><a class="dropdown-item" href="#">{{ 'DASHBOARD.THIS_MONTH' | translate }}</a></li>
+                <li><a class="dropdown-item" href="#">{{ 'DASHBOARD.LAST_MONTH' | translate }}</a></li>
+                <li><a class="dropdown-item" href="#">{{ 'DASHBOARD.THIS_YEAR' | translate }}</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-primary fw-bold">{{ 'DASHBOARD.ACTIONS' | translate }}</span>
+                <span class="text-muted small">{{completedActions}} / {{totalActions}}</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-primary" [style.width]="(completedActions / (totalActions || 1)) * 100 + '%'" aria-valuenow="completedActions" aria-valuemin="0" aria-valuemax="totalActions"></div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-info fw-bold">{{ 'DASHBOARD.INVOICES' | translate }}</span>
+                <span class="text-muted small">{{totalFactures - pendingFactures}} / {{totalFactures}}</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-info" [style.width]="((totalFactures - pendingFactures) / (totalFactures || 1)) * 100 + '%'" aria-valuenow="totalFactures - pendingFactures" aria-valuemin="0" aria-valuemax="totalFactures"></div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-warning fw-bold">{{ 'DASHBOARD.REQUESTS' | translate }}</span>
+                <span class="text-muted small">{{totalDemandes - pendingDemandes}} / {{totalDemandes}}</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-warning" [style.width]="((totalDemandes - pendingDemandes) / (totalDemandes || 1)) * 100 + '%'" aria-valuenow="totalDemandes - pendingDemandes" aria-valuemin="0" aria-valuemax="totalDemandes"></div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <h6 class="fw-bold mb-3">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h6>
+              <div class="d-grid gap-2">
+                <button class="btn btn-outline-info" routerLink="invoice">
+                  <i class="bi bi-receipt me-1"></i> {{ 'DASHBOARD.CREATE_INVOICE' | translate }}
+                </button>
+                <button class="btn btn-outline-warning" routerLink="request">
+                  <i class="bi bi-file-earmark-text me-1"></i> {{ 'DASHBOARD.SUBMIT_REQUEST' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Tables Row -->
+    <div class="row">
+      <!-- Actions Table -->
+      <div class="col-xl-6 mb-4">
+        <div class="card shadow h-100">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 fw-bold text-primary">{{ 'DASHBOARD.RECENT_ACTIONS' | translate }}</h6>
+            <a href="#" class="btn btn-sm btn-outline-primary">{{ 'DASHBOARD.VIEW_ALL' | translate }}</a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>{{ 'DASHBOARD.TEXT' | translate }}</th>
+                  <th>{{ 'DASHBOARD.LANGUAGE' | translate }}</th>
+                  <th>{{ 'DASHBOARD.STATUS' | translate }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let action of actions.slice(0, 5)">
+                  <td>{{action.code}}</td>
+                  <td>{{action.text.substring(0, 30)}}{{action.text.length > 30 ? '...' : ''}}</td>
+                  <td>{{action.language}}</td>
+                  <td>
+                    <span class="badge bg-{{getActionStatusColor(action.statutAction)}}">
+                      {{getActionStatusText(action.statutAction)}}
+                    </span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="actions.length === 0" class="text-center py-4">
+              <i class="bi bi-mic-mute fs-1 text-muted mb-3"></i>
+              <p class="mb-0">{{ 'DASHBOARD.NO_ACTIONS' | translate }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions Table -->
+      <div class="col-xl-6 mb-4">
+        <div class="card shadow h-100">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 fw-bold text-primary">{{ 'DASHBOARD.RECENT_TRANSACTIONS' | translate }}</h6>
+            <a href="#" class="btn btn-sm btn-outline-primary">{{ 'DASHBOARD.VIEW_ALL' | translate }}</a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>{{ 'DASHBOARD.DATE' | translate }}</th>
+                  <th>{{ 'DASHBOARD.TYPE' | translate }}</th>
+                  <th>{{ 'DASHBOARD.AMOUNT' | translate }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let transaction of transactions.slice(0, 5)">
+                  <td>{{transaction.code}}</td>
+                  <td>{{formatDate(transaction.dateTransaction)}}</td>
+                  <td>
+                    <span class="badge" [ngClass]="transaction.montant < 0 ? 'bg-danger' : 'bg-success'">
+                      {{transaction.montant < 0 ? ('DASHBOARD.WITHDRAWAL' | translate) : ('DASHBOARD.PAYMENT' | translate)}}
+                    </span>
+                  </td>
+                  <td [ngClass]="{'text-success': transaction.montant > 0, 'text-danger': transaction.montant < 0}">
+                    {{transaction.montant}}
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="transactions.length === 0" class="text-center py-4">
+              <i class="bi bi-cash-stack fs-1 text-muted mb-3"></i>
+              <p class="mb-0">{{ 'DASHBOARD.NO_TRANSACTIONS' | translate }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

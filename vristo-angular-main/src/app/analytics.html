@@ -1,0 +1,372 @@
+<div>
+    <ul class="flex space-x-2 rtl:space-x-reverse">
+        <li>
+            <a href="javascript:;" class="text-primary hover:underline">Dashboard</a>
+        </li>
+        <li class="before:mr-2 before:content-['/'] rtl:before:ml-2">
+            <span>Analytics</span>
+        </li>
+    </ul>
+    <div class="pt-5">
+        <div class="mb-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="panel h-full sm:col-span-2 lg:col-span-1">
+                <!-- statistics -->
+                <div class="mb-5 flex items-center justify-between dark:text-white-light">
+                    <h5 class="text-lg font-semibold">{{ 'statistics' | translate }}</h5>
+                    <div hlMenu class="dropdown">
+                        <button type="button" hlMenuButton>
+                            <icon-horizontal-dots class="text-black/70 hover:!text-primary dark:text-white/70" />
+                        </button>
+                        <ul *hlMenuItems @toggleAnimation class="ltr:right-0 rtl:left-0">
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">This Week</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">Last Week</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">This Month</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">Last Month</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="grid gap-8 text-sm font-bold text-[#515365] sm:grid-cols-2">
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <div class="mb-2">{{ 'total_visits' | translate }}</div>
+                            <div class="text-lg text-[#f8538d]">0</div>
+                        </div>
+                        <div class="overflow-hidden">
+                            <apx-chart
+                                [series]="totalVisit.series"
+                                [chart]="totalVisit.chart"
+                                [stroke]="totalVisit.stroke"
+                                [colors]="totalVisit.colors"
+                                [grid]="totalVisit.grid"
+                                [tooltip]="totalVisit.tooltip"
+                                class="rounded-lg bg-white dark:bg-black"
+                            >
+                                <!-- loader -->
+                                <div class="grid min-h-[58px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08]">
+                                    <span
+                                        class="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-black !border-l-transparent dark:border-white"
+                                    ></span>
+                                </div>
+                            </apx-chart>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <div class="mb-2">{{ 'paid_visits' | translate }}</div>
+                            <div class="text-lg text-[#f8538d]">0</div>
+                        </div>
+                        <div class="overflow-hidden">
+                            <apx-chart
+                                [series]="paidVisit.series"
+                                [chart]="paidVisit.chart"
+                                [stroke]="paidVisit.stroke"
+                                [colors]="paidVisit.colors"
+                                [grid]="paidVisit.grid"
+                                [tooltip]="paidVisit.tooltip"
+                                class="rounded-lg bg-white dark:bg-black"
+                            >
+                                <!-- loader -->
+                                <div class="grid min-h-[58px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08]">
+                                    <span
+                                        class="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-black !border-l-transparent dark:border-white"
+                                    ></span>
+                                </div>
+                            </apx-chart>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel h-full">
+                <div class="mb-5 flex items-center justify-between dark:text-white-light">
+                    <h5 class="text-lg font-semibold">{{ 'expenses' | translate }}</h5>
+                    <div hlMenu class="dropdown">
+                        <button type="button" hlMenuButton>
+                            <icon-horizontal-dots class="text-black/70 hover:!text-primary dark:text-white/70" />
+                        </button>
+                        <ul *hlMenuItems @toggleAnimation class="ltr:right-0 rtl:left-0">
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">This Week</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">Last Week</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">This Month</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">Last Month</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="my-10 text-3xl font-bold text-[#e95f2b]">
+                    <span class="ltr:mr-2 rtl:ml-2">$ 0</span>
+                    <span class="text-sm text-black ltr:mr-1 rtl:ml-1 dark:text-white-light">{{'this_week' | translate}}</span>
+                    <icon-trending-up class="inline text-success" />
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="h-5 w-full overflow-hidden rounded-full bg-dark-light p-1 shadow-3xl dark:bg-dark-light/10 dark:shadow-none">
+                        <div
+                            class="relative h-full w-full rounded-full bg-gradient-to-r from-[#4361ee] to-[#805dca] before:absolute before:inset-y-0 before:m-auto before:h-2 before:w-2 before:rounded-full before:bg-white ltr:before:right-0.5 rtl:before:left-0.5"
+                            style="width: 65%"
+                        ></div>
+                    </div>
+                    <span class="ltr:ml-5 rtl:mr-5 dark:text-white-light">0%</span>
+                </div>
+            </div>
+
+            <div
+                class="panel grid h-full grid-cols-1 content-between overflow-hidden before:absolute before:-right-44 before:bottom-0 before:top-0 before:m-auto before:h-96 before:w-96 before:rounded-full before:bg-[#1937cc]"
+                style="background: linear-gradient(0deg, #00c6fb -227%, #005bea) !important"
+            >
+                <div class="z-[7] mb-16 flex items-start justify-between text-white-light">
+                    <h5 class="text-lg font-semibold">{{ 'total_balance' | translate }}</h5>
+
+                    <div class="relative whitespace-nowrap text-xl">
+                        $ 0
+                        <span class="mt-1 table rounded bg-[#4361ee] p-1 text-xs text-[#d3d3d3] ltr:ml-auto rtl:mr-auto">+ 0</span>
+                    </div>
+                </div>
+                <div class="z-10 flex items-center justify-between">
+                    <div class="flex items-center justify-between">
+                        <a
+                            href="javascript:;"
+                            class="place-content-center rounded p-1 text-white-light shadow-[0_0_2px_0_#bfc9d4] hover:bg-[#1937cc] ltr:mr-2 rtl:ml-2"
+                        >
+                            <icon-plus />
+                        </a>
+                        <a href="javascript:;" class="grid place-content-center rounded p-1 text-white-light shadow-[0_0_2px_0_#bfc9d4] hover:bg-[#1937cc]">
+                            <icon-credit-card />
+                        </a>
+                    </div>
+                    <!-- <a href="javascript:;" class="z-10 rounded p-1 text-white-light shadow-[0_0_2px_0_#bfc9d4] hover:bg-[#4361ee]"> Upgrade </a> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6 ">
+            <div class="panel h-full p-0 lg:col-span-2">
+                <div class="mb-5 flex items-start justify-between border-b border-[#e0e6ed] p-5 dark:border-[#1b2e4b] dark:text-white-light">
+                    <h5 class="text-lg font-semibold">{{ 'Unique_visitors' | translate }}</h5>
+                    <div hlMenu class="dropdown">
+                        <button type="button" hlMenuButton>
+                            <icon-horizontal-dots class="text-black/70 hover:!text-primary dark:text-white/70" />
+                        </button>
+                        <ul *hlMenuItems @toggleAnimation class="ltr:right-0 rtl:left-0">
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">View</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">Update</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" *hlMenuItem="let menuItem">Download</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- [dropShadow]="uniqueVisitor.dropShadow" -->
+                <div class="overflow-hidden">
+                    <apx-chart
+                        [series]="uniqueVisitor.series"
+                        [chart]="uniqueVisitor.chart"
+                        [dataLabels]="uniqueVisitor.dataLabels"
+                        [stroke]="uniqueVisitor.stroke"
+                        [colors]="uniqueVisitor.colors"
+                        [plotOptions]="uniqueVisitor.plotOptions"
+                        [legend]="uniqueVisitor.legend"
+                        [grid]="uniqueVisitor.grid"
+                        [xaxis]="uniqueVisitor.xaxis"
+                        [yaxis]="uniqueVisitor.yaxis"
+                        [fill]="uniqueVisitor.fill"
+                        [tooltip]="uniqueVisitor.tooltip"
+                        class="rounded-lg bg-white dark:bg-black"
+                    >
+                        <!-- loader -->
+                        <div class="grid min-h-[360px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08]">
+                            <span class="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-black !border-l-transparent dark:border-white"></span>
+                        </div>
+                    </apx-chart>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6 grid gap-6 sm:grid-cols-3 xl:grid-cols-5">
+            <div class="panel h-full sm:col-span-3 xl:col-span-2">
+                <div class="mb-5 flex items-start justify-between">
+                    <h5 class="text-lg font-semibold dark:text-white-light">{{ 'Visitors_by_browser' | translate }}</h5>
+                </div>
+                <div class="flex flex-col space-y-5">
+                    <div class="flex items-center">
+                        <div class="h-9 w-9">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-primary dark:text-white-light">
+                                <icon-chrome class="h-5 w-5" />
+                            </div>
+                        </div>
+                        <div class="w-full flex-initial px-3">
+                            <div class="w-summary-info mb-1 flex justify-between font-semibold text-white-dark">
+                                <h6>Chrome</h6>
+                                <p class="text-xs ltr:ml-auto rtl:mr-auto">0%</p>
+                            </div>
+                            <div>
+                                <div class="h-5 w-full overflow-hidden rounded-full bg-dark-light p-1 shadow-3xl dark:bg-dark-light/10 dark:shadow-none">
+                                    <div
+                                        class="relative h-full w-full rounded-full bg-gradient-to-r from-[#009ffd] to-[#2a2a72] before:absolute before:inset-y-0 before:m-auto before:h-2 before:w-2 before:rounded-full before:bg-white ltr:before:right-0.5 rtl:before:left-0.5"
+                                        style="width: 65%"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="h-9 w-9">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-danger/10 text-danger dark:bg-danger dark:text-white-light">
+                                <icon-safari class="h-5 w-5" />
+                            </div>
+                        </div>
+                        <div class="w-full flex-initial px-3">
+                            <div class="w-summary-info mb-1 flex justify-between font-semibold text-white-dark">
+                                <h6>Safari</h6>
+                                <p class="text-xs ltr:ml-auto rtl:mr-auto">0%</p>
+                            </div>
+                            <div>
+                                <div class="h-5 w-full overflow-hidden rounded-full bg-dark-light p-1 shadow-3xl dark:bg-dark-light/10 dark:shadow-none">
+                                    <div
+                                        class="relative h-full w-full rounded-full bg-gradient-to-r from-[#a71d31] to-[#3f0d12] before:absolute before:inset-y-0 before:m-auto before:h-2 before:w-2 before:rounded-full before:bg-white ltr:before:right-0.5 rtl:before:left-0.5"
+                                        style="width: 40%"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="h-9 w-9">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-warning/10 text-warning dark:bg-warning dark:text-white-light">
+                                <icon-globe class="h-5 w-5" />
+                            </div>
+                        </div>
+                        <div class="w-full flex-initial px-3">
+                            <div class="w-summary-info mb-1 flex justify-between font-semibold text-white-dark">
+                                <h6>Others</h6>
+                                <p class="text-xs ltr:ml-auto rtl:mr-auto">0%</p>
+                            </div>
+                            <div>
+                                <div class="h-5 w-full overflow-hidden rounded-full bg-dark-light p-1 shadow-3xl dark:bg-dark-light/10 dark:shadow-none">
+                                    <div
+                                        class="relative h-full w-full rounded-full bg-gradient-to-r from-[#fe5f75] to-[#fc9842] before:absolute before:inset-y-0 before:m-auto before:h-2 before:w-2 before:rounded-full before:bg-white ltr:before:right-0.5 rtl:before:left-0.5"
+                                        style="width: 25%"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel h-full p-0">
+                <div class="flex p-5">
+                    <div
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-primary dark:text-white-light"
+                    >
+                        <icon-users-group class="h-5 w-5" />
+                    </div>
+                    <div class="font-semibold ltr:ml-3 rtl:mr-3">
+                        <p class="text-xl dark:text-white-light">0</p>
+                        <h5 class="text-xs text-[#506690]">Mobile</h5>
+                    </div>
+                </div>
+                <div class="h-44 overflow-hidden">
+                    <apx-chart
+                        [series]="followers.series"
+                        [chart]="followers.chart"
+                        [stroke]="followers.stroke"
+                        [colors]="followers.colors"
+                        [grid]="followers.grid"
+                        [yaxis]="followers.yaxis"
+                        [tooltip]="followers.tooltip"
+                        class="rounded-lg bg-white dark:bg-black"
+                    >
+                        <!-- [fill]="followers.fill" -->
+                        <!-- loader -->
+                        <div class="grid min-h-[176px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08]">
+                            <span class="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-black !border-l-transparent dark:border-white"></span>
+                        </div>
+                    </apx-chart>
+                </div>
+            </div>
+
+            <div class="panel h-full p-0">
+                <div class="flex p-5">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-danger/10 text-danger dark:bg-danger dark:text-white-light">
+                        <icon-link class="h-5 w-5" />
+                    </div>
+                    <div class="font-semibold ltr:ml-3 rtl:mr-3">
+                        <p class="text-xl dark:text-white-light">0</p>
+                        <h5 class="text-xs text-[#506690]">Browser</h5>
+                    </div>
+                </div>
+                <div class="h-44 overflow-hidden">
+                    <apx-chart
+                        [series]="referral.series"
+                        [chart]="referral.chart"
+                        [stroke]="referral.stroke"
+                        [colors]="referral.colors"
+                        [grid]="referral.grid"
+                        [yaxis]="referral.yaxis"
+                        [tooltip]="referral.tooltip"
+                        class="rounded-lg bg-white dark:bg-black"
+                    >
+                        <!-- [fill]="referral.fill" -->
+                        <!-- loader -->
+                        <div class="grid min-h-[176px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08]">
+                            <span class="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-black !border-l-transparent dark:border-white"></span>
+                        </div>
+                    </apx-chart>
+                </div>
+            </div>
+
+            <div class="panel h-full p-0">
+                <div class="flex p-5">
+                    <div
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-success/10 text-success dark:bg-success dark:text-white-light"
+                    >
+                        <icon-chat-dots class="h-5 w-5" />
+                    </div>
+                    <div class="font-semibold ltr:ml-3 rtl:mr-3">
+                        <p class="text-xl dark:text-white-light">0</p>
+                        <h5 class="text-xs text-[#506690]">Desktop</h5>
+                    </div>
+                </div>
+                <div class="h-44 overflow-hidden">
+                    <apx-chart
+                        [series]="engagement.series"
+                        [chart]="engagement.chart"
+                        [stroke]="engagement.stroke"
+                        [colors]="engagement.colors"
+                        [grid]="engagement.grid"
+                        [yaxis]="engagement.yaxis"
+                        [tooltip]="engagement.tooltip"
+                        class="rounded-lg bg-white dark:bg-black"
+                    >
+                        <!-- [fill]="engagement.fill" -->
+                        <!-- loader -->
+                        <div class="grid min-h-[176px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08]">
+                            <span class="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-black !border-l-transparent dark:border-white"></span>
+                        </div>
+                    </apx-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

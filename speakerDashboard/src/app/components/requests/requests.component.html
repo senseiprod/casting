@@ -1,0 +1,396 @@
+<main class="content p-4">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 mb-0 text-dark fw-bold">{{ 'requestManagement.title' | translate }}</h1>
+      <p class="text-muted mb-0">{{ 'requestManagement.subtitle' | translate }}</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a  class="btn btn-primary rounded-pill px-4 d-flex align-items-center shadow-sm" (click)="toggleNewRequestForm()">
+        <i class="bi bi-plus-lg me-2"></i>{{ 'requestManagement.newRequest' | translate }}
+      </a>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading your requests data...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadDemandes()">Retry</button>
+  </div>
+
+  <!-- New Request Form -->
+  <div *ngIf="showNewRequestForm" class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 fw-bold text-primary">{{ 'requestManagement.newRequest' | translate }}</h6>
+      <button class="btn btn-sm btn-link text-primary p-0" type="button" (click)="toggleNewRequestForm()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="newRequestForm" (ngSubmit)="createNewDemande()">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="requestTitle" class="form-label">{{ 'requestManagement.modal.fields.title' | translate }}*</label>
+            <input type="text" class="form-control" id="requestTitle" formControlName="titre" placeholder="Enter request title">
+            <div *ngIf="newRequestForm.get('titre')?.invalid && newRequestForm.get('titre')?.touched" class="text-danger small mt-1">
+              Title is required
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="requestType" class="form-label">{{ 'requestManagement.table.type' | translate }}*</label>
+            <select class="form-select" id="requestType" formControlName="type">
+              <option value="support">Support Request</option>
+              <option value="commercial">Commercial</option>
+              <option value="audiobook">Audiobook</option>
+              <option value="videogame">Video Game</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="requestDescription" class="form-label">{{ 'requestManagement.table.description' | translate }}*</label>
+            <textarea class="form-control" id="requestDescription" rows="4" formControlName="description" placeholder="Provide details about your request"></textarea>
+            <div *ngIf="newRequestForm.get('description')?.invalid && newRequestForm.get('description')?.touched" class="text-danger small mt-1">
+              Description is required
+            </div>
+          </div>
+          <div class="col-12 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-secondary rounded-pill me-2" (click)="toggleNewRequestForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill" [disabled]="submitting">
+              <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              {{ submitting ? 'Submitting...' : 'Submit Request' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stats Cards Row -->
+  <div class="row">
+    <!-- Total Requests -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card stat-card primary h-100">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <div class="text-xs text-primary text-uppercase mb-1">
+                {{ 'requestManagement.stats.totalRequests' | translate }}
+              </div>
+              <div class="h4 mb-0 fw-bold text-dark">{{totalDemandes}}</div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-list-check stat-icon text-primary"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card stat-card warning h-100">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <div class="text-xs text-warning text-uppercase mb-1">
+                {{ 'requestManagement.stats.pendingRequests' | translate }}
+              </div>
+              <div class="h4 mb-0 fw-bold text-dark">{{pendingCount}}</div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-hourglass-split stat-icon text-warning"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approved Requests -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card stat-card success h-100">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <div class="text-xs text-success text-uppercase mb-1">
+                {{ 'requestManagement.stats.completed' | translate }}
+              </div>
+              <div class="h4 mb-0 fw-bold text-dark">{{approvedCount}}</div>
+              <div class="progress progress-sm mt-2 mb-1" *ngIf="totalDemandes > 0">
+                <div class="progress-bar bg-success" role="progressbar"
+                     [style.width.%]="(approvedCount / totalDemandes) * 100"
+                     [attr.aria-valuenow]="approvedCount" aria-valuemin="0" [attr.aria-valuemax]="totalDemandes"></div>
+              </div>
+              <div class="text-xs text-muted" *ngIf="totalDemandes > 0">
+                <span class="fw-bold">{{((approvedCount / totalDemandes) * 100).toFixed(0)}}% </span>
+                <span>approval rate</span>
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-check-circle stat-icon text-success"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rejected Requests -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card stat-card danger h-100">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <div class="text-xs text-danger text-uppercase mb-1">
+                {{ 'requestManagement.filters.rejected' | translate }}
+              </div>
+              <div class="h4 mb-0 fw-bold text-dark">{{rejectedCount}}</div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-x-circle stat-icon text-danger"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 fw-bold text-primary">Advanced Search & Filters</h6>
+      <button class="btn btn-sm btn-link text-primary p-0" type="button" (click)="toggleFilters()">
+        <i class="bi" [ngClass]="showFilters ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+      </button>
+    </div>
+    <div class="collapse" [ngClass]="{'show': showFilters}">
+      <div class="card-body">
+        <form>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="statusFilter" class="form-label">{{ 'requestManagement.filterOptions.status' | translate }}</label>
+              <select id="statusFilter" class="form-select rounded-pill">
+                <option value="" selected>{{ 'requestManagement.filterOptions.allStatuses' | translate }}</option>
+                <option value="EN_ATTENTE">{{ 'requestManagement.filterOptions.pending' | translate }}</option>
+                <option value="APPROUVEE">{{ 'requestManagement.filterOptions.approved' | translate }}</option>
+                <option value="REJETEE">{{ 'requestManagement.filterOptions.rejected' | translate }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="typeFilter" class="form-label">{{ 'requestManagement.filterOptions.type' | translate }}</label>
+              <select id="typeFilter" class="form-select rounded-pill">
+                <option value="" selected>{{ 'requestManagement.filterOptions.allTypes' | translate }}</option>
+                <option value="support">{{ 'requestManagement.filterOptions.support' | translate }}</option>
+                <option value="commercial">{{ 'requestManagement.filterOptions.commercial' | translate }}</option>
+                <option value="audiobook">{{ 'requestManagement.filterOptions.audiobook' | translate }}</option>
+                <option value="videogame">{{ 'requestManagement.filterOptions.videogame' | translate }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="dateRangeFilter" class="form-label">{{ 'requestManagement.filterOptions.dateRange' | translate }}</label>
+              <select id="dateRangeFilter" class="form-select rounded-pill">
+                <option value="all" selected>{{ 'requestManagement.filterOptions.allTime' | translate }}</option>
+                <option value="today">{{ 'requestManagement.filterOptions.today' | translate }}</option>
+                <option value="week">{{ 'requestManagement.filterOptions.week' | translate }}</option>
+                <option value="month">{{ 'requestManagement.filterOptions.month' | translate }}</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <div class="input-group">
+                <input type="text" class="form-control" [placeholder]="'requestManagement.filterOptions.searchPlaceholder' | translate">
+                <button class="btn btn-primary px-4" type="button">
+                  <i class="bi bi-search me-1"></i> {{ 'requestManagement.filterOptions.search' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="d-flex justify-content-end mt-3">
+          <button class="btn btn-outline-secondary rounded-pill me-2">{{ 'requestManagement.filterOptions.reset' | translate }}</button>
+          <button class="btn btn-primary rounded-pill">{{ 'requestManagement.filterOptions.apply' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Requests -->
+  <!-- Pending Requests -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 fw-bold text-primary">{{ 'requestManagement.pending.title' | translate }}</h6>
+      <a href="#" class="text-decoration-none text-primary small fw-medium">{{ 'requestManagement.pending.viewAll' | translate }}</a>
+    </div>
+    <div class="card-body">
+      <div *ngIf="pendingDemandes.length === 0" class="text-center py-5">
+        <i class="bi bi-hourglass fs-1 text-muted mb-3"></i>
+        <p class="mb-0">{{ 'requestManagement.pending.noPending' | translate }}</p>
+      </div>
+      <div *ngIf="pendingDemandes.length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>{{ 'requestManagement.table.requestId' | translate }}</th>
+            <th>{{ 'requestManagement.table.title' | translate }}</th>
+            <th>{{ 'requestManagement.table.type' | translate }}</th>
+            <th>{{ 'requestManagement.table.description' | translate }}</th>
+            <th>{{ 'requestManagement.table.dateCreated' | translate }}</th>
+            <th>{{ 'requestManagement.table.status' | translate }}</th>
+            <th>{{ 'requestManagement.table.actions' | translate }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let demande of pendingDemandes">
+            <td>{{demande.code}}</td>
+            <td>{{demande.titre}}</td>
+            <td>{{getTypeLabel(demande.type)}}</td>
+            <td>{{demande.description.substring(0, 30)}}{{demande.description.length > 30 ? '...' : ''}}</td>
+            <td>{{formatDate(demande.dateCreation)}}</td>
+            <td>
+              <span class="status-badge status-{{getStatusClass(demande.statut)}}">{{getStatusLabel(demande.statut)}}</span>
+            </td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-primary rounded-pill ms-1" title="{{ 'requestManagement.actions.viewDetails' | translate }}" (click)="viewDemandeDetails(demande)" data-bs-toggle="modal" data-bs-target="#requestDetailsModal">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Requests -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 fw-bold text-primary">{{ 'requestManagement.all.title' | translate }}</h6>
+      <div class="btn-group">
+        <button class="btn btn-sm btn-outline-primary active">{{ 'requestManagement.all.allButton' | translate }}</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div *ngIf="allDemandes.length === 0" class="text-center py-5">
+        <i class="bi bi-clipboard-x fs-1 text-muted mb-3"></i>
+        <p class="mb-0">{{ 'requestManagement.all.noRequests' | translate }}</p>
+      </div>
+      <div *ngIf="allDemandes.length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>{{ 'requestManagement.table.requestId' | translate }}</th>
+            <th>{{ 'requestManagement.table.title' | translate }}</th>
+            <th>{{ 'requestManagement.table.type' | translate }}</th>
+            <th>{{ 'requestManagement.table.description' | translate }}</th>
+            <th>{{ 'requestManagement.table.dateCreated' | translate }}</th>
+            <th>{{ 'requestManagement.table.status' | translate }}</th>
+            <th>{{ 'requestManagement.table.actions' | translate }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let demande of allDemandes">
+            <td>{{demande.code}}</td>
+            <td>{{demande.titre}}</td>
+            <td>{{getTypeLabel(demande.type)}}</td>
+            <td>{{demande.description.substring(0, 30)}}{{demande.description.length > 30 ? '...' : ''}}</td>
+            <td>{{formatDate(demande.dateCreation)}}</td>
+            <td>
+              <span class="status-badge status-{{getStatusClass(demande.statut)}}">{{getStatusLabel(demande.statut)}}</span>
+            </td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-primary rounded-pill" title="{{ 'requestManagement.actions.viewDetails' | translate }}" (click)="viewDemandeDetails(demande)" data-bs-toggle="modal" data-bs-target="#requestDetailsModal">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Request Details Modal -->
+<div class="modal fade" id="requestDetailsModal" tabindex="-1" aria-labelledby="requestDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold" id="requestDetailsModalLabel">
+          {{ 'requestManagement.modal.title' | translate }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedDemande">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold mb-0">{{ selectedDemande.code }}</h6>
+          <span class="status-badge status-{{ getStatusClass(selectedDemande.statut) }}">
+            {{ getStatusLabel(selectedDemande.statut) }}
+          </span>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label fw-medium">
+                {{ 'requestManagement.modal.fields.title' | translate }}
+              </label>
+              <p class="mb-0">{{ selectedDemande.titre }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-medium">
+                {{ 'requestManagement.modal.fields.type' | translate }}
+              </label>
+              <p class="mb-0">{{ getTypeLabel(selectedDemande.type) }}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label fw-medium">
+                {{ 'requestManagement.modal.fields.dateCreated' | translate }}
+              </label>
+              <p class="mb-0">{{ formatDate(selectedDemande.dateCreation) }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-medium">
+                {{ 'requestManagement.modal.fields.requestId' | translate }}
+              </label>
+              <p class="mb-0">{{ selectedDemande.uuid }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-medium">
+            {{ 'requestManagement.modal.fields.description' | translate }}
+          </label>
+          <div class="p-3 bg-light rounded">
+            <p class="mb-0">{{ selectedDemande.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">
+          {{ 'requestManagement.modal.buttons.close' | translate }}
+        </button>
+        <button *ngIf="selectedDemande?.statut === 'EN_ATTENTE'" type="button" class="btn btn-danger rounded-pill me-2"
+                (click)="rejectDemande(selectedDemande)">
+          {{ 'requestManagement.modal.buttons.reject' | translate }}
+        </button>
+        <button *ngIf="selectedDemande?.statut === 'EN_ATTENTE'" type="button" class="btn btn-primary rounded-pill"
+                (click)="acceptDemande(selectedDemande)">
+          {{ 'requestManagement.modal.buttons.accept' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

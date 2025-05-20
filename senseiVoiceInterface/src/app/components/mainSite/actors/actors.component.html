@@ -1,0 +1,218 @@
+<div class="container">
+  <!-- Main Heading -->
+  <h1 class="main-heading">DÉCOUVREZ NOS SPEAKERS PROFESSIONNELS<br>POUR TOUS VOS PROJETS AUDIO.</h1>
+
+  <!-- Description -->
+  <p class="sub-text">
+    Notre plateforme vous propose une sélection de speakers professionnels, prêts à donner vie à vos projets publicitaires, vidéos, podcasts, e-learning et plus encore.
+  </p>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <div class="search-bar">
+      <div class="dropdown">
+        <button
+          class="btn btn-secondary dropdown-toggle"
+          type="button"
+          id="languageDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">
+          {{ selectedLanguage }}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+          <li><a class="dropdown-item" (click)="selectLanguage('All language')">All language </a></li>
+          <li><a class="dropdown-item" (click)="selectLanguage('English')">English</a></li>
+          <li><a class="dropdown-item" (click)="selectLanguage('Français')">Français</a></li>
+          <li><a class="dropdown-item" (click)="selectLanguage('Español')">Español</a></li>
+          <li><a class="dropdown-item" (click)="selectLanguage('العربية')">العربية</a></li>
+        </ul>
+      </div>
+
+      <div class="search-input-container">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Rechercher par nom..."
+          [(ngModel)]="searchQuery"
+          (input)="filterSpeakersByName()"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center my-4">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2">Chargement des speakers...</p>
+  </div>
+
+  <!-- Speaker Cards Grid -->
+  <div class="speaker-grid" *ngIf="!isLoading">
+    <div *ngIf="filteredSpeakers.length === 0" class="no-results">
+      <p>Aucun speaker trouvé. Veuillez modifier vos critères de recherche.</p>
+    </div>
+
+    <div class="speaker-card" *ngFor="let speaker of filteredSpeakers">
+      <a href="speaker-details/{{speaker.uuid}}">
+      <div class="speaker-avatar">
+        <img [src]="'assets/img/avatar men.png'" alt="{{ speaker.prenom }} {{ speaker.nom }}">
+      </div>
+      </a>
+      <div class="speaker-content">
+        <div class="voice-options row">
+          <div>
+            {{ speaker.prenom }} {{ speaker.nom }}<br>
+            <span class="option-text" *ngIf="speaker.activeAnalyse">Enable text analysis</span>
+            <span class="option-text" *ngIf="!speaker.activeAnalyse">disable text analysis</span>
+          </div>
+
+          <div class="row g-3" style="margin-left:-50px">
+            <div class="col-md-6">
+              <button
+                class="voice-option-button"
+                [class.playing]="isPlaying(speaker.uuid, 'clone')"
+                [class.disabled]="!hasAudioType(speaker.uuid, 'clone') || isLoadingAudio[speaker.uuid]"
+                [disabled]="!hasAudioType(speaker.uuid, 'clone') || isLoadingAudio[speaker.uuid]"
+                (click)="playAudio(speaker, 'clone')">
+                <span class="play-icon">
+                  <i class="bi" [ngClass]="{'bi-play-fill': !isPlaying(speaker.uuid, 'clone'), 'bi-pause-fill': isPlaying(speaker.uuid, 'clone')}"></i>
+                </span>
+                <span class="option-text">clone voice</span>
+              </button>
+            </div>
+            <div class="col-md-6">
+              <button
+                class="voice-option-button"
+                [class.playing]="isPlaying(speaker.uuid, 'original')"
+                [class.disabled]="!hasAudioType(speaker.uuid, 'original') || isLoadingAudio[speaker.uuid]"
+                [disabled]="!hasAudioType(speaker.uuid, 'original') || isLoadingAudio[speaker.uuid]"
+                (click)="playAudio(speaker, 'original')">
+                <span class="play-icon">
+                  <i class="bi" [ngClass]="{'bi-play-fill': !isPlaying(speaker.uuid, 'original'), 'bi-pause-fill': isPlaying(speaker.uuid, 'original')}"></i>
+                </span>
+                <span class="option-text">original voice</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio loading indicator -->
+        <div *ngIf="isLoadingAudio[speaker.uuid]" class="audio-loading">
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Chargement audio...</span>
+          </div>
+          <span class="loading-text">Chargement des échantillons audio...</span>
+        </div>
+
+        <div class="speaker-actions">
+          <button class="reserve-button" (click)="bookSpeaker(speaker)">
+            <i class="bi bi-check-circle"></i>
+            Réserver
+          </button>
+          <a href="speakerDasboard/{{conectedUuid}}/generate-with-speaker-voice/{{speaker.uuid}}" style="text-decoration: none !important;">
+          <button class="generate-button" >
+            <i class="bi bi-gear"></i>
+            Generate
+          </button>
+            </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Reservation Modal (Integrated in the same component) -->
+  <div class="modal-overlay" *ngIf="showReservationModal" (click)="closeReservationModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Réserver un Speaker</h2>
+        <button class="close-button" (click)="closeReservationModal()">×</button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedSpeaker">
+        <div class="speaker-info">
+          <div class="speaker-avatar">
+            <img [src]="getPhoto(selectedSpeaker.uuid)" alt="{{ selectedSpeaker.prenom }} {{ selectedSpeaker.nom }}">
+          </div>
+          <div class="speaker-details">
+            <h3>{{ selectedSpeaker.prenom }} {{ selectedSpeaker.nom }}</h3>
+            <p *ngIf="selectedSpeaker.role">{{ selectedSpeaker.role }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="reservationForm" (ngSubmit)="submitReservation()">
+          <div class="form-group">
+            <label for="date">Date de réservation</label>
+            <input
+              type="date"
+              id="date"
+              formControlName="date"
+              [min]="minDate"
+              class="form-control"
+            >
+            <div class="error-message" *ngIf="reservationForm.get('date')?.invalid && reservationForm.get('date')?.touched">
+              Veuillez sélectionner une date valide.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="time">Heure de réservation</label>
+            <input
+              type="time"
+              id="time"
+              formControlName="time"
+              class="form-control"
+            >
+            <div class="error-message" *ngIf="reservationForm.get('time')?.invalid && reservationForm.get('time')?.touched">
+              Veuillez sélectionner une heure valide.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="durationMinutes">Durée d'enregistrement (minutes)</label>
+            <input
+              type="number"
+              id="durationMinutes"
+              formControlName="durationMinutes"
+              min="5"
+              max="240"
+              class="form-control"
+            >
+            <div class="error-message" *ngIf="reservationForm.get('durationMinutes')?.invalid && reservationForm.get('durationMinutes')?.touched">
+              La durée doit être entre 5 et 240 minutes.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="voiceOverType">Type de voix off</label>
+            <select
+              id="voiceOverType"
+              formControlName="voiceOverType"
+              class="form-control"
+            >
+              <option *ngFor="let type of voiceOverTypes" [value]="type.id">{{ type.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="notes">Notes supplémentaires</label>
+            <textarea
+              id="notes"
+              formControlName="notes"
+              rows="3"
+              class="form-control"
+              placeholder="Informations complémentaires pour votre réservation..."
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="cancel-button" (click)="closeReservationModal()">Annuler</button>
+            <button type="submit" class="submit-button">Confirmer la réservation</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

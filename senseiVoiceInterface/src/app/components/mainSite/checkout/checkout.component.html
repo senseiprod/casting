@@ -1,0 +1,452 @@
+<main class="content p-4 fade-in">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 mb-0 text-dark fw-bold">{{'clientDashboard.title'}}</h1>
+      <p class="text-muted mb-0">{{ 'clientDashboard.subtitle'}}</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="#" class="btn btn-outline-primary rounded-pill px-3 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#newRequestModal">
+        <i class="bi bi-plus-lg me-2"></i> {{ 'clientDashboard.newRequest'}}
+      </a>
+      <a href="#" class="btn btn-primary rounded-pill px-4 d-flex align-items-center shadow-sm" (click)="applyAsSpeaker()">
+        <i class="bi bi-mic me-2"></i> {{ 'clientDashboard.becomeSpeaker'}}
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Cards Row -->
+  <div class="row">
+    <div *ngFor="let card of statCards" class="col-xl-3 col-md-6 mb-4">
+      <div class="card stat-card {{card.color}} h-100">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <div class="text-xs text-{{card.color}} text-uppercase mb-1">
+                {{card.title}}
+              </div>
+              <div class="h4 mb-0 fw-bold text-dark">{{card.value}}</div>
+              <ng-container *ngIf="card.change">
+                <div class="text-xs text-muted mt-2">
+                  <i class="bi bi-arrow-{{card.change.direction}}-short text-{{card.change.direction === 'up' ? 'success' : 'danger'}}"></i>
+                  <span class="text-{{card.change.direction === 'up' ? 'success' : 'danger'}} fw-bold">{{card.change.value}} </span>
+                  <span>since last month</span>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="card.progress !== undefined">
+                <div class="progress progress-sm mt-2 mb-1">
+                  <div class="progress-bar bg-{{card.color}}" role="progressbar" [style.width.%]="card.progress"
+                       [attr.aria-valuenow]="card.progress" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="text-xs text-muted">
+                  <span class="fw-bold">{{card.progress}}% </span>
+                  <span>completion rate</span>
+                </div>
+              </ng-container>
+            </div>
+            <div class="col-auto">
+              <i class="bi {{card.icon}} stat-icon text-{{card.color}}"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Speaker Application Status (if exists) -->
+  <div *ngIf="speakerApplication" class="alert alert-info d-flex align-items-center mb-4" role="alert">
+    <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+    <div>
+      <h6 class="alert-heading mb-1">Speaker Application Status:
+        <span class="badge" [ngClass]="{
+          'bg-warning text-dark': speakerApplication.status === 'pending',
+          'bg-success': speakerApplication.status === 'approved',
+          'bg-danger': speakerApplication.status === 'rejected'
+        }">
+          {{speakerApplication.status | titlecase}}
+        </span>
+      </h6>
+      <p class="mb-0">Application ID: {{speakerApplication.id}} | Submitted on: {{speakerApplication.date}}</p>
+      <p class="mb-0" *ngIf="speakerApplication.notes">{{speakerApplication.notes}}</p>
+    </div>
+  </div>
+
+  <!-- Active Projects and Top Speakers -->
+  <div class="row">
+    <!-- Active Projects -->
+    <div class="col-lg-8">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 fw-bold text-primary">Active Projects</h6>
+          <a href="#" class="text-decoration-none text-primary small fw-medium">View All</a>
+        </div>
+        <div class="card-body">
+          <div *ngFor="let project of activeProjects" class="project-card mb-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center">
+                <div class="bg-{{project.speaker.bgColor}} text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                  <span class="fw-bold">{{project.speaker.initials}}</span>
+                </div>
+                <div>
+                  <h6 class="mb-0 fw-bold">{{project.title}}</h6>
+                  <div class="small text-muted">{{project.id}} • {{project.type}}</div>
+                </div>
+              </div>
+              <span class="status-badge status-{{project.status}}">{{project.status | titlecase}}</span>
+            </div>
+
+            <div class="mb-3" *ngIf="project.progress !== undefined">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="small">Progress</span>
+                <span class="small fw-bold">{{project.progress}}%</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="project.progress"
+                     [attr.aria-valuenow]="project.progress" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="small">
+                <span class="me-3"><i class="bi bi-calendar-event text-primary me-1"></i> Due: {{project.dueDate}}</span>
+                <span><i class="bi bi-cash text-success me-1"></i> Budget: ${{project.budget}}</span>
+              </div>
+              <div class="project-actions">
+                <button class="btn btn-sm btn-outline-primary rounded-pill me-1" (click)="viewProjectDetails(project)">
+                  <i class="bi bi-eye"></i> Details
+                </button>
+                <button class="btn btn-sm btn-outline-danger rounded-pill" (click)="cancelProject(project.id)">
+                  <i class="bi bi-x-circle"></i> Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="activeProjects.length === 0" class="text-center py-4">
+            <i class="bi bi-clipboard-x text-muted fs-1 mb-3"></i>
+            <p class="mb-0">You don't have any active projects.</p>
+            <p class="text-muted">Create a new request to get started.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Speakers -->
+    <div class="col-lg-4">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 fw-bold text-primary">Top Speakers</h6>
+          <a href="#" class="text-decoration-none text-primary small fw-medium">Browse All</a>
+        </div>
+        <div class="card-body">
+          <div *ngFor="let speaker of topSpeakers" class="speaker-card mb-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="bg-{{speaker.bgColor}} text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                <span class="fw-bold">{{speaker.initials}}</span>
+              </div>
+              <div>
+                <h6 class="mb-0 fw-bold">{{speaker.name}}</h6>
+                <div class="d-flex align-items-center">
+                  <div class="text-warning me-1">
+                    <i class="bi bi-star-fill"></i>
+                  </div>
+                  <span class="small fw-bold">{{speaker.rating}}</span>
+                  <span class="small text-muted ms-2">{{speaker.specialty}} Specialist</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between small text-muted mb-2">
+              <span><i class="bi bi-cash me-1"></i> {{speaker.price}}</span>
+              <span><i class="bi bi-soundwave me-1"></i> {{speaker.samples}} Samples</span>
+              <span><i class="bi bi-folder me-1"></i> {{speaker.projects}} Projects</span>
+            </div>
+
+            <button class="btn btn-sm btn-outline-primary w-100 rounded-pill" (click)="viewSpeakerProfile(speaker.id)">
+              <i class="bi bi-person me-1"></i> View Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recording Requests -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 fw-bold text-primary">Recording Requests</h6>
+      <a href="#" class="text-decoration-none text-primary small fw-medium" data-bs-toggle="modal" data-bs-target="#newRequestModal">Create New</a>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>Request ID</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Budget</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Applicants</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let request of recordingRequests">
+            <td>{{request.id}}</td>
+            <td>{{request.title}}</td>
+            <td>{{request.type}}</td>
+            <td>${{request.budget}}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <i class="bi bi-calendar-event text-primary me-1"></i>
+                {{request.dueDate}}
+              </div>
+            </td>
+            <td>
+              <span class="status-badge status-{{request.status}}">{{request.status | titlecase}}</span>
+            </td>
+            <td>
+              <span class="badge bg-primary rounded-pill">{{request.applicants}}</span>
+            </td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-primary rounded-pill me-1" title="View Details" (click)="viewRequestDetails(request.id)">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill me-1" title="Edit" (click)="editRequest(request.id)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger rounded-pill" title="Cancel" (click)="cancelRequest(request.id)">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="recordingRequests.length === 0" class="text-center py-4">
+        <i class="bi bi-clipboard-x text-muted fs-1 mb-3"></i>
+        <p class="mb-0">You don't have any recording requests.</p>
+        <p class="text-muted">Create a new request to get started.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Statistics -->
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+          <h6 class="m-0 fw-bold text-primary">Project Statistics</h6>
+          <div>
+            <select class="form-select form-select-sm">
+              <option selected>This Year</option>
+              <option>This Quarter</option>
+              <option>This Month</option>
+              <option>Last 30 Days</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="chart-area mb-4">
+                <div class="d-flex justify-content-center align-items-center h-100 bg-light rounded">
+                  <div class="text-center">
+                    <i class="bi bi-bar-chart-line fs-1 text-primary mb-3"></i>
+                    <p class="mb-0 fw-medium">Project Volume Over Time</p>
+                    <p class="text-muted small">(Chart visualization would appear here)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <h6 class="fw-bold mb-3">Project Types Distribution</h6>
+
+              <div *ngFor="let type of projectTypeDistribution" class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="small">{{type.name}}</span>
+                  <span class="small fw-bold">{{type.percentage}}%</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-{{type.color}}" [style.width.%]="type.percentage"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- New Request Modal -->
+<div class="modal fade" id="newRequestModal" tabindex="-1" aria-labelledby="newRequestModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="newRequestModalLabel">Create New Recording Request</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="requestTitle" class="form-label">Project Title</label>
+            <input type="text" class="form-control" id="requestTitle" placeholder="Enter a title for your project" [(ngModel)]="newRequest.title" name="title">
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="requestType" class="form-label">Project Type</label>
+              <select class="form-select" id="requestType" [(ngModel)]="newRequest.type" name="type">
+                <option value="Commercial">Commercial</option>
+                <option value="E-Learning">E-Learning</option>
+                <option value="Corporate">Corporate</option>
+                <option value="IVR">IVR System</option>
+                <option value="Audiobook">Audiobook</option>
+                <option value="Character">Character Voice</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="requestBudget" class="form-label">Budget ($)</label>
+              <input type="number" class="form-control" id="requestBudget" placeholder="Enter your budget" [(ngModel)]="newRequest.budget" name="budget">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="requestDueDate" class="form-label">Due Date</label>
+            <input type="date" class="form-control" id="requestDueDate" [(ngModel)]="newRequest.dueDate" name="dueDate">
+          </div>
+
+          <div class="mb-3">
+            <label for="requestDescription" class="form-label">Project Description</label>
+            <textarea class="form-control" id="requestDescription" rows="3" placeholder="Describe your project in detail" [(ngModel)]="newRequest.description" name="description"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="requestRequirements" class="form-label">Voice Requirements</label>
+            <textarea class="form-control" id="requestRequirements" rows="3" placeholder="Specify voice requirements (gender, age range, accent, tone, etc.)" [(ngModel)]="newRequest.requirements" name="requirements"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Attachments (Optional)</label>
+            <div class="input-group">
+              <input type="file" class="form-control" id="requestAttachments">
+              <button class="btn btn-outline-secondary" type="button">Upload</button>
+            </div>
+            <div class="form-text">Upload script, reference materials, or examples (Max: 10MB)</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="createRequest()">Create Request</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Project Details Modal -->
+<div class="modal fade" id="projectDetailsModal" tabindex="-1" aria-labelledby="projectDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="selectedProject">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold" id="projectDetailsModalLabel">Project Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold mb-0">{{selectedProject.id}}</h6>
+          <span class="status-badge status-{{selectedProject.status}}">{{selectedProject.status | titlecase}}</span>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label fw-medium">Project Title</label>
+              <p class="mb-0">{{selectedProject.title}}</p>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-medium">Project Type</label>
+              <p class="mb-0">{{selectedProject.type}}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label fw-medium">Speaker</label>
+              <p class="mb-0">{{selectedProject.speaker.name}}</p>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-medium">Due Date</label>
+              <p class="mb-0">{{selectedProject.dueDate}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3" *ngIf="selectedProject.progress !== undefined">
+          <label class="form-label fw-medium">Progress</label>
+          <div class="progress mb-2" style="height: 10px;">
+            <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="selectedProject.progress"
+                 [attr.aria-valuenow]="selectedProject.progress" aria-valuemin="0"
+                 [attr.aria-valuenow]="selectedProject.progress" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <div class="small text-muted">
+            <span class="fw-bold">{{selectedProject.progress}}% complete</span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-medium">Budget</label>
+          <h5 class="text-primary fw-bold">${{selectedProject.budget}}</h5>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-medium">Project Timeline</label>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-point bg-success"></div>
+              <div class="timeline-content">
+                <h6 class="mb-0">Project Started</h6>
+                <p class="small text-muted mb-0">Apr 15, 2023</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-point bg-primary"></div>
+              <div class="timeline-content">
+                <h6 class="mb-0">First Draft Submitted</h6>
+                <p class="small text-muted mb-0">Apr 20, 2023</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-point bg-warning"></div>
+              <div class="timeline-content">
+                <h6 class="mb-0">Revisions Requested</h6>
+                <p class="small text-muted mb-0">Apr 22, 2023</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-point bg-light"></div>
+              <div class="timeline-content">
+                <h6 class="mb-0">Final Delivery</h6>
+                <p class="small text-muted mb-0">Due: {{selectedProject.dueDate}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline-primary rounded-pill me-2">
+          <i class="bi bi-chat"></i> Message Speaker
+        </button>
+        <button type="button" class="btn btn-outline-danger rounded-pill" (click)="cancelProject(selectedProject.id)">
+          <i class="bi bi-x-circle"></i> Cancel Project
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,236 @@
+
+<div class="studio-page">
+  <!-- Hero Section -->
+  <section class="studio-hero">
+    <div class="hero-overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 hero-content">
+          <h1 class="hero-title">Studio d'enregistrement professionnel</h1>
+          <p class="hero-subtitle">Des équipements et des espaces acoustiques de pointe pour votre son parfait</p>
+          <div class="hero-buttons">
+            <button class="btn-book"  [ngClass]="{'active': activeTab === 'booking'}" (click)="setActiveTab('booking')">Réservez une séance</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <div class="content-tabs">
+        <button class="tab-button" [ngClass]="{'active': activeTab === 'overview'}" (click)="setActiveTab('overview')">Studio Overview</button>
+        <button class="tab-button" [ngClass]="{'active': activeTab === 'services'}" (click)="setActiveTab('services')">Services</button>
+        <button class="tab-button" [ngClass]="{'active': activeTab === 'booking'}" (click)="setActiveTab('booking')">Réservez</button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'overview'">
+        <div class="row">
+          <div class="col-lg-8">
+            <!-- Studio Introduction -->
+            <div class="studio-intro card">
+              <h2 class="section-title">Bienvenue dans notre studio</h2>
+              <div class="studio-description">
+                <p>Notre studio d’enregistrement professionnel allie technologie de pointe et conception acoustique optimisée pour offrir une qualité sonore et visuelle exceptionnelle. Spécialisés dans la production de podcasts, d’enregistrements vocaux, d’instruments et de sessions de groupe, nous mettons notre expertise et notre passion au service de votre créativité.</p>
+                <p>Équipé des dernières technologies et porté par une équipe de spécialistes, notre studio vous accompagne à chaque étape de votre projet : de l’enregistrement au montage, jusqu’à la diffusion. Que vous soyez un créateur indépendant, une entreprise ou un média, nous vous proposons un service sur-mesure, adapté à vos besoins spécifiques.</p>
+                <p>Notre mission ? Donner de la voix à vos idées en garantissant un rendu clair, percutant et immersif. Grâce à un équipement haut de gamme, une approche rigoureuse et une réactivité sans faille, nous faisons de chaque production une véritable réussite.</p>
+              </div>
+
+              <!-- Featured Image Carousel -->
+              <div class="studio-carousel">
+                <div class="carousel-container">
+                  <div class="carousel-image-container">
+                    <img [src]="galleryImages[currentImageIndex].url" [alt]="galleryImages[currentImageIndex].alt" class="carousel-image" style="height:600px ; width:800px">
+                    <div class="carousel-caption">{{galleryImages[currentImageIndex].alt}}</div>
+                  </div>
+                  <button class="carousel-control prev" (click)="prevImage()">
+                    <span class="arrow-left"></span>
+                  </button>
+                  <button class="carousel-control next" (click)="nextImage()">
+                    <span class="arrow-right"></span>
+                  </button>
+                </div>
+                <div class="carousel-thumbnails">
+                  <div *ngFor="let image of galleryImages; let i = index"
+                       class="carousel-thumbnail"
+                       [ngClass]="{'active': i === currentImageIndex}"
+                       (click)="selectImage(i)">
+                    <img [src]="image.url" [alt]="image.alt" >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Studio Features -->
+            <div class="studio-features card">
+              <h2 class="section-title">Studio Features</h2>
+              <div class="features-grid">
+                <div class="feature-item">
+                  <div class="feature-icon acoustic-icon"></div>
+                  <h3 class="feature-title">Excellence acoustique</h3>
+                  <p class="feature-description">Traitement acoustique conçu par des professionnels pour une capture et une surveillance sonore optimales.</p>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon equipment-icon"></div>
+                  <h3 class="feature-title">Équipement haut de gamme</h3>
+                  <p class="feature-description">Microphones, préamplis et équipements de traitement standard de l'industrie pour des résultats professionnels.</p>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon engineer-icon"></div>
+                  <h3 class="feature-title">Ingénieurs experts</h3>
+                  <p class="feature-description">Des ingénieurs du son expérimentés pour vous aider à obtenir le son parfait pour votre projet.</p>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon comfort-icon"></div>
+                  <h3 class="feature-title">Confort et commodités</h3>
+                  <p class="feature-description">Salon confortable, rafraîchissements et commodités pour que votre séance se déroule sans problème.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Testimonials -->
+
+          </div>
+
+          <div class="col-lg-4">
+            <!-- Quick Booking Widget -->
+            <div class="quick-booking sidebar-card">
+              <h3 class="card-title">Quick Booking</h3>
+              <div class="booking-form">
+                <div class="form-group">
+                  <label>Select Service</label>
+                  <select class="form-control">
+                    <option value="">Select a service</option>
+                    <option *ngFor="let service of services" [value]="service.name">{{service.name}} ({{service.price}})</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Select Date</label>
+                  <input type="date" class="form-control">
+                </div>
+                <div class="available-slots">
+                  <h4>Créneaux horaires disponibles</h4>
+                  <div class="slots-grid">
+                    <button *ngFor="let slot of timeSlots"
+                            class="slot-button"
+                            [ngClass]="{'available': slot.available, 'unavailable': !slot.available}"
+                            [disabled]="!slot.available"
+                            (click)="selectTimeSlot(slot)">
+                      {{slot.time}}
+                    </button>
+                  </div>
+                </div>
+                <button class="btn-book-now">Vérifier la disponibilité</button>
+              </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="contact-info sidebar-card">
+              <h3 class="card-title">Contactez-nous</h3>
+              <div class="contact-details">
+                <div class="contact-item">
+                  <div class="contact-icon location-icon"></div>
+                  <div class="contact-text">
+                    <p>9 Rue abou Moussa El Jazouli, </p>
+                    <p>1er étage N° 1, Maarif, Casablanca ,Maroc</p>
+                  </div>
+                </div>
+                <div class="contact-item">
+                  <div class="contact-icon phone-icon"></div>
+                  <div class="contact-text">
+                    <p>+2125 20 09 39 90</p>
+                      <p>+2126 64 51 75 17</p>
+                  </div>
+                </div>
+                <div class="contact-item">
+                  <div class="contact-icon email-icon"></div>
+                  <div class="contact-text">
+                    <p>contact@senseiprod.ma</p>
+                  </div>
+                </div>
+                <div class="contact-item">
+                  <div class="contact-icon hours-icon"></div>
+                  <div class="contact-text">
+                    <p><strong>Heures:</strong></p>
+                    <p>Lundi - Friday: 9AM - 10PM</p>
+                    <p>Vendredi: 10AM - 8PM</p>
+                    <p>Samedi & Dimanche : Sur rendez-vous</p>
+                  </div>
+                </div>
+              </div>
+              <div class="social-links">
+                <a href="#" class="social-link facebook-icon"></a>
+                <a href="#" class="social-link instagram-icon"></a>
+                <a href="#" class="social-link twitter-icon"></a>
+                <a href="#" class="social-link youtube-icon"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equipment Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'equipment'">
+        <h2 class="section-title">Our Professional Equipment</h2>
+        <div class="equipment-intro">
+          <p>We've carefully selected our equipment to provide you with the best possible recording experience. From vintage classics to cutting-edge modern gear, our studio is equipped to handle any recording scenario.</p>
+        </div>
+
+        <div class="equipment-categories">
+          <div *ngFor="let category of equipment" class="equipment-category card">
+            <h3 class="category-title">{{category.category}}</h3>
+            <ul class="equipment-list">
+              <li *ngFor="let item of category.items" class="equipment-item">
+                <span class="equipment-check">✓</span>
+                <span class="equipment-name">{{item}}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="equipment-cta card">
+          <div class="cta-content">
+            <h3>Need Specific Equipment?</h3>
+            <p>If you require specific equipment for your session that's not listed here, please contact us. We may be able to arrange it for your session.</p>
+            <button class="btn-contact">Contact Us</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Services Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'services'">
+        <h2 class="section-title">Our Services</h2>
+        <div class="services-intro">
+          <p>Nous proposons une gamme complète de services d'enregistrement et de production audio pour répondre à vos besoins créatifs. Chaque service comprend l'accès à notre équipement professionnel et à nos ingénieurs expérimentés.</p>
+        </div>
+
+        <div class="services-grid">
+          <div *ngFor="let service of services" class="service-card card">
+            <div class="service-header">
+              <div class="service-icon" [ngClass]="service.icon + '-icon'"></div>
+              <h3 class="service-title">{{service.name}}</h3>
+            </div>
+            <div class="service-content">
+              <p class="service-description">{{service.description}}</p>
+              <div class="service-price">{{service.price}}</div>
+            </div>
+            <button class="btn-book-service">Réservez ce service</button>
+          </div>
+        </div>
+
+        <div class="custom-services card">
+          <h3>Services personnalisés</h3>
+          <p>Besoin d'un projet spécifique ou unique ? Nous proposons des formules sur mesure, adaptées à vos besoins spécifiques. Contactez-nous pour discuter de vos besoins et obtenir un devis personnalisé.</p>
+          <button class="btn-custom-quote">Obtenez un devis personnalisé</button>
+        </div>
+      </div>
+
+      <!-- Booking Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'booking'">
+          <app-booking></app-booking>
+        </div>
+      </div>
+    </div>
+  </div>

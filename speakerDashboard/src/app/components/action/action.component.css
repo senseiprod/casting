@@ -1,0 +1,195 @@
+/* Main Content Styles */
+.content {
+  margin-left: 280px;
+  padding-top: 70px;
+  margin-top:60px;
+  background: linear-gradient(180deg, rgb(244, 247, 251) 0%, rgb(244, 247, 251) 100%);
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  min-height: 100vh;
+  transition: all 0.3s;
+}
+/* Action Status Badges */
+.action-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 50rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.action-status.pending {
+  background-color: #fff4d9;
+  color: #ffc107;
+}
+
+.action-status.in-progress {
+  background-color: #e0f7fa;
+  color: #03a9f4;
+}
+
+.action-status.completed {
+  background-color: #e0f8e9;
+  color: #198754;
+}
+
+/* Action Preview */
+.action-preview {
+  padding: 1rem;
+}
+
+.text-content {
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Card Border Left */
+.border-left-primary {
+  border-left: 0.25rem solid #CB1025 !important;
+}
+
+.border-left-success {
+  border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-warning {
+  border-left: 0.25rem solid #ffc107 !important;
+}
+
+.border-left-danger {
+  border-left: 0.25rem solid #e74a3b !important;
+}
+
+.border-left-info {
+  border-left: 0.25rem solid #36b9cc !important;
+}
+
+/* Filter Section */
+.filter-section {
+  background-color: #f8f9fc;
+  padding: 1rem;
+  border-radius: 0.35rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+/* Fade In Animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Table Styles */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* Button Group */
+.btn-group .btn {
+  margin-right: 0.25rem;
+}
+
+.btn-group .btn:last-child {
+  margin-right: 0;
+}
+
+/* Loading Spinner */
+.spinner-border {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Brand Color Overrides */
+.btn-primary {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #a80d1e;
+  border-color: #a80d1e;
+}
+
+.btn-outline-primary {
+  color: #CB1025;
+  border-color: #CB1025;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.text-primary {
+  color: #CB1025 !important;
+}
+
+.bg-primary {
+  background-color: #CB1025 !important;
+}
+
+.modal-header.bg-primary {
+  background-color: #CB1025 !important;
+}
+
+.page-item.active .page-link {
+  background-color: #CB1025;
+  border-color: #CB1025;
+}
+
+.page-link {
+  color: #CB1025;
+}
+
+.page-link:hover {
+  color: #a80d1e;
+}
+
+.progress-bar {
+  background-color: #CB1025;
+}
+
+/* Hover effects */
+.card:hover .border-left-primary {
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(203, 16, 37, 0.15);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(203, 16, 37, 0.05);
+}
+
+/* Focus styles */
+.form-control:focus, .form-select:focus {
+  border-color: rgba(203, 16, 37, 0.5);
+  box-shadow: 0 0 0 0.25rem rgba(203, 16, 37, 0.25);
+}
+
+/* Alert customization */
+.alert-primary {
+  color: #6a0914;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+/* Spinner color */
+.spinner-border.text-primary {
+  color: #CB1025 !important;
+}
