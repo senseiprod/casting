@@ -56,10 +56,10 @@ public class SecurityConfig {
                                                                 // DemandeController endpoints
                                                                 "/api/demandes/{id}",
                                                                 "/api/demandes/uuid/{uuid}",
-                                                                "/api/demandes/demandeur/{uuid}",  
+                                                                "/api/demandes/demandeur/{uuid}",
                                                                 "/api/demandes/update/{uuid}",
                                                                 "/api/demandes/delete/{uuid}",
-                                                               // ElevenLabsController endpoints
+                                                                // ElevenLabsController endpoints
                                                                 "/api/elevenlabs/text-to-speech/{voiceId}",
                                                                 "/api/elevenlabs/voices/{voiceId}",
                                                                 "/api/elevenlabs/voices",
@@ -96,7 +96,8 @@ public class SecurityConfig {
                                                                 "/api/reservationsSpeaker/user/{userUuid}/date/{date}",
                                                                 "/api/reservationsSpeaker/speaker/{speakerUuid}/date/{date}",
                                                                 "/api/reservationsSpeaker/**",
-                                                                // ReservationStudioController endpoints                                                                "/api/reservations/by-date",
+                                                                // ReservationStudioController endpoints
+                                                                // "/api/reservations/by-date",
                                                                 "/api/reservations/by-date-and-range",
                                                                 "/api/reservations/by-date-range",
                                                                 "/api/reservations/reserved-hours",
@@ -120,15 +121,14 @@ public class SecurityConfig {
                                                                 "/utilisateurs/client",
                                                                 "/utilisateurs/speaker",
                                                                 // Voix2Controller endpoints
-                                                                "/api/voix2/create",
+                                                                // "/api/voix2/create",
                                                                 "/api/voix2/{id}",
                                                                 "/api/voix2/all",
                                                                 "/api/voix2/speaker-voice/{uuid}",
                                                                 // VoixController endpoints
                                                                 "/api/voix/{id}",
                                                                 "/api/voix/all",
-                                                                "/api/voix/speaker-voice/{uuid}"
-                                                                )
+                                                                "/api/voix/speaker-voice/{uuid}")
                                                 .hasAnyAuthority("management:read")
 
                                                 .requestMatchers("/api/actions/create",
