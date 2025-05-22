@@ -21,7 +21,6 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_PROFILES_ACTIVE: docker
-      
     ports:
       - "8080:8080"
     depends_on:
@@ -44,6 +43,33 @@ services:
     container_name: angular-app3
     ports:
       - "4202:80"
+
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - angular-app1
+      - angular-app2
+      - angular-app3
+      - spring-backend
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    user: "1000:1000"
+    volumes:
+      - ./certbot/letsencrypt:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - nginx-proxy
+    command: renew --dry-run
 
 volumes:
   pgdata:
