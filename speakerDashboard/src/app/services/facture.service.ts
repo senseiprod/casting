@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface FactureClient {
   code: string;
@@ -48,7 +49,7 @@ export interface FactureSpeakerResponse {
 })
 export class FactureService {
 
-  private baseUrl = 'http://localhost:8080/api/factures';
+  private baseUrl = `${environment.apiUrl}/api/factures`;
 
   constructor(private http: HttpClient) { }
 

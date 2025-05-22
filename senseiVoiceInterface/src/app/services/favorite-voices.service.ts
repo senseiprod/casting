@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+
 
 export interface FavoriteVoicesDto {
   userUuid: string;
@@ -11,7 +13,7 @@ export interface FavoriteVoicesDto {
   providedIn: 'root'
 })
 export class FavoriteVoicesService {
-  private baseUrl = 'http://localhost:8080/api/favorites'; // Adjust if using a different port or base path
+  private baseUrl = `${environment.apiUrl}/api/favorites`; // Adjust if using a different port or base path
 
   constructor(private http: HttpClient) {}
 

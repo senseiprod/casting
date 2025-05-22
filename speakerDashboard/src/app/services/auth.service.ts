@@ -4,6 +4,7 @@ import {Observable, tap} from 'rxjs';
 import {jwtDecode} from "jwt-decode";
 import {SpeakerService} from "./speaker.service";
 import {SpeakerResponse} from "./speaker.service";
+import { environment } from 'src/environments/environment';
 
 interface RegisterRequest {
   firstname: string;
@@ -33,7 +34,7 @@ interface User {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/v1/auth';
+  private apiUrl = `${environment.apiUrl}/api/v1/auth`;
 
   constructor(private http: HttpClient,private userService : SpeakerService) {}
   private tokenKey = '';

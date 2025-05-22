@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 export interface Action {
   id: number;
   text: string;
@@ -53,7 +54,7 @@ export interface ActionResponse {
   providedIn: 'root'
 })
 export class ActionService {
-  private apiUrl = 'http://localhost:8080/api/actions';
+  private apiUrl = `${environment.apiUrl}/api/actions`;
 
   constructor(private http: HttpClient) {}
 

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 export interface Project {
   id: number;
@@ -37,7 +38,7 @@ export interface Action {
   providedIn: 'root'
 })
 export class ProjectService {
-  private baseUrl = 'http://localhost:8080/api/projects';
+  private baseUrl = `${environment.apiUrl}/api/projects`;
   private audioCache: Map<string, Blob> = new Map();
 
   constructor(private http: HttpClient) { }

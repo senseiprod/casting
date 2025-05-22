@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Client, Message } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -10,7 +11,7 @@ export class NotificationService {
 
     constructor() {
       this.stompClient = new Client({
-        webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+        webSocketFactory: () => new SockJS(`${environment.apiUrl}/ws`),
         reconnectDelay: 5000,
       });
 

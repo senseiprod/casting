@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  private apiUrl = 'http://localhost:8080/utilisateurs';
+  private apiUrl = `${environment.apiUrl}/utilisateurs`;
 
   constructor(private http: HttpClient) {}
 
@@ -27,7 +28,7 @@ export class UsersService {
   }
 
   getUserImage(userUuid: string): Observable<Blob> {
-    return this.http.get(`http://localhost:8080/utilisateurs/${userUuid}/photo`, { responseType: 'blob' });
+    return this.http.get(`${environment.apiUrl}/utilisateurs/${userUuid}/photo`, { responseType: 'blob' });
   }
 
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface VoixResponse {
   uuid: string;
@@ -33,7 +34,7 @@ export interface VoixRequest {
   providedIn: 'root'
 })
 export class VoixService {
-  private apiUrl = 'http://localhost:8080/api/voix';
+  private apiUrl = `${environment.apiUrl}/api/voix`;
 
   constructor(private http: HttpClient) {}
 

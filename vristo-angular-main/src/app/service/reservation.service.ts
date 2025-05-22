@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface Reservation {
   date: string;
@@ -23,7 +24,7 @@ export interface ReservationRequest {
 })
 export class ReservationService {
   // Make sure this base URL matches your backend
-  private apiUrl = 'http://localhost:8080/api/reservations';
+  private apiUrl = `${environment.apiUrl}/api/reservations`;
 
   constructor(private http: HttpClient) { }
 

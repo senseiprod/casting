@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 
 export enum TypeAudio {
@@ -17,7 +18,7 @@ export class AudioService {
 
 
   getAllAudios(): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/api/audios/all`).pipe(
+    return this.http.get<any[]>(`${environment.apiUrl}/api/audios/all`).pipe(
       map(audios => audios.map(audio => ({
         ...audio,
         fileUrl: `data:audio/mp3;base64,${audio.audioFile}` // Convert Base64 if needed

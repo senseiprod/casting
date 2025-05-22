@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import {Observable, tap} from 'rxjs';
 import {jwtDecode} from "jwt-decode";
 import {ClientResponse, ClientService} from "./client-service.service";
+import { environment } from 'src/environments/environment';
+
 
 interface RegisterRequest {
   firstname: string;
@@ -32,7 +34,7 @@ interface User {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/v1/auth';
+  private apiUrl = `${environment.apiUrl}/api/v1/auth`;
   client : ClientResponse =new ClientResponse();
 
   constructor(private http: HttpClient,private userService : ClientService) {}

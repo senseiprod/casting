@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface SpeakerReservation {
   date: string;
@@ -21,7 +22,7 @@ export interface SpeakerReservationRequest {
   providedIn: 'root'
 })
 export class SpeakerReservationService {
-  private apiUrl = 'http://localhost:8080/api/reservationsSpeaker';
+  private apiUrl = `${environment.apiUrl}/api/reservationsSpeaker`;
 
   constructor(private http: HttpClient) { }
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface DemandeRequest {
   titre: string;
@@ -24,7 +25,7 @@ export interface DemandeResponse {
   providedIn: 'root'
 })
 export class DemandeService {
-  private apiUrl = 'http://localhost:8080/api/demandes';
+  private apiUrl = `${environment.apiUrl}/api/demandes`;
 
   constructor(private http: HttpClient) {}
 

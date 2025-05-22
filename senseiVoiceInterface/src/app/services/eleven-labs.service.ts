@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 export interface Voice {
   id: string;
@@ -18,7 +19,7 @@ export interface Voice {
 }
 @Injectable({ providedIn: 'root' })
 export class ElevenLabsService {
-  private baseUrl = 'http://localhost:8080/api/elevenlabs'; // Remplace avec l'URL réelle de ton backend
+  private baseUrl = `${environment.apiUrl}/api/elevenlabs`; // Remplace avec l'URL réelle de ton backend
 
   constructor(private http: HttpClient) {}
 

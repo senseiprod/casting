@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 
 interface DemandeResponse {
@@ -30,9 +31,9 @@ interface SpeakerResponse {
 })
 export class RequestService {
 
-  private apiUrl = `http://localhost:8080/api/demandes/en-attente`;
-  private clientApiUrl = `http://localhost:8080/api/clients/uuid`;
-  private speakerApiUrl = `http://localhost:8080/api/speakers/uuid`;
+  private apiUrl = `${environment.apiUrl}/api/demandes/en-attente`;
+  private clientApiUrl = `${environment.apiUrl}/api/clients/uuid`;
+  private speakerApiUrl = `${environment.apiUrl}/api/speakers/uuid`;
   // Base URL for client
 
   constructor(private http: HttpClient) { }

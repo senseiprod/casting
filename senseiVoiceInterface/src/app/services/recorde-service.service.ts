@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 interface RecordRequest {
   utilisateurUuid: string;
@@ -20,7 +21,7 @@ interface RecordResponse {
   providedIn: 'root',
 })
 export class RecordService {
-  private apiUrl = 'http://localhost:8080/api/records';
+  private apiUrl = `${environment.apiUrl}/api/records`;
 
   constructor(private http: HttpClient) {}
 

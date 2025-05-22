@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface Voix2Response {
   uuid: string;
@@ -31,7 +32,7 @@ export interface Voix2Request {
   providedIn: 'root'
 })
 export class VoiceElenlabsService {
-  private apiUrl = 'http://localhost:8080/api/voix2'; // À adapter selon ton backend
+  private apiUrl = `${environment.apiUrl}/api/voix2`; // À adapter selon ton backend
 
   constructor(private http: HttpClient) {}
 

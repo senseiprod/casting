@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface AudioResponse {
   id: number;
@@ -13,7 +14,7 @@ export interface AudioResponse {
   providedIn: 'root',
 })
 export class AudioService {
-  private apiUrl = 'http://localhost:8080/api/audios';
+  private apiUrl = `${environment.apiUrl}/api/audios`;
 
   constructor(private http: HttpClient) {}
 

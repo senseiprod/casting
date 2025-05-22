@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface SpeakerRequest {
   nom: string;
@@ -47,7 +48,7 @@ export class SpeakerResponse {
   providedIn: 'root',
 })
 export class SpeakerService {
-  private apiUrl = 'http://localhost:8080/api/speakers';
+  private apiUrl = `${environment.apiUrl}/api/speakers`;
 
   constructor(private http: HttpClient) {}
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface ReservationSpeakerDto {
   date: string; // format YYYY-MM-DD
@@ -17,7 +18,7 @@ export interface ReservationSpeakerDtoResponse extends ReservationSpeakerDto {
   providedIn: 'root'
 })
 export class ReservationSpeakerService {
-  private baseUrl = 'http://localhost:8080/api/reservationsSpeaker';
+  private baseUrl = `${environment.apiUrl}/api/reservationsSpeaker`;
 
   constructor(private http: HttpClient) {}
 
