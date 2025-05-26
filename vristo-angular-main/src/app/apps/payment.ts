@@ -6,6 +6,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { forkJoin, Observable, tap } from 'rxjs';
 import { FactureService } from '../service/facture.service';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
+import { environment } from 'src/environments/environment';
 
 interface DemandeResponse {
   utilisateurUuid: string;
@@ -41,6 +42,7 @@ export class PaymentComponent implements OnInit {
   speakers: { [key: string]: string } = {}; // Object to hold speaker names by UUID
   isLoading = true; // Flag to show loading state
   pdfUrls: { [key: number]: SafeResourceUrl } = {};
+   private baseUrl = environment.apiUrl;
 
 
   constructor(
@@ -128,7 +130,7 @@ export class PaymentComponent implements OnInit {
   }
 
   validatePayment(uuid: string, status: string): void {
-    const payoutUrl = 'http://localhost:8080/payment/payout';
+    const payoutUrl = `${this.baseUrl}/payment/payout`;
 
     // Convert numeric values to strings as required by the backend
     const params = new HttpParams()
@@ -150,7 +152,7 @@ export class PaymentComponent implements OnInit {
         console.log('Payout successful:', response.body);
 
         // After successful payout, update the request status
-        const updateUrl = `http://localhost:8080/api/demandes/update/${uuid}?status=${status}`;
+        const updateUrl = `${this.baseUrl}/api/demandes/update/${uuid}?status=${status}`;
 
         this.http.put(updateUrl, null).subscribe(
           () => {
@@ -181,7 +183,7 @@ export class PaymentComponent implements OnInit {
   }
 
    loadDemandes(): void {
-    this.http.get<DemandeResponse[]>(`http://localhost:8080/api/demandes/en-attente`)
+    this.http.get<DemandeResponse[]>(`${this.baseUrl}/api/demandes/en-attente`)
       .subscribe(
         (response) => {
           this.demandes = response;

@@ -43,7 +43,7 @@ export class AuthService {
     return !!localStorage.getItem(this.tokenKey);
   }
   register(request: RegisterRequest): Observable<AuthenticationResponse> {
-    return this.http.post<AuthenticationResponse>(`${this.apiUrl}/register`, request);
+    return this.http.post<AuthenticationResponse>(`${this.apiUrl}/registerSpeaker`, request);
   }
 
   login(request: AuthenticationRequest): Observable<AuthenticationResponse> {

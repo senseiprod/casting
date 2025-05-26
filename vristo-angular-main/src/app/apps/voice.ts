@@ -6,6 +6,7 @@ import { toggleAnimation } from 'src/app/shared/animations';
 import { AudioService } from '../service/audio.service';
 import { NgxCustomModalComponent } from 'ngx-custom-modal';
 import { UsersService } from '../service/users.service';
+import { environment } from 'src/environments/environment';
 
 
 
@@ -46,6 +47,8 @@ interface Voice {
 export class CreateVoiceComponent implements OnInit {
 
     @ViewChild('newSpeakerModal') newSpeakerModal!: NgxCustomModalComponent;
+
+    private baseUrl = environment.apiUrl;
 
   voiceForm: FormGroup;
   synthesizeForm: FormGroup;
@@ -218,7 +221,7 @@ export class CreateVoiceComponent implements OnInit {
   fetchVoicePreview(elevenlabsId: string): void {
     if (!elevenlabsId) return;
 
-    this.http.get<any>(`http://localhost:8080/api/elevenlabs/voices/${elevenlabsId}`).subscribe(
+    this.http.get<any>(`${this.baseUrl}/api/elevenlabs/voices/${elevenlabsId}`).subscribe(
       response => {
         const voiceIndex = this.voices.findIndex(v => v.elevenlabs_id === elevenlabsId);
         if (voiceIndex !== -1) {
@@ -234,7 +237,7 @@ export class CreateVoiceComponent implements OnInit {
 
 
   fetchSpeakers(): void {
-    this.http.get('http://localhost:8080/api/speakers').subscribe(
+    this.http.get(`${this.baseUrl}/api/speakers`).subscribe(
       (data: any) => {
         this.speakers = data;
       },
@@ -246,7 +249,7 @@ export class CreateVoiceComponent implements OnInit {
 
   deleteVoice(id: string): void {
     if (confirm('Are you sure you want to delete this voice? This action cannot be undone.')) {
-      this.http.delete(`http://localhost:8080/api/voix2/delete/${id}`).subscribe(
+      this.http.delete(`${this.baseUrl}/api/voix2/delete/${id}`).subscribe(
         () => {
           this.toastr.success('Voice deleted successfully');
           this.fetchVoices(); // Refresh the voice list
@@ -316,7 +319,7 @@ export class CreateVoiceComponent implements OnInit {
   });
 
     this.loading = true;
-    this.http.post<any>('http://localhost:8080/api/voix2/create', formData).subscribe(
+    this.http.post<any>(`${this.baseUrl}/api/voix2/create`, formData).subscribe(
       response => {
         this.loading = false;
         this.toastr.success('Voice created successfully!');
@@ -344,7 +347,7 @@ export class CreateVoiceComponent implements OnInit {
 
   // The rest of the methods remain unchanged
   fetchVoices(): void {
-    this.http.get<Voice[]>('http://localhost:8080/api/voix2/all').subscribe(
+    this.http.get<Voice[]>(`${this.baseUrl}/api/voix2/all`).subscribe(
       data => {
         console.log('Received voice data:', data);
         this.voices = data.map(voice => ({
@@ -427,7 +430,7 @@ export class CreateVoiceComponent implements OnInit {
     const optimizeStreamingLatency = 0;
 
     // Construct the API URL with the voice ID and parameters
-    const apiUrl = `http://localhost:8080/api/elevenlabs/text-to-speech/${this.selectedVoice.elevenlabs_id}?output_format=${outputFormat}&enable_logging=${enableLogging}&optimize_streaming_latency=${optimizeStreamingLatency}`;
+    const apiUrl = `${this.baseUrl}/api/elevenlabs/text-to-speech/${this.selectedVoice.elevenlabs_id}?output_format=${outputFormat}&enable_logging=${enableLogging}&optimize_streaming_latency=${optimizeStreamingLatency}`;
 
     console.log('Synthesize Speech URL:', apiUrl);
     console.log('Synthesize Speech Request Body:', requestBody);

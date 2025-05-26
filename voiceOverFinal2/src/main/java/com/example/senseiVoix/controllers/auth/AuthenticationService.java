@@ -6,8 +6,11 @@ import com.example.senseiVoix.entities.Utilisateur;
 import com.example.senseiVoix.entities.token.Token;
 import com.example.senseiVoix.repositories.TokenRepository;
 import com.example.senseiVoix.entities.token.TokenType;
+import com.example.senseiVoix.enumeration.RoleUtilisateur;
 import com.example.senseiVoix.repositories.UtilisateurRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.oauth2.sdk.Role;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,30 +29,68 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
-    @Autowired
-    public AuthenticationService(UtilisateurRepository repository, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
-        this.repository = repository;
-        this.tokenRepository = tokenRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-    }
 
-    public AuthenticationResponse register(RegisterRequest request) {
+  @Autowired
+  public AuthenticationService(UtilisateurRepository repository, TokenRepository tokenRepository,
+      PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+    this.repository = repository;
+    this.tokenRepository = tokenRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.jwtService = jwtService;
+    this.authenticationManager = authenticationManager;
+  }
+
+  public AuthenticationResponse register(RegisterRequest request) {
     var user = new Client();
-        user.setPrenom(request.getFirstname());
+    user.setPrenom(request.getFirstname());
     user.setNom(request.getLastname());
     user.setEmail(request.getEmail());
     user.setCompanyName(request.getCompanyName());
     user.setPhone(request.getPhone());
     user.setMotDePasse(passwordEncoder.encode(request.getPassword()));
-    user.setRole(request.getRole());
+    user.setRole(RoleUtilisateur.CLIENT);
 
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     saveUserToken(savedUser, jwtToken);
-    return new AuthenticationResponse(jwtToken,refreshToken, user.getUuid());
+    return new AuthenticationResponse(jwtToken, refreshToken, user.getUuid());
+
+  }
+
+  public AuthenticationResponse registerSpeaker(RegisterRequest request) {
+    var user = new Client();
+    user.setPrenom(request.getFirstname());
+    user.setNom(request.getLastname());
+    user.setEmail(request.getEmail());
+    user.setCompanyName(request.getCompanyName());
+    user.setPhone(request.getPhone());
+    user.setMotDePasse(passwordEncoder.encode(request.getPassword()));
+    user.setRole(RoleUtilisateur.SPEAKER);
+
+    var savedUser = repository.save(user);
+    var jwtToken = jwtService.generateToken(user);
+    var refreshToken = jwtService.generateRefreshToken(user);
+    saveUserToken(savedUser, jwtToken);
+    return new AuthenticationResponse(jwtToken, refreshToken, user.getUuid());
+
+  }
+
+  public AuthenticationResponse registerAdmin(RegisterRequest request) {
+    var user = new Client();
+    user.setPrenom(request.getFirstname());
+    user.setNom(request.getLastname());
+    user.setEmail(request.getEmail());
+    user.setCompanyName(request.getCompanyName());
+    user.setPhone(request.getPhone());
+    user.setMotDePasse(passwordEncoder.encode(request.getPassword()));
+    user.setRole(RoleUtilisateur.ADMIN);
+
+    var savedUser = repository.save(user);
+    var jwtToken = jwtService.generateToken(user);
+    var refreshToken = jwtService.generateRefreshToken(user);
+    saveUserToken(savedUser, jwtToken);
+    return new AuthenticationResponse(jwtToken, refreshToken, user.getUuid());
 
   }
 
@@ -57,16 +98,14 @@ public class AuthenticationService {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
-            request.getPassword()
-        )
-    );
+            request.getPassword()));
     var user = repository.findByEmail(request.getEmail())
         .orElseThrow();
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
-    return new AuthenticationResponse(jwtToken,refreshToken, user.getUuid());
+    return new AuthenticationResponse(jwtToken, refreshToken, user.getUuid());
   }
 
   private void saveUserToken(Utilisateur user, String jwtToken) {
@@ -91,25 +130,24 @@ public class AuthenticationService {
   }
 
   public void refreshToken(
-          HttpServletRequest request,
-          HttpServletResponse response
-  ) throws IOException {
+      HttpServletRequest request,
+      HttpServletResponse response) throws IOException {
     final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final String refreshToken;
     final String userEmail;
-    if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       return;
     }
     refreshToken = authHeader.substring(7);
     userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
       var user = this.repository.findByEmail(userEmail)
-              .orElseThrow();
+          .orElseThrow();
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
-        var authResponse = new AuthenticationResponse(accessToken,refreshToken, user.getUuid());
+        var authResponse = new AuthenticationResponse(accessToken, refreshToken, user.getUuid());
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }
     }

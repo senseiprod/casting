@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { AudioService } from '../service/audio.service';
+import { environment } from 'src/environments/environment';
 
 interface SharedVoice {
   voice_id: string;
@@ -36,6 +37,7 @@ interface SharedVoice {
    // Make sure you have this file for the styles
 })
 export class SharedVoicesComponent implements OnInit, OnDestroy {
+    private baseUrl = environment.apiUrl;
   languages = [
     { code: 'en', name: 'English' },
     { code: 'fr', name: 'French' },
@@ -209,7 +211,7 @@ selectUseCase(useCase: string, event: MouseEvent): void {
 
   fetchAllVoices(): void {
     this.loading = true;
-    this.http.get<any>('http://localhost:8080/api/elevenlabs/voices?page_size=100')
+    this.http.get<any>(`${this.baseUrl}/api/elevenlabs/voices?page_size=100`)
       .subscribe(
         (response) => {
           if (response && response.voices) {
@@ -508,7 +510,7 @@ selectUseCase(useCase: string, event: MouseEvent): void {
     const enableLogging = true;
     const optimizeStreamingLatency = 0;
 
-    const apiUrl = `http://localhost:8080/api/elevenlabs/text-to-speech/${this.selectedVoice.voice_id}?output_format=${outputFormat}&enable_logging=${enableLogging}&optimize_streaming_latency=${optimizeStreamingLatency}`;
+    const apiUrl = `${this.baseUrl}/api/elevenlabs/text-to-speech/${this.selectedVoice.voice_id}?output_format=${outputFormat}&enable_logging=${enableLogging}&optimize_streaming_latency=${optimizeStreamingLatency}`;
 
     this.http.post(apiUrl, requestBody, { responseType: 'arraybuffer' }).subscribe(
       (response: ArrayBuffer) => {

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RequestService } from '../../app/service/request.service';
 import { HttpClient } from '@angular/common/http';
 import { toggleAnimation } from 'src/app/shared/animations';
+import { environment } from 'src/environments/environment';
 
 interface DemandeResponse {
   utilisateurUuid: string;
@@ -19,6 +20,7 @@ interface DemandeResponse {
   animations: [toggleAnimation],
 })
 export class RequestComponent implements OnInit {
+     private baseUrl = environment.apiUrl;
   demandes: DemandeResponse[] = [];
   clients: { [key: string]: string } = {};
 
@@ -57,7 +59,7 @@ export class RequestComponent implements OnInit {
   }
 
   updateDemande(uuid: string, status: string): void {
-    this.http.put(`http://localhost:8080/api/demandes/update/${uuid}?status=${status}`, null)
+    this.http.put(`${this.baseUrl}/api/demandes/update/${uuid}?status=${status}`, null)
       .subscribe(
         (response) => {
           console.log('Demande updated successfully:', response);
@@ -70,7 +72,7 @@ export class RequestComponent implements OnInit {
   }
 
   loadDemandes(): void {
-    this.http.get<DemandeResponse[]>(`http://localhost:8080/api/demandes/en-attente`)
+    this.http.get<DemandeResponse[]>(`${this.baseUrl}/api/demandes/en-attente`)
       .subscribe(
         (response) => {
           this.demandes = response.filter(demande => demande.type === 'COMPTE');

@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class UsersService {
   private apiUrl = `${environment.apiUrl}/utilisateurs`;
+   private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -34,15 +35,15 @@ export class UsersService {
 
 
   createAdmin(admin: any): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/utilisateurs/admin`, admin);
+    return this.http.post<any>(`${this.baseUrl}/utilisateurs/admin`, admin);
   }
 
   createClient(client: any): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/utilisateurs/client`, client);
+    return this.http.post<any>(`${this.baseUrl}/utilisateurs/client`, client);
   }
 
   createSpeaker(speaker: any): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/utilisateurs/speaker`, speaker);
+    return this.http.post<any>(`${this.baseUrl}/utilisateurs/speaker`, speaker);
   }
 
   uploadUserImage(userId: string, formData: FormData): Observable<any> {
@@ -50,7 +51,7 @@ export class UsersService {
   }
 
   fetchUserById(userId: string): Observable<any> {
-    return this.http.get<any>(`http://localhost:8080/utilisateurs/${userId}`);
+    return this.http.get<any>(`${this.baseUrl}/utilisateurs/${userId}`);
   }
 
 }

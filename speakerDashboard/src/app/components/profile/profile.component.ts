@@ -5,6 +5,7 @@ import { UtilisateurService, UtilisateurRequest } from '../../services/utilisate
 import { VoixService, Voix2Response } from '../../services/voix.service';
 import { SpeakerResponse } from '../../services/speaker.service';
 import { AuthService } from '../../services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -12,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
+  private baseUrl = environment.apiUrl;
   profileForm!: FormGroup;
   userInfo: SpeakerResponse = null;
   userVoices: Voix2Response[] = [];
@@ -176,7 +178,7 @@ export class ProfileComponent implements OnInit {
     this.currentPlayingId = voiceId;
 
     // Simulate audio playback (replace with actual implementation)
-    this.audioElement = new Audio(`http://localhost:8080/api/voix2/sample/${voiceId}`);
+    this.audioElement = new Audio(`${this.baseUrl}/api/voix2/sample/${voiceId}`);
     this.audioElement.onended = () => {
       this.audioPlaying[voiceId] = false;
       this.currentPlayingId = null;
