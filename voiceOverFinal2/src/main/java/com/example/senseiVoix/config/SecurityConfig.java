@@ -37,6 +37,7 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .csrf(AbstractHttpConfigurer::disable)
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(req -> req.requestMatchers(WHITE_LIST_URL)
                                                 .permitAll()
                                                 .requestMatchers("/**").hasAnyAuthority("admin:read")
@@ -271,7 +272,10 @@ public class SecurityConfig {
                 configuration.setAllowedOrigins(List.of(
                                 "http://localhost:4200",
                                 "http://localhost:4201",
-                                "http://localhost:4202"));
+                                "http://localhost:4202",
+                                "https://admin.castingvoixoff.ma",
+                                "https://speaker.castingvoixoff.ma",
+                                "https://castingvoixoff.ma"));
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(List.of("*"));
                 configuration.setAllowCredentials(true);
