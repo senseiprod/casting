@@ -16,6 +16,8 @@ export enum TypeAudio {
 export class AudioService {
   constructor(private http: HttpClient) {}
 
+  private baseUrl = environment.apiUrl;
+
 
   getAllAudios(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/api/audios/all`).pipe(
@@ -29,12 +31,12 @@ export class AudioService {
 
   // Get all speakers
   getSpeakers(): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/api/speakers`);
+    return this.http.get<any[]>(`${this.baseUrl}/api/speakers`);
   }
 
   // Search for speakers by name
   searchSpeakersByName(name: string): Observable<any> {
-    return this.http.get<any>(`http://localhost:8080/api/speakers/search/${name}`);
+    return this.http.get<any>(`${this.baseUrl}/api/speakers/search/${name}`);
   }
 
   // Upload the audio file
@@ -46,7 +48,7 @@ export class AudioService {
     formData.append('type', 'ORIGINAL');
 
 
-    return this.http.post<any>(`http://localhost:8080/api/audios`, formData);
+    return this.http.post<any>(`${this.baseUrl}/api/audios`, formData);
   }
 
   // Upload generated audio file
@@ -59,7 +61,7 @@ export class AudioService {
     formData.append('type', 'GENERATED');
 
 
-    return this.http.post<any>(`http://localhost:8080/api/audios`, formData);
+    return this.http.post<any>(`${this.baseUrl}/api/audios`, formData);
   }
 
    // Generic upload method with type parameter

@@ -2,6 +2,7 @@ import { Component, type OnInit, type OnDestroy } from "@angular/core"
 import { FormBuilder, type FormGroup, Validators } from "@angular/forms"
 import { HttpClient } from "@angular/common/http"
 import { ToastrService } from "ngx-toastr"
+import { environment } from 'src/environments/environment';
 
 interface CombinedVoice {
   voice_id: string
@@ -32,6 +33,8 @@ export class CombinedVoicesComponent implements OnInit, OnDestroy {
     { value: "pcm_22050", label: "WAV (22.05kHz)" },
     { value: "pcm_24000", label: "WAV (24kHz)" },
   ]
+
+  private baseUrl = environment.apiUrl;
 
   playHtOutputFormats = [
     { value: "mp3", label: "MP3" },
@@ -192,7 +195,7 @@ activeFiltersCount = 0;
 
   fetchCombinedVoices(): void {
     this.loading = true
-    this.http.get<any>("http://localhost:8080/api/combined-voices/combined").subscribe(
+    this.http.get<any>(`${this.baseUrl}/api/combined-voices/combined`).subscribe(
       (response) => {
         if (response && response.voices) {
           this.allVoices = response.voices.map((voice: any) => ({
@@ -483,7 +486,7 @@ activeFiltersCount = 0;
     const enableLogging = true
     const optimizeStreamingLatency = 0
 
-    const apiUrl = `http://localhost:8080/api/elevenlabs/text-to-speech/${this.selectedVoice!.voice_id}?output_format=${outputFormat}&enable_logging=${enableLogging}&optimize_streaming_latency=${optimizeStreamingLatency}`
+    const apiUrl = `${this.baseUrl}/api/elevenlabs/text-to-speech/${this.selectedVoice!.voice_id}?output_format=${outputFormat}&enable_logging=${enableLogging}&optimize_streaming_latency=${optimizeStreamingLatency}`
 
     this.http.post(apiUrl, requestBody, { responseType: "arraybuffer" }).subscribe(
       (response: ArrayBuffer) => {
@@ -511,11 +514,11 @@ activeFiltersCount = 0;
     const outputFormat = formValues.output_format || "mp3"
 
     // Basic URL with required parameters
-    let apiUrl = `http://localhost:8080/api/playht/synthesize?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(voice)}&language=${encodeURIComponent(language)}`
+    let apiUrl = `${this.baseUrl}/api/playht/synthesize?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(voice)}&language=${encodeURIComponent(language)}`
 
     // For advanced options, use the advanced endpoint
     if (formValues.quality || formValues.speed || formValues.voice_engine) {
-      apiUrl = "http://localhost:8080/api/playht/synthesize/advanced"
+      apiUrl = `${this.baseUrl}/api/playht/synthesize/advanced`
 
       // Create form data for advanced parameters
       const formData = new FormData()

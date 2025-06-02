@@ -1,6 +1,7 @@
 package com.example.senseiVoix.repositories;
 
 import com.example.senseiVoix.entities.Client;
+import com.example.senseiVoix.enumeration.RoleUtilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +21,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     List<Client> findAllDeleted();
 
     boolean existsByEmail(String email);
+
+    boolean existsByRole(RoleUtilisateur role);
 }

@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AuthService {
+    private baseUrl = environment.apiUrl;
   private apiUrl = `${environment.apiUrl}/api/v1/auth`; // Replace with your backend URL
   private currentUserSubject: BehaviorSubject<any>;
   public currentUser: Observable<any>;
@@ -96,7 +97,7 @@ export class AuthService {
 
 
   signUp(signupData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, signupData);
+    return this.http.post(`${this.apiUrl}/registerAdmin`, signupData);
   }
 
   logout() {
@@ -118,7 +119,7 @@ export class AuthService {
     console.log(userId);
     // Remove surrounding quotes if they exist
 
-    return this.http.get<any>(`http://localhost:8080/utilisateurs/${userId}`);
+    return this.http.get<any>(`${this.baseUrl}/utilisateurs/${userId}`);
 }
 
 }

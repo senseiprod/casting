@@ -139,7 +139,7 @@ export class ProjectService {
     }
 
     // If we get here, we need to fetch the audio from the server by ID
-    const audioUrl = `http://localhost:8080/api/actions/${action.uuid}/audio`;
+    const audioUrl = `${environment.apiUrl}/api/actions/${action.uuid}/audio`;
     return this.http.get(audioUrl, { responseType: 'blob' }).pipe(
       map(blob => {
         if (action.uuid) {
