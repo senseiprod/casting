@@ -16,6 +16,8 @@ export interface Voix2Response {
   name: string;
   price: number;
   elevenlabs_id: string;
+  previewUrl: string;
+
 }
 
 export interface Voix2Request {

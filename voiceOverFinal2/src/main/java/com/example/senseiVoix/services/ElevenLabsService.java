@@ -10,7 +10,7 @@ public interface ElevenLabsService {
 
 
 
-
+        void fetchAndSaveVoicesFromElevenLabs();
         Map<String, Object> createVoiceClone(String name, MultipartFile[] files, boolean removeBackgroundNoise, String description, String labels);
 
         byte[] textToSpeech(String voiceId, String outputFormat, boolean enableLogging, Integer optimizeStreamingLatency, Map<String, Object> requestBody);

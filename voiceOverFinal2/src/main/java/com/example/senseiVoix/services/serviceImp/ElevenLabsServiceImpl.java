@@ -1,9 +1,14 @@
 package com.example.senseiVoix.services.serviceImp;
 
+import com.example.senseiVoix.entities.Voix2;
+import com.example.senseiVoix.enumeration.TypeQualityVoix;
+import com.example.senseiVoix.enumeration.TypeVoice;
+import com.example.senseiVoix.repositories.Voix2Repository;
 import com.example.senseiVoix.services.ElevenLabsService;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
@@ -32,8 +37,12 @@ public class ElevenLabsServiceImpl implements ElevenLabsService {
     private static final String ELEVEN_LABS_VOICES_LIST_URL = ELEVEN_LABS_BASE_URL + "/v2/voices";
     private static final String ELEVEN_LABS_VOICES_DELETE_URL = ELEVEN_LABS_BASE_URL + "/v1/voices/";
     private static final String ELEVEN_LABS_SHARED_VOICES_LIST_URL = ELEVEN_LABS_BASE_URL + "/v1/shared-voices";
+    private static final int PAGE_SIZE = 100;
+    private static final int MAX_VOICES = 5000;
 
     private final RestTemplate restTemplate;
+    @Autowired
+    private Voix2Repository Voix2Repository;
 
     public ElevenLabsServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -180,47 +189,68 @@ public class ElevenLabsServiceImpl implements ElevenLabsService {
     }
 
     @Override
-public Map<String, Object> listSharedVoices(
-        Integer pageSize,
-        String search,
-        String sort,
-        String category,
-        String gender,
-        String age,
-        String accent,
-        String language,
-        int nextPageToken // NEW parameter
-) {
-    UriComponentsBuilder uriBuilder = UriComponentsBuilder
-            .fromUriString(ELEVEN_LABS_SHARED_VOICES_LIST_URL);
-
-    if (pageSize != null) uriBuilder.queryParam("page_size", pageSize);
-    if (search != null) uriBuilder.queryParam("search", search);
-    if (sort != null) uriBuilder.queryParam("sort", sort);
-    if (category != null) uriBuilder.queryParam("category", category);
-    if (gender != null) uriBuilder.queryParam("gender", gender);
-    if (age != null) uriBuilder.queryParam("age", age);
-    if (accent != null) uriBuilder.queryParam("accent", accent);
-    if (language != null) uriBuilder.queryParam("language", language);
-    if (nextPageToken != 0) uriBuilder.queryParam("page", nextPageToken); // pagination
-
-    String listVoicesUrl = uriBuilder.toUriString();
-
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("xi-api-key", apiKey);
-
-    HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-
-    ResponseEntity<Map> response = restTemplate.exchange(
-            listVoicesUrl,
-            HttpMethod.GET,
-            requestEntity,
-            Map.class
-    );
-
-    return response.getBody();
-}
-
+    public Map<String, Object> listSharedVoices(
+            Integer pageSize,
+            String search,
+            String sort,
+            String category,
+            String gender,
+            String age,
+            String accent,
+            String language,
+            int nextPageToken // NEW parameter
+    ) {
+        int index = 1; // Initialize index for voice name generation
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                .fromUriString(ELEVEN_LABS_SHARED_VOICES_LIST_URL);
+    
+        if (pageSize != null) uriBuilder.queryParam("page_size", pageSize);
+        if (search != null) uriBuilder.queryParam("search", search);
+        if (sort != null) uriBuilder.queryParam("sort", sort);
+        if (category != null) uriBuilder.queryParam("category", category);
+        if (gender != null) uriBuilder.queryParam("gender", gender);
+        if (age != null) uriBuilder.queryParam("age", age);
+        if (accent != null) uriBuilder.queryParam("accent", accent);
+        if (language != null) uriBuilder.queryParam("language", language);
+        if (nextPageToken != 0) uriBuilder.queryParam("page", nextPageToken); // pagination
+    
+        String listVoicesUrl = uriBuilder.toUriString();
+    
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("xi-api-key", apiKey);
+    
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+    
+        ResponseEntity<Map> response = restTemplate.exchange(
+                listVoicesUrl,
+                HttpMethod.GET,
+                requestEntity,
+                Map.class
+        );
+    
+        // Modify the response body
+        Map<String, Object> responseBody = response.getBody();
+        if (responseBody != null && responseBody.containsKey("voices")) {
+            Object voicesObj = responseBody.get("voices");
+            if (voicesObj instanceof List) {
+                List<Map<String, Object>> voices = (List<Map<String, Object>>) voicesObj;
+                for (Map<String, Object> voice : voices) {
+                    if (voice.containsKey("name")) {
+                        String originalName = (String) voice.get("name");
+                        String generatedName = String.format("%05d", index++);; // Replace with your logic
+                        voice.put("name", generatedName);
+                    }
+                }
+            }
+        }
+    
+        return responseBody;
+    }
+    
+    // Example method to generate a new voice name
+    private String generateNewVoiceName(String originalName) {
+        return "Generated_" + originalName; // Replace with your actual logic
+    }
 
 
     @Override
@@ -308,4 +338,45 @@ public Map<String, Object> listSharedVoices(
 
     return new ByteArrayResource(out.toByteArray());
 }
+@Override
+public void fetchAndSaveVoicesFromElevenLabs() {
+        int voicesFetched = 0;
+        String nextPageToken = null;
+        int index = 1;
+
+        while (voicesFetched < MAX_VOICES) {
+            Map<String, Object> response = listSharedVoices(PAGE_SIZE, nextPageToken, nextPageToken, nextPageToken, nextPageToken, nextPageToken, nextPageToken, nextPageToken, index);
+            List<Map<String, Object>> voices = (List<Map<String, Object>>) response.get("voices");
+
+            for (Map<String, Object> voiceData : voices) {
+                String voiceId = (String) voiceData.get("voice_id");
+                String language = (String) ((Map<String, Object>) voiceData.get("fine_tuning")).get("language");
+                String gender = "unknown"; // Mettre à jour si possible depuis les métadonnées
+                String previewUrl = (String) voiceData.get("preview_url");
+
+                // Génération d’un nom unique
+                String generatedName = "Voice_" + String.format("%05d", index++);
+
+                // Créer une instance de Voix2
+                Voix2 voix = new Voix2();
+                voix.setElevenlabs_id(voiceId);
+                voix.setLanguage(language);
+                voix.setGender(gender);
+                voix.setName(generatedName);
+                voix.setPrice(1.0); // ou une logique de calcul
+                voix.setNombrePoint(10.0); // ou logique métier
+                voix.setType(TypeQualityVoix.NORMAL); // ou selon qualité
+                voix.setTypeVoice(TypeVoice.ANGRY); // ou autre
+                voix.setSpeaker(null); // ou un speaker par défaut
+                voix.setPreview(previewUrl);
+                Voix2Repository.save(voix);
+                voicesFetched++;
+
+                if (voicesFetched >= MAX_VOICES) break;
+            }
+
+            nextPageToken = (String) response.get("next_page_token");
+            if (nextPageToken == null) break;
+        }
+    }
 }

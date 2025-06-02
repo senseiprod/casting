@@ -109,6 +109,7 @@ public class Voix2 extends BaseModel{
     private String gender;
     private String language;
     private String name;
+    private String preview;
     private Double price;
 
 }

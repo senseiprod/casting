@@ -137,5 +137,9 @@ public class ElevenLabsController {
                 .body(resource);
     }
     
-
+    @PostMapping("/import")
+    public ResponseEntity<String> importVoices() {
+        elevenLabsService.fetchAndSaveVoicesFromElevenLabs();
+        return ResponseEntity.ok("Voices imported successfully");
+    }
 }
