@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { RequestsComponent } from './components/requests/requests.component';
 import { SideBarComponent } from './components/side-bar/side-bar.component';
@@ -21,6 +21,8 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import { ActionComponent } from './components/action/action.component';
 import { MainRouterComponent } from './components/main-router/main-router.component';
 import { DeleteAccountFormComponent } from './components/delete-account-form/delete-account-form.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor'; 
+
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/', '.json');
@@ -60,7 +62,13 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     })
   ],
-  providers: [],
+  providers: [
+{
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
