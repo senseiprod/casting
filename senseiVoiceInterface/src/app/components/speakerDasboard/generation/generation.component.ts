@@ -26,7 +26,7 @@ export class GenerationComponent implements OnInit {
   vitess = 1.0
   rate = 44100
   temperature = 1.0
-  actionData = { text: "The ElevenLabs voice generator can deliver high-quality, human-like speech in 32 languages." }
+  actionData = { text: "The senseiprod voice generator can deliver high-quality, human-like speech in 32 languages." }
   price = 0.05 // Example price per character
   baseUrl = "https://api.voice-service.com"
   audioUrl: SafeUrl | null = null

@@ -236,7 +236,6 @@ public class ElevenLabsServiceImpl implements ElevenLabsService {
                 List<Map<String, Object>> voices = (List<Map<String, Object>>) voicesObj;
                 for (Map<String, Object> voice : voices) {
                     if (voice.containsKey("name")) {
-                        String originalName = (String) voice.get("name");
                         String generatedName = String.format("%05d", index++);; // Replace with your logic
                         voice.put("name", generatedName);
                     }
@@ -284,8 +283,8 @@ public class ElevenLabsServiceImpl implements ElevenLabsService {
 
         return result;
     }
-     @Override
-       public ByteArrayResource generateVoiceNamesExcel() throws Exception {
+@Override
+public ByteArrayResource generateVoiceNamesExcel() throws Exception {
     int pageSize = 100;
     int totalVoicesToFetch = 5000;
     int voicesFetched = 0;
@@ -301,7 +300,6 @@ public class ElevenLabsServiceImpl implements ElevenLabsService {
                 null, null, null, null, null, null, null,
                 nextPageToken
         );
-    
         List<Map<String, Object>> voices = (List<Map<String, Object>>) response.get("voices");
         if (voices == null || voices.isEmpty()) break;
 
