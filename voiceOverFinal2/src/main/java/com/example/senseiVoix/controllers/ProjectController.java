@@ -1,4 +1,5 @@
 package com.example.senseiVoix.controllers;
+import com.example.senseiVoix.dtos.project.ProjectRequest;
 import com.example.senseiVoix.entities.Project;
 import com.example.senseiVoix.services.serviceImp.ProjectService;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/projects")
-@CrossOrigin(origins = "*") // Ã  adapter selon le front
+@CrossOrigin(origins = "*") // à adapter selon le front
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -35,7 +36,7 @@ public class ProjectController {
 
     // POST create new project
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
+    public ResponseEntity<Project> createProject(@RequestBody ProjectRequest project) {
         return ResponseEntity.ok(projectService.createProject(project));
     }
 
