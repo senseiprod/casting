@@ -1,5 +1,6 @@
 package com.example.senseiVoix.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,14 +22,21 @@ public class Project extends BaseModel{
     private String name;
     @Column(name = "description", nullable = false)
     private String description;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Utilisateur user;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "speaker_id", nullable = false)
-    private Speaker preferedVoice;
+    private Utilisateur preferedVoice;
     private LocalDate dateCreation ;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Action> actions;
+
+
 }
