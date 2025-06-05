@@ -18,8 +18,10 @@ public class Project extends BaseModel{
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
+    
     @Column(name = "name", nullable = false)
     private String name;
+
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -28,10 +30,6 @@ public class Project extends BaseModel{
     @JoinColumn(name = "user_id", nullable = false)
     private Utilisateur user;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "speaker_id", nullable = false)
-    private Utilisateur preferedVoice;
     private LocalDate dateCreation ;
 
     @JsonIgnore

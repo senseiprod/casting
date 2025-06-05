@@ -38,16 +38,9 @@ public class ProjectService {
         project.setName(request.getName());
         project.setDescription(request.getDescription());
         project.setDateCreation(request.getDateCreation());
-
         // Set user and speaker
-        Utilisateur user = utilisateurRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Speaker speaker = speakerRepository.findById(request.getSpeakerId())
-                .orElseThrow(() -> new RuntimeException("Speaker not found"));
-
+        Utilisateur user = utilisateurRepository.findByUuid(request.getUserId());
         project.setUser(user);
-        project.setPreferedVoice(speaker);
-
         return projectRepository.save(project);
     }
 

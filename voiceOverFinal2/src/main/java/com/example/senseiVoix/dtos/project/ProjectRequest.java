@@ -17,8 +17,6 @@ public class ProjectRequest {
     private String name;
     private String description;
     private LocalDate dateCreation;
-    private Long userId;
-    private Long speakerId;
-
+    private String userId;
     // Getters and setters
 }

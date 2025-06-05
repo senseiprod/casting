@@ -6,6 +6,7 @@ import { ActionService } from '../../../services/action.service';
 import { ProjectService, Project, Action } from '../../../services/project.service';
 import { forkJoin, of, Subject } from 'rxjs';
 import { catchError, finalize, takeUntil } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-generation-request',
@@ -51,6 +52,7 @@ export class GenerationRequestComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private projectService: ProjectService,
+    private authService: AuthService, // Assuming you have an AuthService to get user info
     private actionService: ActionService,
     private router: Router
   ) {
@@ -237,19 +239,33 @@ export class GenerationRequestComponent implements OnInit {
 
     this.submitting = true;
 
-    const newProject = {
+    // Construct the payload according to the ProjectRequest DTO
+    const projectRequestPayload = {
       name: this.newProjectForm.value.name,
-      type: this.newProjectForm.value.type,
       description: this.newProjectForm.value.description,
-      dateDue: this.newProjectForm.value.dueDate ? new Date(this.newProjectForm.value.dueDate) : null
+      // Set dateCreation to the current date in 'YYYY-MM-DD' format
+      // Java LocalDate typically maps well to this string format.
+      dateCreation: new Date().toISOString().split('T')[0],
+      userId: this.authService.getUserUuid(localStorage.getItem(this.authService.tokenKey)) // Get userId from your auth service or state
     };
 
-    // In a real app, this would be a service call
-    setTimeout(() => {
-      this.submitting = false;
-      this.toggleNewProjectForm();
-      this.loadProjects();
-    }, 1000);
+    // Call the project service to create the project
+    this.projectService.createProject(projectRequestPayload).subscribe({
+      next: (createdProject) => {
+        console.log('Project created successfully:', createdProject);
+        this.projects.push(createdProject); // Add to local list, for example
+        this.submitting = false;
+        this.toggleNewProjectForm(); // Close or reset the form
+        this.loadProjects(); // Refresh the list of projects
+        // Optionally, show a success message
+      },
+      error: (error) => {
+        console.error('Error creating project:', error);
+        this.submitting = false;
+        // Optionally, display an error message to the user
+        // e.g., this.notificationService.showError('Failed to create project. Please try again.');
+      }
+    });
   }
 
   navigateToGeneration(projectId: number): void {

@@ -38,7 +38,7 @@ export class AuthService {
   client : ClientResponse =new ClientResponse();
 
   constructor(private http: HttpClient,private userService : ClientService) {}
-  private tokenKey = '';
+  public tokenKey = '';
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem(this.tokenKey);
