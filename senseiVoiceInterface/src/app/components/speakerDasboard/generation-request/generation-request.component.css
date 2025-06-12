@@ -1,22 +1,34 @@
 /* Main container styles */
 .container {
-  width: 150%;         /* Changed from 120% to 100% */
+  width: 100%; /* Changed from 150% to 100% */
   min-height: 100vh;
-  margin-top: 80px;
+  margin-top: 5rem; /* Using rem instead of fixed pixels */
   transition: all 0.3s;
-  margin-left: 280px;  /* Add margin to account for sidebar width */
+  margin-left: 0; /* Reset margin and handle with media queries */
+  padding: 1rem; /* Add padding for smaller screens */
 }
+
+/* Sidebar margin only on larger screens */
+@media (min-width: 992px) {
+  .container {
+    margin-left: 280px;
+  }
+}
+
 /* Rest of your CSS remains the same */
 .card {
   border: none;
   box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
   border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
 }
+
 .card-header {
-  background-color: #CB1025;
+  background-color: #cb1025;
   color: white;
   border-top-left-radius: 0.5rem !important;
   border-top-right-radius: 0.5rem !important;
+  padding: 0.75rem 1rem;
 }
 
 /* Accordion styles */
@@ -24,10 +36,11 @@
   padding: 1rem;
   background-color: #f8f9fa;
   box-shadow: none;
+  font-size: clamp(0.875rem, 2vw, 1rem); /* Responsive font size */
 }
 
 .accordion-button:not(.collapsed) {
-  color: #CB1025;
+  color: #cb1025;
   background-color: #f8f9fa;
   box-shadow: none;
 }
@@ -45,10 +58,12 @@
 
 /* Status badges */
 .status-badge {
-  font-size: 0.75rem;
+  font-size: clamp(0.7rem, 1.5vw, 0.75rem);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .status-completed {
@@ -76,6 +91,7 @@
   padding: 1rem;
   background-color: #f8f9fa;
   border-radius: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .project-details-item {
@@ -95,6 +111,9 @@
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
   transition: all 0.2s ease;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .audio-file:hover {
@@ -106,11 +125,12 @@
   background-color: #e9ecef;
   border-radius: 0.25rem;
   overflow: hidden;
+  margin: 0.5rem 0;
 }
 
 .waveform {
   height: 100%;
-  background: linear-gradient(90deg, #CB1025 0%, #e9ecef 50%, #CB1025 100%);
+  background: linear-gradient(90deg, #cb1025 0%, #e9ecef 50%, #cb1025 100%);
   background-size: 200% 100%;
   animation: wave 2s linear infinite;
   opacity: 0.7;
@@ -131,24 +151,33 @@
 }
 
 /* Button styles */
-.btn-primary {
-  background-color: #CB1025;
-  border-color: #CB1025;
+.btn {
+  padding: 0.375rem 0.75rem;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  border-radius: 0.25rem;
+  transition: all 0.2s;
 }
 
-.btn-primary:hover, .btn-primary:focus {
+.btn-primary {
+  background-color: #cb1025;
+  border-color: #cb1025;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
   background-color: #a00d1e;
   border-color: #a00d1e;
 }
 
 .btn-outline-primary {
-  color: #CB1025;
-  border-color: #CB1025;
+  color: #cb1025;
+  border-color: #cb1025;
 }
 
-.btn-outline-primary:hover, .btn-outline-primary:focus {
-  background-color: #CB1025;
-  border-color: #CB1025;
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: #cb1025;
+  border-color: #cb1025;
   color: white;
 }
 
@@ -157,21 +186,38 @@
   border: none;
   border-radius: 0.5rem;
   overflow: hidden;
+  width: 90%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .modal-header {
-  background-color: #CB1025;
+  background-color: #cb1025;
   color: white;
+  padding: 1rem;
+}
+
+.modal-body {
+  padding: 1.5rem 1rem;
 }
 
 /* Pagination */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
 .pagination .page-item.active .page-link {
-  background-color: #CB1025;
-  border-color: #CB1025;
+  background-color: #cb1025;
+  border-color: #cb1025;
 }
 
 .pagination .page-link {
-  color: #CB1025;
+  color: #cb1025;
+  padding: 0.375rem 0.75rem;
+  margin: 0.125rem;
 }
 
 .pagination .page-link:hover {
@@ -195,14 +241,29 @@
 }
 
 /* Responsive adjustments */
+@media (max-width: 1200px) {
+  .container {
+    padding: 0.75rem;
+  }
+}
+
 @media (max-width: 992px) {
   .container {
-    margin-left: 0;  /* Remove margin when sidebar is collapsed/hidden */
+    margin-left: 0; /* Remove margin when sidebar is collapsed/hidden */
     width: 100%;
+  }
+
+  .card-header {
+    padding: 0.75rem;
   }
 }
 
 @media (max-width: 768px) {
+  .container {
+    margin-top: 4rem;
+    padding: 0.5rem;
+  }
+
   .project-details-label {
     min-width: 100%;
     margin-bottom: 0.25rem;
@@ -212,7 +273,57 @@
     padding: 0.75rem !important;
   }
 
+  .card {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    margin-top: 3.5rem;
+    padding: 0.5rem;
+  }
+
+  .card-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .accordion-button {
+    padding: 0.75rem;
+  }
+
+  .project-details {
+    padding: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.25rem 0.5rem;
+  }
+
   .waveform-container {
-    height: 40px;
+    height: 4px;
+  }
+}
+
+/* Typography responsive adjustments */
+@media (max-width: 576px) {
+  h1,
+  .h1 {
+    font-size: 1.75rem;
+  }
+
+  h2,
+  .h2 {
+    font-size: 1.5rem;
+  }
+
+  h3,
+  .h3 {
+    font-size: 1.25rem;
+  }
+
+  h4,
+  .h4 {
+    font-size: 1.125rem;
   }
 }
