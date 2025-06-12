@@ -32,7 +32,7 @@ public class Project extends BaseModel{
 
     private LocalDate dateCreation ;
 
-    @JsonIgnore
+    
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Action> actions;
 
