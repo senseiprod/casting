@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DeleteAccountComponent } from './delete-account.component';
+
 
 describe('DeleteAccountComponent', () => {
   let component: DeleteAccountComponent;

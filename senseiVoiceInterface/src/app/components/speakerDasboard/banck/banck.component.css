@@ -1,189 +1,164 @@
-/* Main Container */
+/* Main Container - Fixed for proper sidebar layout */
 .container {
-  width: 100%; /* Changed from 120% to prevent overflow */
-  max-width: 1400px; /* Optional: constrain max content width on very large screens */
+  width: calc(100% - 20px);
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem; /* Added default horizontal padding */
-  padding-right: 1rem; /* Added default horizontal padding */
+  padding-left: 1rem;
+  padding-right: 1rem;
   min-height: 100vh;
-  transition: all 0.3s;
-  padding-top: 70px;
-  box-sizing: border-box; /* Ensures padding is included in width/height */
-  overflow-x: hidden; /* Prevent accidental horizontal scroll */
+  transition: all 0.3s ease;
+  padding-top: 60px;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-/* Page Header */
+/* Page Header - More compact */
 .page-header {
-  margin-bottom: 2.5rem;
-  text-align: center; /* Center header content */
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .page-header h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 700;
   color: #212529;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
 }
 
 .page-header p {
-  font-size: 1.1rem;
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
   color: #6c757d;
-  max-width: 700px;
-  margin: 0 auto; /* Keeps it centered */
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.3;
 }
 
-/* Language Pills */
-.language-pills {
-  display: flex; /* Added for better alignment and wrapping */
-  flex-wrap: wrap; /* Allow pills to wrap to the next line */
-  justify-content: center; /* Center pills */
-  gap: 0.75rem; /* Space between pills */
-  margin-bottom: 2rem;
+/* Filter Controls - Compact layout */
+.filter-controls {
+  margin-bottom: 1rem;
 }
 
-.language-pill {
-  padding: 0.5rem 1.25rem;
-  border-radius: 50px;
-  border: 1px solid #e0e0e0;
-  background-color: white;
-  color: #495057;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-  cursor: pointer; /* Indicate interactivity */
-}
-
-.language-pill:hover {
-  background-color: #f8f9fa;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
-}
-
-.language-pill.active {
-  background-color: #CB1025;
-  color: white;
-  border-color: #CB1025;
-}
-
-/* Filter Controls */
 .filter-controls .card {
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 1.5rem; /* Space below filter card */
+  margin-bottom: 1rem;
 }
 
-/* Assuming filter options might be in a flex container */
-.filter-options-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.filter-options-container > div { /* Target individual filter groups */
-  flex: 1 1 200px; /* Allow filter groups to grow and shrink */
+.filter-controls .card-body {
+  padding: 1rem;
 }
 
+.filter-controls .row {
+  --bs-gutter-x: 0.75rem;
+  --bs-gutter-y: 0.75rem;
+}
+
+.filter-controls .col-md-2 {
+  margin-bottom: 0.75rem;
+}
 
 .form-label {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #495057;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
 }
 
 .form-select {
-  width: 100%; /* Make select full width of its container */
+  width: 100%;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.95rem;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
   transition: all 0.2s ease;
   background-color: #f9f9f9;
+  line-height: 1.3;
 }
 
 .form-select:focus {
-  border-color: #CB1025;
-  box-shadow: 0 0 0 0.2rem rgba(203, 16, 37, 0.15);
+  border-color: #cb1025;
+  box-shadow: 0 0 0 0.15rem rgba(203, 16, 37, 0.15);
 }
 
-.form-check-input:checked {
-  background-color: #CB1025;
-  border-color: #CB1025;
-}
-
-/* Active Filters */
+/* Active Filters - Compact */
 .active-filters {
-  display: flex; /* Added for alignment */
-  flex-wrap: wrap; /* Allow badges to wrap */
-  gap: 0.5rem; /* Space between badges */
-  margin-bottom: 1.5rem; /* Space below active filters */
-  justify-content: center; /* Center if they don't fill width */
+  margin-bottom: 1rem;
+}
+
+.active-filters .card-body {
+  padding: 0.75rem 1rem;
+}
+
+.active-filters .d-flex {
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
 }
 
 .active-filters .badge {
   font-weight: 500;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  background-color: #cb1025 !important;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
-.badge.bg-primary {
-  background-color: #CB1025 !important;
-}
-
-.btn-close {
-  font-size: 0.7rem;
-  padding: 0.15rem;
-}
-
-/* Voice Cards Container (assuming you have one) */
-.voice-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
-  gap: 1.5rem; /* Space between cards */
-  margin-bottom: 2rem;
+/* Voice Cards - Optimized grid layout */
+.row.g-4 {
+  --bs-gutter-x: 1rem;
+  --bs-gutter-y: 1rem;
 }
 
 .voice-card .card {
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  height: 100%; /* For equal height cards in a grid row/flex row */
-  display: flex; /* Added for better internal layout control */
-  flex-direction: column; /* Ensure card content flows vertically */
+  height: 100%;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
-.voice-card .card-body {
-    flex-grow: 1; /* Allow card body to take available space */
-    display: flex;
-    flex-direction: column;
-}
-
 
 .voice-card .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.voice-card .card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Voice Avatar and Info Layout - Compact */
+.voice-card .d-flex {
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
 }
 
 .voice-avatar {
-  position: relative;
-  display: flex; /* For centering image if needed */
-  justify-content: center; /* Center avatar image */
-  margin-bottom: 1rem; /* Default spacing, adjusted in media queries */
+  flex-shrink: 0;
+  margin-right: 0.75rem;
 }
 
 .voice-avatar img {
-  width: 100px; /* Define a base size */
-  height: 100px; /* Define a base size */
-  border-radius: 50%; /* Make it circular */
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
   border: 2px solid #f8f9fa;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   object-fit: cover;
 }
 
 .play-button {
-  width: 36px;
-  height: 36px;
-  background-color: #CB1025;
+  width: 28px;
+  height: 28px;
+  background-color: #cb1025;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -191,387 +166,422 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  /* Position it if it's an overlay, otherwise handle in layout */
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
 }
 
 .play-button:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
   background-color: #a50d1e;
 }
 
-.play-button i { /* Assuming you use <i> for icons, adjust if using <svg> or other */
-  font-size: 1.2rem;
-}
-
 .voice-info {
-  text-align: center; /* Default to center, can be overridden */
-  flex-grow: 1; /* Allow info to take space */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Pushes tags/buttons to bottom */
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .voice-name {
   font-weight: 600;
   color: #212529;
-  margin-bottom: 0.25rem;
-  font-size: 1.1rem;
+  margin-bottom: 0.15rem;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .voice-description {
   color: #6c757d;
-  line-height: 1.4;
-  font-size: 0.9rem; /* Slightly smaller for better balance */
-  margin-bottom: 0.75rem;
+  line-height: 1.3;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+  word-wrap: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .favorite-button {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #adb5bd;
   transition: all 0.2s ease;
-  background: none; /* Ensure it's just an icon button */
+  background: none;
   border: none;
-  padding: 0.25rem; /* Small padding for easier clicking */
+  padding: 0.15rem;
   cursor: pointer;
-  align-self: flex-end; /* Position to the right if in a flex container */
+  flex-shrink: 0;
 }
 
 .favorite-button:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
-.favorite-button .bi-heart-fill { /* Assuming Bootstrap Icons */
-  color: #CB1025;
-}
-
-/* Audio Wave Animation */
+/* Audio Wave - Compact */
 .audio-wave {
-  height: 60px;
-  margin: 1rem 0;
+  height: 40px;
+  margin: 0.75rem 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
-  width: 100%; /* Make it full width of its container */
 }
 
 .wave-bars {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  width: 70%;
   height: 100%;
-  padding: 0 1rem;
 }
 
 .wave-bar {
-  width: 4px;
-  background-color: #CB1025;
-  border-radius: 2px;
+  width: 3px;
+  background-color: #cb1025;
+  border-radius: 1.5px;
   height: 30%;
   transition: height 0.2s ease;
 }
 
 .audio-wave.active .wave-bar {
-  animation: audioWave 1s infinite ease-in-out; /* Added ease-in-out */
+  animation: audioWave 1s infinite ease-in-out;
 }
 
 @keyframes audioWave {
-  0%, 100% { height: 20%; } /* Adjusted for more dynamic range */
-  50% { height: 80%; }
+  0%,
+  100% {
+    height: 20%;
+  }
+  50% {
+    height: 70%;
+  }
 }
 
-/* Stagger animation delays for a more natural wave */
-.wave-bar:nth-child(1) { animation-delay: 0s; }
-.wave-bar:nth-child(2) { animation-delay: 0.1s; }
-.wave-bar:nth-child(3) { animation-delay: 0.2s; }
-.wave-bar:nth-child(4) { animation-delay: 0.3s; }
-.wave-bar:nth-child(5) { animation-delay: 0.4s; }
-/* Add more if you have more bars, or use a SASS/JS loop to generate */
-.wave-bar:nth-child(odd) {
-  /* animation-delay: 0.3s; */ /* Overridden by more specific nth-child if you want varied delays */
-}
-.wave-bar:nth-child(even) {
-  /* animation-delay: 0.5s; */
-}
-
-
-/* Voice Tags */
+/* Voice Tags - Compact */
 .voice-tags {
-  margin-top: auto; /* Pushes tags to the bottom of .voice-info if it's a flex column */
-  padding-top: 0.75rem; /* Space above tags */
+  margin-top: auto;
+  padding-top: 0.5rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center; /* Center tags */
+  gap: 0.3rem;
 }
 
 .voice-tags .badge {
   font-weight: normal;
-  font-size: 0.75rem;
-  padding: 0.35rem 0.65rem;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
   background-color: #f8f9fa;
   color: #495057;
   border: 1px solid #e9ecef;
-  border-radius: 4px; /* Consistent rounding */
+  border-radius: 3px;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
-/* Buttons */
-.btn-primary, .btn-outline-secondary { /* Shared styles */
-  padding: 0.6rem 1.2rem; /* Slightly larger padding */
-  font-weight: 500;
-  border-radius: 6px;
-  font-size: 0.95rem; /* Consistent font size */
-  transition: all 0.2s ease-in-out;
-}
-
+/* Buttons - Compact */
 .btn-primary {
-  background-color: #CB1025;
-  border-color: #CB1025;
-  color: white; /* Ensure text color is white */
+  background-color: #cb1025;
+  border-color: #cb1025;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  font-weight: 500;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  transition: all 0.2s ease-in-out;
+  line-height: 1.3;
+  white-space: nowrap;
 }
 
-.btn-primary:hover, .btn-primary:focus {
+.btn-primary:hover,
+.btn-primary:focus {
   background-color: #a50d1e;
   border-color: #a50d1e;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Subtle shadow on hover */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-outline-secondary {
-  color: #6c757d;
-  border-color: #ced4da;
-  background-color: transparent; /* Ensure it's outline */
-}
-
-.btn-outline-secondary:hover, .btn-outline-secondary:focus {
-  background-color: #f8f9fa;
-  color: #495057;
-  border-color: #adb5bd; /* Slightly darker border on hover */
-}
-
-/* Pagination */
-.pagination-container { /* Wrapper for pagination for centering */
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-}
+/* Pagination - Compact */
 .pagination {
-  margin-bottom: 0; /* Reset if inside a container that provides margin */
+  margin-bottom: 0;
+  justify-content: center;
 }
 
 .page-item.active .page-link {
-  background-color: #CB1025;
-  border-color: #CB1025;
-  color: white; /* Ensure text color */
+  background-color: #cb1025;
+  border-color: #cb1025;
+  color: white;
 }
 
 .page-link {
-  color: #CB1025;
+  color: #cb1025;
   border-radius: 4px;
-  margin: 0 3px; /* Slightly more space */
-  padding: 0.5rem 0.75rem;
+  margin: 0 2px;
+  padding: 0.4rem 0.6rem;
   transition: all 0.2s ease-in-out;
+  font-size: 0.85rem;
+  line-height: 1.2;
 }
 
 .page-link:hover {
   color: #a50d1e;
   background-color: #f8f9fa;
-  border-color: #ddd; /* Subtle border change */
+  border-color: #ddd;
 }
 
-/* Empty State */
+/* Responsive Breakpoints - Fixed for sidebar layout */
+
+/* Large Tablets (992px and down) */
+@media (max-width: 992px) {
+  .container {
+    width: calc(100% - 20px);
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+  }
+
+  .filter-controls .col-md-2 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+
+  .voice-card .card-body {
+    padding: 0.875rem;
+  }
+}
+
+/* Tablets (768px and down) */
+@media (max-width: 768px) {
+  .container {
+    width: calc(100% - 20px);
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 50px;
+    max-width: 100%;
+  }
+
+  .filter-controls .col-md-2 {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .col-lg-4.col-md-6 {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .voice-card .d-flex {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .voice-avatar {
+    margin-right: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  .voice-info {
+    text-align: center;
+  }
+
+  .voice-name {
+    white-space: normal;
+  }
+}
+
+/* Mobile Phones (576px and down) */
+@media (max-width: 576px) {
+  .container {
+    width: calc(100% - 10px);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 40px;
+    max-width: 100%;
+  }
+
+  .voice-card .card-body {
+    padding: 0.75rem;
+  }
+
+  .voice-avatar img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .play-button {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+  }
+
+  .voice-name {
+    font-size: 0.9rem;
+  }
+
+  .voice-description {
+    font-size: 0.75rem;
+  }
+
+  .btn-primary {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    width: 100%;
+  }
+
+  .active-filters .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.45rem;
+  }
+
+  .page-link {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Very Small Mobile (400px and down) */
+@media (max-width: 400px) {
+  .container {
+    width: calc(100% - 10px);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    max-width: 100%;
+  }
+
+  .voice-avatar img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .play-button {
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+  }
+
+  .voice-name {
+    font-size: 0.85rem;
+  }
+
+  .voice-description {
+    font-size: 0.7rem;
+  }
+}
+
+/* Loading and Empty States - Compact */
 .empty-state .card {
-  border-radius: 12px;
-  padding: 3rem 1.5rem; /* Increased padding */
-  text-align: center; /* Center content */
+  border-radius: 8px;
+  padding: 2rem 1rem;
+  text-align: center;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-.empty-state i { /* Assuming icon */
-  font-size: 4rem; /* Larger icon */
+.empty-state i {
+  font-size: 3rem;
   color: #dee2e6;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .empty-state h3 {
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  font-size: 1.5rem; /* Larger heading */
+  margin-bottom: 0.25rem;
+  font-size: 1.2rem;
+  line-height: 1.2;
 }
+
 .empty-state p {
-    font-size: 1rem;
-    color: #6c757d;
+  font-size: 0.9rem;
+  color: #6c757d;
+  line-height: 1.3;
 }
 
-/* Responsive Adjustments */
-
-/* Larger Tablets and Small Desktops */
-@media (max-width: 992px) {
-  .page-header h1 {
-    font-size: 2.2rem;
-  }
-  .page-header p {
-    font-size: 1.05rem;
-  }
-  .voice-card .card-body {
-    padding: 1.25rem;
-  }
+/* Prevent text overflow and ensure proper spacing */
+* {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-
-/* Tablets (Portrait) and Large Mobile Phones (Landscape) */
-@media (max-width: 768px) {
-  .container {
-    padding-top: 60px; /* Slightly less top padding */
-  }
-  .page-header h1 {
-    font-size: 2rem;
-  }
-  .page-header p {
-    font-size: 1rem;
-  }
-
-  .language-pill {
-    padding: 0.4rem 1rem;
-    font-size: 0.9rem;
-  }
-
-  /* Voice card content stacking (avatar above info) */
-  .voice-card-content-wrapper { /* Assuming a wrapper for avatar and info if they are side-by-side */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .voice-avatar {
-    margin-bottom: 1rem; /* Already present, ensure it's effective */
-  }
-
-  .voice-info {
-    text-align: center; /* Already present */
-    width: 100%; /* Ensure it takes full width when stacked */
-  }
-
-  .filter-options-container {
-    flex-direction: column; /* Stack filter options */
-  }
-  .filter-options-container > div {
-     flex-basis: auto; /* Reset flex-basis when stacking */
-  }
+.text-nowrap-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Mobile Phones (Portrait) */
-@media (max-width: 576px) {
-  .container {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    padding-top: 50px;
-  }
+/* Ensure proper line spacing throughout */
+p,
+span,
+div {
+  line-height: 1.3;
+}
 
-  .page-header h1 {
-    font-size: 1.8rem;
-  }
-  .page-header p {
-    font-size: 0.95rem;
-  }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.2;
+}
 
-  .language-pills {
-    gap: 0.5rem;
-  }
-  .language-pill {
-    padding: 0.35rem 0.9rem;
-    font-size: 0.85rem;
-  }
+/* Additional improvements for better layout */
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+}
 
-  .voice-card .card-body {
-    padding: 1rem;
-  }
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
 
-  /*
-    The original .d-flex { flex-direction: column; } was too generic.
-    If you have specific flex containers that need to stack on mobile,
-    target them directly. For example:
-    .specific-flex-container-on-card {
-      flex-direction: column;
-      align-items: center;
-    }
-  */
-  /* Example: If voice avatar and play button are in a row */
-  .voice-avatar-controls {
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-  }
+/* Better spacing for filter controls */
+.filter-controls .row > * {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
 
+/* Improved button spacing */
+.btn + .btn {
+  margin-left: 0.5rem;
+}
 
-  .voice-avatar img {
-    width: 80px;
-    height: 80px;
-  }
-
-  .play-button {
-    width: 32px;
-    height: 32px;
-  }
-  .play-button i {
-    font-size: 1rem;
-  }
-
-  .voice-name {
-    font-size: 1rem;
-  }
-  .voice-description {
-    font-size: 0.85rem;
-  }
-
-  .btn-primary, .btn-outline-secondary {
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-    width: 100%; /* Make buttons full-width for easier tapping */
-    margin-bottom: 0.5rem; /* Add space if multiple buttons stack */
-  }
-  .btn-primary:last-child, .btn-outline-secondary:last-child {
-    margin-bottom: 0;
-  }
-  .button-group { /* If you have a group of buttons */
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-
-  .active-filters .badge {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.6rem;
-  }
-
-  .page-link {
-    padding: 0.4rem 0.6rem; /* Smaller pagination links */
-    font-size: 0.9rem;
-  }
-  .pagination-container {
-    margin-top: 1.5rem;
+/* Better responsive grid for voice cards */
+@media (min-width: 1200px) {
+  .col-lg-4 {
+    flex: 0 0 auto;
+    width: 33.333333%;
   }
 }
 
-/* Extra Small Devices */
-@media (max-width: 400px) {
-    .container {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-    .page-header h1 {
-        font-size: 1.6rem;
-    }
-    .page-header p {
-        font-size: 0.9rem;
-    }
-    .language-pill {
-        font-size: 0.8rem;
-    }
-    .voice-name {
-        font-size: 0.95rem;
-    }
+@media (min-width: 992px) and (max-width: 1199px) {
+  .col-lg-4 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+/* Ensure proper spacing in pagination */
+.pagination .page-item {
+  margin: 0 0.125rem;
+}
+
+/* Loading spinner improvements */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Better focus states */
+.form-select:focus,
+.btn:focus,
+.page-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(203, 16, 37, 0.25);
 }

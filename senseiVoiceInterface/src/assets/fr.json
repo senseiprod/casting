@@ -64,6 +64,7 @@
     "sampleRate": "Taux d'échantillonnage :",
     "temperature": "Température :"
   },
+
   "characterLimit": {
     "warning": "Le test gratuit est limité à 100 caractères. Votre texte sera tronqué."
   },
@@ -619,7 +620,8 @@
       "gender": "Genre",
       "category": "Catégorie",
       "voicesPerPage": "Voix par page",
-      "reset": "Réinitialiser"
+      "reset": "Réinitialiser",
+      "language":"language"
     },
     "noVoicesFound": "Aucune voix trouvée avec les filtres sélectionnés. Veuillez essayer d'autres critères.",
     "loading": "Chargement des voix...",

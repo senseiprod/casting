@@ -9,12 +9,14 @@ body {
 
 /* Content Layout */
 .content {
-  width: 100%; /* Fixed from 120% */
+  margin-left: 280px;
+  padding-top: clamp(60px, 8vh, 70px);
   min-height: 100vh;
   transition: all 0.3s ease;
-  padding: 1rem; /* Fixed from 600px top padding */
-  margin: 0 auto;
-  max-width: 1400px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+  width: 100%;
 }
 
 /* Modal Styles */
@@ -512,6 +514,8 @@ audio {
 @media (min-width: 1200px) {
   .content {
     padding: 2rem;
+            margin-left: 150px;
+
   }
 
   .voice-card {
@@ -527,6 +531,9 @@ audio {
 @media (max-width: 1199px) and (min-width: 992px) {
   .content {
     padding: 1.5rem;
+                margin-left: 90px;
+
+
   }
 }
 
@@ -534,6 +541,9 @@ audio {
 @media (max-width: 991px) and (min-width: 768px) {
   .content {
     padding: 1rem;
+               margin-left: 90px;
+
+
   }
 
   .tab-nav {
@@ -553,6 +563,8 @@ audio {
 @media (max-width: 767px) {
   .content {
     padding: 0.75rem;
+        margin-left: 90px;
+
   }
 
   .tab-nav {

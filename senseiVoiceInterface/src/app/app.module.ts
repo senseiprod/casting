@@ -41,12 +41,13 @@ import {TranslateLoader, TranslateModule, TranslatePipe} from "@ngx-translate/co
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import { HumainVoiceComponent } from './components/mainSite/humain-voice/humain-voice.component';
 import { GenerateWithSlectedVoiceComponent } from './components/speakerDasboard/generate-with-slected-voice/generate-with-slected-voice.component';
-import { DeleteAccountComponent } from './components/SpeakerDasboard/delete-account/delete-account.component';
+
 import { ReservationModalComponent } from './components/mainSite/reservation-modal/reservation-modal.component';
 import { GenerateWithVoiceSpeakerComponent } from './components/speakerDasboard/generate-with-voice-speaker/generate-with-voice-speaker.component';
 import { BookingComponent } from './components/mainSite/booking/booking.component';
 import { FooterHomeComponent } from './components/mainSite/footer-home/footer-home.component';
 import { ListWithSlectedLanguageComponent } from './components/mainSite/list-with-slected-language/list-with-slected-language.component';
+import { DeleteAccountComponent } from './components/speakerDasboard/delete-account/delete-account.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/', '.json');
 }

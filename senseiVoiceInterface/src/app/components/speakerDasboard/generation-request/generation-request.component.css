@@ -1,13 +1,17 @@
 /* Main container styles */
 .container {
-  width: 100%; /* Changed from 150% to 100% */
+  width: 77%; /* Changed from 150% to 100% */
   min-height: 100vh;
   margin-top: 5rem; /* Using rem instead of fixed pixels */
   transition: all 0.3s;
   margin-left: 0; /* Reset margin and handle with media queries */
   padding: 1rem; /* Add padding for smaller screens */
 }
+.content {
+  min-height: 100vh;
+  transition: all 0.3s ease;
 
+}
 /* Sidebar margin only on larger screens */
 @media (min-width: 992px) {
   .container {

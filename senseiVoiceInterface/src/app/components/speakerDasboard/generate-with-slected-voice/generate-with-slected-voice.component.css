@@ -11,12 +11,14 @@ body {
 
 /* Content Layout - Fixed from problematic values */
 .content {
-  width: 100%; /* Fixed from 120% */
+  margin-left: 280px;
+  padding-top: clamp(60px, 8vh, 70px);
   min-height: 100vh;
   transition: all 0.3s ease;
-  padding: clamp(1rem, 3vw, 2rem); /* Fixed from 600px top padding */
-  margin: 0 auto;
-  max-width: 1400px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+  width: 100%;
 }
 
 /* Tab Navigation Styles */
