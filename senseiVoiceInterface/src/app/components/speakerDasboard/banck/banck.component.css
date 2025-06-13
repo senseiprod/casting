@@ -112,6 +112,7 @@
 .row.g-4 {
   --bs-gutter-x: 1rem;
   --bs-gutter-y: 1rem;
+  margin-left: 90px;
 }
 
 .voice-card .card {

@@ -102,7 +102,10 @@
     <div class="card border-0 shadow-sm">
       <div class="card-body py-3">
         <div class="d-flex flex-wrap align-items-center">
-          <span class="me-2 fw-medium">{{ 'voiceCasting.filters.activeFilters' | translate }}:</span>
+          <span style="margin-left:50px;" class="active-filters-label">
+  <i class="bi bi-funnel-fill me-1"></i>
+  {{ 'voiceCasting.filters.activeFilters' | translate }}:
+</span>
 
           <span class="badge bg-primary me-2 mb-1" *ngIf="selectedLanguage">
             {{ 'voiceCasting.filters.language' | translate }}: {{ selectedLanguage }}
@@ -293,3 +296,81 @@
     </nav>
   </div>
 </div>
+
+<style>
+/* Update the container to properly account for the sidebar */
+.container {
+  width: calc(100% - 190px); /* Adjust width to account for sidebar */
+  max-width: 1200px;
+  margin-left: 190px; /* Match the margin-left of filter-controls */
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  padding-top: 60px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Remove the margin-left from filter-controls since we've moved the container */
+.filter-controls {
+  margin-bottom: 1rem;
+  margin-left: 0; /* Remove the 190px margin since container is already offset */
+}
+
+/* Update responsive breakpoints to maintain proper layout with sidebar */
+@media (max-width: 992px) {
+  .container {
+    width: calc(100% - 190px);
+    margin-left: 190px;
+    margin-right: auto;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: calc(100% - 190px);
+    margin-left: 190px;
+    margin-right: auto;
+    padding-top: 50px;
+    max-width: 100%;
+  }
+}
+
+/* For mobile views, we might need to adjust for a collapsed sidebar */
+@media (max-width: 576px) {
+  .container {
+    width: calc(100% - 60px); /* Assuming sidebar collapses to ~50px on mobile */
+    margin-left: 60px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 40px;
+    max-width: 100%;
+  }
+}
+
+.active-filters-label {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  color: #495057;
+  background-color: #f8f9fa;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
+  border-left: 3px solid #cb1025;
+}
+
+.active-filters-label i {
+  color: #cb1025;
+  font-size: 0.8rem;
+}
+
+.active-filters .card-body {
+  padding: 0.75rem 1rem;
+  background-color: #fcfcfc;
+}
+</style>

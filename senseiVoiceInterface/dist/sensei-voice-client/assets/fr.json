@@ -614,7 +614,7 @@
     "title": "TROUVEZ LA VOIX PARFAITE DANS LA LANGUE ADAPTÉE À VOTRE AUDIENCE",
     "description": "Notre plateforme vous propose une large sélection de voix dans plusieurs langues, prêtes à être utilisées pour vos projets publicitaires, vidéos, podcasts, e-learning et plus encore.",
     "filters": {
-      "activeFilters": "Filtres actifs:",
+      "activeFilters": "Filtres actifs",
       "accent": "Accent",
       "age": "Âge",
       "gender": "Genre",
