@@ -1,14 +1,14 @@
-/* Main Container - Fixed for proper sidebar layout */
+/* Main Container - Responsive with sidebar */
 .container {
-  width: calc(100% - 20px);
+  width: calc(100% - 280px);
   max-width: 1200px;
-  margin-left: auto;
+  margin-left: 280px;
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
   min-height: 100vh;
   transition: all 0.3s ease;
-  padding-top: 60px;
+  padding-top: 100px;
   box-sizing: border-box;
   overflow-x: hidden;
 }
@@ -38,6 +38,7 @@
 /* Filter Controls - Compact layout */
 .filter-controls {
   margin-bottom: 1rem;
+  margin-left: 0;
 }
 
 .filter-controls .card {
@@ -112,7 +113,7 @@
 .row.g-4 {
   --bs-gutter-x: 1rem;
   --bs-gutter-y: 1rem;
-  margin-left: 90px;
+  margin-left: 0;
 }
 
 .voice-card .card {
@@ -332,116 +333,59 @@
   border-color: #ddd;
 }
 
-/* Responsive Breakpoints - Fixed for sidebar layout */
+/* Responsive Breakpoints - Updated for sidebar layout */
 
-/* Large Tablets (992px and down) */
-@media (max-width: 992px) {
+/* Large Desktop (1200px and up) */
+@media (min-width: 1200px) {
   .container {
-    width: calc(100% - 20px);
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 100%;
-  }
-
-  .filter-controls .col-md-2 {
-    flex: 0 0 auto;
-    width: 50%;
-  }
-
-  .voice-card .card-body {
-    padding: 0.875rem;
+    width: calc(100% - 300px);
+    margin-left: 300px;
+    padding: 100px 2rem 2rem;
   }
 }
 
-/* Tablets (768px and down) */
-@media (max-width: 768px) {
+/* Desktop (992px to 1199px) */
+@media (max-width: 1199px) and (min-width: 992px) {
   .container {
-    width: calc(100% - 20px);
-    margin-left: auto;
-    margin-right: auto;
-    padding-top: 50px;
-    max-width: 100%;
-  }
-
-  .filter-controls .col-md-2 {
-    width: 100%;
-    margin-bottom: 0.75rem;
-  }
-
-  .col-lg-4.col-md-6 {
-    flex: 0 0 auto;
-    width: 100%;
-  }
-
-  .voice-card .d-flex {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .voice-avatar {
-    margin-right: 0;
-    margin-bottom: 0.75rem;
-  }
-
-  .voice-info {
-    text-align: center;
-  }
-
-  .voice-name {
-    white-space: normal;
+    width: calc(100% - 280px);
+    margin-left: 280px;
+    padding: 100px 1.5rem 1.5rem;
   }
 }
 
-/* Mobile Phones (576px and down) */
-@media (max-width: 576px) {
+/* Tablet (768px to 991px) */
+@media (max-width: 991px) and (min-width: 768px) {
   .container {
-    width: calc(100% - 10px);
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    padding-top: 40px;
-    max-width: 100%;
+    width: calc(100% - 260px);
+    margin-left: 260px;
+    padding: 100px 1rem 1rem;
   }
+}
 
-  .voice-card .card-body {
-    padding: 0.75rem;
-  }
-
-  .voice-avatar img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .play-button {
-    width: 24px;
-    height: 24px;
-    font-size: 0.7rem;
-  }
-
-  .voice-name {
-    font-size: 0.9rem;
-  }
-
-  .voice-description {
-    font-size: 0.75rem;
-  }
-
-  .btn-primary {
-    font-size: 0.75rem;
-    padding: 0.35rem 0.7rem;
+/* Mobile and Small Tablet (767px and below) */
+@media (max-width: 767px) {
+  .container {
     width: 100%;
+    margin-left: 0;
+    padding: 100px 1rem 1rem;
   }
+}
 
-  .active-filters .badge {
-    font-size: 0.7rem;
-    padding: 0.25rem 0.45rem;
+/* Small Mobile (575px and below) */
+@media (max-width: 575px) {
+  .container {
+    width: 100%;
+    margin-left: 0;
+    padding: 80px 0.75rem 1rem;
   }
+}
 
-  .page-link {
-    padding: 0.3rem 0.5rem;
-    font-size: 0.8rem;
+/* Extra Small Mobile (479px and below) */
+@media (max-width: 479px) {
+  .container {
+    width: 100%;
+    margin-left: 0;
+    padding: 80px 0.5rem 1rem;
   }
 }
 

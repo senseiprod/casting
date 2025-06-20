@@ -1,21 +1,66 @@
-/* Main container styles */
+/* Main container styles - Responsive */
 .container {
-  width: 77%; /* Changed from 150% to 100% */
+  width: calc(100% - 280px);
   min-height: 100vh;
-  margin-top: 5rem; /* Using rem instead of fixed pixels */
+  margin-left: 280px;
+  margin-top: 0;
   transition: all 0.3s;
-  margin-left: 0; /* Reset margin and handle with media queries */
-  padding: 1rem; /* Add padding for smaller screens */
+  padding: 100px 1rem 1rem;
+  box-sizing: border-box;
 }
+
 .content {
   min-height: 100vh;
   transition: all 0.3s ease;
-
+  width: 100%;
 }
-/* Sidebar margin only on larger screens */
-@media (min-width: 992px) {
+
+/* Responsive breakpoints - Updated */
+@media (min-width: 1200px) {
   .container {
+    width: calc(100% - 300px);
+    margin-left: 300px;
+    padding: 100px 2rem 2rem;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 992px) {
+  .container {
+    width: calc(100% - 280px);
     margin-left: 280px;
+    padding: 100px 1.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 991px) and (min-width: 768px) {
+  .container {
+    width: calc(100% - 260px);
+    margin-left: 260px;
+    padding: 100px 1rem 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .container {
+    width: 100%;
+    margin-left: 0;
+    padding: 100px 1rem 1rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .container {
+    width: 100%;
+    margin-left: 0;
+    padding: 80px 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .container {
+    width: 100%;
+    margin-left: 0;
+    padding: 80px 0.5rem 1rem;
   }
 }
 

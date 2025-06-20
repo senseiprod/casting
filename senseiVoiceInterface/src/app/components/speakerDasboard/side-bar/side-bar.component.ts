@@ -13,6 +13,7 @@ import {FormBuilder, Validators} from "@angular/forms";
 export class SideBarComponent implements OnInit {
   userId: string | null = '';
   photoUrl: string | ArrayBuffer | null = null;
+  sidebarOpen = false
   constructor(
     private route: ActivatedRoute,
     private utilisateurService: UtilisateurService,
@@ -21,6 +22,14 @@ export class SideBarComponent implements OnInit {
     this.route.parent?.paramMap.subscribe(params => {
       this.userId = params.get('uuid') || '';
     });
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen
+  }
+
+  closeSidebar() {
+    this.sidebarOpen = false
   }
   getPhoto(): void {
     this.utilisateurService.getPhoto(this.userId).subscribe(response => {

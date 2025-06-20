@@ -38,11 +38,13 @@
   margin-right: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .toggle-button:hover {
   background-color: #f0f0f0;
-  color: #CB1025;
+  color: #cb1025;
 }
 
 .toggle-button i {
@@ -55,16 +57,20 @@
 }
 
 .page-title h1 {
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   font-weight: 600;
   color: #333;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: clamp(0.7rem, 1.5vw, 0.75rem);
   color: #777;
   margin-top: 0.25rem;
 }
@@ -75,7 +81,7 @@
 }
 
 .breadcrumb .current {
-  color: #CB1025;
+  color: #cb1025;
   font-weight: 500;
 }
 
@@ -83,6 +89,7 @@
 .header-right {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 /* Search Box */
@@ -98,6 +105,7 @@
   padding: 0.5rem 1rem;
   width: 250px;
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .search-box:focus-within {
@@ -116,7 +124,7 @@
   background: transparent;
   outline: none;
   width: 100%;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   color: #555;
 }
 
@@ -140,6 +148,8 @@
   color: #555;
   font-weight: 500;
   transition: all 0.2s ease;
+  min-height: 44px;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 .language-button:hover {
@@ -174,11 +184,13 @@
   color: #555;
   position: relative;
   transition: all 0.2s ease;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .notification-button:hover {
   background-color: #f0f0f0;
-  color: #CB1025;
+  color: #cb1025;
 }
 
 .notification-badge {
@@ -187,7 +199,7 @@
   right: -5px;
   width: 18px;
   height: 18px;
-  background-color: #CB1025;
+  background-color: #cb1025;
   color: white;
   font-size: 0.7rem;
   font-weight: 600;
@@ -227,7 +239,7 @@
 }
 
 .mark-all:hover {
-  color: #CB1025;
+  color: #cb1025;
 }
 
 .notification-body {
@@ -264,7 +276,7 @@
   width: 36px;
   height: 36px;
   background-color: rgba(203, 16, 37, 0.1);
-  color: #CB1025;
+  color: #cb1025;
   border-radius: 8px;
   margin-right: 0.75rem;
 }
@@ -292,7 +304,7 @@
 
 .view-all {
   font-size: 0.85rem;
-  color: #CB1025;
+  color: #cb1025;
   text-decoration: none;
   font-weight: 500;
 }
@@ -313,6 +325,7 @@
   border: none;
   padding: 0.5rem;
   cursor: pointer;
+  min-height: 44px;
 }
 
 .profile-avatar {
@@ -334,7 +347,7 @@
   right: -2px;
   width: 10px;
   height: 10px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   border: 2px solid white;
   border-radius: 50%;
 }
@@ -345,16 +358,24 @@
 }
 
 .profile-name {
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   font-weight: 600;
   color: #333;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
 }
 
 .profile-role {
-  font-size: 0.75rem;
+  font-size: clamp(0.7rem, 1.5vw, 0.75rem);
   color: #777;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
 }
 
 .profile-arrow {
@@ -398,11 +419,12 @@
   padding: 0.75rem 1rem;
   color: #555;
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .dropdown-item:hover {
   background-color: #f8f9fa;
-  color: #CB1025;
+  color: #cb1025;
 }
 
 .dropdown-item i {
@@ -418,17 +440,66 @@
 }
 
 .logout-item {
-  color: #CB1025;
+  color: #cb1025;
 }
 
 .logout-item:hover {
   background-color: #ffebee;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 992px) {
+/* Responsive Breakpoints */
+
+/* Large Desktop (1200px and up) */
+@media (min-width: 1200px) {
+  .topbar {
+    left: 300px;
+  }
+
+  .search-box {
+    width: 300px;
+  }
+}
+
+/* Desktop (992px to 1199px) */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .topbar {
+    left: 280px;
+  }
+
+  .search-box {
+    width: 250px;
+  }
+}
+
+/* Tablet (768px to 991px) */
+@media (max-width: 991px) and (min-width: 768px) {
+  .topbar {
+    left: 260px;
+  }
+
+  .search-container {
+    display: none;
+  }
+
+  .profile-info {
+    display: block;
+  }
+
+  .header-container {
+    padding: 0 1rem;
+  }
+}
+
+/* Mobile and Small Tablet (767px and below) */
+@media (max-width: 767px) {
   .topbar {
     left: 0;
+    padding-left: 4rem;
+    padding-right: 1rem;
+  }
+
+  .header-container {
+    padding: 0 1rem 0 4rem;
   }
 
   .search-container {
@@ -438,15 +509,9 @@
   .profile-info {
     display: none;
   }
-}
-
-@media (max-width: 768px) {
-  .header-container {
-    padding: 0 1rem;
-  }
 
   .page-title h1 {
-    font-size: 1.1rem;
+    max-width: 150px;
   }
 
   .breadcrumb {
@@ -467,12 +532,101 @@
   }
 }
 
-@media (max-width: 576px) {
+/* Small Mobile (575px and below) */
+@media (max-width: 575px) {
+  .topbar {
+    height: 60px;
+  }
+
+  .header-container {
+    padding: 0 0.5rem 0 3.5rem;
+  }
+
   .page-title {
     display: none;
   }
 
   .language-button span {
+    display: none;
+  }
+
+  .header-right {
+    gap: 0.25rem;
+  }
+
+  .notification-dropdown,
+  .profile-dropdown {
+    width: calc(100vw - 2rem);
+    max-width: 280px;
+  }
+}
+
+/* Extra Small Mobile (479px and below) */
+@media (max-width: 479px) {
+  .topbar {
+    height: 60px;
+  }
+
+  .header-container {
+    padding: 0 0.25rem 0 3rem;
+  }
+
+  .profile-avatar img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .notification-button,
+  .toggle-button {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .language-button {
+    padding: 0.375rem 0.5rem;
+    min-height: 36px;
+  }
+}
+
+/* Focus states for accessibility */
+.toggle-button:focus,
+.language-button:focus,
+.notification-button:focus,
+.profile-button:focus {
+  outline: 2px solid #cb1025;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .topbar {
+    border-bottom: 2px solid #000;
+  }
+
+  .notification-button:hover,
+  .language-button:hover,
+  .toggle-button:hover {
+    outline: 2px solid;
+    outline-offset: -2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .topbar,
+  .toggle-button,
+  .language-button,
+  .notification-button,
+  .search-box {
+    transition: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .topbar {
     display: none;
   }
 }

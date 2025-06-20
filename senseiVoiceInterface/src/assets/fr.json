@@ -35,7 +35,12 @@
       "young": "Jeune",
       "adult": "Adulte",
       "senior": "Sénior",
-      "resetAll": "Réinitialiser Tout"
+      "resetAll": "Réinitialiser Tout",
+      "specifications": "Spécifications",
+      "language": "Langue",
+      "gender": "Genre",
+      "ageGroup": "Tranche d'âge",
+      "type": "Type"
     },
     "buttons": {
       "original": "Original",
@@ -56,6 +61,7 @@
     "selectProjectBtn": "Sélectionner un Projet",
     "cancel": "Annuler",
     "createNew": "Créer un Nouveau Projet"
+    
   },
   "voiceControls": {
     "format": "Format",
@@ -71,12 +77,24 @@
   "info": {
     "price": "Prix :",
     "characters": "Caractères :",
-    "total": "Total :"
+    "total": "Total :",
+    "free": "Gratuit"
+
   },
   "generation": {
     "success": "Discours généré avec succès",
-    "andSavedTo": "et enregistré dans le projet"
+    "andSavedTo": "et enregistré dans le projet",
+    "freeTestTitle": "Test gratuit",
+    "audioRequestTitle": "Demande audio",
+    "generate": "Générer"
+
   },
+  "voiceShowcase": {
+    "voicePreview": "Aperçu de la voix",
+    "description": "Écoutez l'échantillon vocal avant de générer votre contenu.",
+    "changeVoice": "Changer de voix"
+  },
+
   "checkout": {
     "proceedToCheckout": "Procéder au Paiement",
     "pricingInformation": "Informations sur les Prix",

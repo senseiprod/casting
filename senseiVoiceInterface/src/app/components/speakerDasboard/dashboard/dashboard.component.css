@@ -1,13 +1,19 @@
-/* Base Styles */
+/* Dashboard Container - Responsive */
 .dashboard-container {
   padding: 30px 0;
   background-color: #f8f9fa;
   min-height: 100vh;
+  margin-left: 280px;
+  padding-top: 100px;
+  transition: all 0.3s ease;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
 }
 
 /* Dashboard Header */
@@ -18,7 +24,7 @@
 }
 
 .dashboard-title {
-  color: #CB1025;
+  color: #cb1025;
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 8px;
@@ -44,7 +50,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   height: 100%;
   transition: all 0.25s ease;
-  border-top: 3px solid #CB1025;
+  border-top: 3px solid #cb1025;
 }
 
 .stat-card:hover {
@@ -64,7 +70,7 @@
 }
 
 .stat-icon i {
-  color: #CB1025;
+  color: #cb1025;
   font-size: 22px;
 }
 
@@ -95,7 +101,7 @@
 
 .progress-bar {
   height: 100%;
-  background-color: #CB1025;
+  background-color: #cb1025;
   border-radius: 2px;
 }
 
@@ -121,18 +127,18 @@
 }
 
 .section-title::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
   width: 4px;
-  background-color: #CB1025;
+  background-color: #cb1025;
   border-radius: 2px;
 }
 
 .btn-custom {
-  background-color: #CB1025;
+  background-color: #cb1025;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -257,7 +263,7 @@
 }
 
 .item-icon i {
-  color: #CB1025;
+  color: #cb1025;
   font-size: 18px;
 }
 
@@ -306,7 +312,7 @@
 }
 
 .btn-icon:hover i {
-  color: #CB1025;
+  color: #cb1025;
 }
 
 /* Status Card */
@@ -344,7 +350,7 @@
 }
 
 .status-icon i {
-  color: #CB1025;
+  color: #cb1025;
   font-size: 22px;
 }
 
@@ -397,7 +403,7 @@
 
 .status-progress {
   height: 100%;
-  background-color: #CB1025;
+  background-color: #cb1025;
   border-radius: 4px;
 }
 
@@ -427,13 +433,13 @@
 
 .status-btn:hover {
   background-color: #f8e1e3;
-  color: #CB1025;
+  color: #cb1025;
 }
 
 .status-btn.active {
-  background-color: #CB1025;
+  background-color: #cb1025;
   color: #ffffff;
-  border-color: #CB1025;
+  border-color: #cb1025;
 }
 
 /* Action List Specific */
@@ -464,7 +470,7 @@
 .btn-play {
   width: 32px;
   height: 32px;
-  background-color: #CB1025;
+  background-color: #cb1025;
   border: none;
   border-radius: 50%;
   display: flex;
@@ -561,7 +567,7 @@
 }
 
 .btn-calendar:hover i {
-  color: #CB1025;
+  color: #cb1025;
 }
 
 .calendar-grid {
@@ -603,7 +609,7 @@
 }
 
 .calendar-day.has-reservation {
-  border: 2px solid #CB1025;
+  border: 2px solid #cb1025;
 }
 
 .day-number {
@@ -616,7 +622,7 @@
   bottom: 5px;
   width: 4px;
   height: 4px;
-  background-color: #CB1025;
+  background-color: #cb1025;
   border-radius: 50%;
 }
 
@@ -641,7 +647,49 @@
   margin: 0;
 }
 
-/* Responsive Adjustments */
+/* Responsive adjustments for dashboard */
+@media (min-width: 1200px) {
+  .dashboard-container {
+    margin-left: 300px;
+    padding: 100px 2rem 2rem;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 992px) {
+  .dashboard-container {
+    margin-left: 280px;
+    padding: 100px 1.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 991px) and (min-width: 768px) {
+  .dashboard-container {
+    margin-left: 260px;
+    padding: 100px 1rem 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-container {
+    margin-left: 0;
+    padding: 100px 1rem 1rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .dashboard-container {
+    margin-left: 0;
+    padding: 80px 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .dashboard-container {
+    margin-left: 0;
+    padding: 80px 0.5rem 1rem;
+  }
+}
+
 @media (max-width: 992px) {
   .dashboard-title {
     font-size: 28px;

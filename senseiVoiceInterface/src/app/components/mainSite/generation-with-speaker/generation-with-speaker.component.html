@@ -217,10 +217,10 @@
                                                     voice.voice_id,
                                                     voice.name,
                                                     'https://api.dicebear.com/7.x/initials/svg?seed=' + voice.name,
-                                                    voice.labels?.gender || 'Non défini',
-                                                    voice.labels?.age || 'Non défini',
+                                                    voice.gender || 'Non défini',
+                                                    voice.age || 'Non défini',
                                                     voice.category || 'Non classé',
-                                                    voice.fine_tuning?.language || 'Non défini',
+                                                    voice.language || 'Non défini',
                                                     voice.preview_url || 'no-preview'
                                                   ]">
             {{ 'voiceCasting.generate' | translate }}

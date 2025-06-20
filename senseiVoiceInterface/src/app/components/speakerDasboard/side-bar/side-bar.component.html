@@ -1,4 +1,12 @@
-<nav class="sidebar">
+<!-- Mobile Sidebar Toggle -->
+<button class="sidebar-toggle" (click)="toggleSidebar()" aria-label="Toggle Sidebar">
+  <i class="bi bi-list"></i>
+</button>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay" [class.show]="sidebarOpen" (click)="closeSidebar()"></div>
+
+<nav class="sidebar" [class.show]="sidebarOpen">
   <!-- Logo Section -->
   <div class="sidebar-brand">
     <img src="assets/img/LOGO NOIR (2).png" alt="Company Logo" class="logo">

@@ -35,7 +35,12 @@
       "young": "Joven",
       "adult": "Adulto",
       "senior": "Mayor",
-      "resetAll": "Restablecer Todo"
+      "resetAll": "Restablecer Todo",
+      "specifications": "Especificaciones",
+      "language": "Idioma",
+      "gender": "Género",
+      "ageGroup": "Grupo de edad",
+      "type": "Tipo"
     },
     "buttons": {
       "original": "Original",
@@ -70,12 +75,24 @@
   "info": {
     "price": "Precio:",
     "characters": "Caracteres:",
-    "total": "Total:"
+    "total": "Total:",
+    "free": "Gratuit"
+
   },
   "generation": {
     "success": "Voz generada con éxito",
-    "andSavedTo": "y guardada en el proyecto"
+    "andSavedTo": "y guardada en el proyecto",
+    "freeTestTitle": "Prueba gratuita",
+    "audioRequestTitle": "Solicitud de audio",
+    "generate": "Generar"
+
   },
+  "voiceShowcase": {
+    "voicePreview": "Vista previa de la voz",
+    "description": "Escuche la muestra de voz antes de generar su contenido.",
+    "changeVoice": "Cambiar voz"
+  },
+
   "checkout": {
     "proceedToCheckout": "Proceder al Pago",
     "pricingInformation": "Información de Precios",
