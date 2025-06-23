@@ -35,7 +35,12 @@
       "young": "Young",
       "adult": "Adult",
       "senior": "Senior",
-      "resetAll": "Reset All"
+      "resetAll": "Reset All",
+      "specifications": "Specifications",
+      "language": "Language",
+      "gender": "Gender",
+      "ageGroup": "Age Group",
+      "type": "Type"
     },
     "buttons": {
       "original": "Original",
@@ -70,12 +75,23 @@
   "info": {
     "price": "Price:",
     "characters": "Characters:",
-    "total": "Total:"
+    "total": "Total:",
+    "free": "Free"
   },
   "generation": {
     "success": "Speech generated successfully",
-    "andSavedTo": "and saved to project"
+    "andSavedTo": "and saved to project",
+    "freeTestTitle": "Free Test",
+    "audioRequestTitle": "Audio Request",
+    "generate": "Generate"
+
   },
+  "voiceShowcase": {
+    "voicePreview": "Voice Preview",
+    "description": "Listen to the voice sample before generating your content.",
+    "changeVoice": "Change Voice"
+  },
+
   "checkout": {
     "proceedToCheckout": "Proceed to Checkout",
     "pricingInformation": "Pricing Information",
