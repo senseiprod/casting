@@ -19,7 +19,7 @@ body {
 }
 
 .content {
-  margin-left: 280px;
+  margin-left: 260px;
   padding-top: 100px;
   min-height: 100vh;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -652,12 +652,8 @@ body {
   background: #f1f5f9;
   border: 2px solid #e2e8f0;
   color: #64748b;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem;
   border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
 }
 
 .btn-reset-filters:hover {
