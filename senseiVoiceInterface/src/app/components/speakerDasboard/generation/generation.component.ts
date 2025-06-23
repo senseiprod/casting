@@ -1,4 +1,4 @@
-import { Component, type OnInit } from "@angular/core"
+import { Component, ElementRef, ViewChild, type OnInit } from "@angular/core"
 import  { ElevenLabsService } from "../../../services/eleven-labs.service"
 import  { Voice } from "../../../services/eleven-labs.service"
 import  { DomSanitizer, SafeUrl } from "@angular/platform-browser"
@@ -33,7 +33,15 @@ export class GenerationComponent implements OnInit {
   audioPlayer = new Audio()
   voiceId = "sarah_voice"
   userId: string | null = ""
-
+  languages = [
+    { code: 'en', name: 'Anglais', active: true },
+    { code: 'fr', name: 'Français', active: false },
+    { code: 'ar', name: 'Arabe', active: false },
+    { code: 'de', name: 'Allemand', active: false },
+    { code: 'es', name: 'Espagnol', active: false },
+    { code: 'tr', name: 'Turc', active: false },
+    { code: 'it', name: 'Italien', active: false }
+  ];
   // Project related properties
   projects: Project[] = []
   selectedProject: Project | null = null
@@ -57,6 +65,22 @@ export class GenerationComponent implements OnInit {
     voiceName: "",
   }
 
+  // Audio player properties
+  @ViewChild("audioPlayer") audioPlayerRef!: ElementRef<HTMLAudioElement>
+  isAudioPlaying = false
+  currentTime = 0
+  duration = 0
+  volume = 100
+  isMuted = false
+  progressPercentage = 0
+  waveformBars: number[] = []
+
+  // Add these properties to your component class
+  showCharLimitModal = false
+  userAcceptedPaidContent = false
+  hasExceededLimit = false
+  previousTextLength = 0
+
   constructor(
     private elevenLabsService: ElevenLabsService,
     private route: ActivatedRoute,
@@ -66,12 +90,16 @@ export class GenerationComponent implements OnInit {
     private actionService: ActionService,
   ) {}
 
+  // Initialize waveform bars in ngOnInit
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
       this.userId = params.get("uuid") || ""
     })
     this.fetchVoices()
     this.fetchUserProjects()
+
+    // Initialize waveform bars
+    this.waveformBars = Array.from({ length: 20 }, () => Math.random() * 80 + 20)
   }
 
   fetchUserProjects() {
@@ -261,7 +289,7 @@ export class GenerationComponent implements OnInit {
   }
 
   closeModal() {
-    this.showVoiceSelection = false;
+    this.showVoiceSelection = false
     this.showVoice = true
   }
 
@@ -297,6 +325,105 @@ export class GenerationComponent implements OnInit {
     }
   }
 
+  // Audio player methods
+  togglePlayPause(): void {
+    if (!this.audioPlayerRef?.nativeElement) return
+
+    const audio = this.audioPlayerRef.nativeElement
+
+    if (this.isAudioPlaying) {
+      audio.pause()
+      this.isAudioPlaying = false
+    } else {
+      audio
+        .play()
+        .then(() => {
+          this.isAudioPlaying = true
+        })
+        .catch((error) => {
+          console.error("Error playing audio:", error)
+          this.generationError = "Failed to play audio. Please try again."
+        })
+    }
+  }
+
+  onAudioLoaded(): void {
+    if (this.audioPlayerRef?.nativeElement) {
+      this.duration = this.audioPlayerRef.nativeElement.duration
+      this.setVolume({ target: { value: this.volume } } as any)
+    }
+  }
+
+  onTimeUpdate(): void {
+    if (this.audioPlayerRef?.nativeElement) {
+      this.currentTime = this.audioPlayerRef.nativeElement.currentTime
+      this.progressPercentage = (this.currentTime / this.duration) * 100
+    }
+  }
+
+  onAudioEnded(): void {
+    this.isAudioPlaying = false
+    this.currentTime = 0
+    this.progressPercentage = 0
+  }
+
+  onAudioError(event: any): void {
+    console.error("Audio error:", event)
+    this.isAudioPlaying = false
+    this.generationError = "Error playing audio. Please try again."
+  }
+
+  seekAudio(event: MouseEvent): void {
+    if (!this.audioPlayerRef?.nativeElement) return
+
+    const progressContainer = event.currentTarget as HTMLElement
+    const rect = progressContainer.getBoundingClientRect()
+    const clickX = event.clientX - rect.left
+    const percentage = (clickX / rect.width) * 100
+    const newTime = (percentage / 100) * this.duration
+
+    this.audioPlayerRef.nativeElement.currentTime = newTime
+    this.currentTime = newTime
+    this.progressPercentage = percentage
+  }
+
+  setVolume(event: any): void {
+    if (!this.audioPlayerRef?.nativeElement) return
+
+    this.volume = Number.parseInt(event.target.value)
+    this.audioPlayerRef.nativeElement.volume = this.volume / 100
+    this.isMuted = this.volume === 0
+  }
+
+  toggleMute(): void {
+    if (!this.audioPlayerRef?.nativeElement) return
+
+    if (this.isMuted) {
+      this.volume = 50
+      this.audioPlayerRef.nativeElement.volume = 0.5
+      this.isMuted = false
+    } else {
+      this.volume = 0
+      this.audioPlayerRef.nativeElement.volume = 0
+      this.isMuted = true
+    }
+  }
+
+  formatTime(seconds: number): string {
+    if (!seconds || isNaN(seconds)) return "0:00"
+
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = Math.floor(seconds % 60)
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+  }
+
+  get volumeIcon(): string {
+    if (this.isMuted || this.volume === 0) return "bi-volume-mute-fill"
+    if (this.volume < 30) return "bi-volume-down-fill"
+    if (this.volume < 70) return "bi-volume-up-fill"
+    return "bi-volume-up-fill"
+  }
+
   // Getter for paginated voices
   get paginatedVoices() {
     const startIndex = (this.currentPage - 1) * this.voicesPerPage
@@ -316,45 +443,39 @@ export class GenerationComponent implements OnInit {
     }
   }
 
-  // Add these properties to your component class
-  showCharLimitModal: boolean = false;
-  userAcceptedPaidContent: boolean = false;
-  hasExceededLimit: boolean = false;
-  previousTextLength: number = 0;
-
-// Add these methods to your component class
+  // Add these methods to your component class
 
   checkTextLength(): void {
-    const currentLength = this.actionData.text.length;
+    const currentLength = this.actionData.text.length
 
     // Only show the popup when crossing the threshold from below 100 to above 100
     if (currentLength > 100 && this.previousTextLength <= 100 && !this.userAcceptedPaidContent) {
-      this.showCharLimitModal = true;
+      this.showCharLimitModal = true
     }
 
-    this.previousTextLength = currentLength;
+    this.previousTextLength = currentLength
   }
 
   acceptExceedLimit(): void {
-    this.userAcceptedPaidContent = true;
-    this.showCharLimitModal = false;
+    this.userAcceptedPaidContent = true
+    this.showCharLimitModal = false
   }
 
   cancelExceedLimit(): void {
     // If user cancels, trim the text to 100 characters
     if (this.actionData.text.length > 100) {
-      this.actionData.text = this.actionData.text.substring(0, 100);
+      this.actionData.text = this.actionData.text.substring(0, 100)
     }
-    this.showCharLimitModal = false;
-    this.previousTextLength = this.actionData.text.length;
+    this.showCharLimitModal = false
+    this.previousTextLength = this.actionData.text.length
   }
 
   calculateTotal(): number {
     if (this.actionData.text.length <= 100) {
-      return 0; // Free for first 100 characters
+      return 0 // Free for first 100 characters
     } else {
       // Only charge for characters beyond 100
-      return this.price * (this.actionData.text.length - 100);
+      return this.price * (this.actionData.text.length - 100)
     }
   }
 }

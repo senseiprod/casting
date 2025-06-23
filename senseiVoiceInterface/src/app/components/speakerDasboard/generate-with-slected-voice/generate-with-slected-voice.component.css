@@ -20,9 +20,16 @@ body {
 
 .content {
   margin-left: 280px;
-  padding: 2rem;
+  padding-top: 100px;
   min-height: 100vh;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-bottom: 2rem;
+  width: calc(100vw - 280px);
+  max-width: none;
+  box-sizing: border-box;
+  position: relative;
 }
 
 /* Voice Showcase Container */
@@ -1546,4 +1553,40 @@ audio.no-download::-webkit-media-controls-panel {
 .waveform-bar.active {
   background: linear-gradient(to top, #cb1025, #a50d1e);
   box-shadow: 0 0 8px rgba(203, 16, 37, 0.3);
+}
+.voice-hero-actions {
+  display: flex;
+  gap: 1rem;
+}
+.voice-hero-actions {
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.hero-play-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.hero-play-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.hero-play-btn.secondary {
+  background: rgba(255, 255, 255, 0.9);
+  color: #cb1025;
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+.hero-play-btn.secondary:hover {
+  background: white;
+  transform: translateY(-2px);
 }

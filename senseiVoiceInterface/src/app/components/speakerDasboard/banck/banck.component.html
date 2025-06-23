@@ -1,376 +1,328 @@
-<div class="container">
+<div class="modern-container">
   <!-- Page Header -->
-  <div class="page-header mb-5">
-    <h1 class="text-center fw-bold">Favorite Voices</h1>
-    <p class="text-center text-muted">Browse and manage your collection of favorite voices</p>
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="bi bi-heart-fill me-2"></i>
+        Favorite Voices
+      </h1>
+      <p class="page-subtitle">Browse and manage your collection of favorite voices</p>
+    </div>
   </div>
 
   <!-- Filter Controls -->
-  <div class="filter-controls mb-4" style="margin-left:190px;">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body p-4">
-        <div class="row g-3">
-          <!-- Language Filter -->
-          <div class="col-md-2">
-            <label for="languageFilter" class="form-label">
-              {{ 'voiceCasting.filters.language' | translate }}</label>
-            <select
-              id="languageFilter"
-              class="form-select"
-              [value]="selectedLanguage"
-              (change)="filterByLanguage($event)">
-              <option *ngFor="let language of languages" [value]="language.code" [selected]="language.active">
-                {{ language.name }}
-              </option>
-            </select>
-          </div>
+  <div class="filter-section">
+    <div class="filter-card">
+      <div class="filter-header">
+        <h3 class="filter-title">
+          <i class="bi bi-funnel me-2"></i>
+          Voice Filters
+        </h3>
+      </div>
+      <div class="filter-grid">
+        <!-- Language Filter -->
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="bi bi-globe me-1"></i>
+            {{ 'voiceCasting.filters.language' | translate }}
+          </label>
+          <select
+            class="filter-select"
+            [value]="selectedLanguage"
+            (change)="filterByLanguage($event)">
+            <option *ngFor="let language of languages" [value]="language.code">
+              {{ language.name }}
+            </option>
+          </select>
+        </div>
 
-          <!-- Accent Filter -->
-          <div class="col-md-2">
-            <label for="accentFilter" class="form-label">{{ 'voiceCasting.filters.accent' | translate }}</label>
-            <select
-              id="accentFilter"
-              class="form-select"
-              [value]="selectedAccent"
-              (change)="filterByAccent($event)">
-              <option *ngFor="let accent of accents" [value]="accent.code" [selected]="accent.active">
-                {{ accent.name }}
-              </option>
-            </select>
-          </div>
+        <!-- Accent Filter -->
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="bi bi-mic me-1"></i>
+            {{ 'voiceCasting.filters.accent' | translate }}
+          </label>
+          <select
+            class="filter-select"
+            [value]="selectedAccent"
+            (change)="filterByAccent($event)">
+            <option *ngFor="let accent of accents" [value]="accent.code">
+              {{ accent.name }}
+            </option>
+          </select>
+        </div>
 
-          <!-- Age Filter -->
-          <div class="col-md-2">
-            <label for="ageFilter" class="form-label">{{ 'voiceCasting.filters.age' | translate }}</label>
-            <select
-              id="ageFilter"
-              class="form-select"
-              [value]="selectedAge"
-              (change)="filterByAge($event)">
-              <option *ngFor="let age of ages" [value]="age.code" [selected]="age.active">
-                {{ age.name }}
-              </option>
-            </select>
-          </div>
+        <!-- Age Filter -->
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="bi bi-person me-1"></i>
+            {{ 'voiceCasting.filters.age' | translate }}
+          </label>
+          <select
+            class="filter-select"
+            [value]="selectedAge"
+            (change)="filterByAge($event)">
+            <option *ngFor="let age of ages" [value]="age.code">
+              {{ age.name }}
+            </option>
+          </select>
+        </div>
 
-          <!-- Gender Filter -->
-          <div class="col-md-2">
-            <label for="genderFilter" class="form-label">{{ 'voiceCasting.filters.gender' | translate }}</label>
-            <select
-              id="genderFilter"
-              class="form-select"
-              [value]="selectedGender"
-              (change)="filterByGender($event)">
-              <option *ngFor="let gender of genders" [value]="gender.code" [selected]="gender.active">
-                {{ gender.name }}
-              </option>
-            </select>
-          </div>
+        <!-- Gender Filter -->
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="bi bi-gender-ambiguous me-1"></i>
+            {{ 'voiceCasting.filters.gender' | translate }}
+          </label>
+          <select
+            class="filter-select"
+            [value]="selectedGender"
+            (change)="filterByGender($event)">
+            <option *ngFor="let gender of genders" [value]="gender.code">
+              {{ gender.name }}
+            </option>
+          </select>
+        </div>
 
-          <!-- Category Filter -->
-          <div class="col-md-2">
-            <label for="categoryFilter" class="form-label">{{ 'voiceCasting.filters.category' | translate }}</label>
-            <select
-              id="categoryFilter"
-              class="form-select"
-              [value]="selectedCategory"
-              (change)="filterByCategory($event)">
-              <option *ngFor="let category of categories" [value]="category.code" [selected]="category.active">
-                {{ category.name }}
-              </option>
-            </select>
-          </div>
+        <!-- Category Filter -->
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="bi bi-tags me-1"></i>
+            {{ 'voiceCasting.filters.category' | translate }}
+          </label>
+          <select
+            class="filter-select"
+            [value]="selectedCategory"
+            (change)="filterByCategory($event)">
+            <option *ngFor="let category of categories" [value]="category.code">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
 
-          <!-- Page Size Selector -->
-          <div class="col-md-2">
-            <label for="pageSize" class="form-label">{{ 'voiceCasting.filters.voicesPerPage' | translate }}</label>
-            <select
-              id="pageSize"
-              class="form-select"
-              [value]="pageSize"
-              (change)="onPageSizeChange($event)">
-              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-            </select>
-          </div>
+        <!-- Page Size Selector -->
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="bi bi-grid me-1"></i>
+            {{ 'voiceCasting.filters.voicesPerPage' | translate }}
+          </label>
+          <select
+            class="filter-select"
+            [value]="pageSize"
+            (change)="onPageSizeChange($event)">
+            <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+          </select>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Active Filters Display -->
-  <div class="active-filters mb-4" *ngIf="selectedLanguage || selectedAccent || selectedAge || selectedGender || selectedCategory || showFavoritesOnly">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-3">
-        <div class="d-flex flex-wrap align-items-center">
-          <span style="margin-left:50px;" class="active-filters-label">
-  <i class="bi bi-funnel-fill me-1"></i>
-  {{ 'voiceCasting.filters.activeFilters' | translate }}:
-</span>
-
-          <span class="badge bg-primary me-2 mb-1" *ngIf="selectedLanguage">
-            {{ 'voiceCasting.filters.language' | translate }}: {{ selectedLanguage }}
-            <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByLanguage('')"></button>
-          </span>
-
-          <span class="badge bg-primary me-2 mb-1" *ngIf="selectedAccent">
-            {{ 'voiceCasting.filters.accent' | translate }}: {{selectedAccent }}
-            <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByAccent('')"></button>
-          </span>
-
-          <span class="badge bg-primary me-2 mb-1" *ngIf="selectedAge">
-            {{ 'voiceCasting.filters.age' | translate }}: {{ selectedAge }}
-            <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByAge('')"></button>
-          </span>
-
-          <span class="badge bg-primary me-2 mb-1" *ngIf="selectedGender">
-            {{ 'voiceCasting.filters.gender' | translate }}: {{selectedGender }}
-            <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByGender('')"></button>
-          </span>
-
-          <span class="badge bg-primary me-2 mb-1" *ngIf="selectedCategory">
-            {{ 'voiceCasting.filters.category' | translate }}: {{ selectedCategory }}
-            <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByCategory('')"></button>
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Loading Indicator -->
-  <div *ngIf="isLoading" class="text-center my-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">{{ 'voiceCasting.loading' | translate }}</span>
-    </div>
-    <p class="mt-3 text-muted">{{ 'voiceCasting.loading' | translate }}</p>
-  </div>
-
-  <!-- No Voices Found Message -->
-  <div *ngIf="!isLoading && voices.length === 0" class="empty-state my-5">
-    <div class="card border-0 shadow-sm py-5">
-      <div class="card-body text-center">
-        <i class="bi bi-mic-mute display-1 text-muted mb-3"></i>
-        <h3>{{ 'voiceCasting.noVoicesFound' | translate }}</h3>
-        <p class="text-muted">{{ 'voiceCasting.tryDifferentFilters' | translate }}</p>
-        <button class="btn btn-primary mt-3" (click)="resetFilters()">
-          {{ 'voiceCasting.resetFilters' | translate }}
+  <!-- Active Filters -->
+  <div class="active-filters" *ngIf="selectedLanguage || selectedAccent || selectedAge || selectedGender || selectedCategory">
+    <div class="active-filters-card">
+      <div class="active-filters-header">
+        <span class="active-filters-title">
+          <i class="bi bi-funnel-fill me-1"></i>
+          {{ 'voiceCasting.filters.activeFilters' | translate }}
+        </span>
+        <button class="clear-all-btn" (click)="resetFilters()">
+          <i class="bi bi-x-circle me-1"></i>
+          Clear All
         </button>
       </div>
+      <div class="active-filters-list">
+        <span class="filter-badge" *ngIf="selectedLanguage">
+          <i class="bi bi-globe me-1"></i>
+          {{ selectedLanguage }}
+          <button class="remove-filter" (click)="filterByLanguage('')">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+        <span class="filter-badge" *ngIf="selectedAccent">
+          <i class="bi bi-mic me-1"></i>
+          {{ selectedAccent }}
+          <button class="remove-filter" (click)="filterByAccent('')">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+        <span class="filter-badge" *ngIf="selectedAge">
+          <i class="bi bi-person me-1"></i>
+          {{ selectedAge }}
+          <button class="remove-filter" (click)="filterByAge('')">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+        <span class="filter-badge" *ngIf="selectedGender">
+          <i class="bi bi-gender-ambiguous me-1"></i>
+          {{ selectedGender }}
+          <button class="remove-filter" (click)="filterByGender('')">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+        <span class="filter-badge" *ngIf="selectedCategory">
+          <i class="bi bi-tags me-1"></i>
+          {{ selectedCategory }}
+          <button class="remove-filter" (click)="filterByCategory('')">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+      </div>
     </div>
   </div>
 
-  <!-- Voice Cards Grid -->
-  <div class="row g-4" *ngIf="!isLoading && voices.length > 0">
-    <div class="col-lg-4 col-md-6" *ngFor="let voice of voices">
-      <div class="voice-card h-100">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body p-4">
-            <div class="d-flex">
-              <!-- Voice Avatar -->
-              <div class="voice-avatar position-relative me-3">
-                <img
-                  *ngIf="voice.gender === 'male'"
-                  [src]="'assets/img/avatar men.png'"
-                  alt="Male voice profile"
-                  class="rounded-circle"
-                  width="80"
-                  height="80"
-                >
-                <img
-                  *ngIf="voice.gender === 'female'"
-                  [src]="'assets/img/avatar women.png'"
-                  alt="Female voice profile"
-                  class="rounded-circle"
-                  width="80"
-                  height="80"
-                >
-                <img
-                  *ngIf="!voice.gender || (voice.gender !== 'male' && voice.gender !== 'female')"
-                  [src]="'https://api.dicebear.com/7.x/initials/svg?seed=' + voice.name"
-                  alt="Voice profile"
-                  class="rounded-circle"
-                  width="80"
-                  height="80"
-                >
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-card">
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+      </div>
+      <h3 class="loading-title">{{ 'voiceCasting.loading' | translate }}</h3>
+      <p class="loading-subtitle">Finding your favorite voices...</p>
+    </div>
+  </div>
 
-                <!-- Play Button -->
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && voices.length === 0" class="empty-state">
+    <div class="empty-card">
+      <div class="empty-icon">
+        <i class="bi bi-heart"></i>
+      </div>
+      <h3 class="empty-title">{{ 'voiceCasting.noVoicesFound' | translate }}</h3>
+      <p class="empty-subtitle">{{ 'voiceCasting.tryDifferentFilters' | translate }}</p>
+      <button class="reset-btn" (click)="resetFilters()">
+        <i class="bi bi-arrow-clockwise me-2"></i>
+        {{ 'voiceCasting.resetFilters' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Voice Grid -->
+  <div class="voices-grid" *ngIf="!isLoading && voices.length > 0">
+    <div class="voice-card" *ngFor="let voice of voices">
+      <div class="voice-card-inner">
+        <!-- Voice Header -->
+        <div class="voice-header">
+          <div class="voice-avatar-container">
+            <div class="voice-avatar">
+              <img
+                *ngIf="voice.gender === 'male'"
+                [src]="'assets/img/avatar men.png'"
+                alt="Male voice profile"
+                class="avatar-image"
+              >
+              <img
+                *ngIf="voice.gender === 'female'"
+                [src]="'assets/img/avatar women.png'"
+                alt="Female voice profile"
+                class="avatar-image"
+              >
+              <img
+                *ngIf="!voice.gender || (voice.gender !== 'male' && voice.gender !== 'female')"
+                [src]="'https://api.dicebear.com/7.x/initials/svg?seed=' + voice.name"
+                alt="Voice profile"
+                class="avatar-image"
+              >
+              <div class="avatar-overlay">
                 <button
-                  class="play-button position-absolute bottom-0 start-50 translate-middle-x border-0 shadow-sm"
+                  class="play-btn"
                   (click)="playVoice(voice)"
-                  aria-label="Play voice sample">
+                  [class.playing]="currentPlayingVoiceId === voice.voice_id">
                   <i *ngIf="currentPlayingVoiceId !== voice.voice_id" class="bi bi-play-fill"></i>
                   <i *ngIf="currentPlayingVoiceId === voice.voice_id" class="bi bi-pause-fill"></i>
                 </button>
               </div>
-
-              <!-- Voice Info -->
-              <div class="voice-info flex-grow-1">
-                <div class="d-flex justify-content-between align-items-start">
-                  <h3 class="voice-name h5 mb-1">{{ voice.name }}</h3>
-
-                  <!-- Favorite Button -->
-                  <button
-                    class="favorite-button bg-transparent border-0"
-                    (click)="toggleFavoriteVoice(voice)"
-                    [attr.aria-label]="isFavorite(voice) ? 'Remove from favorites' : 'Add to favorites'">
-                    <i class="bi" [ngClass]="isFavorite(voice) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
-                  </button>
-                </div>
-
-                <!-- Voice Description -->
-                <p class="voice-description text-muted mb-0 small">
-                  {{ voice.description | slice:0:80 }}{{ voice.description.length > 80 ? '...' : '' }}
-                </p>
-              </div>
-            </div>
-
-            <!-- Audio Wave Visualization -->
-            <div class="audio-wave mt-3 mb-3" [class.active]="currentPlayingVoiceId === voice.voice_id">
-              <div class="wave-bars">
-                <div class="wave-bar" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]"
-                     [style.height.%]="getRandomHeight(i)"
-                     [style.animation-delay.ms]="i * 100"></div>
-              </div>
-            </div>
-
-            <!-- Voice Tags -->
-            <div class="voice-tags d-flex flex-wrap gap-1 mb-3">
-              <span class="badge bg-light text-dark" *ngIf="voice.language">{{ voice.language }}</span>
-              <span class="badge bg-light text-dark" *ngIf="voice.accent">{{ voice.accent }}</span>
-              <span class="badge bg-light text-dark" *ngIf="voice.age">{{ voice.age }}</span>
-              <span class="badge bg-light text-dark" *ngIf="voice.gender">{{ voice.gender }}</span>
-            </div>
-
-            <!-- Generate Button -->
-            <div class="text-end">
-              <a class="btn btn-primary" href="speakerDasboard/{{uuid}}">
-                <i class="bi bi-soundwave me-1"></i>
-                {{ 'voiceCasting.generate' | translate }}
-              </a>
             </div>
           </div>
+          
+          <div class="voice-info">
+            <div class="voice-name-row">
+              <h3 class="voice-name">{{ voice.name }}</h3>
+              <button
+                class="favorite-btn"
+                (click)="toggleFavoriteVoice(voice)"
+                [class.favorited]="isFavorite(voice)">
+                <i class="bi bi-heart-fill"></i>
+              </button>
+            </div>
+            <p class="voice-description">
+              {{ voice.description | slice:0:80 }}{{ voice.description?.length > 80 ? '...' : '' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Audio Waveform -->
+        <div class="audio-waveform" [class.active]="currentPlayingVoiceId === voice.voice_id">
+          <div class="waveform-bars">
+            <div class="wave-bar" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]"
+                 [style.height.%]="getRandomHeight(i)"
+                 [style.animation-delay.ms]="i * 100"></div>
+          </div>
+        </div>
+
+        <!-- Voice Tags -->
+        <div class="voice-tags">
+          <span class="voice-tag" *ngIf="voice.language">
+            <i class="bi bi-globe me-1"></i>
+            {{ voice.language }}
+          </span>
+          <span class="voice-tag" *ngIf="voice.accent">
+            <i class="bi bi-mic me-1"></i>
+            {{ voice.accent }}
+          </span>
+          <span class="voice-tag" *ngIf="voice.age">
+            <i class="bi bi-person me-1"></i>
+            {{ voice.age }}
+          </span>
+          <span class="voice-tag" *ngIf="voice.gender">
+            <i class="bi bi-gender-ambiguous me-1"></i>
+            {{ voice.gender }}
+          </span>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="voice-actions">
+          <a class="generate-btn" [href]="'speakerDasboard/' + uuid">
+            <i class="bi bi-soundwave me-2"></i>
+            {{ 'voiceCasting.generate' | translate }}
+          </a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Pagination Controls -->
-  <div *ngIf="!isLoading && voices.length > 0" class="d-flex justify-content-between align-items-center mt-4 mb-3">
-    <div>
-      <span class="badge bg-light text-dark p-2">
-        <i class="bi bi-mic-fill me-1"></i>
-        {{ totalVoices }} {{ 'voiceCasting.voicesFound' | translate }}
-      </span>
-      <span class="ms-2 text-muted">
+  <!-- Pagination -->
+  <div class="pagination-section" *ngIf="!isLoading && voices.length > 0">
+    <div class="pagination-info">
+      <div class="voices-count">
+        <i class="bi bi-heart-fill me-2"></i>
+        <span class="count-number">{{ totalVoices }}</span>
+        <span class="count-label">{{ 'voiceCasting.voicesFound' | translate }}</span>
+      </div>
+      <div class="page-info">
         {{ 'voiceCasting.page' | translate }} {{ currentPageIndex + 1 }}
-      </span>
+      </div>
     </div>
 
-    <nav aria-label="Page navigation">
-      <ul class="pagination">
-        <!-- First Page Button -->
-        <li class="page-item" [class.disabled]="currentPageIndex === 0">
-          <button class="page-link" (click)="firstPage()" [disabled]="currentPageIndex === 0">
-            <i class="bi bi-chevron-double-left"></i>
-          </button>
-        </li>
-
-        <!-- Previous Page Button -->
-        <li class="page-item" [class.disabled]="currentPageIndex === 0">
-          <button class="page-link" (click)="prevPage()" [disabled]="currentPageIndex === 0">
-            <i class="bi bi-chevron-left"></i>
-          </button>
-        </li>
-
-        <!-- Current Page Indicator -->
-        <li class="page-item active">
-          <span class="page-link">{{ currentPageIndex + 1 }}</span>
-        </li>
-
-        <!-- Next Page Button -->
-        <li class="page-item" [class.disabled]="!hasMorePages">
-          <button class="page-link" (click)="nextPage()" [disabled]="!hasMorePages">
-            <i class="bi bi-chevron-right"></i>
-          </button>
-        </li>
-      </ul>
-    </nav>
+    <div class="pagination-controls">
+      <button
+        class="pagination-btn"
+        (click)="firstPage()"
+        [disabled]="currentPageIndex === 0">
+        <i class="bi bi-chevron-double-left"></i>
+      </button>
+      <button
+        class="pagination-btn"
+        (click)="prevPage()"
+        [disabled]="currentPageIndex === 0">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <span class="current-page">{{ currentPageIndex + 1 }}</span>
+      <button
+        class="pagination-btn"
+        (click)="nextPage()"
+        [disabled]="!hasMorePages">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
   </div>
 </div>
-
-<style>
-/* Update the container to properly account for the sidebar */
-.container {
-  width: calc(100% - 190px); /* Adjust width to account for sidebar */
-  max-width: 1200px;
-  margin-left: 190px; /* Match the margin-left of filter-controls */
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  min-height: 100vh;
-  transition: all 0.3s ease;
-  padding-top: 60px;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
-
-/* Remove the margin-left from filter-controls since we've moved the container */
-.filter-controls {
-  margin-bottom: 1rem;
-  margin-left: 0; /* Remove the 190px margin since container is already offset */
-}
-
-/* Update responsive breakpoints to maintain proper layout with sidebar */
-@media (max-width: 992px) {
-  .container {
-    width: calc(100% - 190px);
-    margin-left: 190px;
-    margin-right: auto;
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    width: calc(100% - 190px);
-    margin-left: 190px;
-    margin-right: auto;
-    padding-top: 50px;
-    max-width: 100%;
-  }
-}
-
-/* For mobile views, we might need to adjust for a collapsed sidebar */
-@media (max-width: 576px) {
-  .container {
-    width: calc(100% - 60px); /* Assuming sidebar collapses to ~50px on mobile */
-    margin-left: 60px;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    padding-top: 40px;
-    max-width: 100%;
-  }
-}
-
-.active-filters-label {
-  display: inline-flex;
-  align-items: center;
-  font-weight: 600;
-  color: #495057;
-  background-color: #f8f9fa;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  margin-right: 0.5rem;
-  font-size: 0.85rem;
-  border-left: 3px solid #cb1025;
-}
-
-.active-filters-label i {
-  color: #cb1025;
-  font-size: 0.8rem;
-}
-
-.active-filters .card-body {
-  padding: 0.75rem 1rem;
-  background-color: #fcfcfc;
-}
-</style>
