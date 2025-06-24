@@ -1,83 +1,127 @@
 <div class="login-container">
-  <!-- Left Side - Form Container -->
-  <div class="login-form-side">
-    <div class="logo">
-      <img src="assets/img/LOGO NOIR (2).png" alt="Casting Voixoff.ma Logo">
+  <!-- Background elements -->
+  <div class="background-overlay">
+    <img src="/assets/auth/bg-gradient.png" alt="" class="background-image" />
+    <div class="gradient-overlay"></div>
+
+    <!-- Animated background elements -->
+    <div class="animated-background">
+      <img src="/assets/auth/coming-soon-object2.png" alt="" class="floating-object-1 animate-float" />
+      <img src="/assets/auth/coming-soon-object3.png" alt="" class="floating-object-2 animate-float-delay" />
+      <img src="/assets/auth/polygon-object.svg" alt="" class="floating-object-3 animate-pulse" />
     </div>
-
-    <div class="welcome-text">
-      <h1>welcome back</h1>
-      <p>Thank you for getting back, please login to your account by filling these form:</p>
-    </div>
-
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input
-          type="email"
-          id="email"
-          formControlName="email"
-          placeholder="coolname@name.com"
-          [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}"
-        >
-        <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
-          <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="password-input-container">
-          <input
-            [type]="showPassword ? 'text' : 'password'"
-            id="password"
-            formControlName="password"
-            placeholder="••••••••••••••"
-            [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
-          >
-          <button
-            type="button"
-            class="toggle-password"
-            (click)="togglePasswordVisibility()"
-            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
-          >
-            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-          </button>
-        </div>
-        <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
-        </div>
-      </div>
-
-      <div class="form-options">
-        <div class="remember-me">
-          <input type="checkbox" id="remember" class="custom-checkbox">
-          <label for="remember">Remember me</label>
-        </div>
-        <a href="reset" class="forgot-password" >Forgot password</a>
-      </div>
-
-      <div class="alert alert-danger" *ngIf="loginError">
-        <i class="bi bi-exclamation-triangle-fill"></i> {{ errorMessage }}
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn-login" [disabled]="isSubmitting">
-          <span *ngIf="!isSubmitting">LOGIN</span>
-          <div class="spinner" *ngIf="isSubmitting">
-            <div class="bounce1"></div>
-            <div class="bounce2"></div>
-            <div class="bounce3"></div>
-          </div>
-        </button>
-        <button type="button" class="btn-signup" routerLink="/signup">SIGN UP</button>
-      </div>
-    </form>
   </div>
 
-  <!-- Right Side - Image Container -->
-  <div class="login-image-side">
+  <!-- Main card container -->
+  <div class="main-card">
 
+    <!-- Left side branding panel -->
+    <div class="branding-panel">
+      <!-- Overlay pattern -->
+      <div class="pattern-overlay"></div>
+
+      <!-- Logo container -->
+      <div class="logo-container">
+        <a href="/" class="logo-link">
+          <img src="assets/auth/CASTINGVOIXOFF_Plan de travail 1 copie 2.png" alt="Logo" class="logo-image" />
+        </a>
+
+        <!-- Decorative elements -->
+        <div class="decorative-line"></div>
+
+        <!-- Tagline -->
+        <p class="tagline">{{ 'tagline' | translate }}</p>
+      </div>
+
+      <!-- Mobile logo (visible on small screens) -->
+      <div class="mobile-logo">
+        <a href="/" class="mobile-logo-link">
+          <img src="assets/auth/flags/EN.svg" alt="Logo" class="mobile-logo-image" />
+        </a>
+      </div>
+    </div>
+
+    <!-- Right side login form -->
+    <div class="form-panel">
+      <!-- Top bar with language selector -->
+    
+
+      <!-- Login form container -->
+      <div class="form-container">
+        <!-- Header -->
+        <div class="form-header">
+          <h1 class="form-title">
+            <span class="gradient-text">{{ 'admin_login' | translate }}</span>
+          </h1>
+          <p class="form-subtitle">{{ 'enter_credentials' | translate }}</p>
+        </div>
+
+        <!-- Form -->
+        <form class="login-form">
+          <!-- Email field -->
+          <div class="form-group">
+            <label for="email" class="form-label">{{ 'email_address' | translate }}</label>
+            <div class="input-container">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="{{ 'email_placeholder' | translate }}"
+                class="form-input"
+                required
+              />
+              <span class="input-icon">
+                <!-- Add email icon here -->
+                📧
+              </span>
+            </div>
+          </div>
+
+          <!-- Password field -->
+          <div class="form-group">
+            <label for="password" class="form-label">{{ 'password' | translate }}</label>
+            <div class="input-container">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="{{ 'password_placeholder' | translate }}"
+                class="form-input"
+                required
+              />
+              <span class="input-icon">
+                <!-- Add lock icon here -->
+                🔒
+              </span>
+            </div>
+          </div>
+
+          <!-- Error message -->
+          <div class="error-message animate-fadeIn" style="display: none;">
+            <div class="error-content">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{{ 'invalid_credentials' | translate }}</span>
+            </div>
+          </div>
+          
+          <!-- Submit button -->
+          <button type="submit" class="submit-button">
+            <div class="button-content">
+              <span class="loading-spinner animate-spin" style="display: none;"></span>
+              <span class="button-text">{{ 'sign_in' | translate }}</span>
+            </div>
+          </button>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="form-footer">
+        <p class="footer-text">© CastingVoixOff All Rights Reserved.</p>
+      </div>
+    </div>
   </div>
 </div>
