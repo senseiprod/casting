@@ -6,6 +6,7 @@ import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -27,6 +28,23 @@ public class PaypalService {
         this.apiContext = new APIContext("AWa3HYTtvjD5b6D9Bstx0zDzJeEv6ew7eM2_mjbLDsy8LkGopVmlOnb_1kuopFw-Zb8tAI7078O5yKFH", "EFKlurD8xdxztwwfbpgh-5k2In86jMG6_wvra_xhqMtsXzcdid7Ob-v51nsCEpnMzL87V2m5Y457abkO", "sandbox");
         this.utilisateurService = utilisateurService;
     }
+
+    //changes
+
+    @Value("${paypal.client.id}")
+    private String clientId;
+
+    @Value("${paypal.client.secret}")
+    private String clientSecret;
+
+    @Value("${paypal.mode}")
+    private String mode;
+
+    public APIContext getAPIContext() {
+        return new APIContext(clientId, clientSecret, mode);
+    }
+
+    //changes
 
     public Payment createPayment(Double total, String currency, String method, String intent, String description,
                                  String cancelUrl, String successUrl, String clientUuid) throws PayPalRESTException {
@@ -209,5 +227,52 @@ public class PaypalService {
         } catch (Exception e) {
             throw new PayPalRESTException("Error getting access token: " + e.getMessage(), e);
         }
+    }
+
+
+    //changes start here
+
+    public Payment createPayment(
+            Double total,
+            String currency,
+            String description,
+            String cancelUrl,
+            String successUrl) throws PayPalRESTException {
+
+        Amount amount = new Amount();
+        amount.setCurrency(currency);
+        amount.setTotal(String.format("%.2f", total));
+
+        Transaction transaction = new Transaction();
+        transaction.setDescription(description);
+        transaction.setAmount(amount);
+
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(transaction);
+
+        Payer payer = new Payer();
+        payer.setPaymentMethod("paypal");
+
+        Payment payment = new Payment();
+        payment.setIntent("sale");
+        payment.setPayer(payer);
+        payment.setTransactions(transactions);
+
+        RedirectUrls redirectUrls = new RedirectUrls();
+        redirectUrls.setCancelUrl(cancelUrl);
+        redirectUrls.setReturnUrl(successUrl);
+        payment.setRedirectUrls(redirectUrls);
+
+        return payment.create(getAPIContext());
+    }
+
+    public Payment executePayment2(String paymentId, String payerId) throws PayPalRESTException {
+        Payment payment = new Payment();
+        payment.setId(paymentId);
+
+        PaymentExecution paymentExecution = new PaymentExecution();
+        paymentExecution.setPayerId(payerId);
+
+        return payment.execute(getAPIContext(), paymentExecution);
     }
 }

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Generation Testing Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .test-data {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeaa7;
+        }
+        .voice-examples {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #b3d9ff;
+        }
+        .voice-id-input {
+            font-family: monospace;
+            background-color: #f8f9fa;
+        }
+        .voice-example {
+            background-color: #f8f9fa;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-family: monospace;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+        }
+        .voice-example:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎤 TTS Generation Testing Template</h1>
+
+    <div class="test-data">
+        <h3>📋 Test Data (Pre-filled for testing)</h3>
+        <p><strong>User UUID:</strong> test-user-uuid-123</p>
+        <p><strong>Project UUID:</strong> test-project-uuid-789</p>
+        <p><strong>Sample Text:</strong> "Hello world, this is a test of the text-to-speech system."</p>
+    </div>
+
+    <div class="voice-examples">
+        <h3>🎙️ ElevenLabs Voice ID Examples (Click to use)</h3>
+        <p><strong>Popular Voice IDs:</strong></p>
+        <div class="voice-example" onclick="setVoiceId('21m00Tcm4TlvDq8ikWAM')">
+            <strong>Rachel (Female, American):</strong> 21m00Tcm4TlvDq8ikWAM
+        </div>
+        <div class="voice-example" onclick="setVoiceId('AZnzlk1XvdvUeBnXmlld')">
+            <strong>Domi (Female, American):</strong> AZnzlk1XvdvUeBnXmlld
+        </div>
+        <div class="voice-example" onclick="setVoiceId('EXAVITQu4vr4xnSDxMaL')">
+            <strong>Bella (Female, American):</strong> EXAVITQu4vr4xnSDxMaL
+        </div>
+        <div class="voice-example" onclick="setVoiceId('ErXwobaYiN019PkySvjV')">
+            <strong>Antoni (Male, American):</strong> ErXwobaYiN019PkySvjV
+        </div>
+        <div class="voice-example" onclick="setVoiceId('MF3mGyEYCl7XYWbV9V6O')">
+            <strong>Elli (Female, American):</strong> MF3mGyEYCl7XYWbV9V6O
+        </div>
+        <div class="voice-example" onclick="setVoiceId('TxGEqnHWrfWFTfGW9XjX')">
+            <strong>Josh (Male, American):</strong> TxGEqnHWrfWFTfGW9XjX
+        </div>
+        <p><em>Note: In your real app, these would come from ElevenLabs Get Voices API</em></p>
+    </div>
+
+    <form id="ttsForm">
+        <div class="form-group">
+            <label for="text">Text to Convert (Character count will determine price):</label>
+            <textarea id="text" name="text" placeholder="Enter the text you want to convert to speech..." required>Hello world, this is a test of the text-to-speech system. This text has exactly 80 characters for testing purposes.</textarea>
+            <small>Character count: <span id="charCount">0</span> | Estimated price: $<span id="estimatedPrice">0.00</span></small>
+        </div>
+
+        <div class="form-group">
+            <label for="voiceUuid">ElevenLabs Voice ID:</label>
+            <input type="text" id="voiceUuid" name="voiceUuid" class="voice-id-input"
+                   value="21m00Tcm4TlvDq8ikWAM"
+                   placeholder="Enter ElevenLabs voice ID (e.g., 21m00Tcm4TlvDq8ikWAM)"
+                   required>
+            <small>Enter the exact voice ID from ElevenLabs (click examples above to auto-fill)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="language">Language:</label>
+            <select id="language" name="language" required>
+                <option value="en" selected>English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="utilisateurUuid">User UUID:</label>
+            <input type="text" id="utilisateurUuid" name="utilisateurUuid" value="test-user-uuid-123" required>
+        </div>
+
+        <div class="form-group">
+            <label for="projectUuid">Project UUID:</label>
+            <input type="text" id="projectUuid" name="projectUuid" value="test-project-uuid-789" required>
+        </div>
+
+        <button type="submit" id="generateBtn">🎵 Generate TTS Audio</button>
+        <button type="button" id="resetBtn">🔄 Reset Form</button>
+    </form>
+
+    <div id="status"></div>
+
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">
+        <h3>📋 Testing Workflow Steps:</h3>
+        <ol>
+            <li><strong>Fill Form:</strong> Enter text and select/input ElevenLabs voice ID</li>
+            <li><strong>Click Generate:</strong> Creates Action entity and calculates price</li>
+            <li><strong>PayPal Redirect:</strong> You'll be redirected to PayPal sandbox</li>
+            <li><strong>Login & Pay:</strong> Use PayPal sandbox test account</li>
+            <li><strong>Return & Generate:</strong> Audio generation uses the voice ID directly with ElevenLabs</li>
+            <li><strong>Completion:</strong> Action status updated to GENERE</li>
+        </ol>
+    </div>
+</div>
+
+<script>
+    // Configuration
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // DOM Elements
+    const form = document.getElementById('ttsForm');
+    const textArea = document.getElementById('text');
+    const charCountSpan = document.getElementById('charCount');
+    const estimatedPriceSpan = document.getElementById('estimatedPrice');
+    const statusDiv = document.getElementById('status');
+    const generateBtn = document.getElementById('generateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const voiceInput = document.getElementById('voiceUuid');
+
+    // Set voice ID from examples
+    function setVoiceId(voiceId) {
+        voiceInput.value = voiceId;
+        showStatus(`✅ Voice ID set to: ${voiceId}`, 'success');
+        setTimeout(() => {
+            statusDiv.innerHTML = '';
+        }, 2000);
+    }
+
+    // Update character count and price estimation
+    function updateCharCount() {
+        const text = textArea.value;
+        const charCount = text.length;
+        const estimatedPrice = (charCount * 0.1).toFixed(2);
+
+        charCountSpan.textContent = charCount;
+        estimatedPriceSpan.textContent = estimatedPrice;
+    }
+
+    // Show status message
+    function showStatus(message, type = 'info') {
+        statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+
+    // Handle form submission
+    async function handleSubmit(event) {
+        event.preventDefault();
+
+        generateBtn.disabled = true;
+        generateBtn.textContent = '⏳ Processing...';
+
+        try {
+            showStatus('🔄 Step 1: Creating action and calculating price...', 'info');
+
+            const formData = new FormData(form);
+            const requestData = {
+                text: formData.get('text'),
+                voiceUuid: formData.get('voiceUuid'), // This is actually the ElevenLabs voice ID
+                language: formData.get('language'),
+                utilisateurUuid: formData.get('utilisateurUuid'),
+                projectUuid: formData.get('projectUuid')
+            };
+
+            console.log('📤 Sending request:', requestData);
+
+            const response = await fetch(`${API_BASE_URL}/actions/create-action`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            const data = await response.json();
+            console.log('📥 Response:', data);
+
+            if (response.ok && data.approvalUrl) {
+                showStatus(
+                    `✅ Step 1 Complete!<br>
+                        📊 Action ID: ${data.actionId}<br>
+                        🎙️ Voice ID: ${requestData.voiceUuid}<br>
+                        💰 Price: $${data.price.toFixed(2)}<br>
+                        🔄 Step 2: Redirecting to PayPal in 3 seconds...`,
+                    'success'
+                );
+
+                // Redirect to PayPal after 3 seconds
+                setTimeout(() => {
+                    console.log('🔗 Redirecting to PayPal:', data.approvalUrl);
+                    window.location.href = data.approvalUrl;
+                }, 3000);
+
+            } else {
+                throw new Error(data.error || 'Failed to create action');
+            }
+
+        } catch (error) {
+            console.error('❌ Error:', error);
+            showStatus(`❌ Error: ${error.message}`, 'error');
+            generateBtn.disabled = false;
+            generateBtn.textContent = '🎵 Generate TTS Audio';
+        }
+    }
+
+    // Reset form
+    function resetForm() {
+        form.reset();
+        statusDiv.innerHTML = '';
+        generateBtn.disabled = false;
+        generateBtn.textContent = '🎵 Generate TTS Audio';
+        // Reset to default voice ID
+        voiceInput.value = '21m00Tcm4TlvDq8ikWAM';
+        updateCharCount();
+    }
+
+    // Event listeners
+    textArea.addEventListener('input', updateCharCount);
+    form.addEventListener('submit', handleSubmit);
+    resetBtn.addEventListener('click', resetForm);
+
+    // Initialize
+    updateCharCount();
+
+    // Log testing information
+    console.log('🧪 TTS Testing Template Loaded');
+    console.log('📋 Test Data Available:');
+    console.log('- User UUID: test-user-uuid-123');
+    console.log('- Project UUID: test-project-uuid-789');
+    console.log('- Default Voice ID: 21m00Tcm4TlvDq8ikWAM (Rachel)');
+    console.log('💡 Make sure your Spring Boot app is running on localhost:8080');
+    console.log('🎙️ Click on voice examples to auto-fill voice ID');
+</script>
+</body>
+</html>

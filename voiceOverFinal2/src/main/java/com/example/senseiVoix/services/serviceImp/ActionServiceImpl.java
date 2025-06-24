@@ -7,6 +7,7 @@ import com.example.senseiVoix.enumeration.PaymentStatus;
 import com.example.senseiVoix.enumeration.StatutAction;
 import com.example.senseiVoix.enumeration.TypeAudio;
 import com.example.senseiVoix.repositories.*;
+import com.example.senseiVoix.services.ElevenLabsService;
 import com.example.senseiVoix.services.PlayHtService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.base.rest.PayPalRESTException;
@@ -23,8 +24,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -55,6 +55,8 @@ public class ActionServiceImpl {
     private ProjectRepository projectRepository;
     @Autowired
     private ResourceLoader resourceLoader;
+    @Autowired
+    private ElevenLabsService elevenLabsService;
 
     ActionServiceImpl() {
 
@@ -241,6 +243,85 @@ public class ActionServiceImpl {
             actionResponse.setVoiceUuid(action.getVoice().getUuid());
             return actionResponse;
         }).collect(Collectors.toList());
+    }
+
+    //changes start here
+
+    public Action createInitialAction(ActionRequest actionRequest) {
+        Action action = new Action();
+        action.setText(actionRequest.getText());
+        action.setLanguage(actionRequest.getLanguage());
+        action.setStatutAction(StatutAction.EN_ATTENTE);
+        action.setDateCreation(new Date());
+
+        // DON'T STORE VOICE ID ANYWHERE - user will provide it when needed
+
+        if (actionRequest.getUtilisateurUuid() != null) {
+            Utilisateur utilisateur = utilisateurRepository.findByUuid(actionRequest.getUtilisateurUuid());
+            if (utilisateur == null) throw new RuntimeException("User not found");
+            action.setUtilisateur(utilisateur);
+        }
+
+        if (actionRequest.getProjectUuid() != null) {
+            Object rawProject = projectRepository.findByUuid(actionRequest.getProjectUuid())
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+            Project project = (Project) rawProject;
+            action.setProject(project);
+        }
+
+        return actionRepository.save(action);
+    }
+
+    public double calculatePrice(String text) {
+        if (text == null || text.isEmpty()) {
+            return 0.0;
+        }
+        return text.length() * 0.9;
+    }
+
+    public Action generateAudioAndUpdateAction(Long actionId, String voiceId) {
+        Action action = actionRepository.findById(actionId)
+                .orElseThrow(() -> new RuntimeException("Action not found"));
+
+        try {
+            // Prepare request body for ElevenLabs API
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("text", action.getText());
+
+            // Add voice settings
+            Map<String, Object> voiceSettings = new HashMap<>();
+            voiceSettings.put("stability", 0.5);
+            voiceSettings.put("similarity_boost", 0.5);
+            requestBody.put("voice_settings", voiceSettings);
+
+            // Use the voice ID provided by user directly
+            byte[] audioData = elevenLabsService.textToSpeech(
+                    voiceId, // Voice ID provided by user
+                    "mp3_44100_128",
+                    true,
+                    null,
+                    requestBody
+            );
+
+            // Update action with generated audio
+            action.setAudioGenerated(audioData);
+            action.setStatutAction(StatutAction.GENERE);
+
+            return actionRepository.save(action);
+
+        } catch (Exception e) {
+            action.setStatutAction(StatutAction.REJETE);
+            actionRepository.save(action);
+            throw new RuntimeException("Failed to generate audio: " + e.getMessage());
+        }
+    }
+
+    public void cancelAction(Long actionId) {
+        Action action = actionRepository.findById(actionId)
+                .orElseThrow(() -> new RuntimeException("Action not found"));
+
+        action.setStatutAction(StatutAction.REJETE);
+        actionRepository.save(action);
     }
 
 }
