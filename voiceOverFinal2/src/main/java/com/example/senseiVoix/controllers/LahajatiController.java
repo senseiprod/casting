@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/tts")
+@RequestMapping("/api/lahajati")
 @RequiredArgsConstructor
 public class LahajatiController {
 

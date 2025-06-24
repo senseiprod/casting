@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class PaypalService {
@@ -50,7 +51,8 @@ public class PaypalService {
                                  String cancelUrl, String successUrl, String clientUuid) throws PayPalRESTException {
         Amount amount = new Amount();
         amount.setCurrency(currency);
-        String formattedAmount = String.format("%.2f", total).replace(",", ".");
+        String formattedAmount = String.format(Locale.ENGLISH, "%.2f", total);
+
         System.out.println("Formatted Amount: " + formattedAmount);
         amount.setTotal(formattedAmount);
 
@@ -241,7 +243,8 @@ public class PaypalService {
 
         Amount amount = new Amount();
         amount.setCurrency(currency);
-        amount.setTotal(String.format("%.2f", total));
+        amount.setTotal(String.format(Locale.ENGLISH, "%.2f", total));
+
 
         Transaction transaction = new Transaction();
         transaction.setDescription(description);
