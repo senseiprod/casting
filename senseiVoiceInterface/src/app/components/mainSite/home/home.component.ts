@@ -8,15 +8,13 @@ import {AudioService} from "../../../services/oudio.service";
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit,AfterViewInit{
+export class HomeComponent implements OnInit{
   speakers: SpeakerResponse[] = [];
   searchQuery: string = '';
   photoUrls: { [key: string]: string } = {};
   currentAudio: HTMLAudioElement | null = null;
   audioList: string[] = [];
   audio: string = '';
-  @ViewChild("svgContainer") svgContainer!: ElementRef
-  animationState = "start"
   // Stocker les URLs des photos
 
   constructor(
@@ -27,7 +25,6 @@ export class HomeComponent implements OnInit,AfterViewInit{
 
   ngOnInit(): void {
     this.loadSpeakers();
-    this.toggleAnimationState();
   }
 
   loadSpeakers() {
@@ -67,20 +64,7 @@ export class HomeComponent implements OnInit,AfterViewInit{
   getPhoto(userId: string): string {
     return this.photoUrls[userId] || 'assets/img/team/team-d-1-1.jpg';
   }
-  ngAfterViewInit(): void {
-    // Initialize the SVG
-    this.initSvg()
-  }
 
-  toggleAnimationState(): void {
-    // Toggle between animation states to create continuous animation
-    this.animationState = this.animationState === "start" ? "end" : "start"
-
-    // Continue the animation loop
-    setTimeout(() => {
-      this.toggleAnimationState()
-    }, 15000) // Match the animation duration
-  }
   loadAudios(speakerId: string | null) : string[] {
     let audioss : string[] =[];
     this.audioService.getAllAudiosBySpeaker(speakerId).subscribe(
@@ -92,15 +76,6 @@ export class HomeComponent implements OnInit,AfterViewInit{
       }
     );
     return audioss;
-  }
-  initSvg(): void {
-    // Get all paths in the SVG
-    const paths = this.svgContainer.nativeElement.querySelectorAll("path")
-
-    // Add staggered animation delay to each path
-    paths.forEach((path: SVGPathElement, index: number) => {
-      path.style.animationDelay = `${index * 0.1}s`
-    })
   }
   toggleAudio(audioId: string): void {
     const audio = document.getElementById(audioId) as HTMLAudioElement;

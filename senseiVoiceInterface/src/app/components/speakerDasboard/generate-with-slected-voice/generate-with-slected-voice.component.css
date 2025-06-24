@@ -625,11 +625,51 @@ body {
   border: 1px solid #e2e8f0;
 }
 
+/* Responsive padding adjustments */
+@media (max-width: 768px) {
+  .filters-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
 .filters-grid {
   display: grid;
   grid-template-columns: 2fr repeat(4, 1fr) auto;
   gap: 1rem;
   align-items: center;
+}
+
+/* Tablet breakpoint */
+@media (max-width: 1900px) {
+  .filters-grid {
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 0.75rem;
+  }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Small mobile breakpoint */
+@media (max-width: 480px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
 }
 
 .filter-input,
@@ -639,6 +679,18 @@ body {
   border-radius: 12px;
   font-size: 0.875rem;
   transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mobile input adjustments */
+@media (max-width: 480px) {
+  .filter-input,
+  .filter-select {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+    border-radius: 10px;
+  }
 }
 
 .filter-input:focus,
@@ -652,13 +704,54 @@ body {
   background: #f1f5f9;
   border: 2px solid #e2e8f0;
   color: #64748b;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  width: fit-content;
+  justify-self: end;
+}
+
+/* Tablet button adjustments */
+@media (max-width: 1024px) {
+  .btn-reset-filters {
+    grid-column: span 1;
+    justify-self: stretch;
+    white-space: normal;
+  }
+}
+
+/* Mobile button adjustments */
+@media (max-width: 768px) {
+  .btn-reset-filters {
+    grid-column: span 2;
+    justify-self: stretch;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-reset-filters {
+    grid-column: span 1;
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+    border-radius: 10px;
+  }
 }
 
 .btn-reset-filters:hover {
   border-color: #cb1025;
   color: #cb1025;
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) {
+  .btn-reset-filters:hover {
+    border-color: #e2e8f0;
+    color: #64748b;
+  }
 }
 
 .voices-grid {

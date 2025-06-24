@@ -182,22 +182,7 @@ svg {
   animation: waveFlow 8s ease-in-out infinite alternate;
 }
 
-@keyframes waveFlow {
-  0% {
-    stroke-dasharray: 0;
-    stroke-dashoffset: 1000;
-    opacity: 0.1;
-  }
-  50% {
-    stroke-dasharray: 1000;
-    opacity: 0.3;
-  }
-  100% {
-    stroke-dasharray: 0;
-    stroke-dashoffset: 0;
-    opacity: 0.2;
-  }
-}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;

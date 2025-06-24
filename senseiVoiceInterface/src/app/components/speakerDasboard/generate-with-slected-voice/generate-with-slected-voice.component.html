@@ -281,7 +281,7 @@
     <!-- Voice Selection Section (when no voice selected or browsing) -->
     <div *ngIf="showVoiceSelection" class="voice-selection-container">
       <div class="selection-header">
-        <h2>{{ 'voiceSelection.title' | translate }}</h2>
+        <h2 style="margin-left: 10px;">{{ 'voiceSelection.title' | translate }}</h2>
         <button class="btn-close-selection" (click)="closeModal()" *ngIf="selectedVoice">
           <i class="bi bi-x-lg"></i>
         </button>
