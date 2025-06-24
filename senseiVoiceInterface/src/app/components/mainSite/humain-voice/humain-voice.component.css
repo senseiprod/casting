@@ -182,7 +182,7 @@
     transform: translate(-50%, -50%);
     width: 40px;
     height: 40px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: #dc1a22;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -193,7 +193,7 @@
 
     i {
       font-size: 24px;
-      color: #dc1a22;
+      color: #ece7e8;
       margin-left: 3px; /* Adjust for play icon centering */
     }
   }

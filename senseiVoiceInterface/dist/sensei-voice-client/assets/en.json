@@ -609,7 +609,21 @@
     "voicesFound": "voices found",
     "page": "Page",
     "generate": "Generate"
-  }
+  },
 
-
+    "admin_login": "Client Login",
+    "tagline": "Secure admin portal for managing your voice casting platform",
+    "enter_credentials": "Enter your credentials to access your account",
+    "email_address": "Email Address",
+    "email_placeholder": "Enter your email",
+    "password": "Password",
+    "password_placeholder": "Enter your password",
+    "sign_in": "Sign In",
+    "signing_in": "Signing In...",
+    "invalid_credentials": "Invalid credentials. Please try again.",
+    "copyright": "© CastingVoixOff All Rights Reserved.",
+    "language": "Language",
+    "english": "English",
+    "french": "Français",
+    "spanish": "Español"
 }

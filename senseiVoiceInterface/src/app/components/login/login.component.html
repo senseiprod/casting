@@ -57,65 +57,58 @@
         </div>
 
         <!-- Form -->
-        <form class="login-form">
-          <!-- Email field -->
-          <div class="form-group">
-            <label for="email" class="form-label">{{ 'email_address' | translate }}</label>
-            <div class="input-container">
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="{{ 'email_placeholder' | translate }}"
-                class="form-input"
-                required
-              />
-              <span class="input-icon">
-                <!-- Add email icon here -->
-                📧
-              </span>
-            </div>
-          </div>
+       <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <!-- Email -->
+  <div class="form-group">
+    <label for="email" class="form-label">{{ 'email_address' | translate }}</label>
+    <div class="input-container">
+      <input
+        type="email"
+        id="email"
+        name="email"
+        formControlName="email"
+        placeholder="{{ 'email_placeholder' | translate }}"
+        class="form-input"
+        required
+      />
+      <span class="input-icon">📧</span>
+    </div>
+  </div>
 
-          <!-- Password field -->
-          <div class="form-group">
-            <label for="password" class="form-label">{{ 'password' | translate }}</label>
-            <div class="input-container">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="{{ 'password_placeholder' | translate }}"
-                class="form-input"
-                required
-              />
-              <span class="input-icon">
-                <!-- Add lock icon here -->
-                🔒
-              </span>
-            </div>
-          </div>
+  <!-- Password -->
+  <div class="form-group">
+    <label for="password" class="form-label">{{ 'password' | translate }}</label>
+    <div class="input-container">
+      <input
+        type="password"
+        id="password"
+        name="password"
+        formControlName="password"
+        placeholder="{{ 'password_placeholder' | translate }}"
+        class="form-input"
+        required
+      />
+      <span class="input-icon">🔒</span>
+    </div>
+  </div>
 
-          <!-- Error message -->
-          <div class="error-message animate-fadeIn" style="display: none;">
-            <div class="error-content">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              <span>{{ 'invalid_credentials' | translate }}</span>
-            </div>
-          </div>
-          
-          <!-- Submit button -->
-          <button type="submit" class="submit-button">
-            <div class="button-content">
-              <span class="loading-spinner animate-spin" style="display: none;"></span>
-              <span class="button-text">{{ 'sign_in' | translate }}</span>
-            </div>
-          </button>
-        </form>
+  <!-- Error -->
+  <div class="error-message animate-fadeIn" *ngIf="loginError">
+    <div class="error-content">
+      <svg xmlns="http://www.w3.org/2000/svg" ...></svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <button type="submit" class="submit-button" [disabled]="isSubmitting">
+    <div class="button-content">
+      <span class="loading-spinner animate-spin" *ngIf="isSubmitting"></span>
+      <span class="button-text">{{ 'sign_in' | translate }}</span>
+    </div>
+  </button>
+</form>
+
       </div>
 
       <!-- Footer -->
