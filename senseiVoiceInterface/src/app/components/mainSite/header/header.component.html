@@ -19,7 +19,7 @@
                  (click)="toggleLanguageDropdown()" >
                 {{selectedLanguage}}
               </a>
-              <ul class="dropdown-menu" [class.show]="isLanguageDropdownOpen" value="Language">
+              <ul class="dropdown-menu language-dropdown" [class.show]="isLanguageDropdownOpen" value="Language">
                 <li><a class="dropdown-item" (click)="selectLanguage('en')">English</a></li>
                 <li><a class="dropdown-item" (click)="selectLanguage('fr')">Français</a></li>
                 <li><a class="dropdown-item" (click)="selectLanguage('de')">Deutsch</a></li>
