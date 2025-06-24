@@ -40,48 +40,6 @@
             </select>
           </div>
 
-          <!-- Accent Filter -->
-          <div class="col-md-2">
-            <label for="accentFilter" class="form-label">{{ 'voiceCasting.filters.accent' | translate }}</label>
-            <select
-              id="accentFilter"
-              class="form-select"
-              [value]="selectedAccent"
-              (change)="filterByAccent($event)">
-              <option *ngFor="let accent of accents" [value]="accent.code" [selected]="accent.active">
-                {{ accent.name }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Age Filter -->
-          <div class="col-md-2">
-            <label for="ageFilter" class="form-label">{{ 'voiceCasting.filters.age' | translate }}</label>
-            <select
-              id="ageFilter"
-              class="form-select"
-              [value]="selectedAge"
-              (change)="filterByAge($event)">
-              <option *ngFor="let age of ages" [value]="age.code" [selected]="age.active">
-                {{ age.name }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Gender Filter -->
-          <div class="col-md-2">
-            <label for="genderFilter" class="form-label">{{ 'voiceCasting.filters.gender' | translate }}</label>
-            <select
-              id="genderFilter"
-              class="form-select"
-              [value]="selectedGender"
-              (change)="filterByGender($event)">
-              <option *ngFor="let gender of genders" [value]="gender.code" [selected]="gender.active">
-                {{ gender.name }}
-              </option>
-            </select>
-          </div>
-
           <!-- Category Filter -->
           <div class="col-md-2">
             <label for="categoryFilter" class="form-label">{{ 'voiceCasting.filters.category' | translate }}</label>
