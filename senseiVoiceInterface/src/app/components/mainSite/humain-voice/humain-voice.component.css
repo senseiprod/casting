@@ -15,7 +15,18 @@
   margin: 0 auto 30px;
   color: #666;
 }
-
+.language-dropdown {
+  max-height: calc(5 * 40px); /* 5 éléments, chacun environ 40px de haut */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #ccc; /* optionnel : un contour */
+  border-radius: 4px;     /* optionnel : coins arrondis */
+}
+.language-dropdown li {
+  height: 40px;           /* fixe la hauteur d'un item */
+  line-height: 40px;      /* aligne le texte verticalement */
+  padding: 0 10px;
+}
 .language-pills {
   display: flex;
   flex-wrap: wrap;
