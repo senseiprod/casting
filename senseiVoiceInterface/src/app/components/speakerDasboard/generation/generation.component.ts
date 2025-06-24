@@ -40,8 +40,33 @@ export class GenerationComponent implements OnInit {
     { code: 'de', name: 'Allemand', active: false },
     { code: 'es', name: 'Espagnol', active: false },
     { code: 'tr', name: 'Turc', active: false },
-    { code: 'it', name: 'Italien', active: false }
+    { code: 'it', name: 'Italien', active: false },
+    { code: 'pt', name: 'Portugais', active: false },
+    { code: 'hi', name: 'Hindi', active: false },
+    { code: 'bn', name: 'Bengali', active: false },
+    { code: 'ru', name: 'Russe', active: false },
+    { code: 'ja', name: 'Japonais', active: false },
+    { code: 'ko', name: 'Coréen', active: false },
+    { code: 'zh', name: 'Chinois', active: false },
+    { code: 'vi', name: 'Vietnamien', active: false },
+    { code: 'pl', name: 'Polonais', active: false },
+    { code: 'uk', name: 'Ukrainien', active: false },
+    { code: 'ro', name: 'Roumain', active: false },
+    { code: 'nl', name: 'Néerlandais', active: false },
+    { code: 'sv', name: 'Suédois', active: false },
+    { code: 'fi', name: 'Finnois', active: false },
+    { code: 'no', name: 'Norvégien', active: false },
+    { code: 'da', name: 'Danois', active: false },
+    { code: 'hu', name: 'Hongrois', active: false },
+    { code: 'cs', name: 'Tchèque', active: false },
+    { code: 'el', name: 'Grec', active: false },
+    { code: 'th', name: 'Thaï', active: false },
+    { code: 'id', name: 'Indonésien', active: false },
+    { code: 'ms', name: 'Malais', active: false },
+    { code: 'he', name: 'Hébreu', active: false },
+    { code: 'fa', name: 'Persan', active: false }
   ];
+  
   // Project related properties
   projects: Project[] = []
   selectedProject: Project | null = null
