@@ -48,6 +48,8 @@ import { BookingComponent } from './components/mainSite/booking/booking.componen
 import { FooterHomeComponent } from './components/mainSite/footer-home/footer-home.component';
 import { ListWithSlectedLanguageComponent } from './components/mainSite/list-with-slected-language/list-with-slected-language.component';
 import { DeleteAccountComponent } from './components/speakerDasboard/delete-account/delete-account.component';
+import { PaymentSuccessComponent } from './components/speakerDasboard/payment-success/payment-success.component';
+import { PaymentFailedComponent } from './components/speakerDasboard/payment-failed/payment-failed.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/', '.json');
 }
@@ -88,7 +90,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     GenerateWithVoiceSpeakerComponent,
     BookingComponent,
     FooterHomeComponent,
-    ListWithSlectedLanguageComponent
+    ListWithSlectedLanguageComponent,
+    PaymentSuccessComponent,
+    PaymentFailedComponent
   ],
     imports: [
         BrowserModule,

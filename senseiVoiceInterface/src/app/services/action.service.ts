@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 export interface Action {
@@ -49,7 +49,10 @@ export interface ActionResponse {
   voiceUuid: string;
   dateCreation: Date;
   utilisateurUuid: string;
+  audioGenerated: string;
 }
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -91,5 +94,40 @@ export class ActionService {
   }
   getActionsByProject(uuid: string): Observable<Action[]> {
     return this.http.get<Action[]>(`${this.apiUrl}/by-project/${uuid}`);
+  }
+
+  getActionByUuid(uuid: string): Observable<ActionResponse> {
+    return this.http.get<ActionResponse>(`${this.apiUrl}/uuid/${uuid}`);
+  }
+  createActionPayed(requestBody: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/create-action`, requestBody);
+  }
+
+  // Called on PayPal success
+  paymentSuccess(actionId: number, paymentId: string, payerId: string): Observable<any> {
+    const params = new HttpParams()
+      .set('paymentId', paymentId)
+      .set('PayerID', payerId);
+    return this.http.get(`${this.apiUrl}/payment/success/${actionId}`, { params });
+  }
+
+  // Called on PayPal cancel
+  paymentCancel(actionId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/payment/cancel/${actionId}`);
+  }
+
+  // Used for testing success endpoint manually (bypass PayPal)
+  testSuccess(actionId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/test-success/${actionId}`);
+  }
+
+  // Get temporary voice storage (debug)
+  getVoiceStorage(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/debug/voice-storage`);
+  }
+
+  // Clear temporary voice storage (debug)
+  clearVoiceStorage(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/debug/clear-voice-storage`, {});
   }
 }

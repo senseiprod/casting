@@ -9,9 +9,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +57,15 @@ public class ActionController {
             return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
         }
     }
-
+    @GetMapping("/uuid/{uuid}")
+    public ResponseEntity<ActionResponse> getActionByUuid(@PathVariable String uuid) {
+        try {
+            ActionResponse response = actionService.getActionsUuid(uuid);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
     @DeleteMapping("/delete/{uuid}")
     public ResponseEntity<?> deleteAction(@PathVariable String uuid) {
         actionService.deleteAction(uuid);
@@ -124,8 +135,8 @@ public class ActionController {
                         price,
                         "USD",
                         "Text-to-Speech Generation",
-                        "http://localhost:8080/api/actions/payment/cancel/" + action.getId(),
-                        "http://localhost:8080/api/actions/payment/success/" + action.getId()
+                        "http://localhost:8080/api/actions/payment/cancel/" + action.getId() +"/"+actionRequest.getUtilisateurUuid(),
+                        "http://localhost:8080/api/actions/payment/success/" + action.getId()+"/"+actionRequest.getUtilisateurUuid()
                 );
 
                 response.put("paymentId", payment.getId());
@@ -157,9 +168,10 @@ public class ActionController {
         }
     }
 
-    @GetMapping("/payment/success/{actionId}")
-    public ResponseEntity<Map<String, Object>> paymentSuccess(
+    @GetMapping("/payment/success/{actionId}/{utilisateurUuid}")
+    public RedirectView paymentSuccess(
             @PathVariable Long actionId,
+            @PathVariable String utilisateurUuid,
             @RequestParam("paymentId") String paymentId,
             @RequestParam("PayerID") String payerId) {
 
@@ -186,16 +198,19 @@ public class ActionController {
                 response.put("actionId", updatedAction.getId());
                 response.put("status", updatedAction.getStatutAction());
                 response.put("voiceIdUsed", voiceId);
+                
+                 String redirectUri = "http://localhost:4201/speakerDasboard/"+ utilisateurUuid +"/payment-success/" + updatedAction.getUuid();
 
-                return ResponseEntity.ok(response);
+            return new RedirectView(redirectUri);
             } else {
-                return ResponseEntity.badRequest().body(Map.of("error", "Payment not approved"));
+                return new RedirectView("http://localhost:4201/speakerDasboard/"+ utilisateurUuid +"/payment-failed" );
             }
 
         } catch (Exception e) {
             // Clean up temporary storage on error
             tempVoiceStorage.remove(actionId);
-            return ResponseEntity.badRequest().body(Map.of("error", "Payment execution failed: " + e.getMessage()));
+            e.printStackTrace(); 
+            return new RedirectView("http://localhost:4201/speakerDasboard/"+ utilisateurUuid +"/payment-failed");
         }
     }
 

@@ -1,0 +1,177 @@
+<div class="payment-success-container">
+    <!-- Loading State -->
+    <div class="loading-section" *ngIf="isLoading">
+      <div class="loading-card">
+        <div class="loading-spinner">
+          <i class="bi bi-hourglass-split"></i>
+        </div>
+        <h3>Loading Your Audio</h3>
+        <p>Please wait while we retrieve your generated content...</p>
+      </div>
+    </div>
+  
+    <!-- Error State -->
+    <div class="error-section" *ngIf="hasError && !isLoading">
+      <div class="error-card">
+        <div class="error-icon">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <h3>Something Went Wrong</h3>
+        <p>{{ errorMessage }}</p>
+        <div class="error-actions">
+          <button class="btn-retry" (click)="retryLoading()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Try Again
+          </button>
+          <button class="btn-home" (click)="goToHome()">
+            <i class="bi bi-house me-2"></i>
+            Go Home
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Success State with Audio Player -->
+    <div class="success-section" *ngIf="actionData && !isLoading && !hasError">
+      <div class="success-card">
+        <!-- Header -->
+        <div class="success-header">
+          <div class="success-icon">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+          <h2>Your Audio is Ready!</h2>
+          <p>Your AI-generated speech has been created successfully.</p>
+        </div>
+  
+        <!-- Action Details -->
+        <div class="action-details">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Action Code:</span>
+              <span class="value">{{ actionData.code }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Language:</span>
+              <span class="value">{{ actionData.language }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Status:</span>
+              <span class="value status" [class]="actionData.statutAction.toLowerCase()">
+                 GENERATED 
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Created:</span>
+              <span class="value">{{ actionData.dateCreation | date:'medium' }}</span>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Text Content -->
+        <div class="text-content">
+          <h4>Generated Text:</h4>
+          <div class="text-display">
+            <p>{{ actionData.text }}</p>
+          </div>
+        </div>
+  
+        <!-- Enhanced Audio Player -->
+        <div class="audio-player-section" *ngIf="audioUrl">
+          <h4>Audio Player</h4>
+          <div class="audio-player-container">
+            <!-- Hidden audio element -->
+            <audio 
+              [src]="audioUrl" 
+              (loadedmetadata)="onAudioLoaded($event)"
+              #audioPlayer
+              style="display: none;">
+            </audio>
+  
+            <!-- Custom Audio Player UI -->
+            <div class="custom-audio-player">
+              <!-- Play/Pause Button -->
+              <button class="play-pause-btn" (click)="togglePlayPause()">
+                <i class="bi" [class]="isPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+              </button>
+  
+              <!-- Progress Section -->
+              <div class="progress-section">
+                <div class="time-display">
+                  <span class="current-time">{{ formatTime(currentTime) }}</span>
+                </div>
+                
+                <div class="progress-container">
+                  <input 
+                    type="range" 
+                    class="progress-slider"
+                    min="0" 
+                    max="100" 
+                    [value]="getProgressPercentage()"
+                    (input)="seekTo($event)">
+                  <div class="progress-track">
+                    <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+                  </div>
+                </div>
+                
+                <div class="time-display">
+                  <span class="duration">{{ formatTime(duration) }}</span>
+                </div>
+              </div>
+  
+              <!-- Controls Section -->
+              <div class="controls-section">
+                <!-- Playback Speed -->
+                <div class="speed-control">
+                  <label>Speed:</label>
+                  <select (change)="changePlaybackRate($event)" [value]="playbackRate">
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1">1x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                  </select>
+                </div>
+  
+                <!-- Volume Control -->
+                <div class="volume-control">
+                  <i class="bi bi-volume-up"></i>
+                  <input 
+                    type="range" 
+                    class="volume-slider"
+                    min="0" 
+                    max="100" 
+                    [value]="volume * 100"
+                    (input)="changeVolume($event)">
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Action Buttons -->
+          <div class="audio-actions">
+            <button class="btn-download" (click)="downloadAudio()">
+              <i class="bi bi-download me-2"></i>
+              Download Audio
+            </button>
+            <button class="btn-share" (click)="shareAudio()">
+              <i class="bi bi-share me-2"></i>
+              Share
+            </button>
+          </div>
+        </div>
+  
+        <!-- Navigation Actions -->
+        <div class="navigation-actions">
+          <button class="btn-new-generation" (click)="createNewGeneration()">
+            <i class="bi bi-plus-circle me-2"></i>
+            Create New Audio
+          </button>
+          <button class="btn-home" (click)="goToHome()">
+            <i class="bi bi-house me-2"></i>
+            Back to Home
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

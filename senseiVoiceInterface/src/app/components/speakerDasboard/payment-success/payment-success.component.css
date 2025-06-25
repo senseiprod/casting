@@ -1,0 +1,459 @@
+.payment-success-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f1f3f8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Loading Section */
+.loading-section {
+  text-align: center;
+}
+
+.loading-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 500px;
+}
+
+.loading-spinner {
+  font-size: 4rem;
+  color: #cb1025;
+  margin-bottom: 2rem;
+  animation: spin 2s linear infinite;
+}
+
+/* Error Section */
+.error-section {
+  text-align: center;
+}
+
+.error-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(220, 53, 69, 0.1);
+  border: 2px solid rgba(220, 53, 69, 0.2);
+  max-width: 500px;
+}
+
+.error-icon {
+  font-size: 4rem;
+  color: #dc3545;
+  margin-bottom: 2rem;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+/* Success Section */
+.success-section {
+  text-align: center;
+  width: 100%;
+  max-width: 900px;
+}
+
+.success-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(25, 135, 84, 0.1);
+  border: 2px solid rgba(25, 135, 84, 0.2);
+}
+
+.success-header {
+  margin-bottom: 3rem;
+}
+
+.success-icon {
+  font-size: 5rem;
+  color: #28a745;
+  margin-bottom: 2rem;
+  animation: successPulse 2s ease-in-out;
+}
+
+.success-card h2 {
+  color: #28a745;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+/* Action Details */
+.action-details {
+  background: linear-gradient(135deg, #f8f9fc 0%, #f1f3f8 100%);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  text-align: left;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.detail-item .label {
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.detail-item .value {
+  color: #2d3748;
+  font-weight: 700;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.status.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.processing {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* Text Content */
+.text-content {
+  margin-bottom: 3rem;
+  text-align: left;
+}
+
+.text-content h4 {
+  color: #2d3748;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.text-display {
+  background: linear-gradient(135deg, rgba(25, 135, 84, 0.05) 0%, rgba(25, 135, 84, 0.02) 100%);
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid rgba(25, 135, 84, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.text-display p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Enhanced Audio Player */
+.audio-player-section {
+  margin-bottom: 3rem;
+}
+
+.audio-player-section h4 {
+  color: #2d3748;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.audio-player-container {
+  background: linear-gradient(135deg, rgba(25, 135, 84, 0.05) 0%, rgba(25, 135, 84, 0.02) 100%);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  border: 1px solid rgba(25, 135, 84, 0.1);
+}
+
+.custom-audio-player {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.play-pause-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 auto;
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+}
+
+.play-pause-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(40, 167, 69, 0.4);
+}
+
+.progress-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.time-display {
+  font-weight: 600;
+  color: #4a5568;
+  min-width: 50px;
+  text-align: center;
+}
+
+.progress-container {
+  flex: 1;
+  position: relative;
+  height: 8px;
+}
+
+.progress-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: transparent;
+  outline: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+.progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #28a745;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+  border-radius: 4px;
+  transition: width 0.1s ease;
+}
+
+.controls-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.speed-control label {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.speed-control select {
+  padding: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  background: white;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.volume-control i {
+  color: #4a5568;
+  font-size: 1.2rem;
+}
+
+.volume-slider {
+  width: 100px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.1);
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #28a745;
+  cursor: pointer;
+}
+
+/* Action Buttons */
+.audio-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.btn-download,
+.btn-share,
+.btn-retry,
+.btn-home,
+.btn-new-generation {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.btn-download {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+}
+
+.btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(40, 167, 69, 0.4);
+}
+
+.btn-share {
+  background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
+}
+
+.btn-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(23, 162, 184, 0.4);
+}
+
+.btn-retry,
+.btn-home,
+.btn-new-generation {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+}
+
+.btn-retry:hover,
+.btn-home:hover,
+.btn-new-generation:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(108, 117, 125, 0.4);
+}
+
+.navigation-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .payment-success-container {
+    padding: 1rem;
+  }
+
+  .success-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .progress-section {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .controls-section {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .audio-actions,
+  .navigation-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-download,
+  .btn-share,
+  .btn-retry,
+  .btn-home,
+  .btn-new-generation {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+}

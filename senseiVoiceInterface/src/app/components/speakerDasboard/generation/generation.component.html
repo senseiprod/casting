@@ -87,14 +87,6 @@
           <div class="generation-info">
             <div class="info-badges">
               <span class="info-badge">
-                <i class="bi bi-tag me-1"></i>
-                {{ 'info.price' | translate }} {{ price }}
-              </span>
-              <span class="info-badge">
-                <i class="bi bi-text-paragraph me-1"></i>
-                {{ 'info.characters' | translate }} {{ actionData.text.length }}
-              </span>
-              <span class="info-badge">
                 <i class="bi bi-calculator me-1"></i>
                 {{ 'info.total' | translate }} {{ calculateTotal() }}
               </span>
@@ -214,14 +206,6 @@
           <div class="generation-info">
             <div class="info-badges">
               <span class="info-badge">
-                <i class="bi bi-tag me-1"></i>
-                {{ 'info.price' | translate }} {{ price }}
-              </span>
-              <span class="info-badge">
-                <i class="bi bi-text-paragraph me-1"></i>
-                {{ 'info.characters' | translate }} {{ actionData.text.length }}
-              </span>
-              <span class="info-badge">
                 <i class="bi bi-calculator me-1"></i>
                 {{ 'info.total' | translate }} {{ price * actionData.text.length }}
               </span>
@@ -240,14 +224,6 @@
           <div class="pricing-info">
             <h5>{{ 'checkout.pricingInformation' | translate }}</h5>
             <div class="pricing-details">
-              <div class="pricing-item">
-                <span>{{ 'checkout.pricePerCharacter' | translate }}</span>
-                <span class="pricing-value">{{ price }}</span>
-              </div>
-              <div class="pricing-item">
-                <span>{{ 'checkout.totalCharacters' | translate }}</span>
-                <span class="pricing-value">{{ actionData.text.length }}</span>
-              </div>
               <div class="pricing-item total">
                 <span>{{ 'checkout.totalPrice' | translate }}</span>
                 <span class="pricing-value">{{ price * actionData.text.length }}</span>
@@ -428,6 +404,169 @@
           <button class="btn-primary" (click)="acceptExceedLimit()">
             {{ 'charLimit.continue' | translate }}
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Method Selection Modal -->
+    <div class="payment-method-modal" *ngIf="showPaymentMethodModal" (click)="closePaymentMethodModal()">
+      <div class="payment-modal-content" (click)="$event.stopPropagation()">
+        <div class="payment-modal-header">
+          <h3>{{ 'payment.selectMethod' | translate }}</h3>
+          <button class="modal-close-btn" (click)="closePaymentMethodModal()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <div class="payment-modal-body">
+          <div class="payment-summary">
+            <h5>{{ 'payment.orderSummary' | translate }}</h5>
+            <div class="summary-item total">
+              <span>{{ 'payment.totalAmount' | translate }}:</span>
+              <span class="total-price">${{ calculatedPrice.toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <div class="payment-methods">
+            <h5>{{ 'payment.chooseMethod' | translate }}</h5>
+            
+            <div class="payment-method-option" 
+                 [class.selected]="selectedPaymentMethod === 'paypal'"
+                 (click)="selectPaymentMethod('paypal')">
+              <div class="payment-method-icon">
+                <i class="bi bi-paypal"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>PayPal</h6>
+                <p>{{ 'payment.paypalDesc' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedPaymentMethod === 'paypal'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+
+            <div class="payment-method-option" 
+                 [class.selected]="selectedPaymentMethod === 'card'"
+                 (click)="selectPaymentMethod('card')">
+              <div class="payment-method-icon">
+                <i class="bi bi-credit-card"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.creditCard' | translate }}</h6>
+                <p>{{ 'payment.cardDesc' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedPaymentMethod === 'card'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+
+            <div class="payment-method-option" 
+                 [class.selected]="selectedPaymentMethod === 'verment'"
+                 (click)="selectPaymentMethod('verment')">
+              <div class="payment-method-icon">
+                <i class="bi bi-bank"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.verment' | translate }}</h6>
+                <p>{{ 'payment.vermentDesc' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedPaymentMethod === 'verment'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="payment-error" *ngIf="paymentError">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ paymentError }}
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-modal-footer">
+          <button class="btn-secondary" (click)="closePaymentMethodModal()">
+            {{ 'payment.cancel' | translate }}
+          </button>
+          <button class="btn-primary" 
+                  (click)="proceedWithPayment()" 
+                  [disabled]="!selectedPaymentMethod || isProcessingPayment">
+            <i class="bi" [ngClass]="isProcessingPayment ? 'bi-hourglass-split' : 'bi-arrow-right'"></i>
+            {{ isProcessingPayment ? 'payment.processing' : 'payment.proceed' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Processing Modal -->
+    <div class="payment-processing-modal" *ngIf="showPaymentProcessing" (click)="$event.stopPropagation()">
+      <div class="processing-modal-content">
+        <div class="processing-header">
+          <h3>{{ 'payment.processing' | translate }}</h3>
+        </div>
+        
+        <div class="processing-body">
+          <div class="processing-spinner">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <h5>{{ 'payment.preparingPayment' | translate }}</h5>
+          <p>{{ 'payment.redirectingToPaypal' | translate }}</p>
+          
+          <div class="payment-details">
+            <div class="detail-item">
+              <span>{{ 'payment.amount' | translate }}:</span>
+              <span>${{ calculatedPrice.toFixed(2) }}</span>
+            </div>
+            <div class="detail-item" *ngIf="actionId">
+              <span>{{ 'payment.actionId' | translate }}:</span>
+              <span>#{{ actionId }}</span>
+            </div>
+          </div>
+
+          <div class="payment-error" *ngIf="paymentError">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ paymentError }}
+              <button class="btn-retry-payment" (click)="retryPayment()">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                {{ 'payment.retry' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- For testing purposes -->
+          <div class="test-section" *ngIf="actionId && paymentError">
+            <button class="btn-test-payment" (click)="testPaymentSuccess()">
+              <i class="bi bi-play-circle me-1"></i>
+              Test Payment Success
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generation Progress Modal -->
+    <div class="generation-progress-modal" *ngIf="showGenerationProgress" (click)="$event.stopPropagation()">
+      <div class="progress-modal-content">
+        <div class="progress-header">
+          <h3>{{ 'generation.generating' | translate }}</h3>
+        </div>
+        
+        <div class="progress-body">
+          <div class="generation-status">
+            <div class="status-icon">
+              <i class="bi bi-mic-fill"></i>
+            </div>
+            <h4>{{ 'generation.creatingAudio' | translate }}</h4>
+            <p>{{ 'generation.pleaseWait' | translate }}</p>
+          </div>
+
+          <div class="generation-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="generationProgress"></div>
+            </div>
+            <div class="progress-text">{{ generationProgress }}%</div>
+          </div>
         </div>
       </div>
     </div>

@@ -11,9 +11,18 @@ import java.util.Date;
 public class ActionResponse {
     String uuid;
     String code;
+    private byte[] audioGenerated ;
 
     public String getUuid() {
         return uuid;
+    }
+
+    public byte[] getAudioGenerated() {
+        return audioGenerated;
+    }
+
+    public void setAudioGenerated(byte[] audioGenerated) {
+        this.audioGenerated = audioGenerated;
     }
 
     public void setUuid(String uuid) {

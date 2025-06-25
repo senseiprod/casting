@@ -29,6 +29,8 @@ import {
 } from "./components/speakerDasboard/generate-with-slected-voice/generate-with-slected-voice.component";import {
   GenerateWithVoiceSpeakerComponent
 } from "./components/speakerDasboard/generate-with-voice-speaker/generate-with-voice-speaker.component";
+import { PaymentSuccessComponent } from './components/speakerDasboard/payment-success/payment-success.component';
+import { PaymentFailedComponent } from './components/speakerDasboard/payment-failed/payment-failed.component';
 
 
 
@@ -80,6 +82,8 @@ const routes: Routes = [
       { path: 'generate', component: GenerationComponent },
       { path: 'generate-with-selected-voice/:voice_id/:voice_name/:voice_photo/:voice_gender/:voice_age/:voice_category/:voice_language/:voice_preview_url', component: GenerateWithSlectedVoiceComponent },
       { path: 'generate-with-speaker-voice/:uuid', component: GenerateWithVoiceSpeakerComponent },
+      { path: 'payment-success/:uuid', component: PaymentSuccessComponent },
+      { path: 'payment-failed', component: PaymentFailedComponent },
     ]
   },
 

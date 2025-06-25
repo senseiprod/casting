@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, type OnInit } from "@angular/core"
+import { Component,  ElementRef, ViewChild,  OnInit } from "@angular/core"
 import  { ElevenLabsService } from "../../../services/eleven-labs.service"
 import  { Voice } from "../../../services/eleven-labs.service"
 import  { DomSanitizer, SafeUrl } from "@angular/platform-browser"
@@ -34,39 +34,39 @@ export class GenerationComponent implements OnInit {
   voiceId = "sarah_voice"
   userId: string | null = ""
   languages = [
-    { code: 'en', name: 'Anglais', active: true },
-    { code: 'fr', name: 'Français', active: false },
-    { code: 'ar', name: 'Arabe', active: false },
-    { code: 'de', name: 'Allemand', active: false },
-    { code: 'es', name: 'Espagnol', active: false },
-    { code: 'tr', name: 'Turc', active: false },
-    { code: 'it', name: 'Italien', active: false },
-    { code: 'pt', name: 'Portugais', active: false },
-    { code: 'hi', name: 'Hindi', active: false },
-    { code: 'bn', name: 'Bengali', active: false },
-    { code: 'ru', name: 'Russe', active: false },
-    { code: 'ja', name: 'Japonais', active: false },
-    { code: 'ko', name: 'Coréen', active: false },
-    { code: 'zh', name: 'Chinois', active: false },
-    { code: 'vi', name: 'Vietnamien', active: false },
-    { code: 'pl', name: 'Polonais', active: false },
-    { code: 'uk', name: 'Ukrainien', active: false },
-    { code: 'ro', name: 'Roumain', active: false },
-    { code: 'nl', name: 'Néerlandais', active: false },
-    { code: 'sv', name: 'Suédois', active: false },
-    { code: 'fi', name: 'Finnois', active: false },
-    { code: 'no', name: 'Norvégien', active: false },
-    { code: 'da', name: 'Danois', active: false },
-    { code: 'hu', name: 'Hongrois', active: false },
-    { code: 'cs', name: 'Tchèque', active: false },
-    { code: 'el', name: 'Grec', active: false },
-    { code: 'th', name: 'Thaï', active: false },
-    { code: 'id', name: 'Indonésien', active: false },
-    { code: 'ms', name: 'Malais', active: false },
-    { code: 'he', name: 'Hébreu', active: false },
-    { code: 'fa', name: 'Persan', active: false }
-  ];
-  
+    { code: "en", name: "Anglais", active: true },
+    { code: "fr", name: "Français", active: false },
+    { code: "ar", name: "Arabe", active: false },
+    { code: "de", name: "Allemand", active: false },
+    { code: "es", name: "Espagnol", active: false },
+    { code: "tr", name: "Turc", active: false },
+    { code: "it", name: "Italien", active: false },
+    { code: "pt", name: "Portugais", active: false },
+    { code: "hi", name: "Hindi", active: false },
+    { code: "bn", name: "Bengali", active: false },
+    { code: "ru", name: "Russe", active: false },
+    { code: "ja", name: "Japonais", active: false },
+    { code: "ko", name: "Coréen", active: false },
+    { code: "zh", name: "Chinois", active: false },
+    { code: "vi", name: "Vietnamien", active: false },
+    { code: "pl", name: "Polonais", active: false },
+    { code: "uk", name: "Ukrainien", active: false },
+    { code: "ro", name: "Roumain", active: false },
+    { code: "nl", name: "Néerlandais", active: false },
+    { code: "sv", name: "Suédois", active: false },
+    { code: "fi", name: "Finnois", active: false },
+    { code: "no", name: "Norvégien", active: false },
+    { code: "da", name: "Danois", active: false },
+    { code: "hu", name: "Hongrois", active: false },
+    { code: "cs", name: "Tchèque", active: false },
+    { code: "el", name: "Grec", active: false },
+    { code: "th", name: "Thaï", active: false },
+    { code: "id", name: "Indonésien", active: false },
+    { code: "ms", name: "Malais", active: false },
+    { code: "he", name: "Hébreu", active: false },
+    { code: "fa", name: "Persan", active: false },
+  ]
+
   // Project related properties
   projects: Project[] = []
   selectedProject: Project | null = null
@@ -105,6 +105,19 @@ export class GenerationComponent implements OnInit {
   userAcceptedPaidContent = false
   hasExceededLimit = false
   previousTextLength = 0
+
+  // Payment related properties
+  showPaymentMethodModal = false
+  selectedPaymentMethod: "card" | "paypal" | "verment" | null = null
+  isProcessingPayment = false
+  paymentError: string | null = null
+  calculatedPrice = 0
+  actionId: number | null = null
+  paymentId: string | null = null
+  approvalUrl: string | null = null
+  showPaymentProcessing = false
+  showGenerationProgress = false
+  generationProgress = 0
 
   constructor(
     private elevenLabsService: ElevenLabsService,
@@ -153,6 +166,7 @@ export class GenerationComponent implements OnInit {
     // Reset error messages when switching tabs
     this.generationError = null
     this.generationSuccess = false
+    this.paymentError = null
   }
 
   isTextOverLimit(): boolean {
@@ -181,10 +195,167 @@ export class GenerationComponent implements OnInit {
       }
       this.processAudioGeneration()
     }
-    // For audio request, proceed to checkout
+    // For audio request, show payment method selection
     else if (this.activeTab === "request") {
-      this.proceedToCheckout()
+      this.showPaymentMethodSelection()
     }
+  }
+
+  showPaymentMethodSelection() {
+    // Calculate price
+    this.calculatedPrice = this.price * this.actionData.text.length
+    this.showPaymentMethodModal = true
+    this.paymentError = null
+  }
+
+  selectPaymentMethod(method: "card" | "paypal" | "verment") {
+    this.selectedPaymentMethod = method
+  }
+
+  closePaymentMethodModal() {
+    this.showPaymentMethodModal = false
+    this.selectedPaymentMethod = null
+    this.paymentError = null
+  }
+
+  proceedWithPayment() {
+    if (!this.selectedPaymentMethod) {
+      this.paymentError = "Please select a payment method"
+      return
+    }
+
+    if (this.selectedPaymentMethod === "paypal") {
+      this.processPayPalPayment()
+    } else if (this.selectedPaymentMethod === "card") {
+      // Handle card payment - you can implement this later
+      this.paymentError = "Card payment not implemented yet"
+    } else if (this.selectedPaymentMethod === "verment") {
+      // Handle verment payment - you can implement this later
+      this.paymentError = "Verment payment not implemented yet"
+    }
+  }
+
+  processPayPalPayment() {
+    if (!this.selectedVoice || !this.userId) {
+      this.paymentError = "Missing required information"
+      return
+    }
+
+    this.isProcessingPayment = true
+    this.paymentError = null
+    this.showPaymentProcessing = true
+
+    // Create action request
+    const actionRequest = {
+      text: this.actionData.text,
+      voiceUuid: this.selectedVoice.id,
+      utilisateurUuid: this.userId,
+      language: this.selectedVoice.language,
+      projectUuid: this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+    }
+
+    this.actionService.createActionPayed(actionRequest).subscribe(
+      (response) => {
+        console.log("PayPal payment response:", response)
+
+        this.actionId = response.actionId
+        this.paymentId = response.paymentId
+        this.approvalUrl = response.approvalUrl
+        this.calculatedPrice = response.price
+
+        if (response.paypalError) {
+          this.paymentError = response.paypalError
+          this.isProcessingPayment = false
+          this.showPaymentProcessing = false
+
+          // For testing, you can use the test URL
+          if (response.testUrl) {
+            console.log("Test URL available:", response.testUrl)
+          }
+        } else if (this.approvalUrl) {
+          // Redirect to PayPal for payment approval
+          this.redirectToPayPal()
+        } else {
+          this.paymentError = "Failed to create PayPal payment"
+          this.isProcessingPayment = false
+          this.showPaymentProcessing = false
+        }
+      },
+      (error) => {
+        console.error("Error creating PayPal payment:", error)
+        this.paymentError = error.error?.error || "Failed to process payment"
+        this.isProcessingPayment = false
+        this.showPaymentProcessing = false
+      },
+    )
+  }
+
+  redirectToPayPal() {
+    if (this.approvalUrl) {
+      // Close modals before redirect
+      this.closePaymentMethodModal()
+      this.showPaymentProcessing = false
+
+      // Redirect to PayPal
+      window.location.href = this.approvalUrl
+    }
+  }
+
+  // For testing purposes - bypass PayPal
+  testPaymentSuccess() {
+    if (this.actionId) {
+      this.actionService.testSuccess(this.actionId).subscribe(
+        (response) => {
+          console.log("Test payment success:", response)
+          this.handlePaymentSuccess()
+        },
+        (error) => {
+          console.error("Test payment error:", error)
+          this.paymentError = "Test payment failed"
+        },
+      )
+    }
+  }
+
+  handlePaymentSuccess() {
+    this.isProcessingPayment = false
+    this.showPaymentProcessing = false
+    this.closePaymentMethodModal()
+
+    // Start generation process
+    this.startAudioGeneration()
+  }
+
+  startAudioGeneration() {
+    this.showGenerationProgress = true
+    this.generationProgress = 0
+    this.isGenerating = true
+
+    // Simulate generation progress
+    const progressInterval = setInterval(() => {
+      this.generationProgress += 10
+      if (this.generationProgress >= 100) {
+        clearInterval(progressInterval)
+        this.completeGeneration()
+      }
+    }, 500)
+  }
+
+  completeGeneration() {
+    this.showGenerationProgress = false
+    this.isGenerating = false
+    this.generationSuccess = true
+
+    // Here you would typically get the generated audio from the backend
+    // For now, we'll simulate it
+    console.log("Audio generation completed for action:", this.actionId)
+  }
+
+  retryPayment() {
+    this.paymentError = null
+    this.isProcessingPayment = false
+    this.showPaymentProcessing = false
+    this.showPaymentMethodModal = true
   }
 
   processAudioGeneration() {
@@ -211,34 +382,6 @@ export class GenerationComponent implements OnInit {
         this.generationError = "Failed to generate speech. Please try again."
       },
     )
-  }
-
-  proceedToCheckout() {
-    if (!this.selectedVoice) return
-
-    // Prepare checkout data
-    this.checkoutData = {
-      textLength: this.actionData.text.length,
-      price: this.selectedVoice.price || this.price,
-      totalPrice: (this.selectedVoice.price || this.price) * this.actionData.text.length,
-      voiceId: this.selectedVoice.id,
-      voiceName: this.selectedVoice.name,
-    }
-
-    // Navigate to checkout with data
-    // Using state to pass data to the checkout component
-    this.router.navigate(["/checkout"], {
-      state: {
-        checkoutData: this.checkoutData,
-        text: this.actionData.text,
-        voiceSettings: {
-          emotion: this.selectedEmotion,
-          speed: this.vitess,
-          sampleRate: this.rate,
-          temperature: this.temperature,
-        },
-      },
-    })
   }
 
   saveAudioToProject(audioBlob: Blob) {

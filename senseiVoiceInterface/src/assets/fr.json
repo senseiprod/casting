@@ -14,6 +14,30 @@
   "english": "English",
   "french": "Français",
   "spanish": "Español",
+  "payment": {
+    "selectMethod": "Sélectionner un mode de paiement",
+    "orderSummary": "Résumé de la commande",
+    "textLength": "Longueur du texte",
+    "pricePerChar": "Prix par caractère",
+    "totalAmount": "Montant total",
+    "chooseMethod": "Choisissez un mode de paiement",
+    "paypalDesc": "Payez en toute sécurité avec votre compte PayPal.",
+    "creditCard": "Carte de crédit",
+    "cardDesc": "Payer avec Visa, MasterCard ou d'autres cartes.",
+    "verment": "Virement bancaire",
+    "vermentDesc": "Payer par virement bancaire direct.",
+    "cancel": "Annuler",
+    "proceed": "Continuer",
+    "processing": "Traitement en cours...",
+    "preparingPayment": "Préparation de votre paiement...",
+    "redirectingToPaypal": "Redirection vers PayPal...",
+    "amount": "Montant",
+    "actionId": "ID de l'action",
+    "retry": "Réessayer le paiement"
+  },
+  "info": {
+    "characters": "caractères"
+  },
   "tabs": {
     "freeTest": "TEST GRATUIT",
     "audioRequest": "DEMANDE AUDIO",

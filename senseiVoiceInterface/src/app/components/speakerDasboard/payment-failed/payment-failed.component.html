@@ -1,0 +1,168 @@
+<div class="payment-failed-container">
+    <!-- Processing State -->
+    <div class="processing-section" *ngIf="isProcessing">
+      <div class="processing-card">
+        <div class="processing-spinner">
+          <i class="bi bi-hourglass-split"></i>
+        </div>
+        <h3>Processing Payment Status</h3>
+        <p>Please wait while we check your payment status...</p>
+      </div>
+    </div>
+  
+    <!-- Payment Failed State -->
+    <div class="failed-section" *ngIf="!isProcessing">
+      <div class="failed-card">
+        <div class="failed-icon">
+          <i class="bi" [ngClass]="getFailureIcon()"></i>
+        </div>
+        
+        <h2>{{ getFailureTitle() }}</h2>
+        <p class="failure-message">{{ getFailureMessage() }}</p>
+        
+        <!-- Error Details -->
+        <div class="error-details" *ngIf="errorReason || actionId">
+          <h4>Error Details</h4>
+          <div class="details-grid">
+            <div class="detail-item" *ngIf="actionId">
+              <span class="label">Action ID:</span>
+              <span class="value">#{{ actionId }}</span>
+            </div>
+            <div class="detail-item" *ngIf="paymentId">
+              <span class="label">Payment ID:</span>
+              <span class="value">{{ paymentId }}</span>
+            </div>
+            <div class="detail-item" *ngIf="errorReason">
+              <span class="label">Error:</span>
+              <span class="value">{{ errorReason }}</span>
+            </div>
+            <div class="detail-item" *ngIf="paymentAmount > 0">
+              <span class="label">Amount:</span>
+              <span class="value">${{ paymentAmount.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Primary Actions -->
+        <div class="primary-actions">
+          <button class="btn-retry" (click)="retryPayment()" *ngIf="failureType !== 'cancelled'">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Try Again
+          </button>
+          
+          <button class="btn-different-method" (click)="tryDifferentPaymentMethod()">
+            <i class="bi bi-credit-card me-2"></i>
+            Try Different Payment Method
+          </button>
+        </div>
+  
+        <!-- Secondary Actions -->
+        <div class="secondary-actions">
+          <button class="btn-support" (click)="contactSupport()" *ngIf="!showSupportOptions">
+            <i class="bi bi-headset me-2"></i>
+            Get Help
+          </button>
+          
+          <button class="btn-status-check" (click)="checkPaymentStatus()">
+            <i class="bi bi-search me-2"></i>
+            Check Payment Status
+          </button>
+        </div>
+  
+        <!-- Support Options -->
+        <div class="support-options" *ngIf="showSupportOptions">
+          <h4>How would you like to get help?</h4>
+          
+          <div class="support-methods">
+            <button class="support-method" (click)="sendSupportEmail()">
+              <div class="method-icon">
+                <i class="bi bi-envelope-fill"></i>
+              </div>
+              <div class="method-info">
+                <h5>Email Support</h5>
+                <p>Send us an email with your issue details</p>
+              </div>
+            </button>
+            
+            <button class="support-method" (click)="openLiveChat()">
+              <div class="method-icon">
+                <i class="bi bi-chat-dots-fill"></i>
+              </div>
+              <div class="method-info">
+                <h5>Live Chat</h5>
+                <p>Chat with our support team right now</p>
+              </div>
+            </button>
+            
+            <button class="support-method" (click)="viewFAQ()">
+              <div class="method-icon">
+                <i class="bi bi-question-circle-fill"></i>
+              </div>
+              <div class="method-info">
+                <h5>FAQ</h5>
+                <p>Find answers to common payment issues</p>
+              </div>
+            </button>
+          </div>
+  
+          <div class="support-confirmation" *ngIf="supportTicketSent">
+            <div class="confirmation-icon">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <p>Support email sent! We'll get back to you within 24 hours.</p>
+          </div>
+        </div>
+  
+        <!-- Navigation Actions -->
+        <div class="navigation-actions">
+          <button class="btn-home" (click)="goToHomepage()">
+            <i class="bi bi-house me-2"></i>
+            Go to Homepage
+          </button>
+          
+          <button class="btn-generation" (click)="goToGeneration()">
+            <i class="bi bi-mic me-2"></i>
+            Try Free Generation
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Helpful Tips Section -->
+    <div class="tips-section" *ngIf="!isProcessing">
+      <div class="tips-card">
+        <h4>Common Payment Issues & Solutions</h4>
+        
+        <div class="tip-item">
+          <div class="tip-icon">
+            <i class="bi bi-credit-card-2-back"></i>
+          </div>
+          <div class="tip-content">
+            <h5>Card Declined</h5>
+            <p>Check your card details, expiry date, and available balance. Contact your bank if the issue persists.</p>
+          </div>
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-icon">
+            <i class="bi bi-wifi-off"></i>
+          </div>
+          <div class="tip-content">
+            <h5>Connection Issues</h5>
+            <p>Ensure you have a stable internet connection and try refreshing the page.</p>
+          </div>
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-icon">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <div class="tip-content">
+            <h5>Security Verification</h5>
+            <p>Some banks require additional verification for online payments. Check for SMS or email confirmations.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

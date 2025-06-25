@@ -114,7 +114,15 @@ public class ActionServiceImpl {
     public List<Action> getActionsByProjectUuid(String uuid) {
         return actionRepository.findByProject(uuid);
     }
-
+    public ActionResponse getActionsUuid(String uuid) {
+        Action action = actionRepository.findByUuid(uuid);
+        ActionResponse action1 = new ActionResponse();
+        action1.setStatutAction(StatutAction.EN_ATTENTE);
+        action1.setText(action.getText());
+        action1.setLanguage(action.getLanguage());
+        action1.setAudioGenerated(action.getAudioGenerated());
+        return action1;
+    }
     public void sendNotification(String utilisateurUuid, String speakerUuid, String actionUuid) {
         Action action = actionRepository.findByUuid(actionUuid);
         Utilisateur utilisateur = utilisateurRepository.findByUuid(utilisateurUuid);
