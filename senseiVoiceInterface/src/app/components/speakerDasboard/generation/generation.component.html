@@ -241,7 +241,7 @@
       <!-- Search and Filters -->
       <!-- Filters -->
       <div class="filters-section">
-        <div class="filters-grid">
+        <div class="filters-grid" [class.darija-active]="isDarijaSelected()">
           <input type="text" 
                  class="filter-input" 
                  [placeholder]="'voiceSelection.searchPlaceholder' | translate" 
@@ -286,6 +286,7 @@
         <div class="voice-card" 
              *ngFor="let voice of filteredVoices | paginate: { itemsPerPage: 6, currentPage: currentPage }"
              [class.selected]="selectedVoice && selectedVoice.id === voice.id"
+             [attr.data-language]="voice.language"
              (click)="selectVoice(voice)">
           
           <div class="voice-card-header">
@@ -301,6 +302,9 @@
               <span class="voice-badge voice-badge-type">{{ voice.type }}</span>
               <span class="voice-badge voice-badge-lang">{{ voice.language }}</span>
             </div>
+            
+  
+            
             <div class="voice-card-meta">
               <span class="voice-meta">{{ voice.gender }}</span>
               <span class="voice-meta-separator">•</span>

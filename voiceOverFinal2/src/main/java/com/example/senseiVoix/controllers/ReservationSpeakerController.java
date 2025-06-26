@@ -16,7 +16,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/reservationsSpeaker")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class ReservationSpeakerController {
     @Autowired
     private  ReservationSpeakerService reservationService;

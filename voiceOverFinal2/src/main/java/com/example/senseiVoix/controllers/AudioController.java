@@ -21,7 +21,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/audios")
-@CrossOrigin("*")
 public class AudioController {
 
     private final AudioService audioService;

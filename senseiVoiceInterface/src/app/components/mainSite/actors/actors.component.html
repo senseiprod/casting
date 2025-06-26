@@ -54,72 +54,72 @@
       <p>Aucun speaker trouvé. Veuillez modifier vos critères de recherche.</p>
     </div>
 
-    <div class="speaker-card" *ngFor="let speaker of filteredSpeakers">
-      <a href="speaker-details/{{speaker.uuid}}">
-      <div class="speaker-avatar">
-        <img [src]="'assets/img/avatar men.png'" alt="{{ speaker.prenom }} {{ speaker.nom }}">
+    <div class="speaker-card-new" *ngFor="let speaker of filteredSpeakers">
+      <!-- Card Header -->
+      <div class="card-header">
+        <h3 class="speaker-name">{{ speaker.prenom }} {{ speaker.nom }}</h3>
+        <p class="speaker-description">
+          <span *ngIf="speaker.activeAnalyse">Analyse de texte activée</span>
+          <span *ngIf="!speaker.activeAnalyse">Analyse de texte désactivée</span>
+        </p>
       </div>
-      </a>
-      <div class="speaker-content">
-        <div class="voice-options row">
-          <div>
-            {{ speaker.prenom }} {{ speaker.nom }}<br>
-            <span class="option-text" *ngIf="speaker.activeAnalyse">Enable text analysis</span>
-            <span class="option-text" *ngIf="!speaker.activeAnalyse">disable text analysis</span>
-          </div>
 
-          <div class="row g-3" style="margin-left:-50px">
-            <div class="col-md-6">
-              <button
-                class="voice-option-button"
-                [class.playing]="isPlaying(speaker.uuid, 'clone')"
-                [class.disabled]="!hasAudioType(speaker.uuid, 'clone') || isLoadingAudio[speaker.uuid]"
-                [disabled]="!hasAudioType(speaker.uuid, 'clone') || isLoadingAudio[speaker.uuid]"
-                (click)="playAudio(speaker, 'clone')">
-                <span class="play-icon">
-                  <i class="bi" [ngClass]="{'bi-play-fill': !isPlaying(speaker.uuid, 'clone'), 'bi-pause-fill': isPlaying(speaker.uuid, 'clone')}"></i>
-                </span>
-                <span class="option-text">clone voice</span>
-              </button>
-            </div>
-            <div class="col-md-6">
-              <button
-                class="voice-option-button"
-                [class.playing]="isPlaying(speaker.uuid, 'original')"
-                [class.disabled]="!hasAudioType(speaker.uuid, 'original') || isLoadingAudio[speaker.uuid]"
-                [disabled]="!hasAudioType(speaker.uuid, 'original') || isLoadingAudio[speaker.uuid]"
-                (click)="playAudio(speaker, 'original')">
-                <span class="play-icon">
-                  <i class="bi" [ngClass]="{'bi-play-fill': !isPlaying(speaker.uuid, 'original'), 'bi-pause-fill': isPlaying(speaker.uuid, 'original')}"></i>
-                </span>
-                <span class="option-text">original voice</span>
-              </button>
+      <!-- Speaker Avatar with Play Button -->
+      <div class="speaker-avatar-container">
+        <a href="speaker-details/{{speaker.uuid}}">
+          <div class="speaker-avatar-new">
+            <img [src]="'assets/img/avatar men.png'" alt="{{ speaker.prenom }} {{ speaker.nom }}">
+            <div class="avatar-overlay">
+              <div class="main-play-button" (click)="playAudio(speaker,'original'); $event.preventDefault(); $event.stopPropagation()">
+                <i class="bi bi-play-fill"></i>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
+      </div>
 
-        <!-- Audio loading indicator -->
-        <div *ngIf="isLoadingAudio[speaker.uuid]" class="audio-loading">
-          <div class="spinner-border spinner-border-sm" role="status">
-            <span class="visually-hidden">Chargement audio...</span>
-          </div>
-          <span class="loading-text">Chargement des échantillons audio...</span>
-        </div>
+      <!-- Voice Options -->
+      <div class="voice-options-new">
+        <button
+          class="voice-option-btn"
+          [class.playing]="isPlaying(speaker.uuid, 'clone')"
+          [class.disabled]="!hasAudioType(speaker.uuid, 'clone') || isLoadingAudio[speaker.uuid]"
+          [disabled]="!hasAudioType(speaker.uuid, 'clone') || isLoadingAudio[speaker.uuid]"
+          (click)="playAudio(speaker, 'clone')">
+          <i class="bi" [ngClass]="{'bi-play-fill': !isPlaying(speaker.uuid, 'clone'), 'bi-pause-fill': isPlaying(speaker.uuid, 'clone')}"></i>
+          Voice clone
+        </button>
+        
+        <button
+          class="voice-option-btn"
+          [class.playing]="isPlaying(speaker.uuid, 'original')"
+          [class.disabled]="!hasAudioType(speaker.uuid, 'original') || isLoadingAudio[speaker.uuid]"
+          [disabled]="!hasAudioType(speaker.uuid, 'original') || isLoadingAudio[speaker.uuid]"
+          (click)="playAudio(speaker, 'original')">
+          <i class="bi" [ngClass]="{'bi-play-fill': !isPlaying(speaker.uuid, 'original'), 'bi-pause-fill': isPlaying(speaker.uuid, 'original')}"></i>
+          Voice original
+        </button>
+      </div>
 
-        <div class="speaker-actions">
-          <button class="reserve-button" (click)="bookSpeaker(speaker)">
-            <i class="bi bi-check-circle"></i>
-            Réserver
-          </button>
-          <a href="speakerDasboard/{{conectedUuid}}/generate-with-speaker-voice/{{speaker.uuid}}" style="text-decoration: none !important;">
-          <button class="generate-button" >
-            <i class="bi bi-gear"></i>
+      <!-- Audio loading indicator -->
+      <div *ngIf="isLoadingAudio[speaker.uuid]" class="audio-loading-new">
+        <div class="spinner-border spinner-border-sm" role="status">
+          <span class="visually-hidden">Chargement audio...</span>
+        </div>
+        <span class="loading-text">Chargement des échantillons audio...</span>
+      </div>
+
+      <!-- Reserve Button -->
+      <div class="card-actions">
+        <button class="reserve-btn-new" (click)="bookSpeaker(speaker)">
+          Réserver
+        </button>
+        <a href="speakerDasboard/{{conectedUuid}}/generate-with-speaker-voice/{{speaker.uuid}}" style="text-decoration: none !important;">
+          <button class="generate-btn-new">
             Generate
           </button>
-            </a>
-        </div>
+        </a>
       </div>
-
     </div>
   </div>
 

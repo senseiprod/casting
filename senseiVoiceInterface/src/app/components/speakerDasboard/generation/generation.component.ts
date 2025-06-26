@@ -6,6 +6,37 @@ import  { ProjectService } from "../../../services/project.service"
 import  { Project } from "../../../services/project.service"
 import  { ActionService } from "../../../services/action.service"
 import  { ActivatedRoute, Router } from "@angular/router"
+import  { LahajatiService } from "../../../services/lahajati.service"
+
+// Interface for Lahajati voices
+interface LahajatiVoice {
+  id: string
+  name: string
+  gender: string
+  avatar?: string
+  originalVoiceUrl?: string
+  clonedVoiceUrl?: string
+  price?: number
+  type: string
+  language: string
+  ageZone?: string
+  dialect?: string
+  performanceStyle?: string
+}
+
+// Interface for Lahajati dialects
+interface LahajatiDialect {
+  id: string
+  name: string
+  description?: string
+}
+
+// Interface for Lahajati performance styles
+interface LahajatiPerformanceStyle {
+  id: string
+  name: string
+  description?: string
+}
 
 @Component({
   selector: "app-generation",
@@ -33,10 +64,21 @@ export class GenerationComponent implements OnInit {
   audioPlayer = new Audio()
   voiceId = "sarah_voice"
   userId: string | null = ""
+
+  // Lahajati-specific properties
+  lahajatiVoices: LahajatiVoice[] = []
+  lahajatiDialects: LahajatiDialect[] = []
+  lahajatiPerformanceStyles: LahajatiPerformanceStyle[] = []
+  selectedDialect = ""
+  selectedPerformanceStyle = ""
+  isLoadingLahajatiData = false
+  lahajatiDataLoaded = false
+
   languages = [
-    { code: "en", name: "Anglais", active: true },
-    { code: "fr", name: "Français", active: false },
+    { code: "darija", name: "Darija", active: false }, // Added Darija
     { code: "ar", name: "Arabe", active: false },
+    { code: "fr", name: "Français", active: false },
+    { code: "en", name: "Anglais", active: true },
     { code: "de", name: "Allemand", active: false },
     { code: "es", name: "Espagnol", active: false },
     { code: "tr", name: "Turc", active: false },
@@ -126,6 +168,7 @@ export class GenerationComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private projectService: ProjectService,
     private actionService: ActionService,
+    private lahajatiService: LahajatiService, // Added Lahajati service
   ) {}
 
   // Initialize waveform bars in ngOnInit
@@ -363,7 +406,44 @@ export class GenerationComponent implements OnInit {
     this.generationError = null
     this.generationSuccess = false
 
-    this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe(
+    // Check if it's a Darija voice and use Lahajati service
+    if (this.selectedVoice!.language === "darija") {
+      this.generateDarijaAudio()
+    } else {
+      // Use ElevenLabs service for other languages
+      this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe(
+        (blob) => {
+          const url = URL.createObjectURL(blob)
+          this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
+
+          // If a project is selected, save the audio to that project
+          if (this.selectedProject) {
+            this.saveAudioToProject(blob)
+          } else {
+            this.isGenerating = false
+            this.generationSuccess = true
+          }
+        },
+        (error) => {
+          console.error("Error generating speech:", error)
+          this.isGenerating = false
+          this.generationError = "Failed to generate speech. Please try again."
+        },
+      )
+    }
+  }
+
+  // New method for Darija audio generation
+  generateDarijaAudio() {
+    const requestBody = {
+      text: this.actionData.text,
+      id_voice: this.selectedVoice!.id,
+      dialect_id:  "35",
+      performance_id: "1284",
+      input_mode: "0",
+    }
+
+    this.lahajatiService.generateSpeech(requestBody).subscribe(
       (blob) => {
         const url = URL.createObjectURL(blob)
         this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
@@ -377,9 +457,9 @@ export class GenerationComponent implements OnInit {
         }
       },
       (error) => {
-        console.error("Error generating speech:", error)
+        console.error("Error generating Darija speech:", error)
         this.isGenerating = false
-        this.generationError = "Failed to generate speech. Please try again."
+        this.generationError = "Failed to generate Darija speech. Please try again."
       },
     )
   }
@@ -399,6 +479,16 @@ export class GenerationComponent implements OnInit {
     formData.append("language", this.selectedVoice.language)
     formData.append("projectUuid", this.selectedProject.uuid)
     formData.append("audioGenerated", audioBlob, "audio.mp3")
+
+    // Add Darija-specific parameters if applicable
+    if (this.selectedVoice.language === "darija") {
+      if (this.selectedDialect) {
+        formData.append("dialect", this.selectedDialect)
+      }
+      if (this.selectedPerformanceStyle) {
+        formData.append("performanceStyle", this.selectedPerformanceStyle)
+      }
+    }
 
     this.actionService.createAction(formData).subscribe(
       (response) => {
@@ -427,32 +517,145 @@ export class GenerationComponent implements OnInit {
     )
   }
 
+  fetchLahajatiData() {
+    if (this.lahajatiDataLoaded || this.isLoadingLahajatiData) {
+      return;
+    }
+  
+    this.isLoadingLahajatiData = true;
+    console.log("Fetching Lahajati voices...");
+  
+    this.lahajatiService.getVoices(1, 50).subscribe({
+      next: (voicesResponse) => {
+        try {
+          const voicesData = typeof voicesResponse === 'string' ? JSON.parse(voicesResponse) : voicesResponse;
+          this.lahajatiVoices = this.mapLahajatiVoices(voicesData.data || voicesData);
+          console.log("Lahajati voices loaded:", this.lahajatiVoices);
+  
+          // Ensuite : fetch dialects
+          console.log("Fetching Lahajati dialects...");
+          this.lahajatiService.getDialects(1, 50).subscribe({
+            next: (dialectsResponse) => {
+              const dialectsData = typeof dialectsResponse === 'string' ? JSON.parse(dialectsResponse) : dialectsResponse;
+              this.lahajatiDialects = dialectsData.data || dialectsData;
+              console.log("Lahajati dialects loaded:", this.lahajatiDialects);
+  
+              // Ensuite : fetch performance styles
+              console.log("Fetching performance styles...");
+              this.lahajatiService.getPerformanceStyles(1, 50).subscribe({
+                next: (stylesResponse) => {
+                  const stylesData = typeof stylesResponse === 'string' ? JSON.parse(stylesResponse) : stylesResponse;
+                  this.lahajatiPerformanceStyles = stylesData.data || stylesData;
+                  console.log("Performance styles loaded:", this.lahajatiPerformanceStyles);
+  
+                  this.lahajatiDataLoaded = true;
+                  this.isLoadingLahajatiData = false;
+  
+                  if (this.filters.language === "darija") {
+                    this.applyFilters();
+                  }
+                },
+                error: (error) => {
+                  console.error("Error fetching performance styles:", error);
+                  this.isLoadingLahajatiData = false;
+                }
+              });
+            },
+            error: (error) => {
+              console.error("Error fetching dialects:", error);
+              this.isLoadingLahajatiData = false;
+            }
+          });
+        } catch (error) {
+          console.error("Error parsing voices:", error);
+          this.isLoadingLahajatiData = false;
+        }
+      },
+      error: (error) => {
+        console.error("Error fetching voices:", error);
+        this.isLoadingLahajatiData = false;
+      }
+    });
+  }
+  
+  // Map Lahajati voices to match the existing Voice interface
+  mapLahajatiVoices(lahajatiVoices: any[]): LahajatiVoice[] {
+    return lahajatiVoices.map((voice) => ({
+      id: voice.id_voice || voice.voice_id,
+      name: voice.name || voice.voice_name,
+      gender: voice.gender || "unknown",
+      avatar: voice.avatar || voice.image || "/assets/default-avatar.png",
+      originalVoiceUrl: voice.sample_url || voice.preview_url,
+      clonedVoiceUrl: voice.sample_url || voice.preview_url,
+      price: voice.price || 0.05,
+      type: "darija",
+      language: "darija",
+      ageZone: voice.age_zone || voice.age || "adult",
+      dialect: voice.dialect,
+      performanceStyle: voice.performance_style,
+    }))
+  }
+
   filters = {
     search: "",
     gender: "",
     ageZone: "",
     type: "",
     language: "",
+    dialect: "", // New filter for Darija dialects
+    performanceStyle: "", // New filter for Darija performance styles
   }
 
   applyFilters(): void {
-    this.filteredVoices = this.voices.filter(
+    // Check if Darija is selected and data needs to be loaded
+    if (this.filters.language === "darija" && !this.lahajatiDataLoaded) {
+      this.fetchLahajatiData()
+      return
+    }
+
+    let voicesToFilter: any[] = []
+
+    if (this.filters.language === "darija") {
+      // Use Lahajati voices for Darija
+      voicesToFilter = this.lahajatiVoices
+    } else {
+      // Use ElevenLabs voices for other languages
+      voicesToFilter = this.voices
+    }
+
+    this.filteredVoices = voicesToFilter.filter(
       (voice) =>
         (this.filters.search === "" || voice.name.toLowerCase().includes(this.filters.search.toLowerCase())) &&
         (this.filters.gender === "" || voice.gender === this.filters.gender) &&
         (this.filters.ageZone === "" || voice.ageZone === this.filters.ageZone) &&
         (this.filters.type === "" || voice.type === this.filters.type) &&
-        (this.filters.language === "" || voice.language === this.filters.language),
+        (this.filters.language === "" || voice.language === this.filters.language) &&
+        // Darija-specific filters
+        (this.filters.dialect === "" || voice.dialect === this.filters.dialect) &&
+        (this.filters.performanceStyle === "" || voice.performanceStyle === this.filters.performanceStyle),
     )
+
+    // Reset to first page when filters change
+    this.currentPage = 1
   }
 
   resetFilters(): void {
-    this.filters = { search: "", gender: "", ageZone: "", type: "", language: "" }
+    this.filters = {
+      search: "",
+      gender: "",
+      ageZone: "",
+      type: "",
+      language: "",
+      dialect: "",
+      performanceStyle: "",
+    }
+    this.selectedDialect = ""
+    this.selectedPerformanceStyle = ""
     this.filteredVoices = [...this.voices]
   }
 
-  selectVoice(voice: Voice): void {
-    this.selectedVoice = voice
+  selectVoice(voice: Voice | LahajatiVoice): void {
+    this.selectedVoice = voice as Voice
     this.price = voice.price || this.price
   }
 
@@ -465,7 +668,7 @@ export class GenerationComponent implements OnInit {
     this.showVoiceSelection = !this.showVoiceSelection
   }
 
-  playOriginalVoice(voice: Voice): void {
+  playOriginalVoice(voice: Voice | LahajatiVoice): void {
     if (this.audio && !this.audio.paused && this.audio.src === voice.originalVoiceUrl) {
       this.stopVoice() // Stop if the same audio is playing
     } else {
@@ -475,7 +678,7 @@ export class GenerationComponent implements OnInit {
     }
   }
 
-  playClonedVoice(voice: Voice): void {
+  playClonedVoice(voice: Voice | LahajatiVoice): void {
     if (this.audio && !this.audio.paused && this.audio.src === voice.clonedVoiceUrl) {
       this.stopVoice() // Stop if the same audio is playing
     } else {
@@ -491,6 +694,25 @@ export class GenerationComponent implements OnInit {
       this.audio.currentTime = 0 // Reset playback position
       this.audio = new Audio() // Clear the audio instance
     }
+  }
+
+  // Method to handle dialect selection
+  onDialectChange(dialectId: string): void {
+    this.selectedDialect = dialectId
+    this.filters.dialect = dialectId
+    this.applyFilters()
+  }
+
+  // Method to handle performance style selection
+  onPerformanceStyleChange(styleId: string): void {
+    this.selectedPerformanceStyle = styleId
+    this.filters.performanceStyle = styleId
+    this.applyFilters()
+  }
+
+  // Check if Darija is currently selected
+  isDarijaSelected(): boolean {
+    return this.filters.language === "darija"
   }
 
   // Audio player methods

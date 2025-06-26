@@ -15,18 +15,21 @@
   margin: 0 auto 30px;
   color: #666;
 }
+
 .language-dropdown {
   max-height: calc(5 * 40px); /* 5 éléments, chacun environ 40px de haut */
   overflow-y: auto;
   overflow-x: hidden;
   border: 1px solid #ccc; /* optionnel : un contour */
-  border-radius: 4px;     /* optionnel : coins arrondis */
+  border-radius: 4px; /* optionnel : coins arrondis */
 }
+
 .language-dropdown li {
-  height: 40px;           /* fixe la hauteur d'un item */
-  line-height: 40px;      /* aligne le texte verticalement */
+  height: 40px; /* fixe la hauteur d'un item */
+  line-height: 40px; /* aligne le texte verticalement */
   padding: 0 10px;
 }
+
 .language-pills {
   display: flex;
   flex-wrap: wrap;
@@ -34,7 +37,6 @@
   gap: 10px;
   margin-bottom: 30px;
 }
-/* Add these styles to your component's CSS file */
 
 .voice-profile {
   position: relative;
@@ -68,6 +70,7 @@
   background-color: #dc3545;
   border-color: #dc3545;
 }
+
 .language-pill {
   padding: 8px 16px;
   border-radius: 20px;
@@ -118,6 +121,15 @@
   .form-select option {
     padding: 8px;
   }
+
+  /* Enhanced filters for Darija */
+  .darija-filters {
+    .form-select[disabled] {
+      background-color: #f8f9fa;
+      color: #6c757d;
+      opacity: 0.65;
+    }
+  }
 }
 
 .active-filters {
@@ -133,6 +145,42 @@
       margin-top: -1px;
     }
   }
+
+  /* Darija-specific badge colors */
+  .badge.bg-success {
+    background-color: #28a745 !important;
+  }
+
+  .badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529;
+  }
+}
+
+/* Lahajati loading indicator */
+.lahajati-loading {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(203, 16, 37, 0.05) 0%, rgba(203, 16, 37, 0.02) 100%);
+  border-radius: 1rem;
+  margin: 1rem 0;
+  border: 2px solid rgba(203, 16, 37, 0.1);
+}
+
+.loading-spinner {
+  font-size: 2rem;
+  color: #dc1a22;
+  margin-bottom: 1rem;
+}
+
+.loading-spinner i {
+  animation: spin 2s linear infinite;
+}
+
+.lahajati-loading p {
+  color: #666;
+  margin: 0;
+  font-weight: 600;
 }
 
 /* Voice Cards Styling */
@@ -151,6 +199,15 @@
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Enhanced styling for Darija voices */
+  &.darija-voice {
+    border-left: 4px solid #dc1a22;
+
+    &:hover {
+      box-shadow: 0 8px 25px rgba(220, 26, 34, 0.15);
+    }
   }
 }
 
@@ -216,7 +273,7 @@
 .voice-info {
   flex-grow: 1;
   margin-bottom: 15px;
-  margin-left:37% ;
+  margin-left: 37%;
   margin-top: -37%;
 }
 
@@ -231,6 +288,42 @@
   color: #666;
   line-height: 1.4;
   margin-bottom: 0;
+}
+
+/* Darija-specific extras */
+.darija-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.darija-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.darija-badge.dialect {
+  background: linear-gradient(135deg, rgba(111, 66, 193, 0.1) 0%, rgba(111, 66, 193, 0.05) 100%);
+  color: #6f42c1;
+  border-color: rgba(111, 66, 193, 0.2);
+}
+
+.darija-badge.performance {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+  color: #ffc107;
+  border-color: rgba(255, 193, 7, 0.2);
+}
+
+.darija-badge.professional {
+  background: linear-gradient(135deg, rgba(203, 16, 37, 0.1) 0%, rgba(203, 16, 37, 0.05) 100%);
+  color: #dc1a22;
+  border-color: rgba(203, 16, 37, 0.2);
 }
 
 .generate-button {
@@ -273,6 +366,28 @@
   }
 }
 
+/* Animations */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes audioWave {
+  0% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(0.5);
+  }
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .main-heading {
@@ -285,22 +400,93 @@
 
   .voice-info {
     text-align: center;
+    margin-left: 0;
+    margin-top: 0;
   }
 
   .generate-button {
     align-self: center;
   }
+
+  /* Responsive filter adjustments */
+  .filter-controls .row.darija-filters {
+    .col-md-2 {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .darija-extras {
+    justify-content: center;
+  }
 }
 
-/* Add this to your component's CSS file */
-@keyframes audioWave {
-  0% {
-    transform: scaleY(0.5);
+@media (max-width: 576px) {
+  .container {
+    padding: 20px 10px;
   }
-  50% {
-    transform: scaleY(1);
+
+  .voice-card-content {
+    padding: 15px;
   }
-  100% {
-    transform: scaleY(0.5);
+
+  .voice-profile {
+    width: 80px;
+    height: 80px;
+  }
+
+  .voice-info {
+    margin-left: 0;
+    margin-top: 0;
+    text-align: center;
+  }
+
+  .darija-badge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .filter-controls .card-body {
+    padding: 1rem;
+  }
+
+  .active-filters .badge {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Enhanced accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .voice-card,
+  .loading-spinner i {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .voice-card.darija-voice {
+    border-left-width: 6px;
+  }
+
+  .darija-badge {
+    border-width: 2px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .filter-controls,
+  .pagination,
+  .play-button,
+  .favorite-button {
+    display: none !important;
+  }
+
+  .voice-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
   }
 }

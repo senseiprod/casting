@@ -41,16 +41,27 @@ public class LahajatiServiceImpl implements LahajatiService {
         headers.setBearerAuth(apiKey);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+        
 
-        return restTemplate.exchange(ttsUrl, HttpMethod.POST, entity, byte[].class);
+        ResponseEntity<byte[]> response =  restTemplate.exchange(ttsUrl, HttpMethod.POST, entity, byte[].class);
+                // Copy headers except CORS ones
+                HttpHeaders filteredHeaders = new HttpHeaders();
+                response.getHeaders().forEach((key, values) -> {
+                    if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
+                        !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
+                        filteredHeaders.put(key, values);
+                    }
+                });
+        
+        // Return response with filtered headers
+        return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());
     }
-
-
     @Override
     public ResponseEntity<String> getVoices(Optional<Integer> page, Optional<Integer> perPage, Optional<String> gender) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(MediaType.parseMediaTypes("application/json"));
         headers.setBearerAuth(apiKey);
+        
 
         String url = UriComponentsBuilder
                 .fromHttpUrl("https://lahajati.ai/api/v1/voices-absolute-control")
@@ -61,7 +72,20 @@ public class LahajatiServiceImpl implements LahajatiService {
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        // Copy headers except CORS ones
+        HttpHeaders filteredHeaders = new HttpHeaders();
+        response.getHeaders().forEach((key, values) -> {
+            if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
+                !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
+                filteredHeaders.put(key, values);
+            }
+        });
+
+// Return response with filtered headers
+return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());
+
     }
 
     @Override
@@ -78,7 +102,20 @@ public class LahajatiServiceImpl implements LahajatiService {
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        // Copy headers except CORS ones
+        HttpHeaders filteredHeaders = new HttpHeaders();
+        response.getHeaders().forEach((key, values) -> {
+            if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
+                !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
+                filteredHeaders.put(key, values);
+            }
+        });
+
+// Return response with filtered headers
+return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());
+
     }
 
 
@@ -96,7 +133,19 @@ public class LahajatiServiceImpl implements LahajatiService {
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        // Copy headers except CORS ones
+        HttpHeaders filteredHeaders = new HttpHeaders();
+        response.getHeaders().forEach((key, values) -> {
+            if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
+                !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
+                filteredHeaders.put(key, values);
+            }
+        });
+
+// Return response with filtered headers
+return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());
     }
 
 
@@ -112,8 +161,18 @@ public class LahajatiServiceImpl implements LahajatiService {
 
         String url = "https://lahajati.ai/api/v1/text-to-speech-pro";
 
-        return restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
-    }
+        ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
+
+        // Copy headers except CORS ones
+        HttpHeaders filteredHeaders = new HttpHeaders();
+        response.getHeaders().forEach((key, values) -> {
+            if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
+                !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
+                filteredHeaders.put(key, values);
+            }
+        });
+
+        return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());    }
 
 
     @Override

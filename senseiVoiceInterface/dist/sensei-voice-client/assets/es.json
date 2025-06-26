@@ -1,4 +1,28 @@
 {
+  "payment": {
+    "selectMethod": "Seleccionar método de pago",
+    "orderSummary": "Resumen del pedido",
+    "textLength": "Longitud del texto",
+    "pricePerChar": "Precio por carácter",
+    "totalAmount": "Cantidad total",
+    "chooseMethod": "Elija un método de pago",
+    "paypalDesc": "Pague de forma segura con su cuenta PayPal.",
+    "creditCard": "Tarjeta de crédito",
+    "cardDesc": "Pague con Visa, MasterCard u otras tarjetas.",
+    "verment": "Transferencia bancaria",
+    "vermentDesc": "Pague mediante una transferencia bancaria directa.",
+    "cancel": "Cancelar",
+    "proceed": "Proceder",
+    "processing": "Procesando...",
+    "preparingPayment": "Preparando su pago...",
+    "redirectingToPaypal": "Redirigiendo a PayPal...",
+    "amount": "Monto",
+    "actionId": "ID de acción",
+    "retry": "Reintentar pago"
+  },
+  "info": {
+    "characters": "caracteres"
+  },
   "tabs": {
     "freeTest": "PRUEBA GRATUITA",
     "audioRequest": "SOLICITUD DE AUDIO",

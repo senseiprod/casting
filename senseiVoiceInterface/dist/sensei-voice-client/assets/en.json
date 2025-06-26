@@ -625,5 +625,29 @@
     "language": "Language",
     "english": "English",
     "french": "Français",
-    "spanish": "Español"
+    "spanish": "Español",
+    "payment": {
+      "selectMethod": "Select Payment Method",
+      "orderSummary": "Order Summary",
+      "textLength": "Text Length",
+      "pricePerChar": "Price per Character",
+      "totalAmount": "Total Amount",
+      "chooseMethod": "Choose a Payment Method",
+      "paypalDesc": "Pay securely using your PayPal account.",
+      "creditCard": "Credit Card",
+      "cardDesc": "Pay with Visa, MasterCard, or other cards.",
+      "verment": "Bank Transfer",
+      "vermentDesc": "Pay via a direct bank transfer.",
+      "cancel": "Cancel",
+      "proceed": "Proceed",
+      "processing": "Processing...",
+      "preparingPayment": "Preparing your payment...",
+      "redirectingToPaypal": "Redirecting to PayPal...",
+      "amount": "Amount",
+      "actionId": "Action ID",
+      "retry": "Retry Payment"
+    },
+    "info": {
+      "characters": "characters"
+    }
 }

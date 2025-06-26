@@ -27,6 +27,8 @@
               <span class="badge badge-language">{{ selectedVoice.language }}</span>
               <span class="badge badge-gender">{{ selectedVoice.gender }}</span>
               <span class="badge badge-age">{{ selectedVoice.ageZone }}</span>
+              
+              <!-- Add Darija-specific badges -->
             </div>
             
             <div class="voice-description">
@@ -75,6 +77,9 @@
               <span class="spec-label">{{ 'voiceSelection.filters.type' | translate }}</span>
               <span class="spec-value">{{ selectedVoice.type }}</span>
             </div>
+            
+            <!-- Add Darija-specific specs -->
+          
           </div>
         </div>
       </div>
@@ -289,7 +294,7 @@
 
       <!-- Filters -->
       <div class="filters-section">
-        <div class="filters-grid">
+        <div class="filters-grid" [class.darija-active]="isDarijaSelected()">
           <input type="text" 
                  class="filter-input" 
                  [placeholder]="'voiceSelection.searchPlaceholder' | translate" 
@@ -309,7 +314,6 @@
             </option>
           </select>
           
-          
           <select class="filter-select" [(ngModel)]="filters.gender" (change)="applyFilters()">
             <option value="">{{ 'voiceSelection.filters.allGenders' | translate }}</option>
             <option value="male">{{ 'voiceSelection.filters.male' | translate }}</option>
@@ -322,10 +326,41 @@
             <option value="middle_aged">{{ 'voiceSelection.filters.adult' | translate }}</option>
             <option value="old">{{ 'voiceSelection.filters.senior' | translate }}</option>
           </select>
+
+          <!-- Darija-specific filters -->
+          <select class="filter-select" 
+                  *ngIf="isDarijaSelected()" 
+                  [(ngModel)]="filters.dialect" 
+                  (change)="onDialectChange($event)"
+                  [disabled]="isLoadingLahajatiData">
+            <option value="">All Dialects</option>
+            <option *ngFor="let dialect of lahajatiDialects" [value]="dialect.id">
+              {{ dialect.name }}
+            </option>
+          </select>
+
+          <select class="filter-select" 
+                  *ngIf="isDarijaSelected()" 
+                  [(ngModel)]="filters.performanceStyle" 
+                  (change)="onPerformanceStyleChange($event)"
+                  [disabled]="isLoadingLahajatiData">
+            <option value="">All Styles</option>
+            <option *ngFor="let style of lahajatiPerformanceStyles" [value]="style.id">
+              {{ style.name }}
+            </option>
+          </select>
           
           <button class="btn-reset-filters" (click)="resetFilters()">
             {{ 'voiceSelection.filters.resetAll' | translate }}
           </button>
+        </div>
+
+        <!-- Loading indicator for Lahajati data -->
+        <div class="lahajati-loading" *ngIf="isLoadingLahajatiData && isDarijaSelected()">
+          <div class="loading-spinner">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <p>Loading Darija voices and dialects...</p>
         </div>
       </div>
 
@@ -334,6 +369,7 @@
         <div class="voice-card-modern" 
              *ngFor="let voice of filteredVoices | paginate: { itemsPerPage: 6, currentPage: currentPage }"
              [class.selected]="selectedVoice && selectedVoice.id === voice.id"
+             [attr.data-language]="voice.language"
              (click)="selectVoice(voice)">
           
           <div class="voice-card-header">
@@ -351,11 +387,13 @@
               <span class="mini-badge">{{ voice.type }}</span>
               <span class="mini-badge">{{ voice.language }}</span>
             </div>
+            
+ 
+            
             <p class="voice-card-details">{{ voice.gender }} • {{ voice.ageZone }}</p>
           </div>
           
           <div class="voice-card-actions">
-          
             <div class="btn-preview play-button " (click)="playVoice(voice) ; $event.stopPropagation();">
               <i *ngIf="currentPlayingVoiceId !== voice.id" class="bi bi-play-fill"></i>
               <i *ngIf="currentPlayingVoiceId === voice.id" class="bi bi-pause-fill"></i>
@@ -452,6 +490,169 @@
         </div>
       </div>
       <div class="char-limit-backdrop" (click)="cancelExceedLimit()"></div>
+    </div>
+
+    <!-- Payment Method Selection Modal -->
+    <div class="payment-method-modal" *ngIf="showPaymentMethodModal" (click)="closePaymentMethodModal()">
+      <div class="payment-modal-content" (click)="$event.stopPropagation()">
+        <div class="payment-modal-header">
+          <h3>{{ 'payment.selectMethod' | translate }}</h3>
+          <button class="modal-close-btn" (click)="closePaymentMethodModal()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <div class="payment-modal-body">
+          <div class="payment-summary">
+            <h5>{{ 'payment.orderSummary' | translate }}</h5>
+            <div class="summary-item total">
+              <span>{{ 'payment.totalAmount' | translate }}:</span>
+              <span class="total-price">${{ calculatedPrice.toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <div class="payment-methods">
+            <h5>{{ 'payment.chooseMethod' | translate }}</h5>
+            
+            <div class="payment-method-option" 
+                 [class.selected]="selectedPaymentMethod === 'paypal'"
+                 (click)="selectPaymentMethod('paypal')">
+              <div class="payment-method-icon">
+                <i class="bi bi-paypal"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>PayPal</h6>
+                <p>{{ 'payment.paypalDesc' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedPaymentMethod === 'paypal'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+
+            <div class="payment-method-option" 
+                 [class.selected]="selectedPaymentMethod === 'card'"
+                 (click)="selectPaymentMethod('card')">
+              <div class="payment-method-icon">
+                <i class="bi bi-credit-card"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.creditCard' | translate }}</h6>
+                <p>{{ 'payment.cardDesc' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedPaymentMethod === 'card'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+
+            <div class="payment-method-option" 
+                 [class.selected]="selectedPaymentMethod === 'verment'"
+                 (click)="selectPaymentMethod('verment')">
+              <div class="payment-method-icon">
+                <i class="bi bi-bank"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.verment' | translate }}</h6>
+                <p>{{ 'payment.vermentDesc' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedPaymentMethod === 'verment'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="payment-error" *ngIf="paymentError">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ paymentError }}
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-modal-footer">
+          <button class="btn-secondary" (click)="closePaymentMethodModal()">
+            {{ 'payment.cancel' | translate }}
+          </button>
+          <button class="btn-primary" 
+                  (click)="proceedWithPayment()" 
+                  [disabled]="!selectedPaymentMethod || isProcessingPayment">
+            <i class="bi" [ngClass]="isProcessingPayment ? 'bi-hourglass-split' : 'bi-arrow-right'"></i>
+            {{ isProcessingPayment ? 'payment.processing' : 'payment.proceed' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Processing Modal -->
+    <div class="payment-processing-modal" *ngIf="showPaymentProcessing" (click)="$event.stopPropagation()">
+      <div class="processing-modal-content">
+        <div class="processing-header">
+          <h3>{{ 'payment.processing' | translate }}</h3>
+        </div>
+        
+        <div class="processing-body">
+          <div class="processing-spinner">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <h5>{{ 'payment.preparingPayment' | translate }}</h5>
+          <p>{{ 'payment.redirectingToPaypal' | translate }}</p>
+          
+          <div class="payment-details">
+            <div class="detail-item">
+              <span>{{ 'payment.amount' | translate }}:</span>
+              <span>${{ calculatedPrice.toFixed(2) }}</span>
+            </div>
+            <div class="detail-item" *ngIf="actionId">
+              <span>{{ 'payment.actionId' | translate }}:</span>
+              <span>#{{ actionId }}</span>
+            </div>
+          </div>
+
+          <div class="payment-error" *ngIf="paymentError">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ paymentError }}
+              <button class="btn-retry-payment" (click)="retryPayment()">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                {{ 'payment.retry' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- For testing purposes -->
+          <div class="test-section" *ngIf="actionId && paymentError">
+            <button class="btn-test-payment" (click)="testPaymentSuccess()">
+              <i class="bi bi-play-circle me-1"></i>
+              Test Payment Success
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generation Progress Modal -->
+    <div class="generation-progress-modal" *ngIf="showGenerationProgress" (click)="$event.stopPropagation()">
+      <div class="progress-modal-content">
+        <div class="progress-header">
+          <h3>{{ 'generation.generating' | translate }}</h3>
+        </div>
+        
+        <div class="progress-body">
+          <div class="generation-status">
+            <div class="status-icon">
+              <i class="bi bi-mic-fill"></i>
+            </div>
+            <h4>{{ 'generation.creatingAudio' | translate }}</h4>
+            <p>{{ 'generation.pleaseWait' | translate }}</p>
+          </div>
+
+          <div class="generation-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="generationProgress"></div>
+            </div>
+            <div class="progress-text">{{ generationProgress }}%</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

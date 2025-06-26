@@ -61,12 +61,13 @@ public class SecurityConfig {
         public CorsConfiguration corsConfiguration() {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowedOrigins(List.of(
-                                "http://localhost:4200",
                                 "http://localhost:4201",
+                                "http://localhost:4200",
                                 "http://localhost:4202",
-                                "https://admin.castingvoixoff.ma",
+                                "https://castingvoixoff.ma",
                                 "https://speaker.castingvoixoff.ma",
-                                "https://castingvoixoff.ma"));
+                                "https://admin.castingvoixoff.ma"
+));
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(List.of("*"));
                 configuration.setAllowCredentials(true);

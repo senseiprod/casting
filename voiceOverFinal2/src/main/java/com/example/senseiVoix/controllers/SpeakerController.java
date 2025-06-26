@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/speakers")
-@CrossOrigin("*")
 public class SpeakerController {
 
     @Autowired

@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/actions")
-@CrossOrigin(origins = "*")
 public class ActionController {
 
     @Autowired

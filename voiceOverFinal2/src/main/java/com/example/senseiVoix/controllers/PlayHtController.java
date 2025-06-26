@@ -12,7 +12,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/playht")
-@CrossOrigin("*")
 public class PlayHtController {
 
     private final PlayHtServiceImpl playHtService;

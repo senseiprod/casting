@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/voix")
-@CrossOrigin("*")
 public class VoixController {
 
     private final VoixService voixService;

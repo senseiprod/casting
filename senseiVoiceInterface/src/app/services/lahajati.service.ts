@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LahajatiService {
-  private baseUrl = '/api/lahajati';
+  private baseUrl = `${environment.apiUrl}/api/lahajati`;
 
   constructor(private http: HttpClient) {}
 
@@ -18,8 +19,7 @@ export class LahajatiService {
 
   getVoices(page?: number, perPage?: number, gender?: string): Observable<string> {
     let params = new HttpParams();
-    if (page != null) params = params.set('page', page.toString());
-    if (perPage != null) params = params.set('per_page', perPage.toString());
+    if (perPage != null) params = params.set('per_page', perPage);
     if (gender) params = params.set('gender', gender);
 
     return this.http.get(`${this.baseUrl}/voices-absolute-control`, { params, responseType: 'text' });
@@ -27,16 +27,14 @@ export class LahajatiService {
 
   getPerformanceStyles(page?: number, perPage?: number): Observable<string> {
     let params = new HttpParams();
-    if (page != null) params = params.set('page', page.toString());
-    if (perPage != null) params = params.set('per_page', perPage.toString());
+    if (perPage != null) params = params.set('per_page', perPage);
 
     return this.http.get(`${this.baseUrl}/performance-absolute-control`, { params, responseType: 'text' });
   }
 
   getDialects(page?: number, perPage?: number): Observable<string> {
     let params = new HttpParams();
-    if (page != null) params = params.set('page', page.toString());
-    if (perPage != null) params = params.set('per_page', perPage.toString());
+    if (perPage != null) params = params.set('per_page', perPage);
 
     return this.http.get(`${this.baseUrl}/dialect-absolute-control`, { params, responseType: 'text' });
   }

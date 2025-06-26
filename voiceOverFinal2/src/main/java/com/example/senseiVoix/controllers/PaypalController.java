@@ -11,14 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@CrossOrigin("*")
 public class PaypalController {
     @Autowired
     private  PaypalService paypalService;
 
 
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/payment/create")
     public ResponseEntity<?> createPayment(
             @RequestParam("method") String method,
@@ -79,7 +77,6 @@ public class PaypalController {
         return "paymentError";
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/payment/payout")
     public ResponseEntity<?> sendPayout(
             @RequestParam("recipientEmail") String recipientEmail,

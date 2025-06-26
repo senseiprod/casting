@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/records")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class RecordController {
 
     @Autowired

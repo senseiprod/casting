@@ -2195,3 +2195,110 @@ body {
     font-size: 3rem;
   }
 }
+
+/* Darija-specific styles */
+.lahajati-loading {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(203, 16, 37, 0.05) 0%, rgba(203, 16, 37, 0.02) 100%);
+  border-radius: 1rem;
+  margin: 1rem 0;
+  border: 2px solid rgba(203, 16, 37, 0.1);
+}
+
+.loading-spinner {
+  font-size: 2rem;
+  color: #cb1025;
+  margin-bottom: 1rem;
+}
+
+.loading-spinner i {
+  animation: spin 2s linear infinite;
+}
+
+.lahajati-loading p {
+  color: #718096;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Darija voice card enhancements */
+.voice-card[data-language="darija"] {
+  border-left: 4px solid #cb1025;
+}
+
+.voice-card[data-language="darija"] .voice-badge-type {
+  background: linear-gradient(135deg, rgba(203, 16, 37, 0.15) 0%, rgba(203, 16, 37, 0.1) 100%);
+  color: #cb1025;
+  font-weight: 700;
+}
+
+/* Dialect and performance style badges */
+.darija-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.darija-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.darija-badge.dialect {
+  background: linear-gradient(135deg, rgba(111, 66, 193, 0.1) 0%, rgba(111, 66, 193, 0.05) 100%);
+  color: #6f42c1;
+  border-color: rgba(111, 66, 193, 0.2);
+}
+
+.darija-badge.performance {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+  color: #ffc107;
+  border-color: rgba(255, 193, 7, 0.2);
+}
+
+/* Enhanced filters grid for Darija */
+.filters-grid.darija-active {
+  grid-template-columns: 1.5fr repeat(6, 1fr) auto;
+}
+
+@media (max-width: 1200px) {
+  .filters-grid.darija-active {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .filters-grid.darija-active {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-grid.darija-active {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* Disabled state for loading filters */
+.filter-select:disabled {
+  background-color: #f7fafc;
+  color: #a0aec0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.filter-select:disabled::after {
+  content: " (Loading...)";
+  font-size: 0.75rem;
+  color: #718096;
+}

@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/demandes")
-@CrossOrigin("*")
 public class DemandeController {
 
     private final DemandeService demandeService;
