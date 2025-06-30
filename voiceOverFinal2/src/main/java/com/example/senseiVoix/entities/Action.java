@@ -123,5 +123,8 @@ public class Action extends BaseModel{
     @JoinColumn(name = "utilisateur_id", nullable = false)
     @JsonIgnore
     private Utilisateur utilisateur;
-}
 
+    // NEW FIELD FOR BANK TRANSFER IDENTIFICATION
+    @Column(unique = true)
+    private String libelle;
+}

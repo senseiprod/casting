@@ -2,6 +2,7 @@ package com.example.senseiVoix.controllers;
 
 import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
+import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.entities.Action;
 import com.example.senseiVoix.services.serviceImp.ActionServiceImpl;
 import com.example.senseiVoix.services.serviceImp.PaypalService;
@@ -9,12 +10,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/actions")
+@CrossOrigin(origins = "*")
 public class ActionController {
 
     @Autowired
@@ -30,9 +29,10 @@ public class ActionController {
     @Autowired
     private PaypalService paypalService;
 
-    // Temporary storage for voice IDs during payment flow
+    // Temporary storage for voice IDs during payment flow (BOTH PayPal and Bank Transfer)
     private final Map<Long, String> tempVoiceStorage = new ConcurrentHashMap<>();
 
+    // EXISTING ENDPOINTS (keeping all your existing code)
     @PostMapping("/create")
     public ResponseEntity<?> createAction(
             @RequestParam String text,
@@ -56,15 +56,7 @@ public class ActionController {
             return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
         }
     }
-    @GetMapping("/uuid/{uuid}")
-    public ResponseEntity<ActionResponse> getActionByUuid(@PathVariable String uuid) {
-        try {
-            ActionResponse response = actionService.getActionsUuid(uuid);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
+
     @DeleteMapping("/delete/{uuid}")
     public ResponseEntity<?> deleteAction(@PathVariable String uuid) {
         actionService.deleteAction(uuid);
@@ -105,8 +97,7 @@ public class ActionController {
         return ResponseEntity.ok("Paiement traité avec succès");
     }
 
-    // NEW TTS WORKFLOW ENDPOINTS
-
+    // PAYPAL WORKFLOW ENDPOINTS
     @PostMapping("/create-action")
     public ResponseEntity<Map<String, Object>> createAction(@RequestBody ActionRequest actionRequest) {
         try {
@@ -134,8 +125,8 @@ public class ActionController {
                         price,
                         "USD",
                         "Text-to-Speech Generation",
-                        "http://localhost:8080/api/actions/payment/cancel/" + action.getId() +"/"+actionRequest.getUtilisateurUuid(),
-                        "http://localhost:8080/api/actions/payment/success/" + action.getId()+"/"+actionRequest.getUtilisateurUuid()
+                        "http://localhost:8080/api/actions/payment/cancel/" + action.getId(),
+                        "http://localhost:8080/api/actions/payment/success/" + action.getId()
                 );
 
                 response.put("paymentId", payment.getId());
@@ -167,10 +158,9 @@ public class ActionController {
         }
     }
 
-    @GetMapping("/payment/success/{actionId}/{utilisateurUuid}")
-    public RedirectView paymentSuccess(
+    @GetMapping("/payment/success/{actionId}")
+    public ResponseEntity<Map<String, Object>> paymentSuccess(
             @PathVariable Long actionId,
-            @PathVariable String utilisateurUuid,
             @RequestParam("paymentId") String paymentId,
             @RequestParam("PayerID") String payerId) {
 
@@ -197,19 +187,16 @@ public class ActionController {
                 response.put("actionId", updatedAction.getId());
                 response.put("status", updatedAction.getStatutAction());
                 response.put("voiceIdUsed", voiceId);
-                
-                 String redirectUri = "http://localhost:4201/speakerDasboard/"+ utilisateurUuid +"/payment-success/" + updatedAction.getUuid();
 
-            return new RedirectView(redirectUri);
+                return ResponseEntity.ok(response);
             } else {
-                return new RedirectView("http://localhost:4201/speakerDasboard/"+ utilisateurUuid +"/payment-failed" );
+                return ResponseEntity.badRequest().body(Map.of("error", "Payment not approved"));
             }
 
         } catch (Exception e) {
             // Clean up temporary storage on error
             tempVoiceStorage.remove(actionId);
-            e.printStackTrace(); 
-            return new RedirectView("http://localhost:4201/speakerDasboard/"+ utilisateurUuid +"/payment-failed");
+            return ResponseEntity.badRequest().body(Map.of("error", "Payment execution failed: " + e.getMessage()));
         }
     }
 
@@ -264,7 +251,107 @@ public class ActionController {
         }
     }
 
-    // Utility endpoint to check temporary storage (for debugging)
+    // NEW BANK TRANSFER ENDPOINTS (FIXED TO MATCH PAYPAL PATTERN)
+
+    @PostMapping("/create-action-bank-transfer")
+    public ResponseEntity<BankTransferResponse> createActionWithBankTransfer(@RequestBody ActionRequest actionRequest) {
+        try {
+            // Step 1: Create and save initial action (same as PayPal)
+            Action action = actionService.createInitialAction(actionRequest);
+
+            // Step 2: Store voice ID temporarily for later use (SAME AS PAYPAL)
+            tempVoiceStorage.put(action.getId(), actionRequest.getVoiceUuid());
+
+            // Step 3: Generate unique libellé and create bank transfer response
+            BankTransferResponse response = actionService.createBankTransferResponse(action, actionRequest.getText());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            BankTransferResponse errorResponse = new BankTransferResponse();
+            errorResponse.setMessage("Failed to create action: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    // ADMIN ENDPOINTS (UPDATED TO USE TEMP STORAGE)
+
+    @GetMapping("/admin/pending-bank-transfers")
+    public ResponseEntity<List<Action>> getPendingBankTransferActions() {
+        try {
+            List<Action> pendingActions = actionService.getPendingBankTransferActions();
+            return ResponseEntity.ok(pendingActions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping("/admin/validate-bank-transfer/{actionId}")
+    public ResponseEntity<Map<String, Object>> validateBankTransferAction(@PathVariable Long actionId) {
+        try {
+            // Get voice ID from temporary storage (SAME AS PAYPAL)
+            String voiceId = tempVoiceStorage.get(actionId);
+            if (voiceId == null) {
+                voiceId = "21m00Tcm4TlvDq8ikWAM"; // Default fallback voice ID
+            }
+
+            // Generate audio and update action (SAME AS PAYPAL)
+            Action validatedAction = actionService.generateAudioAndUpdateAction(actionId, voiceId);
+
+            // Clean up temporary storage (SAME AS PAYPAL)
+            tempVoiceStorage.remove(actionId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Bank transfer validated and audio generated successfully");
+            response.put("actionId", validatedAction.getId());
+            response.put("status", validatedAction.getStatutAction());
+            response.put("libelle", validatedAction.getLibelle());
+            response.put("voiceIdUsed", voiceId);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // Clean up temporary storage on error
+            tempVoiceStorage.remove(actionId);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "Failed to validate bank transfer: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PostMapping("/admin/reject-bank-transfer/{actionId}")
+    public ResponseEntity<Map<String, Object>> rejectBankTransferAction(@PathVariable Long actionId) {
+        try {
+            // Clean up temporary storage (SAME AS PAYPAL)
+            tempVoiceStorage.remove(actionId);
+
+            actionService.rejectBankTransferAction(actionId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Bank transfer action rejected successfully");
+            response.put("actionId", actionId);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "Failed to reject bank transfer: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @GetMapping("/admin/action-by-libelle/{libelle}")
+    public ResponseEntity<Action> getActionByLibelle(@PathVariable String libelle) {
+        try {
+            Action action = actionService.getActionByLibelle(libelle);
+            return action != null ? ResponseEntity.ok(action) : ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    // DEBUG ENDPOINTS
     @GetMapping("/debug/voice-storage")
     public ResponseEntity<Map<String, Object>> debugVoiceStorage() {
         Map<String, Object> response = new HashMap<>();
@@ -273,7 +360,6 @@ public class ActionController {
         return ResponseEntity.ok(response);
     }
 
-    // Utility endpoint to clear temporary storage (for debugging)
     @PostMapping("/debug/clear-voice-storage")
     public ResponseEntity<Map<String, Object>> clearVoiceStorage() {
         int clearedCount = tempVoiceStorage.size();

@@ -2,6 +2,7 @@ package com.example.senseiVoix.services.serviceImp;
 
 import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
+import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.entities.*;
 import com.example.senseiVoix.enumeration.PaymentStatus;
 import com.example.senseiVoix.enumeration.StatutAction;
@@ -21,8 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,17 +57,19 @@ public class ActionServiceImpl {
     @Autowired
     private ElevenLabsService elevenLabsService;
 
-    ActionServiceImpl() {
-
-    }
+    // FIXED RIB FOR BANK TRANSFERS
+    private static final String COMPANY_RIB = "FR76 1234 5678 9012 3456 7890 123";
+    private static final String BANK_NAME = "Banque Exemple";
+    private static final String ACCOUNT_HOLDER = "SenseiVoix SARL";
 
     @PostConstruct
     public void init() {
         loadBadWords();
     }
 
+    // EXISTING METHODS (keeping all your existing code)
     public void createAction(String text, String statutAction, String voiceUuid, String utilisateurUuid,
-            String language, String projectUuid, org.springframework.web.multipart.MultipartFile audioFile)
+                             String language, String projectUuid, org.springframework.web.multipart.MultipartFile audioFile)
             throws IOException {
         Action action1 = new Action();
         action1.setProject(projectRepository.findByUuidAndDeletedFalse(projectUuid));
@@ -82,7 +83,7 @@ public class ActionServiceImpl {
     }
 
     public void createActionPyee(String text, String statutAction, String voiceUuid, String utilisateurUuid,
-            String language, String projectUuid, org.springframework.web.multipart.MultipartFile audioFile)
+                                 String language, String projectUuid, org.springframework.web.multipart.MultipartFile audioFile)
             throws IOException {
         Action action1 = new Action();
         action1.setProject(projectRepository.findByUuidAndDeletedFalse(projectUuid));
@@ -102,7 +103,6 @@ public class ActionServiceImpl {
         generateSpeech(uuid);
         action.setStatutAction(StatutAction.VALIDE);
         actionRepository.save(action);
-
     }
 
     public void deleteAction(String uuid) {
@@ -114,15 +114,7 @@ public class ActionServiceImpl {
     public List<Action> getActionsByProjectUuid(String uuid) {
         return actionRepository.findByProject(uuid);
     }
-    public ActionResponse getActionsUuid(String uuid) {
-        Action action = actionRepository.findByUuid(uuid);
-        ActionResponse action1 = new ActionResponse();
-        action1.setStatutAction(StatutAction.EN_ATTENTE);
-        action1.setText(action.getText());
-        action1.setLanguage(action.getLanguage());
-        action1.setAudioGenerated(action.getAudioGenerated());
-        return action1;
-    }
+
     public void sendNotification(String utilisateurUuid, String speakerUuid, String actionUuid) {
         Action action = actionRepository.findByUuid(actionUuid);
         Utilisateur utilisateur = utilisateurRepository.findByUuid(utilisateurUuid);
@@ -144,12 +136,8 @@ public class ActionServiceImpl {
         audio1.setSpeaker(speakerRepository.getSpeakerByVoix(voix));
         audio1.setFormat(audioFormat);
         audioRepository.save(audio1);
-
     }
 
-    /**
-     * Detects the format of a byte[] audio file.
-     */
     private String detectAudioFormat(byte[] audioBytes) {
         Tika tika = new Tika();
         try {
@@ -165,19 +153,17 @@ public class ActionServiceImpl {
             Resource resource = resourceLoader.getResource("classpath:bad-words.txt");
             if (resource.exists()) {
                 try (InputStream inputStream = resource.getInputStream();
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                     badWords = reader.lines()
                             .map(String::trim)
                             .filter(line -> !line.isEmpty())
                             .collect(Collectors.toList());
                 }
             } else {
-                // Fallback if file doesn't exist
                 badWords = new ArrayList<>();
                 System.out.println("Warning: bad-words.txt not found, using empty list");
             }
         } catch (IOException e) {
-            // Provide a fallback instead of throwing an exception
             badWords = new ArrayList<>();
             System.out.println("Warning: Error loading bad-words.txt, using empty list: " + e.getMessage());
         }
@@ -214,12 +200,11 @@ public class ActionServiceImpl {
             paypalService.refundPayment(paymentOpt.getPaypalId(), paymentOpt.getAmount());
             paymentOpt.setStatus(PaymentStatus.FAILED);
             paymentRepository.save(paymentOpt);
-
         }
     }
 
     public void processPayment(String clientUuid, String actionUuid, Double amount, String paypalId,
-            String paypalPayerId) {
+                               String paypalPayerId) {
         Action action = actionRepository.findByUuid(actionUuid);
         try {
             Payment payment = new Payment();
@@ -234,7 +219,6 @@ public class ActionServiceImpl {
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors du paiement : " + e.getMessage());
         }
-
     }
 
     public List<ActionResponse> getActionBySpeakerUuid(String uuid) {
@@ -253,8 +237,7 @@ public class ActionServiceImpl {
         }).collect(Collectors.toList());
     }
 
-    //changes start here
-
+    // PAYPAL METHODS (EXISTING)
     public Action createInitialAction(ActionRequest actionRequest) {
         Action action = new Action();
         action.setText(actionRequest.getText());
@@ -262,7 +245,7 @@ public class ActionServiceImpl {
         action.setStatutAction(StatutAction.EN_ATTENTE);
         action.setDateCreation(new Date());
 
-        // DON'T STORE VOICE ID ANYWHERE - user will provide it when needed
+        // DON'T STORE VOICE ID IN DATABASE - it goes to tempVoiceStorage
 
         if (actionRequest.getUtilisateurUuid() != null) {
             Utilisateur utilisateur = utilisateurRepository.findByUuid(actionRequest.getUtilisateurUuid());
@@ -332,4 +315,71 @@ public class ActionServiceImpl {
         actionRepository.save(action);
     }
 
+    // NEW BANK TRANSFER METHODS (UPDATED TO MATCH PAYPAL PATTERN)
+
+    public BankTransferResponse createBankTransferResponse(Action action, String text) {
+        try {
+            // Generate unique libellé and update action
+            String libelle = generateUniqueLibelle();
+            action.setLibelle(libelle);
+            actionRepository.save(action);
+
+            // Calculate price
+            double price = calculatePrice(text);
+
+            // Create response
+            BankTransferResponse response = new BankTransferResponse();
+            response.setActionId(action.getId());
+            response.setLibelle(libelle);
+            response.setRib(COMPANY_RIB);
+            response.setPrice(price);
+            response.setBankName(BANK_NAME);
+            response.setAccountHolder(ACCOUNT_HOLDER);
+            response.setMessage("Action créée avec succès. Effectuez le virement bancaire avec le libellé fourni.");
+
+            return response;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create bank transfer response: " + e.getMessage());
+        }
+    }
+
+    private String generateUniqueLibelle() {
+        String prefix = "SV";
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String random = String.valueOf((int)(Math.random() * 1000));
+        return prefix + timestamp.substring(timestamp.length() - 8) + random;
+    }
+
+    public List<Action> getPendingBankTransferActions() {
+        return actionRepository.findAll().stream()
+                .filter(action -> action.getStatutAction() == StatutAction.EN_ATTENTE)
+                .filter(action -> action.getLibelle() != null && !action.getLibelle().isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    public void rejectBankTransferAction(Long actionId) {
+        Action action = actionRepository.findById(actionId)
+                .orElseThrow(() -> new RuntimeException("Action not found"));
+
+        action.setStatutAction(StatutAction.REJETE);
+        actionRepository.save(action);
+    }
+
+    public Action getActionByLibelle(String libelle) {
+        return actionRepository.findAll().stream()
+                .filter(action -> libelle.equals(action.getLibelle()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public ActionResponse getActionsUuid(String uuid) {
+        Action action = actionRepository.findByUuid(uuid);
+        ActionResponse action1 = new ActionResponse();
+        action1.setStatutAction(StatutAction.EN_ATTENTE);
+        action1.setText(action.getText());
+        action1.setLanguage(action.getLanguage());
+        action1.setAudioGenerated(action.getAudioGenerated());
+        return action1;
+    }
 }
