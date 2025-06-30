@@ -1,4 +1,163 @@
 {
+  "footer": {
+    "about": "Nuestra plataforma ofrece una selección de locutores profesionales listos para dar vida a tus proyectos publicitarios, videos, podcasts, e-learning y más.",
+    "quickLinks": "Enlaces Rápidos",
+    "services": "Servicios",
+    "contact": "Contacto",
+    "stayInformed": "Mantente informado",
+    "placeholders": {
+      "email": "Tu correo electrónico"
+    },
+    "links": {
+      "home": "Inicio",
+      "speakers": "Locutores",
+      "celebrities": "Celebridades",
+      "advertisers": "Anunciantes",
+      "creators": "Creadores"
+    },
+    "service": {
+      "humanVoices": "Voces Humanas",
+      "aiVoices": "Voces IA",
+      "textAnalysis": "Análisis de Texto",
+      "reservations": "Reservas",
+      "audioGeneration": "Generación de Audio"
+    },
+    "copyright": "Todos los derechos reservados.",
+    "terms": "Términos de uso",
+    "privacy": "Política de privacidad",
+    "legal": "Aviso legal"
+  },
+  "header": {
+    "title": "Resumen del Panel de Control",
+    "breadcrumb": {
+      "home": "Inicio",
+      "dashboard": "Panel de Control"
+    },
+    "search": {
+      "placeholder": "Buscar..."
+    },
+    "language": {
+      "selector": "Selector de Idioma",
+      "options": {
+        "english": "English",
+        "french": "Français",
+        "spanish": "Español"
+      }
+    },
+    "notifications": {
+      "button": "Notificaciones",
+      "title": "Notificaciones",
+      "markAllRead": "Marcar todo como leído",
+      "viewAll": "Ver todas las notificaciones",
+      "noNotifications": "No hay nuevas notificaciones",
+      "items": {
+        "voiceCompleted": "Nueva generación de voz completada",
+        "newComment": "Nuevo comentario en tu proyecto",
+        "requestApproved": "Tu solicitud ha sido aprobada",
+        "paymentReceived": "Pago recibido exitosamente",
+        "projectShared": "Proyecto compartido contigo",
+        "systemUpdate": "Mantenimiento del sistema programado"
+      },
+      "times": {
+        "justNow": "Ahora mismo",
+        "oneMinAgo": "Hace 1 min",
+        "twoMinAgo": "Hace 2 min",
+        "fiveMinAgo": "Hace 5 min",
+        "tenMinAgo": "Hace 10 min",
+        "thirtyMinAgo": "Hace 30 min",
+        "oneHourAgo": "Hace 1 hora",
+        "twoHoursAgo": "Hace 2 horas",
+        "yesterday": "Ayer",
+        "twoDaysAgo": "Hace 2 días"
+      },
+    "logo": {
+      "alt": "Logo Casting Voice Off"
+    },
+    "navigation": {
+      "toggleMenu": "Alternar menú de navegación",
+      "languages": "IDIOMAS",
+      "voiceLanguages": "Idiomas de Voz",
+      "speakers": "SPEAKERS",
+      "aiVoice": "VOZ IA",
+      "humanVoice": "VOZ HUMANA",
+      "studio": "ESTUDIO",
+      "contact": "CONTÁCTANOS"
+    },
+    "voiceLanguages": {
+      "darija": "Darija",
+      "arabic": "Árabe",
+      "french": "Francés",
+      "english": "Inglés",
+      "german": "Alemán",
+      "italian": "Italiano",
+      "spanish": "Español",
+      "portuguese": "Portugués",
+      "hindi": "Hindi",
+      "bengali": "Bengalí",
+      "russian": "Ruso",
+      "japanese": "Japonés",
+      "korean": "Coreano",
+      "chinese": "Chino",
+      "turkish": "Turco",
+      "vietnamese": "Vietnamita",
+      "polish": "Polaco",
+      "ukrainian": "Ucraniano",
+      "romanian": "Rumano",
+      "dutch": "Holandés",
+      "swedish": "Sueco",
+      "finnish": "Finlandés",
+      "norwegian": "Noruego",
+      "danish": "Danés",
+      "hungarian": "Húngaro",
+      "czech": "Checo",
+      "greek": "Griego",
+      "thai": "Tailandés",
+      "indonesian": "Indonesio",
+      "malay": "Malayo",
+      "hebrew": "Hebreo",
+      "persian": "Persa"
+    },
+    "uiLanguage": {
+      "selector": "Idioma de la Interfaz",
+      "options": {
+        "english": "English",
+        "french": "Français",
+        "spanish": "Español"
+      }
+    },
+    "auth": {
+      "login": "INICIAR SESIÓN",
+      "signup": "REGISTRARSE"
+    },
+    "userMenu": {
+      "toggle": "Menú de usuario",
+      "avatar": "Avatar de usuario",
+      "profile": "Perfil",
+      "dashboard": "Panel de Control",
+      "settings": "Configuración",
+      "logout": "Cerrar Sesión"
+    }
+  },
+  "sidebar": {
+    "toggleSidebar": "Alternar barra lateral",
+    "companyLogo": "Logo de la empresa",
+    "profileImage": "Imagen de perfil",
+    "clientPortal": "Portal del Cliente",
+    "companyName": "Acme Corporation",
+    "sections": {
+      "main": "Principal",
+      "account": "Cuenta"
+    },
+    "navigation": {
+      "dashboard": "Panel de Control",
+      "myProjects": "Mis Proyectos",
+      "myRequests": "Mis Solicitudes",
+      "audioLibrary": "Biblioteca de Audio",
+      "settings": "Configuración",
+      "helpSupport": "Ayuda y Soporte"
+    },
+    "logout": "Cerrar Sesión"
+  },
   "payment": {
     "selectMethod": "Seleccionar método de pago",
     "orderSummary": "Resumen del pedido",
