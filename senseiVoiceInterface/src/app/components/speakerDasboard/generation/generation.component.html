@@ -237,7 +237,6 @@
     <!-- Voice Selection Section -->
     <div class="voice-selection-section" *ngIf="!selectedVoice" [class.collapsed]="selectedVoice">
 
-
       <!-- Search and Filters -->
       <!-- Filters -->
       <div class="filters-section">
@@ -302,8 +301,6 @@
               <span class="voice-badge voice-badge-type">{{ voice.type }}</span>
               <span class="voice-badge voice-badge-lang">{{ voice.language }}</span>
             </div>
-            
-  
             
             <div class="voice-card-meta">
               <span class="voice-meta">{{ voice.gender }}</span>
@@ -497,6 +494,83 @@
                   [disabled]="!selectedPaymentMethod || isProcessingPayment">
             <i class="bi" [ngClass]="isProcessingPayment ? 'bi-hourglass-split' : 'bi-arrow-right'"></i>
             {{ isProcessingPayment ? 'payment.processing' : 'payment.proceed' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bank Transfer Details Modal -->
+    <div class="payment-method-modal" *ngIf="showBankTransferModal" (click)="$event.stopPropagation()">
+      <div class="payment-modal-content" (click)="$event.stopPropagation()">
+        <div class="payment-modal-header">
+          <h3>{{ 'payment.bankTransferDetails' | translate }}</h3>
+          <button class="modal-close-btn" (click)="closeBankTransferModal()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <div class="payment-modal-body">
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            {{ 'payment.bankTransferInstructions' | translate }}
+          </div>
+
+          <div class="payment-summary">
+            <h5>{{ 'payment.transferDetails' | translate }}</h5>
+            
+            <div class="bank-details" *ngIf="bankTransferDetails">
+              <div class="detail-item">
+                <span>{{ 'payment.bankName' | translate }}:</span>
+                <span>{{ bankTransferDetails.bankName }}</span>
+                <button class="btn-copy" (click)="copyToClipboard(bankTransferDetails.bankName)">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              
+              <div class="detail-item">
+                <span>{{ 'payment.accountNumber' | translate }}:</span>
+                <span>{{ bankTransferDetails.accountNumber }}</span>
+                <button class="btn-copy" (click)="copyToClipboard(bankTransferDetails.accountNumber)">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              
+              <div class="detail-item">
+                <span>{{ 'payment.routingNumber' | translate }}:</span>
+                <span>{{ bankTransferDetails.routingNumber }}</span>
+                <button class="btn-copy" (click)="copyToClipboard(bankTransferDetails.routingNumber)">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              
+              <div class="detail-item">
+                <span>{{ 'payment.reference' | translate }}:</span>
+                <span class="reference-number">{{ bankTransferReference }}</span>
+                <button class="btn-copy" (click)="copyToClipboard(bankTransferReference)">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              
+              <div class="detail-item total">
+                <span>{{ 'payment.amount' | translate }}:</span>
+                <span class="total-price">${{ calculatedPrice.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ 'payment.includeReference' | translate }}
+          </div>
+        </div>
+
+        <div class="payment-modal-footer">
+          <button class="btn-secondary" (click)="closeBankTransferModal()">
+            {{ 'payment.close' | translate }}
+          </button>
+          <button class="btn-primary" (click)="confirmBankTransferPayment()">
+            <i class="bi bi-check-circle me-1"></i>
+            {{ 'payment.confirmTransfer' | translate }}
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 <!-- Mobile Sidebar Toggle -->
-<button class="sidebar-toggle" (click)="toggleSidebar()" aria-label="Toggle Sidebar">
+<button class="sidebar-toggle" (click)="toggleSidebar()" [attr.aria-label]="'sidebar.toggleSidebar' | translate">
   <i class="bi bi-list"></i>
 </button>
 
@@ -9,31 +9,33 @@
 <nav class="sidebar" [class.show]="sidebarOpen">
   <!-- Logo Section -->
   <div class="sidebar-brand">
-    <img src="assets/img/LOGO NOIR (2).png" alt="Company Logo" class="logo">
+    <img src="assets/img/LOGO NOIR (2).png" [alt]="'sidebar.companyLogo' | translate" class="logo">
   </div>
 
   <!-- Profile Section -->
   <div class="profile-section">
     <div class="profile-avatar">
-      <img [src]="'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" alt="Profile" class="avatar-img">
+      <img [src]="photoUrl || 'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" 
+           [alt]="'sidebar.profileImage' | translate" 
+           class="avatar-img">
     </div>
     <div class="profile-info">
-      <h4 class="profile-title">Client Portal</h4>
-      <p class="profile-subtitle">Acme Corporation</p>
+      <h4 class="profile-title">{{ 'sidebar.clientPortal' | translate }}</h4>
+      <p class="profile-subtitle">{{ 'sidebar.companyName' | translate }}</p>
     </div>
   </div>
 
   <!-- Main Navigation -->
   <div class="nav-section">
     <div class="nav-group">
-      <div class="nav-label">Main</div>
+      <div class="nav-label">{{ 'sidebar.sections.main' | translate }}</div>
 
       <div class="nav-item">
         <a routerLink="generate" class="nav-link" routerLinkActive="active">
           <div class="nav-icon">
             <i class="bi bi-speedometer2"></i>
           </div>
-          <span>Dashboard</span>
+          <span>{{ 'sidebar.navigation.dashboard' | translate }}</span>
         </a>
       </div>
 
@@ -42,7 +44,7 @@
           <div class="nav-icon">
             <i class="bi bi-collection"></i>
           </div>
-          <span>My Projects</span>
+          <span>{{ 'sidebar.navigation.myProjects' | translate }}</span>
         </a>
       </div>
 
@@ -51,7 +53,7 @@
           <div class="nav-icon">
             <i class="bi bi-clipboard-check"></i>
           </div>
-          <span>My Requests</span>
+          <span>{{ 'sidebar.navigation.myRequests' | translate }}</span>
         </a>
       </div>
 
@@ -60,21 +62,21 @@
           <div class="nav-icon">
             <i class="bi bi-music-note-list"></i>
           </div>
-          <span>Audio Library</span>
+          <span>{{ 'sidebar.navigation.audioLibrary' | translate }}</span>
         </a>
       </div>
     </div>
 
     <!-- Settings Navigation -->
     <div class="nav-group">
-      <div class="nav-label">Account</div>
+      <div class="nav-label">{{ 'sidebar.sections.account' | translate }}</div>
 
       <div class="nav-item">
         <a routerLink="profile" class="nav-link" routerLinkActive="active">
           <div class="nav-icon">
             <i class="bi bi-gear"></i>
           </div>
-          <span>Settings</span>
+          <span>{{ 'sidebar.navigation.settings' | translate }}</span>
         </a>
       </div>
 
@@ -83,7 +85,7 @@
           <div class="nav-icon">
             <i class="bi bi-question-circle"></i>
           </div>
-          <span>Help & Support</span>
+          <span>{{ 'sidebar.navigation.helpSupport' | translate }}</span>
         </a>
       </div>
     </div>
@@ -93,7 +95,7 @@
   <div class="logout-section">
     <a href="#" (click)="logout()" class="logout-button">
       <i class="bi bi-box-arrow-right"></i>
-      <span>Logout</span>
+      <span>{{ 'sidebar.logout' | translate }}</span>
     </a>
   </div>
 </nav>

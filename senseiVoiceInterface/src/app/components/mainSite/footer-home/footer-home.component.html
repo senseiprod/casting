@@ -14,43 +14,43 @@
             <img src="assets/img/LOGO NOIR.png" alt="Logo" class="footer-logo">
           </div>
           <p class="footer-about">
-            Notre plateforme vous propose une sélection de speakers professionnels, prêts à donner vie à vos projets publicitaires, vidéos, podcasts, e-learning et plus encore.
+            {{ 'footer.about' | translate }}
           </p>
           <div class="social-icons">
-            <a  class="social-icon"><i class="bi bi-facebook"></i></a>
-            <a  class="social-icon"><i class="bi bi-twitter"></i></a>
-            <a  class="social-icon"><i class="bi bi-instagram"></i></a>
-            <a  class="social-icon"><i class="bi bi-linkedin"></i></a>
+            <a class="social-icon"><i class="bi bi-facebook"></i></a>
+            <a class="social-icon"><i class="bi bi-twitter"></i></a>
+            <a class="social-icon"><i class="bi bi-instagram"></i></a>
+            <a class="social-icon"><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
 
         <!-- Quick Links -->
         <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-          <h5 class="footer-heading">Liens Rapides</h5>
+          <h5 class="footer-heading">{{ 'footer.quickLinks' | translate }}</h5>
           <ul class="footer-links">
-            <li><a href="#">Accueil</a></li>
-            <li><a routerLink="actors">Speakers</a></li>
-            <li><a routerLink="actors">Célébrités</a></li>
-            <li><a routerLink="actors">Annonceurs</a></li>
-            <li><a routerLink="actors">Créateurs</a></li>
+            <li><a href="#">{{ 'footer.links.home' | translate }}</a></li>
+            <li><a routerLink="actors">{{ 'footer.links.speakers' | translate }}</a></li>
+            <li><a routerLink="actors">{{ 'footer.links.celebrities' | translate }}</a></li>
+            <li><a routerLink="actors">{{ 'footer.links.advertisers' | translate }}</a></li>
+            <li><a routerLink="actors">{{ 'footer.links.creators' | translate }}</a></li>
           </ul>
         </div>
 
         <!-- Services -->
         <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-          <h5 class="footer-heading">Services</h5>
+          <h5 class="footer-heading">{{ 'footer.services' | translate }}</h5>
           <ul class="footer-links">
-            <li><a routerLink="humain-voices">Voix Humaines</a></li>
-            <li><a routerLink="voice-ai">Voix IA</a></li>
-            <li><a routerLink="humain-voices">Analyse de Texte</a></li>
-            <li><a routerLink="studio">Réservations</a></li>
-            <li><a routerLink="voice-ai">Génération Audio</a></li>
+            <li><a routerLink="humain-voices">{{ 'footer.service.humanVoices' | translate }}</a></li>
+            <li><a routerLink="voice-ai">{{ 'footer.service.aiVoices' | translate }}</a></li>
+            <li><a routerLink="humain-voices">{{ 'footer.service.textAnalysis' | translate }}</a></li>
+            <li><a routerLink="studio">{{ 'footer.service.reservations' | translate }}</a></li>
+            <li><a routerLink="voice-ai">{{ 'footer.service.audioGeneration' | translate }}</a></li>
           </ul>
         </div>
 
         <!-- Contact -->
         <div class="col-lg-4 col-md-6">
-          <h5 class="footer-heading">Contact</h5>
+          <h5 class="footer-heading">{{ 'footer.contact' | translate }}</h5>
           <ul class="contact-info">
             <li><i class="bi bi-geo-alt-fill"></i> 9 Rue abou Moussa El Jazouli,1st floor No. 1, Maarif,casablanca</li>
             <li><i class="bi bi-telephone-fill"></i> +2125 20 09 39 90</li>
@@ -58,9 +58,9 @@
           </ul>
 
           <div class="newsletter">
-            <h6>Restez informé</h6>
+            <h6>{{ 'footer.stayInformed' | translate }}</h6>
             <div class="newsletter-form">
-              <input type="email" placeholder="Votre email" class="newsletter-input">
+              <input type="email" [placeholder]="'footer.placeholders.email' | translate" class="newsletter-input">
               <button class="newsletter-btn"><i class="bi bi-arrow-right"></i></button>
             </div>
           </div>
@@ -70,12 +70,12 @@
 
     <div class="footer-bottom">
       <div class="copyright">
-        &copy; {{ currentYear }} senseiprod. Tous droits réservés.
+        &copy; {{ currentYear }} senseiprod. {{ 'footer.copyright' | translate }}
       </div>
       <div class="footer-bottom-links">
-        <a >Conditions d'utilisation</a>
-        <a >Politique de confidentialité</a>
-        <a >Mentions légales</a>
+        <a>{{ 'footer.terms' | translate }}</a>
+        <a>{{ 'footer.privacy' | translate }}</a>
+        <a>{{ 'footer.legal' | translate }}</a>
       </div>
     </div>
   </div>

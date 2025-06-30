@@ -8,6 +8,7 @@ import  { ActionService } from "../../../services/action.service"
 import  { ActivatedRoute, Router } from "@angular/router"
 import  { LahajatiService } from "../../../services/lahajati.service"
 
+
 // Interface for Lahajati voices
 interface LahajatiVoice {
   id: string
@@ -75,7 +76,7 @@ export class GenerationComponent implements OnInit {
   lahajatiDataLoaded = false
 
   languages = [
-    { code: "darija", name: "Darija", active: false }, // Added Darija
+    { code: "darija", name: "Darija", active: false },
     { code: "ar", name: "Arabe", active: false },
     { code: "fr", name: "Français", active: false },
     { code: "en", name: "Anglais", active: true },
@@ -161,6 +162,11 @@ export class GenerationComponent implements OnInit {
   showGenerationProgress = false
   generationProgress = 0
 
+  // Bank transfer specific properties
+  showBankTransferModal = false
+  bankTransferDetails: any = null
+  bankTransferReference: string | null = null
+
   constructor(
     private elevenLabsService: ElevenLabsService,
     private route: ActivatedRoute,
@@ -168,7 +174,7 @@ export class GenerationComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private projectService: ProjectService,
     private actionService: ActionService,
-    private lahajatiService: LahajatiService, // Added Lahajati service
+    private lahajatiService: LahajatiService,
   ) {}
 
   // Initialize waveform bars in ngOnInit
@@ -273,8 +279,7 @@ export class GenerationComponent implements OnInit {
       // Handle card payment - you can implement this later
       this.paymentError = "Card payment not implemented yet"
     } else if (this.selectedPaymentMethod === "verment") {
-      // Handle verment payment - you can implement this later
-      this.paymentError = "Verment payment not implemented yet"
+      this.processBankTransferPayment()
     }
   }
 
@@ -331,6 +336,85 @@ export class GenerationComponent implements OnInit {
         this.showPaymentProcessing = false
       },
     )
+  }
+
+  // New method for bank transfer payment
+  processBankTransferPayment() {
+    if (!this.selectedVoice || !this.userId) {
+      this.paymentError = "Missing required information"
+      return
+    }
+
+    this.isProcessingPayment = true
+    this.paymentError = null
+    this.showPaymentProcessing = true
+
+    // Create bank transfer request
+    const bankTransferRequest = {
+      text: this.actionData.text,
+      voiceUuid: this.selectedVoice.id,
+      utilisateurUuid: this.userId,
+      language: this.selectedVoice.language,
+      projectUuid: this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+    }
+
+    this.actionService.createActionWithBankTransfer(bankTransferRequest).subscribe(
+      (response) => {
+        console.log("Bank transfer payment response:", response)
+
+        this.actionId = response.actionId
+        this.bankTransferReference = response.transferReference
+        this.bankTransferDetails = response.bankDetails
+        this.calculatedPrice = response.price || this.calculatedPrice
+
+        this.isProcessingPayment = false
+        this.showPaymentProcessing = false
+        this.closePaymentMethodModal()
+
+        // Show bank transfer details modal
+        this.showBankTransferModal = true
+      },
+      (error) => {
+        console.error("Error creating bank transfer payment:", error)
+        this.paymentError = error.error?.error || "Failed to process bank transfer payment"
+        this.isProcessingPayment = false
+        this.showPaymentProcessing = false
+      },
+    )
+  }
+
+  // Method to close bank transfer modal
+  closeBankTransferModal() {
+    this.showBankTransferModal = false
+    this.bankTransferDetails = null
+    this.bankTransferReference = null
+  }
+
+  // Method to copy bank details to clipboard
+  copyToClipboard(text: string) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        // You can show a toast notification here
+        console.log("Copied to clipboard:", text)
+      })
+      .catch((err) => {
+        console.error("Failed to copy to clipboard:", err)
+      })
+  }
+
+  // Method to confirm bank transfer payment (for manual verification)
+  confirmBankTransferPayment() {
+    if (this.actionId) {
+      // This could trigger a manual verification process
+      // or mark the payment as pending verification
+      console.log("Bank transfer payment confirmed for action:", this.actionId)
+      this.closeBankTransferModal()
+
+      // You might want to show a success message or redirect
+      this.generationSuccess = true
+      this.generationError = null
+    }
   }
 
   redirectToPayPal() {
@@ -438,7 +522,7 @@ export class GenerationComponent implements OnInit {
     const requestBody = {
       text: this.actionData.text,
       id_voice: this.selectedVoice!.id,
-      dialect_id:  "35",
+      dialect_id: "35",
       performance_id: "1284",
       input_mode: "0",
     }
@@ -519,65 +603,66 @@ export class GenerationComponent implements OnInit {
 
   fetchLahajatiData() {
     if (this.lahajatiDataLoaded || this.isLoadingLahajatiData) {
-      return;
+      return
     }
-  
-    this.isLoadingLahajatiData = true;
-    console.log("Fetching Lahajati voices...");
-  
+
+    this.isLoadingLahajatiData = true
+    console.log("Fetching Lahajati voices...")
+
     this.lahajatiService.getVoices(1, 50).subscribe({
       next: (voicesResponse) => {
         try {
-          const voicesData = typeof voicesResponse === 'string' ? JSON.parse(voicesResponse) : voicesResponse;
-          this.lahajatiVoices = this.mapLahajatiVoices(voicesData.data || voicesData);
-          console.log("Lahajati voices loaded:", this.lahajatiVoices);
-  
+          const voicesData = typeof voicesResponse === "string" ? JSON.parse(voicesResponse) : voicesResponse
+          this.lahajatiVoices = this.mapLahajatiVoices(voicesData.data || voicesData)
+          console.log("Lahajati voices loaded:", this.lahajatiVoices)
+
           // Ensuite : fetch dialects
-          console.log("Fetching Lahajati dialects...");
+          console.log("Fetching Lahajati dialects...")
           this.lahajatiService.getDialects(1, 50).subscribe({
             next: (dialectsResponse) => {
-              const dialectsData = typeof dialectsResponse === 'string' ? JSON.parse(dialectsResponse) : dialectsResponse;
-              this.lahajatiDialects = dialectsData.data || dialectsData;
-              console.log("Lahajati dialects loaded:", this.lahajatiDialects);
-  
+              const dialectsData =
+                typeof dialectsResponse === "string" ? JSON.parse(dialectsResponse) : dialectsResponse
+              this.lahajatiDialects = dialectsData.data || dialectsData
+              console.log("Lahajati dialects loaded:", this.lahajatiDialects)
+
               // Ensuite : fetch performance styles
-              console.log("Fetching performance styles...");
+              console.log("Fetching performance styles...")
               this.lahajatiService.getPerformanceStyles(1, 50).subscribe({
                 next: (stylesResponse) => {
-                  const stylesData = typeof stylesResponse === 'string' ? JSON.parse(stylesResponse) : stylesResponse;
-                  this.lahajatiPerformanceStyles = stylesData.data || stylesData;
-                  console.log("Performance styles loaded:", this.lahajatiPerformanceStyles);
-  
-                  this.lahajatiDataLoaded = true;
-                  this.isLoadingLahajatiData = false;
-  
+                  const stylesData = typeof stylesResponse === "string" ? JSON.parse(stylesResponse) : stylesResponse
+                  this.lahajatiPerformanceStyles = stylesData.data || stylesData
+                  console.log("Performance styles loaded:", this.lahajatiPerformanceStyles)
+
+                  this.lahajatiDataLoaded = true
+                  this.isLoadingLahajatiData = false
+
                   if (this.filters.language === "darija") {
-                    this.applyFilters();
+                    this.applyFilters()
                   }
                 },
                 error: (error) => {
-                  console.error("Error fetching performance styles:", error);
-                  this.isLoadingLahajatiData = false;
-                }
-              });
+                  console.error("Error fetching performance styles:", error)
+                  this.isLoadingLahajatiData = false
+                },
+              })
             },
             error: (error) => {
-              console.error("Error fetching dialects:", error);
-              this.isLoadingLahajatiData = false;
-            }
-          });
+              console.error("Error fetching dialects:", error)
+              this.isLoadingLahajatiData = false
+            },
+          })
         } catch (error) {
-          console.error("Error parsing voices:", error);
-          this.isLoadingLahajatiData = false;
+          console.error("Error parsing voices:", error)
+          this.isLoadingLahajatiData = false
         }
       },
       error: (error) => {
-        console.error("Error fetching voices:", error);
-        this.isLoadingLahajatiData = false;
-      }
-    });
+        console.error("Error fetching voices:", error)
+        this.isLoadingLahajatiData = false
+      },
+    })
   }
-  
+
   // Map Lahajati voices to match the existing Voice interface
   mapLahajatiVoices(lahajatiVoices: any[]): LahajatiVoice[] {
     return lahajatiVoices.map((voice) => ({

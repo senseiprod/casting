@@ -4,11 +4,11 @@
     <!-- Left Section: Toggle & Title -->
     <div class="header-left">
       <div class="page-title">
-        <h1>Dashboard Overview</h1>
+        <h1>{{ 'header.title' | translate }}</h1>
         <div class="breadcrumb">
-          <span>Home</span>
+          <span>{{ 'header.breadcrumb.home' | translate }}</span>
           <i class="bi bi-chevron-right separator"></i>
-          <span class="current">Dashboard</span>
+          <span class="current">{{ 'header.breadcrumb.dashboard' | translate }}</span>
         </div>
       </div>
     </div>
@@ -19,29 +19,56 @@
       <div class="search-container d-none d-lg-flex">
         <div class="search-box">
           <i class="bi bi-search search-icon"></i>
-          <input type="text" placeholder="Search..." class="search-input">
+          <input 
+            type="text" 
+            [placeholder]="'header.search.placeholder' | translate" 
+            class="search-input"
+            #searchInput
+            (keyup.enter)="onSearchSubmit(searchInput.value)">
         </div>
       </div>
 
       <!-- Language Selector -->
       <div class="language-selector">
         <div class="dropdown">
-          <button class="language-button" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <button 
+            class="language-button" 
+            type="button" 
+            id="languageDropdown" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            [attr.aria-label]="'header.language.selector' | translate">
             <i class="bi bi-globe"></i>
-            <span *ngIf="getCurrentLanguage() === 'en'">EN</span>
-            <span *ngIf="getCurrentLanguage() === 'fr'">FR</span>
-            <span *ngIf="getCurrentLanguage() === 'es'">ES</span>
+            <span>{{ getLanguageDisplayName() }}</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-            <li><a class="dropdown-item" href="#" (click)="changeLanguage('en'); $event.preventDefault()">
-              <span class="language-flag">🇺🇸</span> English
-            </a></li>
-            <li><a class="dropdown-item" href="#" (click)="changeLanguage('fr'); $event.preventDefault()">
-              <span class="language-flag">🇫🇷</span> Français
-            </a></li>
-            <li><a class="dropdown-item" href="#" (click)="changeLanguage('es'); $event.preventDefault()">
-              <span class="language-flag">🇪🇸</span> Español
-            </a></li>
+            <li>
+              <a class="dropdown-item" 
+                 href="#" 
+                 (click)="changeLanguage('en'); $event.preventDefault()"
+                 [class.active]="getCurrentLanguage() === 'en'">
+                <span class="language-flag">🇺🇸</span> 
+                {{ 'header.language.options.english' | translate }}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" 
+                 href="#" 
+                 (click)="changeLanguage('fr'); $event.preventDefault()"
+                 [class.active]="getCurrentLanguage() === 'fr'">
+                <span class="language-flag">🇫🇷</span> 
+                {{ 'header.language.options.french' | translate }}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" 
+                 href="#" 
+                 (click)="changeLanguage('es'); $event.preventDefault()"
+                 [class.active]="getCurrentLanguage() === 'es'">
+                <span class="language-flag">🇪🇸</span> 
+                {{ 'header.language.options.spanish' | translate }}
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -49,46 +76,48 @@
       <!-- Notifications -->
       <div class="notification-container">
         <div class="dropdown">
-          <button class="notification-button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <button 
+            class="notification-button" 
+            id="notificationsDropdown" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            [attr.aria-label]="'header.notifications.button' | translate">
             <i class="bi bi-bell"></i>
-            <span class="notification-badge">3</span>
+            <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
           </button>
           <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationsDropdown">
             <div class="notification-header">
-              <h6>Notifications</h6>
-              <a href="#" class="mark-all">Mark all as read</a>
+              <h6>{{ 'header.notifications.title' | translate }}</h6>
+              <a href="#" 
+                 class="mark-all" 
+                 (click)="markAllNotificationsAsRead(); $event.preventDefault()">
+                {{ 'header.notifications.markAllRead' | translate }}
+              </a>
             </div>
             <div class="notification-body">
-              <a href="#" class="notification-item unread">
+              <div *ngIf="notifications.length === 0" class="no-notifications">
+                <p>{{ 'header.notifications.noNotifications' | translate }}</p>
+              </div>
+              <a href="#" 
+                 class="notification-item" 
+                 *ngFor="let notification of notifications"
+                 [class.unread]="notification.unread"
+                 (click)="markNotificationAsRead(notification.id); $event.preventDefault()">
                 <div class="notification-icon">
-                  <i class="bi bi-file-earmark-text"></i>
+                  <i [class]="notification.icon"></i>
                 </div>
                 <div class="notification-content">
-                  <p class="notification-text">New voice generation completed</p>
-                  <p class="notification-time">2 min ago</p>
-                </div>
-              </a>
-              <a href="#" class="notification-item unread">
-                <div class="notification-icon">
-                  <i class="bi bi-person"></i>
-                </div>
-                <div class="notification-content">
-                  <p class="notification-text">New comment on your project</p>
-                  <p class="notification-time">1 hour ago</p>
-                </div>
-              </a>
-              <a href="#" class="notification-item unread">
-                <div class="notification-icon">
-                  <i class="bi bi-check-circle"></i>
-                </div>
-                <div class="notification-content">
-                  <p class="notification-text">Your request has been approved</p>
-                  <p class="notification-time">2 hours ago</p>
+                  <p class="notification-text">{{ notification.text | translate }}</p>
+                  <p class="notification-time">{{ notification.time | translate }}</p>
                 </div>
               </a>
             </div>
             <div class="notification-footer">
-              <a href="#" class="view-all">View all notifications</a>
+              <a href="#" 
+                 class="view-all" 
+                 (click)="navigateToNotifications(); $event.preventDefault()">
+                {{ 'header.notifications.viewAll' | translate }}
+              </a>
             </div>
           </div>
         </div>
@@ -97,10 +126,17 @@
       <!-- User Profile -->
       <div class="profile-container">
         <div class="dropdown">
-          <button class="profile-button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <button 
+            class="profile-button" 
+            id="userDropdown" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            [attr.aria-label]="'header.profile.menu' | translate">
             <div class="profile-avatar">
-              <img src="assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png" alt="Profile">
-              <span class="status-indicator"></span>
+              <img 
+                [src]="profilePhotoUrl || 'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" 
+                [alt]="'header.profile.avatar' | translate">
+              <span class="status-indicator" [attr.title]="'header.profile.status.online' | translate"></span>
             </div>
             <div class="profile-info d-none d-md-block">
               <h6 class="profile-name">{{ speaker?.prenom }} {{ speaker?.nom }}</h6>
@@ -116,24 +152,34 @@
             </div>
 
             <div class="dropdown-body">
-              <a class="dropdown-item" routerLink="profile">
+              <a class="dropdown-item" 
+                 routerLink="profile"
+                 (click)="navigateToProfile()">
                 <i class="bi bi-person"></i>
-                <span>My Profile</span>
+                <span>{{ 'header.profile.menu.myProfile' | translate }}</span>
               </a>
-              <a class="dropdown-item" routerLink="setting">
+              <a class="dropdown-item" 
+                 routerLink="setting"
+                 (click)="navigateToSettings()">
                 <i class="bi bi-gear"></i>
-                <span>Account Settings</span>
+                <span>{{ 'header.profile.menu.accountSettings' | translate }}</span>
               </a>
               <a class="dropdown-item" href="#">
                 <i class="bi bi-shield-check"></i>
-                <span>Privacy & Security</span>
+                <span>{{ 'header.profile.menu.privacySecurity' | translate }}</span>
+              </a>
+              <a class="dropdown-item" href="#">
+                <i class="bi bi-question-circle"></i>
+                <span>{{ 'header.profile.menu.helpSupport' | translate }}</span>
               </a>
             </div>
 
             <div class="dropdown-footer">
-              <a class="dropdown-item logout-item" href="#">
+              <a class="dropdown-item logout-item" 
+                 href="#" 
+                 (click)="logout(); $event.preventDefault()">
                 <i class="bi bi-box-arrow-right"></i>
-                <span>Logout</span>
+                <span>{{ 'header.profile.menu.logout' | translate }}</span>
               </a>
             </div>
           </div>
@@ -142,4 +188,3 @@
     </div>
   </div>
 </header>
-

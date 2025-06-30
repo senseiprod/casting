@@ -1,15 +1,17 @@
 package com.example.senseiVoix.services.serviceImp;
 
-
 import com.example.senseiVoix.helpers.MultipartInputStreamFileResource;
 import com.example.senseiVoix.services.LahajatiService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,10 +20,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LahajatiServiceImpl implements LahajatiService {
-
 
     @Value("${lahajati.api.key}")
     private String apiKey;
@@ -30,243 +32,296 @@ public class LahajatiServiceImpl implements LahajatiService {
     private String ttsUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
-
     private final String stsUrl = "https://lahajati.ai/api/v1/speech-to-speech-pro";
 
-    @Override
-    public ResponseEntity<byte[]> generateSpeech(Map<String, Object> requestBody) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(MediaType.parseMediaTypes("audio/mpeg"));
-        headers.setBearerAuth(apiKey);
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-        
-
-        ResponseEntity<byte[]> response =  restTemplate.exchange(ttsUrl, HttpMethod.POST, entity, byte[].class);
-                // Copy headers except CORS ones
-                HttpHeaders filteredHeaders = new HttpHeaders();
-                response.getHeaders().forEach((key, values) -> {
-                    if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
-                        !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
-                        filteredHeaders.put(key, values);
-                    }
-                });
-        
-        // Return response with filtered headers
-        return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());
+    // Helper method to create clean headers for String responses
+    private HttpHeaders createCleanHeaders() {
+        HttpHeaders cleanHeaders = new HttpHeaders();
+        cleanHeaders.setContentType(MediaType.APPLICATION_JSON);
+        cleanHeaders.remove("Transfer-Encoding");
+        return cleanHeaders;
     }
-    @Override
-    public ResponseEntity<String> getVoices(Optional<Integer> page, Optional<Integer> perPage, Optional<String> gender) {
+
+    // Helper method to create request headers
+    private HttpHeaders createRequestHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(MediaType.parseMediaTypes("application/json"));
         headers.setBearerAuth(apiKey);
+        headers.set("User-Agent", "SenseiVoix/1.0");
+        headers.set("Connection", "close");
+        return headers;
+    }
+
+    @Override
+    public ResponseEntity<byte[]> generateSpeech(Map<String, Object> requestBody) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(MediaType.parseMediaTypes("audio/mpeg"));
+            headers.setBearerAuth(apiKey);
+            headers.set("Connection", "close"); // Add this to prevent chunked encoding
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<byte[]> response = restTemplate.exchange(ttsUrl, HttpMethod.POST, entity, byte[].class);
         
+            // Create clean headers for the response
+            HttpHeaders cleanHeaders = new HttpHeaders();
+            cleanHeaders.setContentType(MediaType.valueOf("audio/mpeg"));
+            cleanHeaders.remove("Transfer-Encoding");
+        
+            return ResponseEntity.status(response.getStatusCode())
+                .headers(cleanHeaders)
+                .body(response.getBody());
+        } catch (Exception e) {
+            log.error("Error generating speech: ", e);
+            throw e;
+        }
+    }
 
-        String url = UriComponentsBuilder
-                .fromHttpUrl("https://lahajati.ai/api/v1/voices-absolute-control")
-                .queryParamIfPresent("page", page)
-                .queryParamIfPresent("per_page", perPage)
-                .queryParamIfPresent("gender", gender)
-                .toUriString();
+    @Override
+    public ResponseEntity<String> getVoices(Optional<Integer> page, Optional<Integer> perPage, Optional<String> gender) {
+        try {
+            log.info("Getting voices with page: {}, perPage: {}, gender: {}", page, perPage, gender);
+            
+            HttpHeaders headers = createRequestHeaders();
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
+            String url = UriComponentsBuilder
+                    .fromHttpUrl("https://lahajati.ai/api/v1/voices-absolute-control")
+                    .queryParamIfPresent("page", page)
+                    .queryParamIfPresent("per_page", perPage)
+                    .queryParamIfPresent("gender", gender)
+                    .toUriString();
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-        // Copy headers except CORS ones
-        HttpHeaders filteredHeaders = new HttpHeaders();
-        response.getHeaders().forEach((key, values) -> {
-            if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
-                !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
-                filteredHeaders.put(key, values);
-            }
-        });
-
-// Return response with filtered headers
-return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());
-
+            log.info("Making request to URL: {}", url);
+            
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            
+            log.info("Response status: {}", response.getStatusCode());
+            
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body(response.getBody());
+            
+        } catch (HttpClientErrorException e) {
+            log.error("Client error getting voices: Status: {}, Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body("Client error: " + e.getResponseBodyAsString());
+        } catch (HttpServerErrorException e) {
+            log.error("Server error getting voices: Status: {}, Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body("Server error: " + e.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Unexpected error getting voices: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .headers(createCleanHeaders())
+                    .body("Unexpected error: " + e.getMessage());
+        }
     }
 
     @Override
     public ResponseEntity<String> getPerformanceStyles(Optional<Integer> page, Optional<Integer> perPage) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(MediaType.parseMediaTypes("application/json"));
-        headers.setBearerAuth(apiKey);
+        try {
+            HttpHeaders headers = createRequestHeaders();
 
-        String url = UriComponentsBuilder
-                .fromHttpUrl("https://lahajati.ai/api/v1/performance-absolute-control")
-                .queryParamIfPresent("page", page)
-                .queryParamIfPresent("per_page", perPage)
-                .toUriString();
+            String url = UriComponentsBuilder
+                    .fromHttpUrl("https://lahajati.ai/api/v1/performance-absolute-control")
+                    .queryParamIfPresent("page", page)
+                    .queryParamIfPresent("per_page", perPage)
+                    .toUriString();
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-        // Copy headers except CORS ones
-        HttpHeaders filteredHeaders = new HttpHeaders();
-        response.getHeaders().forEach((key, values) -> {
-            if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
-                !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
-                filteredHeaders.put(key, values);
-            }
-        });
-
-// Return response with filtered headers
-return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());
-
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body(response.getBody());
+        } catch (Exception e) {
+            log.error("Error getting performance styles: ", e);
+            throw e;
+        }
     }
-
 
     @Override
     public ResponseEntity<String> getDialects(Optional<Integer> page, Optional<Integer> perPage) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(MediaType.parseMediaTypes("application/json"));
-        headers.setBearerAuth(apiKey);
+        try {
+            HttpHeaders headers = createRequestHeaders();
 
-        String url = UriComponentsBuilder
-                .fromHttpUrl("https://lahajati.ai/api/v1/dialect-absolute-control")
-                .queryParamIfPresent("page", page)
-                .queryParamIfPresent("per_page", perPage)
-                .toUriString();
+            String url = UriComponentsBuilder
+                    .fromHttpUrl("https://lahajati.ai/api/v1/dialect-absolute-control")
+                    .queryParamIfPresent("page", page)
+                    .queryParamIfPresent("per_page", perPage)
+                    .toUriString();
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-        // Copy headers except CORS ones
-        HttpHeaders filteredHeaders = new HttpHeaders();
-        response.getHeaders().forEach((key, values) -> {
-            if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
-                !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
-                filteredHeaders.put(key, values);
-            }
-        });
-
-// Return response with filtered headers
-return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body(response.getBody());
+        } catch (Exception e) {
+            log.error("Error getting dialects: ", e);
+            throw e;
+        }
     }
-
-
 
     @Override
     public ResponseEntity<byte[]> textToSpeechPro(Map<String, Object> requestBody) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(MediaType.parseMediaTypes("audio/mpeg"));
-        headers.setBearerAuth(apiKey);
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(MediaType.parseMediaTypes("audio/mpeg"));
+            headers.setBearerAuth(apiKey);
+            headers.set("Connection", "close"); // Add this
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-        String url = "https://lahajati.ai/api/v1/text-to-speech-pro";
-
-        ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
-
-        // Copy headers except CORS ones
-        HttpHeaders filteredHeaders = new HttpHeaders();
-        response.getHeaders().forEach((key, values) -> {
-            if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
-                !key.equalsIgnoreCase("Access-Control-Allow-Credentials")) {
-                filteredHeaders.put(key, values);
-            }
-        });
-
-        return new ResponseEntity<>(response.getBody(), filteredHeaders, response.getStatusCode());    }
-
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+            String url = "https://lahajati.ai/api/v1/text-to-speech-pro";
+            ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
+        
+            // Create clean headers for the response
+            HttpHeaders cleanHeaders = new HttpHeaders();
+            cleanHeaders.setContentType(MediaType.valueOf("audio/mpeg"));
+            cleanHeaders.remove("Transfer-Encoding");
+        
+            return ResponseEntity.status(response.getStatusCode())
+                .headers(cleanHeaders)
+                .body(response.getBody());
+        } catch (Exception e) {
+            log.error("Error with text to speech pro: ", e);
+            throw e;
+        }
+    }
 
     @Override
     public ResponseEntity<byte[]> speechToSpeechPro(MultipartFile audioFile, String idVoice, boolean professionalQuality) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(apiKey);
-        headers.setAccept(MediaType.parseMediaTypes("audio/mpeg"));
-        // Don't set Content-Type explicitly for multipart
-
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(apiKey);
+            headers.setAccept(MediaType.parseMediaTypes("audio/mpeg"));
+            headers.set("Connection", "close"); // Add this
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             Resource fileResource = new MultipartInputStreamFileResource(audioFile);
             body.add("audio_file", fileResource);
+            body.add("id_voice", idVoice);
+            body.add("professional_quality", professionalQuality ? "1" : "0");
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            ResponseEntity<byte[]> response = restTemplate.exchange(stsUrl, HttpMethod.POST, requestEntity, byte[].class);
+        
+            // Create clean headers for the response
+            HttpHeaders cleanHeaders = new HttpHeaders();
+            cleanHeaders.setContentType(MediaType.valueOf("audio/mpeg"));
+            cleanHeaders.remove("Transfer-Encoding");
+        
+            return ResponseEntity.status(response.getStatusCode())
+                .headers(cleanHeaders)
+                .body(response.getBody());
         } catch (IOException e) {
+            log.error("Error processing audio file: ", e);
             throw new RuntimeException("Failed to read audio file", e);
+        } catch (Exception e) {
+            log.error("Error with speech to speech pro: ", e);
+            throw e;
         }
-        body.add("id_voice", idVoice);
-        body.add("professional_quality", professionalQuality ? "1" : "0");
-
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-        return restTemplate.exchange(stsUrl, HttpMethod.POST, requestEntity, byte[].class);
     }
 
     @Override
     public ResponseEntity<String> getGeneralVoices(Optional<Integer> page, Optional<Integer> perPage, Optional<String> gender) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(MediaType.parseMediaTypes("application/json"));
-        headers.setBearerAuth(apiKey);
+        try {
+            HttpHeaders headers = createRequestHeaders();
 
-        String url = UriComponentsBuilder
-                .fromHttpUrl("https://lahajati.ai/api/v1/voices")
-                .queryParamIfPresent("page", page)
-                .queryParamIfPresent("per_page", perPage)
-                .queryParamIfPresent("gender", gender)
-                .toUriString();
+            String url = UriComponentsBuilder
+                    .fromHttpUrl("https://lahajati.ai/api/v1/voices")
+                    .queryParamIfPresent("page", page)
+                    .queryParamIfPresent("per_page", perPage)
+                    .queryParamIfPresent("gender", gender)
+                    .toUriString();
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body(response.getBody());
+        } catch (Exception e) {
+            log.error("Error getting general voices: ", e);
+            throw e;
+        }
     }
-
 
     @Override
     public ResponseEntity<String> createClonedVoice(String voiceName, String gender, MultipartFile voiceImage, MultipartFile audioFile, String voiceTags) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(apiKey);
-        headers.setAccept(MediaType.parseMediaTypes("application/json"));
-
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(apiKey);
+            headers.setAccept(MediaType.parseMediaTypes("application/json"));
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("voice_name", voiceName);
             body.add("gender", gender);
             body.add("voice_tags", voiceTags);
             body.add("voice_image", new MultipartInputStreamFileResource(voiceImage));
             body.add("audio_file", new MultipartInputStreamFileResource(audioFile));
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            String url = "https://lahajati.ai/api/v1/voices/cloned";
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+            
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body(response.getBody());
         } catch (IOException e) {
+            log.error("Error processing uploaded files: ", e);
             throw new RuntimeException("Failed to process uploaded files", e);
+        } catch (Exception e) {
+            log.error("Error creating cloned voice: ", e);
+            throw e;
         }
-
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-        String url = "https://lahajati.ai/api/v1/voices/cloned";
-
-        return restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
     }
 
     @Override
     public ResponseEntity<String> updateClonedVoice(String voiceId, Map<String, Object> requestBody) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(apiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(MediaType.parseMediaTypes("application/json"));
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(apiKey);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(MediaType.parseMediaTypes("application/json"));
+            headers.set("Connection", "close");
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-        String url = "https://lahajati.ai/api/v1/voices/cloned/" + voiceId;
-
-        return restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+            String url = "https://lahajati.ai/api/v1/voices/cloned/" + voiceId;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+            
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body(response.getBody());
+        } catch (Exception e) {
+            log.error("Error updating cloned voice: ", e);
+            throw e;
+        }
     }
 
     @Override
     public ResponseEntity<String> deleteClonedVoice(String voiceId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(apiKey);
-        headers.setAccept(MediaType.parseMediaTypes("application/json"));
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(apiKey);
+            headers.setAccept(MediaType.parseMediaTypes("application/json"));
+            headers.set("Connection", "close");
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        String url = "https://lahajati.ai/api/v1/voices/cloned/" + voiceId;
-
-        return restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            String url = "https://lahajati.ai/api/v1/voices/cloned/" + voiceId;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+            
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(createCleanHeaders())
+                    .body(response.getBody());
+        } catch (Exception e) {
+            log.error("Error deleting cloned voice: ", e);
+            throw e;
+        }
     }
-
-
-
 }

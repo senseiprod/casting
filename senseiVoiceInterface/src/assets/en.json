@@ -1,4 +1,181 @@
 {
+  "footer": {
+    "about": "Our platform offers a selection of professional speakers ready to bring your advertising projects, videos, podcasts, e-learning, and more to life.",
+    "quickLinks": "Quick Links",
+    "services": "Services",
+    "contact": "Contact",
+    "stayInformed": "Stay Informed",
+    "placeholders": {
+      "email": "Your email"
+    },
+    "links": {
+      "home": "Home",
+      "speakers": "Speakers",
+      "celebrities": "Celebrities",
+      "advertisers": "Advertisers",
+      "creators": "Creators"
+    },
+    "service": {
+      "humanVoices": "Human Voices",
+      "aiVoices": "AI Voices",
+      "textAnalysis": "Text Analysis",
+      "reservations": "Reservations",
+      "audioGeneration": "Audio Generation"
+    },
+    "copyright": "All rights reserved.",
+    "terms": "Terms of Use",
+    "privacy": "Privacy Policy",
+    "legal": "Legal Notice"
+  },
+  "header": {
+    "title": "Dashboard Overview",
+    "breadcrumb": {
+      "home": "Home",
+      "dashboard": "Dashboard"
+    },
+    "search": {
+      "placeholder": "Search..."
+    },
+    "language": {
+      "selector": "Language Selector",
+      "options": {
+        "english": "English",
+        "french": "Français",
+        "spanish": "Español"
+      }
+    },
+    "notifications": {
+      "button": "Notifications",
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
+      "viewAll": "View all notifications",
+      "noNotifications": "No new notifications",
+      "items": {
+        "voiceCompleted": "New voice generation completed",
+        "newComment": "New comment on your project",
+        "requestApproved": "Your request has been approved",
+        "paymentReceived": "Payment received successfully",
+        "projectShared": "Project shared with you",
+        "systemUpdate": "System maintenance scheduled"
+      },
+      "times": {
+        "justNow": "Just now",
+        "oneMinAgo": "1 min ago",
+        "twoMinAgo": "2 min ago",
+        "fiveMinAgo": "5 min ago",
+        "tenMinAgo": "10 min ago",
+        "thirtyMinAgo": "30 min ago",
+        "oneHourAgo": "1 hour ago",
+        "twoHoursAgo": "2 hours ago",
+        "yesterday": "Yesterday",
+        "twoDaysAgo": "2 days ago"
+      }
+    },
+    "profile": {
+      "menu": "User Menu",
+      "avatar": "Profile Avatar",
+      "status": {
+        "online": "Online",
+        "offline": "Offline",
+        "away": "Away",
+        "busy": "Busy"
+      },
+      "menu": {
+        "myProfile": "My Profile",
+        "accountSettings": "Account Settings",
+        "privacySecurity": "Privacy & Security",
+        "helpSupport": "Help & Support",
+        "logout": "Logout"
+      }
+    },
+    "logo": {
+      "alt": "Casting Voice Off Logo"
+    },
+    "navigation": {
+      "toggleMenu": "Toggle navigation menu",
+      "languages": "LANGUAGES",
+      "voiceLanguages": "Voice Languages",
+      "speakers": "SPEAKERS",
+      "aiVoice": "AI VOICE",
+      "humanVoice": "HUMAN VOICE",
+      "studio": "STUDIO",
+      "contact": "CONTACT US"
+    },
+    "voiceLanguages": {
+      "darija": "Darija",
+      "arabic": "Arabic",
+      "french": "French",
+      "english": "English",
+      "german": "German",
+      "italian": "Italian",
+      "spanish": "Spanish",
+      "portuguese": "Portuguese",
+      "hindi": "Hindi",
+      "bengali": "Bengali",
+      "russian": "Russian",
+      "japanese": "Japanese",
+      "korean": "Korean",
+      "chinese": "Chinese",
+      "turkish": "Turkish",
+      "vietnamese": "Vietnamese",
+      "polish": "Polish",
+      "ukrainian": "Ukrainian",
+      "romanian": "Romanian",
+      "dutch": "Dutch",
+      "swedish": "Swedish",
+      "finnish": "Finnish",
+      "norwegian": "Norwegian",
+      "danish": "Danish",
+      "hungarian": "Hungarian",
+      "czech": "Czech",
+      "greek": "Greek",
+      "thai": "Thai",
+      "indonesian": "Indonesian",
+      "malay": "Malay",
+      "hebrew": "Hebrew",
+      "persian": "Persian"
+    },
+    "uiLanguage": {
+      "selector": "Interface Language",
+      "options": {
+        "english": "English",
+        "french": "Français",
+        "spanish": "Español"
+      }
+    },
+    "auth": {
+      "login": "LOGIN",
+      "signup": "SIGN UP"
+    },
+    "userMenu": {
+      "toggle": "User menu",
+      "avatar": "User avatar",
+      "profile": "Profile",
+      "dashboard": "Dashboard",
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "sidebar": {
+    "toggleSidebar": "Toggle Sidebar",
+    "companyLogo": "Company Logo",
+    "profileImage": "Profile Image",
+    "clientPortal": "Client Portal",
+    "companyName": "Acme Corporation",
+    "sections": {
+      "main": "Main",
+      "account": "Account"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "myProjects": "My Projects",
+      "myRequests": "My Requests",
+      "audioLibrary": "Audio Library",
+      "settings": "Settings",
+      "helpSupport": "Help & Support"
+    },
+    "logout": "Logout"
+  },
   "tabs": {
     "freeTest": "FREE TEST",
     "audioRequest": "AUDIO REQUEST",
@@ -650,4 +827,6 @@
     "info": {
       "characters": "characters"
     }
+
+    
 }

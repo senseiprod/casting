@@ -53,7 +53,6 @@ public class ActionRequest implements Serializable {
     String language;
     private String projectUuid;
     private byte[] audioGenerated;
-    private String libelle; // NEW FIELD
 
 
     public String getProjectUuid() {

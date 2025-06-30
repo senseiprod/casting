@@ -130,4 +130,8 @@ export class ActionService {
   clearVoiceStorage(): Observable<any> {
     return this.http.post(`${this.apiUrl}/debug/clear-voice-storage`, {});
   }
+
+  createActionWithBankTransfer(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/create-action-bank-transfer`, request);
+  }
 }
