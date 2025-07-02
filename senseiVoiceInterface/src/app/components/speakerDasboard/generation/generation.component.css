@@ -2168,3 +2168,228 @@ body {
   margin: 0;
   font-weight: 600;
 }
+/* Balance Options Modal Styles */
+.balance-display {
+  margin-bottom: 2rem;
+}
+
+.balance-card {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f1f3f8 100%);
+  border-radius: 1rem;
+  border: 2px solid rgba(203, 16, 37, 0.1);
+  gap: 1rem;
+}
+
+.balance-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #cb1025 0%, #a50d1e 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.balance-info {
+  flex: 1;
+}
+
+.balance-info h5 {
+  margin: 0 0 0.5rem 0;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.balance-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.balance-amount.insufficient {
+  color: #dc3545;
+}
+
+.balance-status {
+  color: #cb1025;
+  font-size: 1.5rem;
+  animation: spin 2s linear infinite;
+}
+
+/* Balance Options Styles */
+.balance-options {
+  margin-top: 2rem;
+}
+
+.balance-options h5 {
+  margin-bottom: 1rem;
+  color: #2d3748;
+  font-weight: 700;
+}
+
+.payment-method-option.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f8f9fa;
+}
+
+.payment-method-option.disabled:hover {
+  border-color: rgba(226, 232, 240, 0.8);
+  background: #f8f9fa;
+  transform: none;
+}
+
+/* Charge Amount Section */
+.charge-amount-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(203, 16, 37, 0.05);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(203, 16, 37, 0.1);
+}
+
+.charge-amount-section label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.charge-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 1rem;
+  color: #718096;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.charge-amount-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2rem;
+  border: 2px solid rgba(226, 232, 240, 0.8);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.charge-amount-input:focus {
+  border-color: #cb1025;
+  box-shadow: 0 0 0 4px rgba(203, 16, 37, 0.1);
+  outline: none;
+}
+
+.charge-hint {
+  display: block;
+  margin-top: 0.5rem;
+  color: #718096;
+  font-size: 0.875rem;
+}
+
+/* Balance Error Styles */
+.balance-error {
+  margin-top: 1rem;
+}
+
+/* Enhanced Payment Method Options for Balance */
+.payment-method-option[data-option="use-balance"] .payment-method-icon {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.payment-method-option[data-option="charge-balance"] .payment-method-icon {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.payment-method-option[data-option="pay-direct"] .payment-method-icon {
+  background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+}
+
+/* Responsive Design for Balance Modal */
+@media (max-width: 767px) {
+  .balance-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .balance-amount {
+    font-size: 1.75rem;
+  }
+
+  .charge-amount-section {
+    padding: 0.75rem;
+  }
+
+  .charge-amount-input {
+    padding: 0.625rem 1rem 0.625rem 1.75rem;
+  }
+
+  .currency-symbol {
+    left: 0.75rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .balance-card {
+    padding: 1rem;
+  }
+
+  .balance-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .balance-amount {
+    font-size: 1.5rem;
+  }
+}
+
+/* Loading Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Success State for Balance Usage */
+.balance-success {
+  background: linear-gradient(135deg, rgba(25, 135, 84, 0.05) 0%, rgba(25, 135, 84, 0.02) 100%);
+  border: 2px solid rgba(25, 135, 84, 0.2);
+  color: #198754;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.balance-success .success-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.balance-success h4 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+}
+
+.balance-success p {
+  margin: 0;
+  font-size: 0.95rem;
+}

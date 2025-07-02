@@ -1,5 +1,4 @@
 package com.example.senseiVoix.controllers;
-
 import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
 import com.example.senseiVoix.dtos.action.BankTransferResponse;
@@ -252,7 +251,6 @@ public class ActionController {
     }
 
     // NEW BANK TRANSFER ENDPOINTS (FIXED TO MATCH PAYPAL PATTERN)
-
     @PostMapping("/create-action-bank-transfer")
     public ResponseEntity<BankTransferResponse> createActionWithBankTransfer(@RequestBody ActionRequest actionRequest) {
         try {

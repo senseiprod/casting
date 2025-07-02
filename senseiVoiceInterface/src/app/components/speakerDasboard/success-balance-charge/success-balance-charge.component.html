@@ -1,0 +1,143 @@
+<div class="success-page-container">
+  <!-- Background Elements -->
+  <div class="background-elements">
+    <div class="floating-circle circle-1"></div>
+    <div class="floating-circle circle-2"></div>
+    <div class="floating-circle circle-3"></div>
+    <div class="floating-circle circle-4"></div>
+  </div>
+
+  <!-- Confetti Animation -->
+  <div class="confetti-container" *ngIf="showConfetti">
+    <div class="confetti" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]"></div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="loading-spinner">
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+    </div>
+    <h3>{{ 'success.processing' | translate }}</h3>
+    <p>{{ 'success.verifyingPayment' | translate }}</p>
+  </div>
+
+  <!-- Success Content -->
+  <div class="success-content" *ngIf="!isLoading">
+    <!-- Success Header -->
+    <div class="success-header" [class.animate-in]="showSuccessIcon">
+      <div class="success-icon-container">
+        <div class="success-icon">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <div class="success-pulse"></div>
+      </div>
+      
+      <h1 class="success-title">{{ 'success.chargeComplete' | translate }}</h1>
+      <p class="success-subtitle">{{ 'success.balanceUpdated' | translate }}</p>
+    </div>
+
+    <!-- Transaction Details Card -->
+    <div class="transaction-card" [class.animate-in]="showBalanceUpdate">
+      <div class="card-header">
+        <div class="card-icon">
+          <i class="bi bi-receipt"></i>
+        </div>
+        <h3>{{ 'success.transactionDetails' | translate }}</h3>
+      </div>
+
+      <div class="transaction-details">
+        <div class="detail-row highlight">
+          <span class="detail-label">{{ 'success.amountCharged' | translate }}:</span>
+          <span class="detail-value amount-charged">
+            +${{ chargeDetails.amount.toFixed(2) }}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">{{ 'success.transactionId' | translate }}:</span>
+          <span class="detail-value transaction-id">
+            {{ chargeDetails.transactionId }}
+            <button class="copy-btn" (click)="copyToClipboard(chargeDetails.transactionId)">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">{{ 'success.timestamp' | translate }}:</span>
+          <span class="detail-value">{{ chargeDetails.timestamp | date:'medium' }}</span>
+        </div>
+
+        <div class="balance-update-section">
+          <div class="balance-comparison">
+            <div class="balance-item previous">
+              <span class="balance-label">{{ 'success.previousBalance' | translate }}</span>
+              <span class="balance-amount">${{ chargeDetails.previousBalance.toFixed(2) }}</span>
+            </div>
+            
+            <div class="balance-arrow">
+              <i class="bi bi-arrow-right"></i>
+            </div>
+            
+            <div class="balance-item current">
+              <span class="balance-label">{{ 'success.newBalance' | translate }}</span>
+              <span class="balance-amount new-balance">${{ chargeDetails.newBalance.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons" [class.animate-in]="showActionButtons">
+      <button class="btn-primary large" (click)="continueToGeneration()">
+        <i class="bi bi-mic-fill me-2"></i>
+        {{ 'success.continueGeneration' | translate }}
+      </button>
+
+      <div class="secondary-actions">
+        <button class="btn-secondary" (click)="downloadReceipt()">
+          <i class="bi bi-download me-2"></i>
+          {{ 'success.downloadReceipt' | translate }}
+        </button>
+
+        <button class="btn-secondary" (click)="viewRequests()">
+          <i class="bi bi-clock-history me-2"></i>
+          {{ 'success.viewRequests' | translate }}
+        </button>
+
+        <button class="btn-secondary" (click)="goToProfile()">
+          <i class="bi bi-person me-2"></i>
+          {{ 'success.viewProfile' | translate }}
+        </button>
+
+        <button class="btn-secondary" (click)="goToDashboard()">
+          <i class="bi bi-house me-2"></i>
+          {{ 'success.backToDashboard' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Additional Info -->
+    <div class="additional-info" [class.animate-in]="showActionButtons">
+      <div class="info-card">
+        <div class="info-icon">
+          <i class="bi bi-info-circle"></i>
+        </div>
+        <div class="info-content">
+          <h4>{{ 'success.whatNext' | translate }}</h4>
+          <p>{{ 'success.balanceInfo' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="share-section">
+        <button class="btn-share" (click)="shareSuccess()" *ngIf="navigator.share">
+          <i class="bi bi-share me-2"></i>
+          {{ 'success.share' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

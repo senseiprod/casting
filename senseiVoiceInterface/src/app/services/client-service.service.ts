@@ -25,7 +25,8 @@ export class ClientResponse {
   phone: string;
   username: string;
   role: string;
-  fidelite: string;
+  fidelite: number;
+  balance: number;
   constructor(
 
   ) {
@@ -36,7 +37,7 @@ export class ClientResponse {
       this.uuid="",
       this.prenom="",
       this.code="",
-      this.fidelite=""
+      this.fidelite=0
 
 
   }

@@ -6,12 +6,16 @@ import com.example.senseiVoix.enumeration.PaymentStatus;
 import com.example.senseiVoix.repositories.ClientRepository;
 import com.example.senseiVoix.repositories.PaiementVermentRepository;
 import com.example.senseiVoix.repositories.PaymentRepository;
+import com.paypal.base.rest.PayPalRESTException;
+import com.stripe.model.Charge.PaymentMethodDetails.Paypal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class PaiementService {
@@ -21,6 +25,8 @@ public class PaiementService {
     private ClientRepository utilisateurRepository;
     @Autowired
     private PaymentRepository paymentRepository;
+    @Autowired
+    private PaypalService paypalService;
 
 
 
@@ -62,4 +68,46 @@ public class PaiementService {
     public List<Payment> getAllCompletedPayements() {
         return paymentRepository.findByStatut(PaymentStatus.COMPLETED);
     }
+
+    public void setBalanceClient(String uuid, Double balance) {
+        Client client = utilisateurRepository.findByUuid(uuid);
+        client.setBalance(balance);
+        utilisateurRepository.save(client);
+    }
+
+    public String chargeBalanceClient(String uuid, double amount) throws PayPalRESTException {
+        if (uuid == null || uuid.trim().isEmpty()) {
+            throw new IllegalArgumentException("UUID must not be null or empty.");
+        }
+    
+        if (amount <= 0.0) {
+            throw new IllegalArgumentException("Amount must be greater than zero.");
+        }
+    
+        String formattedAmount = String.format(Locale.US, "%.2f", amount); // 👈 FORMAT CORRECT ICI
+        final String currency = "USD";
+        final String description = "Add more credits";
+        final String cancelUrl = String.format("http://localhost:8080/api/payment/balance/cancel/%s", uuid);
+        
+        // ✅ Ne PAS reformatter avec %.2f, utiliser formattedAmount
+        final String successUrl = String.format("http://localhost:8080/api/payment/balance/success/%s/%s", uuid, formattedAmount);
+    
+        com.paypal.api.payments.Payment payment = paypalService.createPayment(
+            amount,
+            currency,
+            description,
+            cancelUrl,
+            successUrl
+        );
+    
+        for (com.paypal.api.payments.Links link : payment.getLinks()) {
+            if ("approval_url".equalsIgnoreCase(link.getRel())) {
+                return link.getHref();
+            }
+        }
+    
+        throw new IllegalStateException("Approval URL not found in PayPal response.");
+    }
+    
+    
 }

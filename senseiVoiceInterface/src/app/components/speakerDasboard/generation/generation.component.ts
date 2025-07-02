@@ -7,7 +7,8 @@ import  { Project } from "../../../services/project.service"
 import  { ActionService } from "../../../services/action.service"
 import  { ActivatedRoute, Router } from "@angular/router"
 import  { LahajatiService } from "../../../services/lahajati.service"
-
+import { PaypalService } from "src/app/services/paypal-service.service"
+import { ClientService } from "src/app/services/client-service.service"
 
 // Interface for Lahajati voices
 interface LahajatiVoice {
@@ -25,18 +26,10 @@ interface LahajatiVoice {
   performanceStyle?: string
 }
 
-// Interface for Lahajati dialects
-interface LahajatiDialect {
-  id: string
-  name: string
-  description?: string
-}
-
-// Interface for Lahajati performance styles
-interface LahajatiPerformanceStyle {
-  id: string
-  name: string
-  description?: string
+// Interface for user balance
+interface UserBalance {
+  balance: number
+  currency: string
 }
 
 @Component({
@@ -66,10 +59,19 @@ export class GenerationComponent implements OnInit {
   voiceId = "sarah_voice"
   userId: string | null = ""
 
-  // Lahajati-specific properties
+  // Balance-related properties
+  userBalance: UserBalance = { balance: 0, currency: "USD" }
+  isLoadingBalance = false
+  showBalanceOptions = false
+  selectedBalanceOption: "use-balance" | "charge-balance" | "pay-direct" | null = null
+  chargeAmount = 0
+  isChargingBalance = false
+  balanceError: string | null = null
+
+  // Existing properties...
   lahajatiVoices: LahajatiVoice[] = []
-  lahajatiDialects: LahajatiDialect[] = []
-  lahajatiPerformanceStyles: LahajatiPerformanceStyle[] = []
+  lahajatiDialects: any[] = []
+  lahajatiPerformanceStyles: any[] = []
   selectedDialect = ""
   selectedPerformanceStyle = ""
   isLoadingLahajatiData = false
@@ -143,12 +145,6 @@ export class GenerationComponent implements OnInit {
   progressPercentage = 0
   waveformBars: number[] = []
 
-  // Add these properties to your component class
-  showCharLimitModal = false
-  userAcceptedPaidContent = false
-  hasExceededLimit = false
-  previousTextLength = 0
-
   // Payment related properties
   showPaymentMethodModal = false
   selectedPaymentMethod: "card" | "paypal" | "verment" | null = null
@@ -167,6 +163,12 @@ export class GenerationComponent implements OnInit {
   bankTransferDetails: any = null
   bankTransferReference: string | null = null
 
+  // Character limit modal
+  showCharLimitModal = false
+  userAcceptedPaidContent = false
+  hasExceededLimit = false
+  previousTextLength = 0
+
   constructor(
     private elevenLabsService: ElevenLabsService,
     private route: ActivatedRoute,
@@ -175,18 +177,167 @@ export class GenerationComponent implements OnInit {
     private projectService: ProjectService,
     private actionService: ActionService,
     private lahajatiService: LahajatiService,
+    private paypalService: PaypalService,
+    private clientService : ClientService
   ) {}
 
-  // Initialize waveform bars in ngOnInit
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe((params) => {
       this.userId = params.get("uuid") || ""
+      if (this.userId) {
+        this.loadUserBalance()
+      }
     })
     this.fetchVoices()
     this.fetchUserProjects()
-
-    // Initialize waveform bars
     this.waveformBars = Array.from({ length: 20 }, () => Math.random() * 80 + 20)
+  }
+
+  // Load user balance
+  loadUserBalance() {
+    if (!this.userId) return
+    this.clientService.getClientByUuid(this.userId).subscribe(data=> {
+      this.userBalance = {
+        balance: data.balance || 0, // Assuming 'fidelite' is the balance field
+        currency: "USD", // Adjust as necessary
+      }
+      this.isLoadingBalance = false
+    })
+    this.isLoadingBalance = true
+  }
+
+  // Check if user has sufficient balance
+  hasSufficientBalance(): boolean {
+    return this.userBalance.balance >= this.calculatedPrice
+  }
+
+  // Show balance options when generating paid content
+  showPaymentMethodSelection() {
+    this.calculatedPrice = this.price * this.actionData.text.length
+
+    // If user has sufficient balance, show balance options
+    if (this.userBalance.balance > 0) {
+      this.showBalanceOptions = true
+    } else {
+      // If no balance, go directly to payment methods
+      this.showPaymentMethodModal = true
+    }
+
+    this.paymentError = null
+    this.balanceError = null
+  }
+
+  // Select balance option
+  selectBalanceOption(option: "use-balance" | "charge-balance" | "pay-direct") {
+    this.selectedBalanceOption = option
+    this.balanceError = null
+
+    if (option === "charge-balance") {
+      // Calculate minimum charge amount (current cost + some buffer)
+      this.chargeAmount = Math.max(this.calculatedPrice, 10) // Minimum $10 charge
+    }
+  }
+
+  // Proceed with selected balance option
+  proceedWithBalanceOption() {
+    if (!this.selectedBalanceOption) {
+      this.balanceError = "Please select a payment option"
+      return
+    }
+
+    switch (this.selectedBalanceOption) {
+      case "use-balance":
+        this.useExistingBalance()
+        break
+      case "charge-balance":
+        this.chargeUserBalance()
+        break
+      case "pay-direct":
+        this.closeBalanceOptions()
+        this.showPaymentMethodModal = true
+        break
+    }
+  }
+
+  // Use existing balance
+  useExistingBalance() {
+    if (!this.hasSufficientBalance()) {
+      this.balanceError = "Insufficient balance. Please charge your account or pay directly."
+      return
+    }
+
+    // Deduct from balance and proceed with generation
+    this.userBalance.balance -= this.calculatedPrice
+    this.closeBalanceOptions()
+    this.processAudioGeneration()
+  }
+
+  // Charge user balance
+  chargeUserBalance() {
+    if (!this.userId || this.chargeAmount <= 0) {
+      this.balanceError = "Invalid charge amount"
+      return
+    }
+
+    this.isChargingBalance = true
+    this.balanceError = null
+
+    this.paypalService.chargeBalance(this.userId, this.chargeAmount).subscribe({
+      next: (response) => {
+        console.log("Balance charge response:", response)
+
+        if (response.redirectUrl) {
+          // Redirect to PayPal for balance charging
+          window.location.href = response.redirectUrl
+        } else {
+          this.balanceError = "Failed to initiate balance charging"
+          this.isChargingBalance = false
+        }
+      },
+      error: (error) => {
+        console.error("Error charging balance:", error)
+        this.balanceError = error.error?.message || "Failed to charge balance"
+        this.isChargingBalance = false
+      },
+    })
+  }
+
+  // Close balance options modal
+  closeBalanceOptions() {
+    this.showBalanceOptions = false
+    this.selectedBalanceOption = null
+    this.balanceError = null
+    this.chargeAmount = 0
+  }
+
+  // Modified generateSpeech method
+  generateSpeech() {
+    if (!this.selectedVoice) {
+      this.generationError = "Please select a voice first"
+      return
+    }
+
+    // For free test, enforce character limit
+    if (this.activeTab === "free") {
+      if (this.actionData.text.length > this.freeTestCharLimit) {
+        this.limitText()
+      }
+      this.processAudioGeneration()
+    }
+    // For audio request, show balance/payment options
+    else if (this.activeTab === "request") {
+      this.showPaymentMethodSelection()
+    }
+  }
+
+  // Update charge amount
+  updateChargeAmount(event: any) {
+    this.chargeAmount = Number.parseFloat(event.target.value) || 0
+  }
+
+  // Get minimum charge amount
+  getMinimumChargeAmount(): number {
+    return Math.max(this.calculatedPrice - this.userBalance.balance, 10)
   }
 
   fetchUserProjects() {
@@ -216,6 +367,7 @@ export class GenerationComponent implements OnInit {
     this.generationError = null
     this.generationSuccess = false
     this.paymentError = null
+    this.balanceError = null
   }
 
   isTextOverLimit(): boolean {
@@ -229,32 +381,6 @@ export class GenerationComponent implements OnInit {
     if (this.activeTab === "free" && this.actionData.text.length > this.freeTestCharLimit) {
       this.actionData.text = this.actionData.text.substring(0, this.freeTestCharLimit)
     }
-  }
-
-  generateSpeech() {
-    if (!this.selectedVoice) {
-      this.generationError = "Please select a voice first"
-      return
-    }
-
-    // For free test, enforce character limit
-    if (this.activeTab === "free") {
-      if (this.actionData.text.length > this.freeTestCharLimit) {
-        this.limitText()
-      }
-      this.processAudioGeneration()
-    }
-    // For audio request, show payment method selection
-    else if (this.activeTab === "request") {
-      this.showPaymentMethodSelection()
-    }
-  }
-
-  showPaymentMethodSelection() {
-    // Calculate price
-    this.calculatedPrice = this.price * this.actionData.text.length
-    this.showPaymentMethodModal = true
-    this.paymentError = null
   }
 
   selectPaymentMethod(method: "card" | "paypal" | "verment") {
@@ -588,6 +714,7 @@ export class GenerationComponent implements OnInit {
     )
   }
 
+  // Rest of existing methods for voice selection, filters, audio player, etc.
   fetchVoices() {
     this.elevenLabsService.listVoicesFiltter().subscribe(
       (voices: Voice[]) => {
@@ -616,8 +743,6 @@ export class GenerationComponent implements OnInit {
           this.lahajatiVoices = this.mapLahajatiVoices(voicesData.data || voicesData)
           console.log("Lahajati voices loaded:", this.lahajatiVoices)
 
-          // Ensuite : fetch dialects
-          console.log("Fetching Lahajati dialects...")
           this.lahajatiService.getDialects(1, 50).subscribe({
             next: (dialectsResponse) => {
               const dialectsData =
@@ -625,8 +750,6 @@ export class GenerationComponent implements OnInit {
               this.lahajatiDialects = dialectsData.data || dialectsData
               console.log("Lahajati dialects loaded:", this.lahajatiDialects)
 
-              // Ensuite : fetch performance styles
-              console.log("Fetching performance styles...")
               this.lahajatiService.getPerformanceStyles(1, 50).subscribe({
                 next: (stylesResponse) => {
                   const stylesData = typeof stylesResponse === "string" ? JSON.parse(stylesResponse) : stylesResponse
@@ -663,7 +786,6 @@ export class GenerationComponent implements OnInit {
     })
   }
 
-  // Map Lahajati voices to match the existing Voice interface
   mapLahajatiVoices(lahajatiVoices: any[]): LahajatiVoice[] {
     return lahajatiVoices.map((voice) => ({
       id: voice.id_voice || voice.voice_id,
@@ -681,121 +803,18 @@ export class GenerationComponent implements OnInit {
     }))
   }
 
-  filters = {
-    search: "",
-    gender: "",
-    ageZone: "",
-    type: "",
-    language: "",
-    dialect: "", // New filter for Darija dialects
-    performanceStyle: "", // New filter for Darija performance styles
-  }
-
-  applyFilters(): void {
-    // Check if Darija is selected and data needs to be loaded
-    if (this.filters.language === "darija" && !this.lahajatiDataLoaded) {
-      this.fetchLahajatiData()
-      return
-    }
-
-    let voicesToFilter: any[] = []
-
-    if (this.filters.language === "darija") {
-      // Use Lahajati voices for Darija
-      voicesToFilter = this.lahajatiVoices
-    } else {
-      // Use ElevenLabs voices for other languages
-      voicesToFilter = this.voices
-    }
-
-    this.filteredVoices = voicesToFilter.filter(
-      (voice) =>
-        (this.filters.search === "" || voice.name.toLowerCase().includes(this.filters.search.toLowerCase())) &&
-        (this.filters.gender === "" || voice.gender === this.filters.gender) &&
-        (this.filters.ageZone === "" || voice.ageZone === this.filters.ageZone) &&
-        (this.filters.type === "" || voice.type === this.filters.type) &&
-        (this.filters.language === "" || voice.language === this.filters.language) &&
-        // Darija-specific filters
-        (this.filters.dialect === "" || voice.dialect === this.filters.dialect) &&
-        (this.filters.performanceStyle === "" || voice.performanceStyle === this.filters.performanceStyle),
-    )
-
-    // Reset to first page when filters change
-    this.currentPage = 1
-  }
-
-  resetFilters(): void {
-    this.filters = {
-      search: "",
-      gender: "",
-      ageZone: "",
-      type: "",
-      language: "",
-      dialect: "",
-      performanceStyle: "",
-    }
-    this.selectedDialect = ""
-    this.selectedPerformanceStyle = ""
-    this.filteredVoices = [...this.voices]
-  }
-
-  selectVoice(voice: Voice | LahajatiVoice): void {
-    this.selectedVoice = voice as Voice
-    this.price = voice.price || this.price
-  }
-
-  closeModal() {
-    this.showVoiceSelection = false
-    this.showVoice = true
-  }
-
-  toggleVoiceSelection() {
-    this.showVoiceSelection = !this.showVoiceSelection
-  }
-
-  playOriginalVoice(voice: Voice | LahajatiVoice): void {
-    if (this.audio && !this.audio.paused && this.audio.src === voice.originalVoiceUrl) {
-      this.stopVoice() // Stop if the same audio is playing
-    } else {
-      this.stopVoice() // Stop any previous audio
-      this.audio = new Audio(voice.originalVoiceUrl)
-      this.audio.play().catch((error) => console.error("Error playing original voice:", error))
-    }
-  }
-
-  playClonedVoice(voice: Voice | LahajatiVoice): void {
-    if (this.audio && !this.audio.paused && this.audio.src === voice.clonedVoiceUrl) {
-      this.stopVoice() // Stop if the same audio is playing
-    } else {
-      this.stopVoice() // Stop any previous audio
-      this.audio = new Audio(voice.clonedVoiceUrl)
-      this.audio.play().catch((error) => console.error("Error playing cloned voice:", error))
-    }
-  }
-
-  stopVoice(): void {
-    if (this.audio) {
-      this.audio.pause()
-      this.audio.currentTime = 0 // Reset playback position
-      this.audio = new Audio() // Clear the audio instance
-    }
-  }
-
-  // Method to handle dialect selection
   onDialectChange(dialectId: string): void {
     this.selectedDialect = dialectId
     this.filters.dialect = dialectId
     this.applyFilters()
   }
 
-  // Method to handle performance style selection
   onPerformanceStyleChange(styleId: string): void {
     this.selectedPerformanceStyle = styleId
     this.filters.performanceStyle = styleId
     this.applyFilters()
   }
 
-  // Check if Darija is currently selected
   isDarijaSelected(): boolean {
     return this.filters.language === "darija"
   }
@@ -899,13 +918,11 @@ export class GenerationComponent implements OnInit {
     return "bi-volume-up-fill"
   }
 
-  // Getter for paginated voices
   get paginatedVoices() {
     const startIndex = (this.currentPage - 1) * this.voicesPerPage
     return this.filteredVoices.slice(startIndex, startIndex + this.voicesPerPage)
   }
 
-  // Methods for changing page
   nextPage() {
     if (this.currentPage < Math.ceil(this.filteredVoices.length / this.voicesPerPage)) {
       this.currentPage++
@@ -918,12 +935,9 @@ export class GenerationComponent implements OnInit {
     }
   }
 
-  // Add these methods to your component class
-
   checkTextLength(): void {
     const currentLength = this.actionData.text.length
 
-    // Only show the popup when crossing the threshold from below 100 to above 100
     if (currentLength > 100 && this.previousTextLength <= 100 && !this.userAcceptedPaidContent) {
       this.showCharLimitModal = true
     }
@@ -937,7 +951,6 @@ export class GenerationComponent implements OnInit {
   }
 
   cancelExceedLimit(): void {
-    // If user cancels, trim the text to 100 characters
     if (this.actionData.text.length > 100) {
       this.actionData.text = this.actionData.text.substring(0, 100)
     }
@@ -947,10 +960,105 @@ export class GenerationComponent implements OnInit {
 
   calculateTotal(): number {
     if (this.actionData.text.length <= 100) {
-      return 0 // Free for first 100 characters
+      return 0
     } else {
-      // Only charge for characters beyond 100
       return this.price * (this.actionData.text.length - 100)
+    }
+  }
+
+  // Add other existing methods as needed...
+  filters = {
+    search: "",
+    gender: "",
+    ageZone: "",
+    type: "",
+    language: "",
+    dialect: "",
+    performanceStyle: "",
+  }
+
+  applyFilters(): void {
+    if (this.filters.language === "darija" && !this.lahajatiDataLoaded) {
+      this.fetchLahajatiData()
+      return
+    }
+
+    let voicesToFilter: any[] = []
+
+    if (this.filters.language === "darija") {
+      voicesToFilter = this.lahajatiVoices
+    } else {
+      voicesToFilter = this.voices
+    }
+
+    this.filteredVoices = voicesToFilter.filter(
+      (voice) =>
+        (this.filters.search === "" || voice.name.toLowerCase().includes(this.filters.search.toLowerCase())) &&
+        (this.filters.gender === "" || voice.gender === this.filters.gender) &&
+        (this.filters.ageZone === "" || voice.ageZone === this.filters.ageZone) &&
+        (this.filters.type === "" || voice.type === this.filters.type) &&
+        (this.filters.language === "" || voice.language === this.filters.language) &&
+        (this.filters.dialect === "" || voice.dialect === this.filters.dialect) &&
+        (this.filters.performanceStyle === "" || voice.performanceStyle === this.filters.performanceStyle),
+    )
+
+    this.currentPage = 1
+  }
+
+  resetFilters(): void {
+    this.filters = {
+      search: "",
+      gender: "",
+      ageZone: "",
+      type: "",
+      language: "",
+      dialect: "",
+      performanceStyle: "",
+    }
+    this.selectedDialect = ""
+    this.selectedPerformanceStyle = ""
+    this.filteredVoices = [...this.voices]
+  }
+
+  selectVoice(voice: Voice | LahajatiVoice): void {
+    this.selectedVoice = voice as Voice
+    this.price = voice.price || this.price
+  }
+
+  closeModal() {
+    this.showVoiceSelection = false
+    this.showVoice = true
+  }
+
+  toggleVoiceSelection() {
+    this.showVoiceSelection = !this.showVoiceSelection
+  }
+
+  playOriginalVoice(voice: Voice | LahajatiVoice): void {
+    if (this.audio && !this.audio.paused && this.audio.src === voice.originalVoiceUrl) {
+      this.stopVoice()
+    } else {
+      this.stopVoice()
+      this.audio = new Audio(voice.originalVoiceUrl)
+      this.audio.play().catch((error) => console.error("Error playing original voice:", error))
+    }
+  }
+
+  playClonedVoice(voice: Voice | LahajatiVoice): void {
+    if (this.audio && !this.audio.paused && this.audio.src === voice.clonedVoiceUrl) {
+      this.stopVoice()
+    } else {
+      this.stopVoice()
+      this.audio = new Audio(voice.clonedVoiceUrl)
+      this.audio.play().catch((error) => console.error("Error playing cloned voice:", error))
+    }
+  }
+
+  stopVoice(): void {
+    if (this.audio) {
+      this.audio.pause()
+      this.audio.currentTime = 0
+      this.audio = new Audio()
     }
   }
 }

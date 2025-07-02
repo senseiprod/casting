@@ -50,6 +50,7 @@ import { ListWithSlectedLanguageComponent } from './components/mainSite/list-wit
 import { DeleteAccountComponent } from './components/speakerDasboard/delete-account/delete-account.component';
 import { PaymentSuccessComponent } from './components/speakerDasboard/payment-success/payment-success.component';
 import { PaymentFailedComponent } from './components/speakerDasboard/payment-failed/payment-failed.component';
+import { SuccessBalanceChargeComponent } from './components/speakerDasboard/success-balance-charge/success-balance-charge.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/', '.json');
 }
@@ -92,7 +93,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     FooterHomeComponent,
     ListWithSlectedLanguageComponent,
     PaymentSuccessComponent,
-    PaymentFailedComponent
+    PaymentFailedComponent,
+    SuccessBalanceChargeComponent
   ],
     imports: [
         BrowserModule,

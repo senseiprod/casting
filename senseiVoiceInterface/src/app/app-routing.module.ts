@@ -31,6 +31,7 @@ import {
 } from "./components/speakerDasboard/generate-with-voice-speaker/generate-with-voice-speaker.component";
 import { PaymentSuccessComponent } from './components/speakerDasboard/payment-success/payment-success.component';
 import { PaymentFailedComponent } from './components/speakerDasboard/payment-failed/payment-failed.component';
+import { SuccessBalanceChargeComponent } from './components/speakerDasboard/success-balance-charge/success-balance-charge.component';
 
 
 
@@ -84,6 +85,8 @@ const routes: Routes = [
       { path: 'generate-with-speaker-voice/:uuid', component: GenerateWithVoiceSpeakerComponent },
       { path: 'payment-success/:uuid', component: PaymentSuccessComponent },
       { path: 'payment-failed', component: PaymentFailedComponent },
+      { path: 'charge-success/:amount/:newBalance', component: SuccessBalanceChargeComponent },
+      
     ]
   },
 
