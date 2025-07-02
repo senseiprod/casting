@@ -822,11 +822,43 @@
       "redirectingToPaypal": "Redirecting to PayPal...",
       "amount": "Amount",
       "actionId": "Action ID",
-      "retry": "Retry Payment"
+      "retry": "Retry Payment",
+      "balanceOptions": "Balance Options",
+      "currentBalance": "Current Balance",
+      "audioGeneration": "Audio Generation",
+      "choosePaymentOption": "Choose a Payment Option",
+      "useBalance": "Use Existing Balance",
+      "useBalanceDesc": "Use your current balance to pay.",
+      "insufficientBalance": "Insufficient balance.",
+      "chargeBalance": "Charge Balance",
+      "chargeBalanceDesc": "Add funds to your account.",
+      "chargeAmount": "Charge Amount",
+      "minimumCharge": "Minimum charge",
+      "payDirect": "Pay Directly",
+      "payDirectDesc": "Pay directly without using your balance.",
+      "useBalanceNow": "Use Balance Now",
+      "chargeNow": "Charge Now",
+      "charging": "Charging...",
+      "continueToPayment": "Continue to Payment"
     },
-    "info": {
-      "characters": "characters"
+    "success": {
+      "processing": "Processing...",
+      "verifyingPayment": "Verifying your payment, please wait.",
+      "chargeComplete": "Charge Complete!",
+      "balanceUpdated": "Your balance has been successfully updated.",
+      "transactionDetails": "Transaction Details",
+      "amountCharged": "Amount Charged",
+      "transactionId": "Transaction ID",
+      "timestamp": "Timestamp",
+      "previousBalance": "Previous Balance",
+      "newBalance": "New Balance",
+      "continueGeneration": "Continue Generation",
+      "downloadReceipt": "Download Receipt",
+      "viewHistory": "View Transaction History",
+      "backToDashboard": "Back to Dashboard",
+      "whatNext": "What’s Next?",
+      "balanceInfo": "You can now use your updated balance for future purchases or continue generating audio.",
+      "share": "Share"
     }
-
-    
+   
 }

@@ -137,7 +137,7 @@
       "settings": "Configuración",
       "logout": "Cerrar Sesión"
     }
-  },
+  }},
   "sidebar": {
     "toggleSidebar": "Alternar barra lateral",
     "companyLogo": "Logo de la empresa",
@@ -177,7 +177,28 @@
     "redirectingToPaypal": "Redirigiendo a PayPal...",
     "amount": "Monto",
     "actionId": "ID de acción",
-    "retry": "Reintentar pago"
+    "retry": "Reintentar pago",
+    "balanceOptions": "Opciones de saldo",
+    "currentBalance": "Saldo actual",
+    "orderSummary": "Resumen del pedido",
+    "audioGeneration": "Generación de audio",
+    "totalAmount": "Monto total",
+    "choosePaymentOption": "Elija una opción de pago",
+    "useBalance": "Usar saldo existente",
+    "useBalanceDesc": "Usa tu saldo actual para pagar.",
+    "insufficientBalance": "Saldo insuficiente.",
+    "chargeBalance": "Recargar saldo",
+    "chargeBalanceDesc": "Agregue fondos a su cuenta.",
+    "chargeAmount": "Monto de recarga",
+    "minimumCharge": "Recarga mínima",
+    "payDirect": "Pagar directamente",
+    "payDirectDesc": "Pagar directamente sin usar su saldo.",
+    "cancel": "Cancelar",
+    "useBalanceNow": "Usar saldo ahora",
+    "chargeNow": "Recargar ahora",
+    "charging": "Recargando...",
+    "continueToPayment": "Continuar al pago",
+    "proceed": "Proceder"
   },
   "info": {
     "characters": "caracteres"
@@ -807,5 +828,24 @@
   "language": "Idioma",
   "english": "English",
   "french": "Français",
-  "spanish": "Español"
+  "spanish": "Español",
+  "success": {
+    "processing": "Procesando...",
+    "verifyingPayment": "Verificando su pago, por favor espere.",
+    "chargeComplete": "¡Carga completa!",
+    "balanceUpdated": "Su saldo ha sido actualizado correctamente.",
+    "transactionDetails": "Detalles de la transacción",
+    "amountCharged": "Cantidad cargada",
+    "transactionId": "ID de la transacción",
+    "timestamp": "Fecha y hora",
+    "previousBalance": "Saldo anterior",
+    "newBalance": "Nuevo saldo",
+    "continueGeneration": "Continuar generación",
+    "downloadReceipt": "Descargar recibo",
+    "viewHistory": "Ver historial de transacciones",
+    "backToDashboard": "Volver al panel",
+    "whatNext": "¿Qué sigue?",
+    "balanceInfo": "Ahora puede usar su saldo actualizado para futuras compras o continuar generando audio.",
+    "share": "Compartir"
+  }
 }
