@@ -197,7 +197,8 @@
         "logout": "Déconnexion"
       }
     }
-  },
+  }
+},
   "sidebar": {
     "toggleSidebar": "Basculer la barre latérale",
     "companyLogo": "Logo de l'entreprise",
@@ -252,7 +253,28 @@
     "redirectingToPaypal": "Redirection vers PayPal...",
     "amount": "Montant",
     "actionId": "ID de l'action",
-    "retry": "Réessayer le paiement"
+    "retry": "Réessayer le paiement",
+    "balanceOptions": "Options de solde",
+    "currentBalance": "Solde actuel",
+    "orderSummary": "Résumé de la commande",
+    "audioGeneration": "Génération audio",
+    "totalAmount": "Montant total",
+    "choosePaymentOption": "Choisissez une option de paiement",
+    "useBalance": "Utiliser le solde existant",
+    "useBalanceDesc": "Utilisez votre solde actuel pour payer.",
+    "insufficientBalance": "Solde insuffisant.",
+    "chargeBalance": "Recharger le solde",
+    "chargeBalanceDesc": "Ajoutez des fonds à votre compte.",
+    "chargeAmount": "Montant à recharger",
+    "minimumCharge": "Recharge minimale",
+    "payDirect": "Payer directement",
+    "payDirectDesc": "Payer directement sans utiliser votre solde.",
+    "cancel": "Annuler",
+    "useBalanceNow": "Utiliser le solde maintenant",
+    "chargeNow": "Recharger maintenant",
+    "charging": "Rechargement...",
+    "continueToPayment": "Continuer vers le paiement",
+    "proceed": "Continuer"
   },
   "info": {
     "characters": "caractères"
@@ -904,5 +926,24 @@
     "voicesFound": "voix trouvées",
     "page": "Page",
     "generate": "Générer"
+  },
+  "success": {
+    "processing": "Traitement en cours...",
+    "verifyingPayment": "Vérification de votre paiement, veuillez patienter.",
+    "chargeComplete": "Recharge terminée !",
+    "balanceUpdated": "Votre solde a été mis à jour avec succès.",
+    "transactionDetails": "Détails de la transaction",
+    "amountCharged": "Montant rechargé",
+    "transactionId": "ID de la transaction",
+    "timestamp": "Horodatage",
+    "previousBalance": "Solde précédent",
+    "newBalance": "Nouveau solde",
+    "continueGeneration": "Continuer la génération",
+    "downloadReceipt": "Télécharger le reçu",
+    "viewHistory": "Voir l’historique des transactions",
+    "backToDashboard": "Retour au tableau de bord",
+    "whatNext": "Et ensuite ?",
+    "balanceInfo": "Vous pouvez maintenant utiliser votre solde mis à jour pour de futurs achats ou continuer à générer de l’audio.",
+    "share": "Partager"
   }
 }
