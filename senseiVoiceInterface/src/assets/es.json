@@ -534,6 +534,15 @@
     }
   },
   "landingPage": {
+    "references": {
+      "title": "Nuestras Referencias",
+      "subtitle": "Confían en nosotros para sus proyectos de locución y comunicación",
+      "stats": {
+        "clients": "Clientes",
+        "projects": "Proyectos",
+        "industries": "Sectores"
+      }
+    },    
     "hero": {
       "expertise": "10 años de experiencia dando voz a tus proyectos",
       "mainHeading": "TU VOZ, EN UN SEGUNDO.",

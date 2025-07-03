@@ -51,6 +51,7 @@ import { DeleteAccountComponent } from './components/speakerDasboard/delete-acco
 import { PaymentSuccessComponent } from './components/speakerDasboard/payment-success/payment-success.component';
 import { PaymentFailedComponent } from './components/speakerDasboard/payment-failed/payment-failed.component';
 import { SuccessBalanceChargeComponent } from './components/speakerDasboard/success-balance-charge/success-balance-charge.component';
+import { ConditionsGeneralesVenteComponentComponent } from './components/mainSite/conditions-generales-vente-component/conditions-generales-vente-component.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/', '.json');
 }
@@ -94,7 +95,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ListWithSlectedLanguageComponent,
     PaymentSuccessComponent,
     PaymentFailedComponent,
-    SuccessBalanceChargeComponent
+    SuccessBalanceChargeComponent,
+    ConditionsGeneralesVenteComponentComponent
   ],
     imports: [
         BrowserModule,

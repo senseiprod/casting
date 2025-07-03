@@ -32,6 +32,7 @@ import {
 import { PaymentSuccessComponent } from './components/speakerDasboard/payment-success/payment-success.component';
 import { PaymentFailedComponent } from './components/speakerDasboard/payment-failed/payment-failed.component';
 import { SuccessBalanceChargeComponent } from './components/speakerDasboard/success-balance-charge/success-balance-charge.component';
+import { ConditionsGeneralesVenteComponentComponent } from './components/mainSite/conditions-generales-vente-component/conditions-generales-vente-component.component';
 
 
 
@@ -51,6 +52,7 @@ const routes: Routes = [
       { path: 'humain-voices', component: HumainVoiceComponent ,canActivate: [AuthGuard],},
        { path: 'voice-ai', component: GenerationWithSpeakerComponent ,canActivate: [AuthGuard],},
        { path: 'filter-by-language/:language', component: ListWithSlectedLanguageComponent ,canActivate: [AuthGuard],},
+       { path: 'condition-of-sale', component: ConditionsGeneralesVenteComponentComponent },
 
      ]},
 
@@ -86,6 +88,7 @@ const routes: Routes = [
       { path: 'payment-success/:uuid', component: PaymentSuccessComponent },
       { path: 'payment-failed', component: PaymentFailedComponent },
       { path: 'charge-success/:amount/:newBalance', component: SuccessBalanceChargeComponent },
+
       
     ]
   },
