@@ -249,7 +249,7 @@ export class ListWithSlectedLanguageComponent {
     return lahajatiVoices.map((voice) => ({
       id: voice.id_voice || voice.voice_id,
       voice_id: voice.id_voice || voice.voice_id,
-      name: voice.name || voice.voice_name,
+      name: voice.display_name || voice.voice_name,
       gender: voice.gender || "unknown",
       avatar: voice.avatar || voice.image || "/assets/default-avatar.png",
       originalVoiceUrl: voice.sample_url || voice.preview_url,
@@ -487,7 +487,7 @@ export class ListWithSlectedLanguageComponent {
   filterByLanguage(event: any): void {
     const value = event.target ? event.target.value : event;
     this.selectedLanguage = value;
-    this.currentPageIndex = 0;
+    this.currentPageIndex = 1;
     
     // Reset Darija-specific filters when changing language
     if (value !== 'darija') {
@@ -501,14 +501,14 @@ export class ListWithSlectedLanguageComponent {
   filterByAccent(event: any): void {
     const value = event.target ? event.target.value : event;
     this.selectedAccent = value;
-    this.currentPageIndex = 0;
+    this.currentPageIndex = 1;
     this.loadVoices();
   }
 
   filterByAge(event: any): void {
     const value = event.target ? event.target.value : event;
     this.selectedAge = value;
-    this.currentPageIndex = 0;
+    this.currentPageIndex = 1;
     if (this.selectedLanguage === 'darija') {
       this.applyDarijaVoices();
     } else {
@@ -519,7 +519,7 @@ export class ListWithSlectedLanguageComponent {
   filterByGender(event: any): void {
     const value = event.target ? event.target.value : event;
     this.selectedGender = value;
-    this.currentPageIndex = 0;
+    this.currentPageIndex = 1;
     if (this.selectedLanguage === 'darija') {
       this.applyDarijaVoices();
     } else {
@@ -530,13 +530,13 @@ export class ListWithSlectedLanguageComponent {
   filterByCategory(event: any): void {
     const value = event.target ? event.target.value : event;
     this.selectedCategory = value;
-    this.currentPageIndex = 0;
+    this.currentPageIndex = 1;
     this.loadVoices();
   }
 
   onPageSizeChange(event: any): void {
     this.pageSize = parseInt(event.target.value, 10);
-    this.currentPageIndex = 0;
+    this.currentPageIndex = 1;
     if (this.selectedLanguage === 'darija') {
       this.applyDarijaVoices();
     } else {
@@ -560,7 +560,7 @@ export class ListWithSlectedLanguageComponent {
       active: false
     }));
 
-    this.currentPageIndex = 0;
+    this.currentPageIndex = 1;
     this.loadVoices();
   }
 

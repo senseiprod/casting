@@ -681,6 +681,15 @@
     }
   },
   "landingPage": {
+    "references": {
+      "title": "Nos Références",
+      "subtitle": "Ils nous font confiance pour leurs projets de voix-off et de communication",
+      "stats": {
+        "clients": "Clients",
+        "projects": "Projets",
+        "industries": "Secteurs"
+      }
+    },
     "hero": {
       "expertise": "10 ans d'expertise pour donner de la voix à vos projets",
       "mainHeading": "VOTRE VOIX, À LA SECONDE.",
