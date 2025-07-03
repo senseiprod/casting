@@ -1,4 +1,5 @@
 {
+  
   "footer": {
     "about": "Our platform offers a selection of professional speakers ready to bring your advertising projects, videos, podcasts, e-learning, and more to life.",
     "quickLinks": "Quick Links",
@@ -618,6 +619,15 @@
     }
   },
   "landingPage": {
+    "references": {
+      "title": "Our References",
+      "subtitle": "They trust us with their voice-over and communication projects",
+      "stats": {
+        "clients": "Clients",
+        "projects": "Projects",
+        "industries": "Industries"
+      }
+    },    
     "hero": {
       "expertise": "10 years of expertise giving voice to your projects",
       "mainHeading": "YOUR VOICE, IN A SECOND.",
