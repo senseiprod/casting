@@ -583,12 +583,12 @@ body {
 
 .human-card {
   background-color: var(--primary-red);
-  color: white;
+  color: var(--dark-gray);
 }
 
 .ai-card {
   background-color: var(--light-gray);
-  color: var(--dark-gray);
+  color: var(--dark-gray) !important;
 }
 
 .card-icon {
@@ -627,7 +627,9 @@ body {
   text-transform: uppercase;
   letter-spacing: 1px;
 }
-
+.card-title :hover {
+  color: white;
+}
 .card-text {
   font-size: 16px;
   line-height: 1.5;
