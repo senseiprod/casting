@@ -28,31 +28,11 @@ public class    PaymentController {
     @Autowired
     private PaiementService paymentService;
 
-    @PostMapping("/stripe/{clientId}")
-    public ResponseEntity<String> createStripePayment(@PathVariable String clientId, @RequestParam Double amount) {
-        Client client = userRepository.findByUuid(clientId);
-        // Création de la transaction en statut "PENDING"
-        Payment payment = new Payment();
-        payment.setUtilisateur(client);
-        payment.setAmount(amount);
-        payment.setPoints(amount * 10); // Exemple : 1€ = 10 points
-        payment.setPaymentMethod("STRIPE");
-        payment.setStatus(PaymentStatus.PENDING);
-        paymentRepository.save(payment);
-
-        // Génération du lien de paiement Stripe
-        String sessionUrl = stripeService.createCheckoutSession(clientId, amount);
-        return ResponseEntity.ok(sessionUrl);
-    }
-
     @GetMapping
     public ResponseEntity<List<Payment>> getAllPayementsEnAttente() {
         return ResponseEntity.ok(paymentService.getAllPayements());
     }
 
-    @GetMapping("/completed")
-    public ResponseEntity<List<Payment>> getAllCompletedPayementsEnAttente() {
-        return ResponseEntity.ok(paymentService.getAllCompletedPayements());
-    }
+
 }
 

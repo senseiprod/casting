@@ -409,6 +409,252 @@
       </div>
     </div>
 
+    <!-- Balance Options Modal -->
+    <div class="payment-method-modal" *ngIf="showBalanceOptions" (click)="closeBalanceOptions()">
+      <div class="payment-modal-content" (click)="$event.stopPropagation()">
+        <div class="payment-modal-header">
+          <h3>{{ 'payment.balanceOptions' | translate }}</h3>
+          <button class="modal-close-btn" (click)="closeBalanceOptions()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <div class="payment-modal-body">
+          <!-- Current Balance Display -->
+          <div class="balance-display">
+            <div class="balance-card">
+              <div class="balance-icon">
+                <i class="bi bi-wallet2"></i>
+              </div>
+              <div class="balance-info">
+                <h5>{{ 'payment.currentBalance' | translate }}</h5>
+                <div class="balance-amount" [class.insufficient]="!hasSufficientBalance()">
+                  ${{ userBalance.balance.toFixed(2) }}
+                </div>
+              </div>
+              <div class="balance-status" *ngIf="isLoadingBalance">
+                <i class="bi bi-hourglass-split"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="payment-summary">
+            <h5>{{ 'payment.orderSummary' | translate }}</h5>
+            <div class="summary-item">
+              <span>{{ 'payment.audioGeneration' | translate }}:</span>
+              <span>${{ calculatedPrice.toFixed(2) }}</span>
+            </div>
+            <div class="summary-item total">
+              <span>{{ 'payment.totalAmount' | translate }}:</span>
+              <span class="total-price">${{ calculatedPrice.toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <!-- Balance Options -->
+          <div class="balance-options">
+            <h5>{{ 'payment.choosePaymentOption' | translate }}</h5>
+            
+            <!-- Use Existing Balance -->
+            <div class="payment-method-option" 
+                 [class.selected]="selectedBalanceOption === 'use-balance'"
+                 [class.disabled]="!hasSufficientBalance()"
+                 (click)="hasSufficientBalance() && selectBalanceOption('use-balance')">
+              <div class="payment-method-icon">
+                <i class="bi bi-wallet-fill"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.useBalance' | translate }}</h6>
+                <p *ngIf="hasSufficientBalance()">{{ 'payment.useBalanceDesc' | translate }}</p>
+                <p *ngIf="!hasSufficientBalance()" class="text-danger">
+                  {{ 'payment.insufficientBalance' | translate }}
+                </p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedBalanceOption === 'use-balance'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+
+            <!-- Charge Balance -->
+            <div class="payment-method-option" 
+                 [class.selected]="selectedBalanceOption === 'charge-balance'"
+                 (click)="selectBalanceOption('charge-balance')">
+              <div class="payment-method-icon">
+                <i class="bi bi-plus-circle-fill"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.chargeBalance' | translate }}</h6>
+                <p>{{ 'payment.chargeBalanceDesc' | translate }}</p>
+                
+                <!-- Charge Amount Input -->
+                <div class="charge-amount-section" *ngIf="selectedBalanceOption === 'charge-balance'">
+                  <label for="chargeAmount">{{ 'payment.chargeAmount' | translate }}:</label>
+                  <div class="charge-input-group">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" 
+                           id="chargeAmount"
+                           class="charge-amount-input"
+                           [value]="chargeAmount"
+                           (input)="onChargeAmountChange($event)"
+                           (blur)="onChargeAmountBlur($event)"
+                           [min]="getMinimumChargeAmount()"
+                           step="0.01"
+                           placeholder="0.00">
+                  </div>
+                  <small class="charge-hint">
+                    {{ 'payment.minimumCharge' | translate }}: ${{ getMinimumChargeAmount().toFixed(2) }}
+                  </small>
+                  <div class="debug-info" style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Debug: Current charge amount = {{ chargeAmount }}
+                  </div>
+                </div>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedBalanceOption === 'charge-balance'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+
+            <!-- Pay Directly -->
+            <div class="payment-method-option" 
+                 [class.selected]="selectedBalanceOption === 'pay-direct'"
+                 (click)="selectBalanceOption('pay-direct')">
+              <div class="payment-method-icon">
+                <i class="bi bi-credit-card-fill"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.payDirect' | translate }}</h6>
+                <p>{{ 'payment.payDirectDesc' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedBalanceOption === 'pay-direct'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Display -->
+          <div class="balance-error" *ngIf="balanceError">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ balanceError }}
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-modal-footer">
+          <button class="btn-secondary" (click)="closeBalanceOptions()">
+            {{ 'payment.cancel' | translate }}
+          </button>
+          <button class="btn-primary" 
+                  (click)="proceedWithBalanceOption()" 
+                  [disabled]="!selectedBalanceOption || isChargingBalance || (selectedBalanceOption === 'charge-balance' && chargeAmount <= 0)">
+            <i class="bi" [ngClass]="isChargingBalance ? 'bi-hourglass-split' : 'bi-arrow-right'"></i>
+            <span *ngIf="selectedBalanceOption === 'use-balance'">{{ 'payment.useBalanceNow' | translate }}</span>
+            <span *ngIf="selectedBalanceOption === 'charge-balance'">
+              {{ isChargingBalance ? 'payment.charging' : 'payment.chargeNow' | translate }}
+            </span>
+            <span *ngIf="selectedBalanceOption === 'pay-direct'">{{ 'payment.continueToPayment' | translate }}</span>
+            <span *ngIf="!selectedBalanceOption">{{ 'payment.proceed' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Balance Charge Method Modal -->
+    <div class="payment-method-modal" *ngIf="showBalanceChargeModal" (click)="closeBalanceChargeModal()">
+      <div class="payment-modal-content" (click)="$event.stopPropagation()">
+        <div class="payment-modal-header">
+          <h3>{{ 'payment.chargeBalanceMethod' | translate }}</h3>
+          <button class="modal-close-btn" (click)="closeBalanceChargeModal()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <div class="payment-modal-body">
+          <!-- Charge Amount Display -->
+          <div class="payment-summary">
+            <h5>{{ 'payment.chargeAmount' | translate }}</h5>
+            <div class="summary-item total">
+              <span>{{ 'payment.amountToCharge' | translate }}:</span>
+              <span class="total-price">${{ chargeAmount.toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <!-- Charge Methods -->
+          <div class="payment-methods">
+            <h5>{{ 'payment.selectChargeMethod' | translate }}</h5>
+            
+            <!-- PayPal Charge -->
+            <div class="payment-method-option" 
+                 [class.selected]="selectedChargeMethod === 'paypal'"
+                 (click)="selectChargeMethod('paypal')">
+              <div class="payment-method-icon">
+                <i class="bi bi-paypal"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>PayPal</h6>
+                <p>{{ 'payment.chargeWithPaypal' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedChargeMethod === 'paypal'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+
+            <!-- Credit Card Charge -->
+            <div class="payment-method-option" 
+                 [class.selected]="selectedChargeMethod === 'card'"
+                 (click)="selectChargeMethod('card')">
+              <div class="payment-method-icon">
+                <i class="bi bi-credit-card"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.creditCard' | translate }}</h6>
+                <p>{{ 'payment.chargeWithCard' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedChargeMethod === 'card'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+
+            <!-- Bank Transfer Charge -->
+            <div class="payment-method-option" 
+                 [class.selected]="selectedChargeMethod === 'verment'"
+                 (click)="selectChargeMethod('verment')">
+              <div class="payment-method-icon">
+                <i class="bi bi-bank"></i>
+              </div>
+              <div class="payment-method-info">
+                <h6>{{ 'payment.bankTransfer' | translate }}</h6>
+                <p>{{ 'payment.chargeWithBank' | translate }}</p>
+              </div>
+              <div class="payment-method-check" *ngIf="selectedChargeMethod === 'verment'">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Display -->
+          <div class="balance-error" *ngIf="balanceError">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ balanceError }}
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-modal-footer">
+          <button class="btn-secondary" (click)="closeBalanceChargeModal()">
+            {{ 'payment.cancel' | translate }}
+          </button>
+          <button class="btn-primary" 
+                  (click)="proceedWithBalanceCharge()" 
+                  [disabled]="!selectedChargeMethod || isChargingBalance">
+            <i class="bi" [ngClass]="isChargingBalance ? 'bi-hourglass-split' : 'bi-arrow-right'"></i>
+            {{ isChargingBalance ? 'payment.processing' : 'payment.chargeNow' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Payment Method Selection Modal -->
     <div class="payment-method-modal" *ngIf="showPaymentMethodModal" (click)="closePaymentMethodModal()">
       <div class="payment-modal-content" (click)="$event.stopPropagation()">
@@ -528,32 +774,24 @@
               </div>
               
               <div class="detail-item">
-                <span>{{ 'payment.accountNumber' | translate }}:</span>
-                <span>{{ bankTransferDetails.accountNumber }}</span>
-                <button class="btn-copy" (click)="copyToClipboard(bankTransferDetails.accountNumber)">
+                <span>{{ 'payment.accountHolder' | translate }}:</span>
+                <span>{{ bankTransferDetails.accountHolder }}</span>
+                <button class="btn-copy" (click)="copyToClipboard(bankTransferDetails.accountHolder)">
                   <i class="bi bi-clipboard"></i>
                 </button>
               </div>
               
               <div class="detail-item">
-                <span>{{ 'payment.routingNumber' | translate }}:</span>
-                <span>{{ bankTransferDetails.routingNumber }}</span>
-                <button class="btn-copy" (click)="copyToClipboard(bankTransferDetails.routingNumber)">
-                  <i class="bi bi-clipboard"></i>
-                </button>
-              </div>
-              
-              <div class="detail-item">
-                <span>{{ 'payment.reference' | translate }}:</span>
-                <span class="reference-number">{{ bankTransferReference }}</span>
-                <button class="btn-copy" (click)="copyToClipboard(bankTransferReference)">
+                <span>{{ 'payment.rib' | translate }}:</span>
+                <span>{{ bankTransferDetails.rib }}</span>
+                <button class="btn-copy" (click)="copyToClipboard(bankTransferDetails.rib)">
                   <i class="bi bi-clipboard"></i>
                 </button>
               </div>
               
               <div class="detail-item total">
                 <span>{{ 'payment.amount' | translate }}:</span>
-                <span class="total-price">${{ calculatedPrice.toFixed(2) }}</span>
+                <span class="total-price">${{ bankTransferDetails.price.toFixed(2) }}</span>
               </div>
             </div>
           </div>
@@ -561,6 +799,12 @@
           <div class="alert alert-warning">
             <i class="bi bi-exclamation-triangle me-2"></i>
             {{ 'payment.includeReference' | translate }}
+          </div>
+
+          <!-- Message from backend -->
+          <div class="alert alert-info" *ngIf="bankTransferDetails?.message">
+            <i class="bi bi-info-circle me-2"></i>
+            {{ bankTransferDetails.message }}
           </div>
         </div>
 
@@ -648,152 +892,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Balance Options Modal -->
-<div class="payment-method-modal" *ngIf="showBalanceOptions" (click)="closeBalanceOptions()">
-  <div class="payment-modal-content" (click)="$event.stopPropagation()">
-    <div class="payment-modal-header">
-      <h3>{{ 'payment.balanceOptions' | translate }}</h3>
-      <button class="modal-close-btn" (click)="closeBalanceOptions()">
-        <i class="bi bi-x"></i>
-      </button>
-    </div>
-    
-    <div class="payment-modal-body">
-      <!-- Current Balance Display -->
-      <div class="balance-display">
-        <div class="balance-card">
-          <div class="balance-icon">
-            <i class="bi bi-wallet2"></i>
-          </div>
-          <div class="balance-info">
-            <h5>{{ 'payment.currentBalance' | translate }}</h5>
-            <div class="balance-amount" [class.insufficient]="!hasSufficientBalance()">
-              ${{ userBalance.balance.toFixed(2) }}
-            </div>
-          </div>
-          <div class="balance-status" *ngIf="isLoadingBalance">
-            <i class="bi bi-hourglass-split"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="payment-summary">
-        <h5>{{ 'payment.orderSummary' | translate }}</h5>
-        <div class="summary-item">
-          <span>{{ 'payment.audioGeneration' | translate }}:</span>
-          <span>${{ calculatedPrice.toFixed(2) }}</span>
-        </div>
-        <div class="summary-item total">
-          <span>{{ 'payment.totalAmount' | translate }}:</span>
-          <span class="total-price">${{ calculatedPrice.toFixed(2) }}</span>
-        </div>
-      </div>
-
-      <!-- Balance Options -->
-      <div class="balance-options">
-        <h5>{{ 'payment.choosePaymentOption' | translate }}</h5>
-        
-        <!-- Use Existing Balance -->
-        <div class="payment-method-option" 
-             [class.selected]="selectedBalanceOption === 'use-balance'"
-             [class.disabled]="!hasSufficientBalance()"
-             (click)="hasSufficientBalance() && selectBalanceOption('use-balance')">
-          <div class="payment-method-icon">
-            <i class="bi bi-wallet-fill"></i>
-          </div>
-          <div class="payment-method-info">
-            <h6>{{ 'payment.useBalance' | translate }}</h6>
-            <p *ngIf="hasSufficientBalance()">{{ 'payment.useBalanceDesc' | translate }}</p>
-            <p *ngIf="!hasSufficientBalance()" class="text-danger">
-              {{ 'payment.insufficientBalance' | translate }}
-            </p>
-          </div>
-          <div class="payment-method-check" *ngIf="selectedBalanceOption === 'use-balance'">
-            <i class="bi bi-check-circle-fill"></i>
-          </div>
-        </div>
-
-        <!-- Charge Balance -->
-        <div class="payment-method-option" 
-             [class.selected]="selectedBalanceOption === 'charge-balance'"
-             (click)="selectBalanceOption('charge-balance')">
-          <div class="payment-method-icon">
-            <i class="bi bi-plus-circle-fill"></i>
-          </div>
-          <div class="payment-method-info">
-            <h6>{{ 'payment.chargeBalance' | translate }}</h6>
-            <p>{{ 'payment.chargeBalanceDesc' | translate }}</p>
-            
-            <!-- Charge Amount Input -->
-            <div class="charge-amount-section" *ngIf="selectedBalanceOption === 'charge-balance'">
-              <label for="chargeAmount">{{ 'payment.chargeAmount' | translate }}:</label>
-              <div class="charge-input-group">
-                <span class="currency-symbol">$</span>
-                <input type="number" 
-                       id="chargeAmount"
-                       class="charge-amount-input"
-                       [(ngModel)]="chargeAmount"
-                       [min]="getMinimumChargeAmount()"
-                       step="0.01"
-                       (input)="updateChargeAmount($event)"
-                       placeholder="0.00">
-              </div>
-              <small class="charge-hint">
-                {{ 'payment.minimumCharge' | translate }}: ${{ getMinimumChargeAmount().toFixed(2) }}
-              </small>
-            </div>
-          </div>
-          <div class="payment-method-check" *ngIf="selectedBalanceOption === 'charge-balance'">
-            <i class="bi bi-check-circle-fill"></i>
-          </div>
-        </div>
-
-        <!-- Pay Directly -->
-        <div class="payment-method-option" 
-             [class.selected]="selectedBalanceOption === 'pay-direct'"
-             (click)="selectBalanceOption('pay-direct')">
-          <div class="payment-method-icon">
-            <i class="bi bi-credit-card-fill"></i>
-          </div>
-          <div class="payment-method-info">
-            <h6>{{ 'payment.payDirect' | translate }}</h6>
-            <p>{{ 'payment.payDirectDesc' | translate }}</p>
-          </div>
-          <div class="payment-method-check" *ngIf="selectedBalanceOption === 'pay-direct'">
-            <i class="bi bi-check-circle-fill"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Error Display -->
-      <div class="balance-error" *ngIf="balanceError">
-        <div class="alert alert-danger">
-          <i class="bi bi-exclamation-triangle me-2"></i>
-          {{ balanceError }}
-        </div>
-      </div>
-    </div>
-
-    <div class="payment-modal-footer">
-      <button class="btn-secondary" (click)="closeBalanceOptions()">
-        {{ 'payment.cancel' | translate }}
-      </button>
-      <button class="btn-primary" 
-              (click)="proceedWithBalanceOption()" 
-              [disabled]="!selectedBalanceOption || isChargingBalance || (selectedBalanceOption === 'charge-balance' && chargeAmount <= 0)">
-        <i class="bi" [ngClass]="isChargingBalance ? 'bi-hourglass-split' : 'bi-arrow-right'"></i>
-        <span *ngIf="selectedBalanceOption === 'use-balance'">{{ 'payment.useBalanceNow' | translate }}</span>
-        <span *ngIf="selectedBalanceOption === 'charge-balance'">
-          {{ isChargingBalance ? 'payment.charging' : 'payment.chargeNow' | translate }}
-        </span>
-        <span *ngIf="selectedBalanceOption === 'pay-direct'">{{ 'payment.continueToPayment' | translate }}</span>
-        <span *ngIf="!selectedBalanceOption">{{ 'payment.proceed' | translate }}</span>
-      </button>
-    </div>
-  </div>
-</div>
 
   </div>
 </div>

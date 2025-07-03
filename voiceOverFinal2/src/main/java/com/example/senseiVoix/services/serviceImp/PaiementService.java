@@ -1,7 +1,9 @@
 package com.example.senseiVoix.services.serviceImp;
+import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.entities.Client;
 import com.example.senseiVoix.entities.PaiementVerment;
 import com.example.senseiVoix.entities.Payment;
+import com.example.senseiVoix.entities.Utilisateur;
 import com.example.senseiVoix.enumeration.PaymentStatus;
 import com.example.senseiVoix.repositories.ClientRepository;
 import com.example.senseiVoix.repositories.PaiementVermentRepository;
@@ -28,46 +30,17 @@ public class PaiementService {
     @Autowired
     private PaypalService paypalService;
 
+    private static final String COMPANY_RIB = "FR76 1234 5678 9012 3456 7890 123";
+    private static final String BANK_NAME = "Banque Exemple";
+    private static final String ACCOUNT_HOLDER = "SenseiVoix SARL";
 
 
-    public PaiementVerment creerPaiement(String uuid, PaiementVerment paiement) throws IOException, GeneralSecurityException {
-        Client client = utilisateurRepository.findByUuid(uuid);
-        paiement.setUtilisateur(client);
-        paiement.setStatus(PaymentStatus.PENDING);
-        return paiementRepository.save(paiement);
-    }
-
-    public List<PaiementVerment> getPaiementsEnAttente() {
-        return paiementRepository.findByStatut(PaymentStatus.PENDING);
-    }
-
-    public PaiementVerment validerPaiement(String paiementId) {
-        PaiementVerment paiement = paiementRepository.findByUuid(paiementId);
-        paiement.setStatus(PaymentStatus.COMPLETED);
-
-        // Ajouter les points au compte client
-        Client client = (Client) paiement.getUtilisateur();
-        int pointsAjoutes = (int) (paiement.getAmount() * 10); // 1 MAD = 10 points
-        client.setBalance(client.getBalance() + pointsAjoutes);
-        utilisateurRepository.save(client);
-
-        return paiementRepository.save(paiement);
-    }
-
-    public PaiementVerment refuserPaiement(Long paiementId) {
-        PaiementVerment paiement = paiementRepository.findById(paiementId)
-                .orElseThrow(() -> new RuntimeException("Paiement non trouvé"));
-        paiement.setStatus(PaymentStatus.FAILED);
-        return paiementRepository.save(paiement);
-    }
 
     public List<Payment> getAllPayements() {
-        return paymentRepository.findByStatut(PaymentStatus.PENDING);
+        return paymentRepository.findAll();
     }
 
-    public List<Payment> getAllCompletedPayements() {
-        return paymentRepository.findByStatut(PaymentStatus.COMPLETED);
-    }
+
 
     public void setBalanceClient(String uuid, Double balance) {
         Client client = utilisateurRepository.findByUuid(uuid);
@@ -87,10 +60,10 @@ public class PaiementService {
         String formattedAmount = String.format(Locale.US, "%.2f", amount); // 👈 FORMAT CORRECT ICI
         final String currency = "USD";
         final String description = "Add more credits";
-        final String cancelUrl = String.format("https://api.castingvoixoff.ma/api/payment/balance/cancel/%s", uuid);
+        final String cancelUrl = String.format("http://localhost:8080/api/payment/balance/cancel/%s", uuid);
         
         // ✅ Ne PAS reformatter avec %.2f, utiliser formattedAmount
-        final String successUrl = String.format("https://api.castingvoixoff.ma/api/payment/balance/success/%s/%s", uuid, formattedAmount);
+        final String successUrl = String.format("http://localhost:8080/api/payment/balance/success/%s/%s", uuid, formattedAmount);
     
         com.paypal.api.payments.Payment payment = paypalService.createPayment(
             amount,
@@ -109,5 +82,34 @@ public class PaiementService {
         throw new IllegalStateException("Approval URL not found in PayPal response.");
     }
     
-    
+        public BankTransferResponse createBankTransferResponse(String uuid, double price) {
+        try {
+           Utilisateur utilisateur =  utilisateurRepository.findByUuid(uuid);
+           Payment payment = new Payment();
+            payment.setUtilisateur(utilisateur);
+            payment.setLibelle(generateUniqueLibelle());
+            // Generate unique libellé and update action
+            String libelle = generateUniqueLibelle();
+            // Create response
+            BankTransferResponse response = new BankTransferResponse();
+            response.setLibelle(libelle);
+            response.setRib(COMPANY_RIB);
+            response.setPrice(price);
+            response.setBankName(BANK_NAME);
+            response.setAccountHolder(ACCOUNT_HOLDER);
+            response.setMessage("Action créée avec succès. Effectuez le virement bancaire avec le libellé fourni.");
+
+            return response;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create bank transfer response: " + e.getMessage());
+        }
+    }
+
+    private String generateUniqueLibelle() {
+        String prefix = "SV";
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String random = String.valueOf((int)(Math.random() * 1000));
+        return prefix + timestamp.substring(timestamp.length() - 8) + random;
+    }
 }

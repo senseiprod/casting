@@ -29,7 +29,7 @@ public class ClientBalanceController {
             HttpServletResponse response) throws IOException {
         try {
             paiementService.setBalanceClient(uuid, balance);
-            response.sendRedirect("https://castingvoixoff.ma/speakerDasboard/"+uuid+"/charge-success/"+balance+"/"+balance);
+            response.sendRedirect("http://localhost:4201/speakerDasboard/"+uuid+"/charge-success/"+balance+"/"+balance);
         } catch (Exception e) {
             response.sendRedirect("https://your-redirect-url.com/error?message=" + URLEncoder.encode(e.getMessage(), "UTF-8"));
         }

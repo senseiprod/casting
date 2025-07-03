@@ -96,14 +96,7 @@ public class ActionServiceImpl {
         actionRepository.save(action1);
     }
 
-    public void validateAction(String uuid) throws PayPalRESTException, JsonProcessingException {
-        Action action = actionRepository.findByUuid(uuid);
-        Payment payment = paymentRepository.findByActionUuid(action.getUuid());
-        paypalService.executePayment(payment.getPaypalId(), payment.getPaypalPayerId());
-        generateSpeech(uuid);
-        action.setStatutAction(StatutAction.VALIDE);
-        actionRepository.save(action);
-    }
+
 
     public void deleteAction(String uuid) {
         Action action = actionRepository.findByUuid(uuid);
@@ -190,36 +183,8 @@ public class ActionServiceImpl {
         emailService.NotificationSpeaker(speaker.getEmail(), speaker.getNom(), LocalDate.now(), action.getText());
     }
 
-    @Transactional
-    public void rejectAction(String actionUuid) throws PayPalRESTException {
-        Action action = actionRepository.findByUuid(actionUuid);
-        if (action != null) {
-            action.setStatutAction(StatutAction.REJETE);
-            actionRepository.save(action);
-            Payment paymentOpt = paymentRepository.findByActionUuid(actionUuid);
-            paypalService.refundPayment(paymentOpt.getPaypalId(), paymentOpt.getAmount());
-            paymentOpt.setStatus(PaymentStatus.FAILED);
-            paymentRepository.save(paymentOpt);
-        }
-    }
 
-    public void processPayment(String clientUuid, String actionUuid, Double amount, String paypalId,
-                               String paypalPayerId) {
-        Action action = actionRepository.findByUuid(actionUuid);
-        try {
-            Payment payment = new Payment();
-            payment.setUtilisateur(utilisateurRepository.findByUuid(clientUuid));
-            payment.setAmount(amount);
-            payment.setPaymentMethod("PAYPAL");
-            payment.setStatus(PaymentStatus.PENDING);
-            payment.setAction(action);
-            payment.setPaypalId(paypalId);
-            payment.setPaypalPayerId(paypalPayerId);
-            paymentRepository.save(payment);
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors du paiement : " + e.getMessage());
-        }
-    }
+
 
     public List<ActionResponse> getActionBySpeakerUuid(String uuid) {
         List<Action> actions = actionRepository.findBySpeakerUuid(uuid);

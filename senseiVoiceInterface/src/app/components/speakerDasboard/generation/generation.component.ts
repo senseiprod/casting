@@ -7,8 +7,8 @@ import  { Project } from "../../../services/project.service"
 import  { ActionService } from "../../../services/action.service"
 import  { ActivatedRoute, Router } from "@angular/router"
 import  { LahajatiService } from "../../../services/lahajati.service"
-import { PaypalService } from "src/app/services/paypal-service.service"
-import { ClientService } from "src/app/services/client-service.service"
+import  { PaypalService } from "src/app/services/paypal-service.service"
+import  { ClientService } from "src/app/services/client-service.service"
 
 // Interface for Lahajati voices
 interface LahajatiVoice {
@@ -30,6 +30,17 @@ interface LahajatiVoice {
 interface UserBalance {
   balance: number
   currency: string
+}
+
+// Interface for Bank Transfer Response
+interface BankTransferResponse {
+  actionId: number
+  libelle: string
+  rib: string
+  price: number
+  message: string
+  bankName: string
+  accountHolder: string
 }
 
 @Component({
@@ -61,12 +72,17 @@ export class GenerationComponent implements OnInit {
 
   // Balance-related properties
   userBalance: UserBalance = { balance: 0, currency: "USD" }
+  balance = 0
   isLoadingBalance = false
   showBalanceOptions = false
   selectedBalanceOption: "use-balance" | "charge-balance" | "pay-direct" | null = null
   chargeAmount = 0
   isChargingBalance = false
   balanceError: string | null = null
+
+  // Balance charging payment methods
+  showBalanceChargeModal = false
+  selectedChargeMethod: "card" | "paypal" | "verment" | null = null
 
   // Existing properties...
   lahajatiVoices: LahajatiVoice[] = []
@@ -160,7 +176,7 @@ export class GenerationComponent implements OnInit {
 
   // Bank transfer specific properties
   showBankTransferModal = false
-  bankTransferDetails: any = null
+  bankTransferDetails: BankTransferResponse | null = null
   bankTransferReference: string | null = null
 
   // Character limit modal
@@ -178,7 +194,7 @@ export class GenerationComponent implements OnInit {
     private actionService: ActionService,
     private lahajatiService: LahajatiService,
     private paypalService: PaypalService,
-    private clientService : ClientService
+    private clientService: ClientService,
   ) {}
 
   ngOnInit(): void {
@@ -196,14 +212,22 @@ export class GenerationComponent implements OnInit {
   // Load user balance
   loadUserBalance() {
     if (!this.userId) return
-    this.clientService.getClientByUuid(this.userId).subscribe(data=> {
-      this.userBalance = {
-        balance: data.balance || 0, // Assuming 'fidelite' is the balance field
-        currency: "USD", // Adjust as necessary
-      }
-      this.isLoadingBalance = false
-    })
+
     this.isLoadingBalance = true
+    this.clientService.getClientByUuid(this.userId).subscribe({
+      next: (data) => {
+        this.balance = data.balance || 0
+        this.userBalance = { balance: this.balance, currency: "USD" }
+        this.isLoadingBalance = false
+        console.log("User balance loaded:", this.userBalance)
+      },
+      error: (error) => {
+        console.error("Error loading user balance:", error)
+        this.balance = 0
+        this.userBalance = { balance: 0, currency: "USD" }
+        this.isLoadingBalance = false
+      },
+    })
   }
 
   // Check if user has sufficient balance
@@ -215,11 +239,14 @@ export class GenerationComponent implements OnInit {
   showPaymentMethodSelection() {
     this.calculatedPrice = this.price * this.actionData.text.length
 
-    // If user has sufficient balance, show balance options
-    if (this.userBalance.balance > 0) {
+    // Always show balance options first if user has any balance or if balance is still loading
+    console.log("Current balance:", this.userBalance.balance, "Calculated price:", this.calculatedPrice)
+
+    // Show balance options if user has balance or if we're still loading balance
+    if (this.userBalance.balance >= 0 || this.isLoadingBalance) {
       this.showBalanceOptions = true
     } else {
-      // If no balance, go directly to payment methods
+      // If no balance and not loading, go directly to payment methods
       this.showPaymentMethodModal = true
     }
 
@@ -234,7 +261,40 @@ export class GenerationComponent implements OnInit {
 
     if (option === "charge-balance") {
       // Calculate minimum charge amount (current cost + some buffer)
-      this.chargeAmount = Math.max(this.calculatedPrice, 10) // Minimum $10 charge
+      const minimumCharge = this.getMinimumChargeAmount()
+      this.chargeAmount = minimumCharge // Remove the Math.max(minimumCharge, 10) since getMinimumChargeAmount already handles the minimum
+      console.log("Setting initial charge amount to:", this.chargeAmount) // Debug log
+
+      // Force update the input value after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        const input = document.getElementById("chargeAmount") as HTMLInputElement
+        if (input) {
+          input.value = this.chargeAmount.toString()
+          console.log("Updated input value to:", input.value)
+        }
+      }, 100)
+    }
+  }
+
+  // Handle charge amount input changes
+  onChargeAmountChange(event: any) {
+    const value = Number.parseFloat(event.target.value) || 0
+    this.chargeAmount = value
+    console.log("Charge amount changed to:", this.chargeAmount)
+  }
+
+  // Handle charge amount blur event
+  onChargeAmountBlur(event: any) {
+    const value = Number.parseFloat(event.target.value) || 0
+    this.chargeAmount = value
+    console.log("Charge amount blur, final value:", this.chargeAmount)
+
+    // Validate minimum amount
+    const minimumAmount = this.getMinimumChargeAmount()
+    if (this.chargeAmount < minimumAmount) {
+      this.chargeAmount = minimumAmount
+      event.target.value = this.chargeAmount.toString()
+      console.log("Adjusted to minimum amount:", this.chargeAmount)
     }
   }
 
@@ -247,10 +307,17 @@ export class GenerationComponent implements OnInit {
 
     switch (this.selectedBalanceOption) {
       case "use-balance":
-        this.useExistingBalance()
+        if (!this.hasSufficientBalance()) {
+          this.balanceError = "Insufficient balance. Please charge your account or pay directly."
+          return
+        }
+        // Deduct from balance and proceed with generation
+        this.userBalance.balance -= this.calculatedPrice
+        this.closeBalanceOptions()
+        this.processAudioGeneration()
         break
       case "charge-balance":
-        this.chargeUserBalance()
+        this.showBalanceChargeOptions()
         break
       case "pay-direct":
         this.closeBalanceOptions()
@@ -259,47 +326,149 @@ export class GenerationComponent implements OnInit {
     }
   }
 
-  // Use existing balance
-  useExistingBalance() {
-    if (!this.hasSufficientBalance()) {
-      this.balanceError = "Insufficient balance. Please charge your account or pay directly."
-      return
+  // Show balance charge options
+  showBalanceChargeOptions() {
+    // Ensure we have the correct charge amount before showing the modal
+    if (this.chargeAmount <= 0) {
+      const minimumCharge = this.getMinimumChargeAmount()
+      this.chargeAmount = minimumCharge
     }
-
-    // Deduct from balance and proceed with generation
-    this.userBalance.balance -= this.calculatedPrice
+    console.log("Showing balance charge options with amount:", this.chargeAmount)
+    console.log("Selected balance option:", this.selectedBalanceOption)
     this.closeBalanceOptions()
-    this.processAudioGeneration()
+    this.showBalanceChargeModal = true
+    this.selectedChargeMethod = null
+
+    // Force update the charge amount display after modal opens
+    setTimeout(() => {
+      console.log("Charge amount after modal transition:", this.chargeAmount)
+    }, 200)
   }
 
-  // Charge user balance
-  chargeUserBalance() {
-    if (!this.userId || this.chargeAmount <= 0) {
-      this.balanceError = "Invalid charge amount"
+  // Select charge method
+  selectChargeMethod(method: "card" | "paypal" | "verment") {
+    this.selectedChargeMethod = method
+  }
+
+  // Close balance charge modal
+  closeBalanceChargeModal() {
+    this.showBalanceChargeModal = false
+    this.selectedChargeMethod = null
+    this.balanceError = null
+    this.resetChargeAmount() // Reset only when closing this modal
+  }
+
+  // Proceed with balance charging
+  proceedWithBalanceCharge() {
+    console.log("=== PROCEEDING WITH BALANCE CHARGE ===")
+    console.log("Selected charge method:", this.selectedChargeMethod)
+    console.log("Current charge amount:", this.chargeAmount)
+    console.log("Charge amount type:", typeof this.chargeAmount)
+
+    if (!this.selectedChargeMethod) {
+      this.balanceError = "Please select a charging method"
       return
     }
+
+    const minimumAmount = this.getMinimumChargeAmount()
+    console.log("Minimum amount required:", minimumAmount)
+
+    if (this.chargeAmount < minimumAmount) {
+      this.balanceError = `Minimum charge amount is $${minimumAmount.toFixed(2)}`
+      return
+    }
+
+    if (this.chargeAmount <= 0) {
+      this.balanceError = "Please enter a valid charge amount"
+      return
+    }
+
+    console.log("All validations passed. Proceeding with charge amount:", this.chargeAmount)
 
     this.isChargingBalance = true
     this.balanceError = null
 
+    if (this.selectedChargeMethod === "paypal") {
+      this.chargeBalanceWithPayPal()
+    } else if (this.selectedChargeMethod === "card") {
+      this.balanceError = "Credit card charging not implemented yet"
+      this.isChargingBalance = false
+    } else if (this.selectedChargeMethod === "verment") {
+      this.chargeBalanceWithBankTransfer()
+    }
+  }
+
+  // Charge balance with PayPal
+  chargeBalanceWithPayPal() {
+    if (!this.userId) {
+      this.balanceError = "User ID not found"
+      this.isChargingBalance = false
+      return
+    }
+
+    console.log("Charging balance with PayPal, amount:", this.chargeAmount)
+
     this.paypalService.chargeBalance(this.userId, this.chargeAmount).subscribe({
       next: (response) => {
-        console.log("Balance charge response:", response)
+        console.log("PayPal balance charge response:", response)
 
         if (response.redirectUrl) {
           // Redirect to PayPal for balance charging
           window.location.href = response.redirectUrl
         } else {
-          this.balanceError = "Failed to initiate balance charging"
+          this.balanceError = "Failed to initiate PayPal balance charging"
           this.isChargingBalance = false
         }
       },
       error: (error) => {
-        console.error("Error charging balance:", error)
-        this.balanceError = error.error?.message || "Failed to charge balance"
+        console.error("Error charging balance with PayPal:", error)
+        this.balanceError = error.error?.message || "Failed to charge balance with PayPal"
         this.isChargingBalance = false
       },
     })
+  }
+
+  // Charge balance with bank transfer
+  chargeBalanceWithBankTransfer() {
+    if (!this.userId) {
+      this.balanceError = "User ID not found"
+      this.isChargingBalance = false
+      return
+    }
+
+    console.log("Charging balance with bank transfer, amount:", this.chargeAmount)
+
+    // Create bank transfer request for balance charging
+    const bankTransferRequest = {
+      userId: this.userId,
+      amount: this.chargeAmount,
+      type: "balance_charge", // Distinguish from regular payments
+    }
+
+    // You would call your service method here for bank transfer balance charging
+    // For now, we'll show it's not implemented
+    this.balanceError = "Bank transfer balance charging not implemented yet"
+    this.isChargingBalance = false
+
+    // When implemented, it would look something like:
+    /*
+    this.paypalService.chargeBalanceWithBankTransfer(bankTransferRequest).subscribe({
+      next: (response) => {
+        console.log("Bank transfer balance charge response:", response)
+        
+        // Handle the response - might show bank details for manual transfer
+        this.bankTransferDetails = response
+        this.isChargingBalance = false
+        this.closeBalanceChargeModal()
+        this.showBankTransferModal = true
+      },
+      error: (error) => {
+        console.error("Error charging balance with bank transfer:", error)
+        this.balanceError = error.error?.message || "Failed to charge balance with bank transfer"
+        this.isChargingBalance = false
+      },
+    })
+    */
   }
 
   // Close balance options modal
@@ -307,7 +476,14 @@ export class GenerationComponent implements OnInit {
     this.showBalanceOptions = false
     this.selectedBalanceOption = null
     this.balanceError = null
+    // DON'T reset chargeAmount here - keep it for the next modal
+    // this.chargeAmount = 0  // Remove this line
+  }
+
+  // Reset charge amount only when completely canceling the process
+  resetChargeAmount() {
     this.chargeAmount = 0
+    console.log("Charge amount reset to:", this.chargeAmount)
   }
 
   // Modified generateSpeech method
@@ -330,16 +506,24 @@ export class GenerationComponent implements OnInit {
     }
   }
 
-  // Update charge amount
-  updateChargeAmount(event: any) {
-    this.chargeAmount = Number.parseFloat(event.target.value) || 0
-  }
-
   // Get minimum charge amount
   getMinimumChargeAmount(): number {
-    return Math.max(this.calculatedPrice - this.userBalance.balance, 10)
+    const deficit = Math.max(0, this.calculatedPrice - this.userBalance.balance)
+    const minimumCharge = Math.max(deficit, 10) // At least $10 or the deficit amount
+    console.log(
+      "Calculated minimum charge:",
+      minimumCharge,
+      "Deficit:",
+      deficit,
+      "Calculated price:",
+      this.calculatedPrice,
+      "Balance:",
+      this.userBalance.balance,
+    ) // Debug log
+    return minimumCharge
   }
 
+  // Rest of the existing methods remain the same...
   fetchUserProjects() {
     this.projectService.getAllProjects().subscribe(
       (data) => {
@@ -425,7 +609,9 @@ export class GenerationComponent implements OnInit {
       voiceUuid: this.selectedVoice.id,
       utilisateurUuid: this.userId,
       language: this.selectedVoice.language,
-      projectUuid: this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+      projectUuid:
+        this.selectedProject?.uuid ||
+        "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
     }
 
     this.actionService.createActionPayed(actionRequest).subscribe(
@@ -464,7 +650,7 @@ export class GenerationComponent implements OnInit {
     )
   }
 
-  // New method for bank transfer payment
+  // Updated method for bank transfer payment with new response structure
   processBankTransferPayment() {
     if (!this.selectedVoice || !this.userId) {
       this.paymentError = "Missing required information"
@@ -485,13 +671,13 @@ export class GenerationComponent implements OnInit {
     }
 
     this.actionService.createActionWithBankTransfer(bankTransferRequest).subscribe(
-      (response) => {
+      (response: BankTransferResponse) => {
         console.log("Bank transfer payment response:", response)
 
         this.actionId = response.actionId
-        this.bankTransferReference = response.transferReference
-        this.bankTransferDetails = response.bankDetails
-        this.calculatedPrice = response.price || this.calculatedPrice
+        this.bankTransferReference = response.libelle // Using libelle as reference
+        this.bankTransferDetails = response
+        this.calculatedPrice = response.price
 
         this.isProcessingPayment = false
         this.showPaymentProcessing = false

@@ -46,16 +46,6 @@ public class ActionController {
         return ResponseEntity.ok("Action created");
     }
 
-    @PostMapping("/validate/{uuid}")
-    public ResponseEntity<?> validateAction(@PathVariable String uuid) {
-        try {
-            actionService.validateAction(uuid);
-            return ResponseEntity.ok("Action validée avec succès");
-        } catch (PayPalRESTException | JsonProcessingException e) {
-            return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
-        }
-    }
-
     @DeleteMapping("/delete/{uuid}")
     public ResponseEntity<?> deleteAction(@PathVariable String uuid) {
         actionService.deleteAction(uuid);
@@ -80,21 +70,8 @@ public class ActionController {
         return ResponseEntity.ok("Notification envoyée");
     }
 
-    @PostMapping("/reject/{uuid}")
-    public ResponseEntity<?> rejectAction(@PathVariable String uuid) {
-        try {
-            actionService.rejectAction(uuid);
-            return ResponseEntity.ok("Action rejetée avec succès");
-        } catch (PayPalRESTException e) {
-            return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
-        }
-    }
 
-    @PostMapping("/process-payment")
-    public ResponseEntity<?> processPayment(@RequestParam String clientUuid, @RequestParam String actionUuid, @RequestParam Double amount, @RequestParam String paypalId, @RequestParam String paypalPayerId) {
-        actionService.processPayment(clientUuid, actionUuid, amount, paypalId, paypalPayerId);
-        return ResponseEntity.ok("Paiement traité avec succès");
-    }
+
 
     // PAYPAL WORKFLOW ENDPOINTS
     @PostMapping("/create-action")
@@ -124,8 +101,8 @@ public class ActionController {
                         price,
                         "USD",
                         "Text-to-Speech Generation",
-                        "https://api.castingvoixoff.ma//api/actions/payment/cancel/" + action.getId(),
-                        "https://api.castingvoixoff.ma/api/actions/payment/success/" + action.getId()
+                        "http://localhost:8080/api/actions/payment/cancel/" + action.getId(),
+                        "http://localhost:8080/api/actions/payment/success/" + action.getId()
                 );
 
                 response.put("paymentId", payment.getId());
@@ -145,7 +122,7 @@ public class ActionController {
                 response.put("message", "Action created but PayPal payment failed: " + paypalError.getMessage());
 
                 // For testing, provide a direct test URL
-                response.put("testUrl", "https://api.castingvoixoff.ma/api/actions/test-success/" + action.getId());
+                response.put("testUrl", "http://localhost:8080/api/actions/test-success/" + action.getId());
             }
 
             return ResponseEntity.ok(response);
@@ -198,7 +175,7 @@ public class ActionController {
             return ResponseEntity.badRequest().body(Map.of("error", "Payment execution failed: " + e.getMessage()));
         }
     }
-
+    
     @GetMapping("/payment/cancel/{actionId}")
     public ResponseEntity<Map<String, Object>> paymentCancel(@PathVariable Long actionId) {
         try {
