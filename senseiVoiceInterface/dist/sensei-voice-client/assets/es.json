@@ -28,10 +28,10 @@
     "legal": "Aviso legal"
   },
   "header": {
-    "title": "Resumen del Panel de Control",
+    "title": "Resumen del Panel",
     "breadcrumb": {
       "home": "Inicio",
-      "dashboard": "Panel de Control"
+      "dashboard": "Panel"
     },
     "search": {
       "placeholder": "Buscar..."
@@ -39,17 +39,17 @@
     "language": {
       "selector": "Selector de Idioma",
       "options": {
-        "english": "English",
-        "french": "Français",
+        "english": "Inglés",
+        "french": "Francés",
         "spanish": "Español"
       }
     },
     "notifications": {
       "button": "Notificaciones",
       "title": "Notificaciones",
-      "markAllRead": "Marcar todo como leído",
+      "markAllRead": "Marcar todas como leídas",
       "viewAll": "Ver todas las notificaciones",
-      "noNotifications": "No hay nuevas notificaciones",
+      "noNotifications": "No hay notificaciones nuevas",
       "items": {
         "voiceCompleted": "Nueva generación de voz completada",
         "newComment": "Nuevo comentario en tu proyecto",
@@ -69,15 +69,33 @@
         "twoHoursAgo": "Hace 2 horas",
         "yesterday": "Ayer",
         "twoDaysAgo": "Hace 2 días"
+      }
+    },
+    "profile": {
+      "menu": "Menú de Usuario",
+      "avatar": "Avatar de Perfil",
+      "status": {
+        "online": "En línea",
+        "offline": "Desconectado",
+        "away": "Ausente",
+        "busy": "Ocupado"
       },
+      "menu": {
+        "myProfile": "Mi Perfil",
+        "accountSettings": "Configuración de Cuenta",
+        "privacySecurity": "Privacidad y Seguridad",
+        "helpSupport": "Ayuda y Soporte",
+        "logout": "Cerrar Sesión"
+      }
+    },
     "logo": {
-      "alt": "Logo Casting Voice Off"
+      "alt": "Logo de Casting Voice Off"
     },
     "navigation": {
       "toggleMenu": "Alternar menú de navegación",
       "languages": "IDIOMAS",
       "voiceLanguages": "Idiomas de Voz",
-      "speakers": "SPEAKERS",
+      "speakers": "LOCUTORES",
       "aiVoice": "VOZ IA",
       "humanVoice": "VOZ HUMANA",
       "studio": "ESTUDIO",
@@ -118,10 +136,10 @@
       "persian": "Persa"
     },
     "uiLanguage": {
-      "selector": "Idioma de la Interfaz",
+      "selector": "Idioma de Interfaz",
       "options": {
-        "english": "English",
-        "french": "Français",
+        "english": "Inglés",
+        "french": "Francés",
         "spanish": "Español"
       }
     },
@@ -133,11 +151,11 @@
       "toggle": "Menú de usuario",
       "avatar": "Avatar de usuario",
       "profile": "Perfil",
-      "dashboard": "Panel de Control",
+      "dashboard": "Panel",
       "settings": "Configuración",
       "logout": "Cerrar Sesión"
     }
-  }},
+  },
   "sidebar": {
     "toggleSidebar": "Alternar barra lateral",
     "companyLogo": "Logo de la empresa",

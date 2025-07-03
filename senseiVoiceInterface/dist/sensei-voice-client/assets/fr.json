@@ -39,124 +39,15 @@
     "language": {
       "selector": "Sélecteur de Langue",
       "options": {
-        "english": "English",
+        "english": "Anglais",
         "french": "Français",
-        "spanish": "Español"
+        "spanish": "Espagnol"
       }
     },
     "notifications": {
       "button": "Notifications",
       "title": "Notifications",
-      "markAllRead": "Marquer tout comme lu",
-      "viewAll": "Voir toutes les notifications",
-      "noNotifications": "Aucune nouvelle notification",
-      "items": {
-        "voiceCompleted": "Nouvelle génération vocale terminée",
-        "newComment": "Nouveau commentaire sur votre projet",
-        "requestApproved": "Votre demande a été approuvée",
-        "paymentReceived": "Paiement reçu avec succès",
-        "projectShared": "Projet partagé avec vous",
-        "systemUpdate": "Maintenance système programmée"
-      },
-      "times": {
-        "justNow": "À l'instant",
-        "oneMinAgo": "Il y a 1 min",
-        "twoMinAgo": "Il y a 2 min",
-        "fiveMinAgo": "Il y a 5 min",
-        "tenMinAgo": "Il y a 10 min",
-        "thirtyMinAgo": "Il y a 30 min",
-        "oneHourAgo": "Il y a 1 heure",
-        "twoHoursAgo": "Il y a 2 heures",
-        "yesterday": "Hier",
-        "twoDaysAgo": "Il y a 2 jours"
-      },
-    "title": "Aperçu du Tableau de Bord",
-    "logo": {
-      "alt": "Logo Casting Voice Off"
-    },
-    "breadcrumb": {
-      "home": "Accueil",
-      "dashboard": "Tableau de Bord"
-    },
-    "search": {
-      "placeholder": "Rechercher..."
-    },
-    "language": {
-      "selector": "Sélecteur de Langue",
-      "options": {
-        "english": "English",
-        "french": "Français",
-        "spanish": "Español"
-      }
-    },
-    "voiceLanguages": {
-      "darija": "Darija",
-      "arabic": "Arabe",
-      "french": "Français",
-      "english": "Anglais",
-      "german": "Allemand",
-      "italian": "Italien",
-      "spanish": "Espagnol",
-      "portuguese": "Portugais",
-      "hindi": "Hindi",
-      "bengali": "Bengali",
-      "russian": "Russe",
-      "japanese": "Japonais",
-      "korean": "Coréen",
-      "chinese": "Chinois",
-      "turkish": "Turc",
-      "vietnamese": "Vietnamien",
-      "polish": "Polonais",
-      "ukrainian": "Ukrainien",
-      "romanian": "Roumain",
-      "dutch": "Néerlandais",
-      "swedish": "Suédois",
-      "finnish": "Finnois",
-      "norwegian": "Norvégien",
-      "danish": "Danois",
-      "hungarian": "Hongrois",
-      "czech": "Tchèque",
-      "greek": "Grec",
-      "thai": "Thaï",
-      "indonesian": "Indonésien",
-      "malay": "Malais",
-      "hebrew": "Hébreu",
-      "persian": "Persan"
-    },
-    "uiLanguage": {
-      "selector": "Langue de l'Interface",
-      "options": {
-        "english": "English",
-        "french": "Français",
-        "spanish": "Español"
-      }
-    },
-    "auth": {
-      "login": "CONNEXION",
-      "signup": "S'INSCRIRE"
-    },
-    "userMenu": {
-      "toggle": "Menu utilisateur",
-      "avatar": "Avatar utilisateur",
-      "profile": "Profil",
-      "dashboard": "Tableau de Bord",
-      "settings": "Paramètres",
-      "logout": "Déconnexion"
-    },
-    "navigation": {
-      "toggleMenu": "Basculer le menu de navigation",
-      "languages": "LANGUES",
-      "voiceLanguages": "Langues des Voix",
-      "speakers": "SPEAKERS",
-      "aiVoice": "VOIX IA",
-      "humanVoice": "VOIX HUMAINE",
-      "studio": "STUDIO",
-      "contact": "NOUS CONTACTER"
-    },
-    "notifications": {
-      "button": "Notifications",
-      "title": "Notifications",
-      "markAllRead": "Marquer tout comme lu",
+      "markAllRead": "Marquer toutes comme lues",
       "viewAll": "Voir toutes les notifications",
       "noNotifications": "Aucune nouvelle notification",
       "items": {
@@ -196,9 +87,75 @@
         "helpSupport": "Aide et Support",
         "logout": "Déconnexion"
       }
+    },
+    "logo": {
+      "alt": "Logo Casting Voice Off"
+    },
+    "navigation": {
+      "toggleMenu": "Basculer le menu de navigation",
+      "languages": "LANGUES",
+      "voiceLanguages": "Langues Vocales",
+      "speakers": "INTERVENANTS",
+      "aiVoice": "VOIX IA",
+      "humanVoice": "VOIX HUMAINE",
+      "studio": "STUDIO",
+      "contact": "NOUS CONTACTER"
+    },
+    "voiceLanguages": {
+      "darija": "Darija",
+      "arabic": "Arabe",
+      "french": "Français",
+      "english": "Anglais",
+      "german": "Allemand",
+      "italian": "Italien",
+      "spanish": "Espagnol",
+      "portuguese": "Portugais",
+      "hindi": "Hindi",
+      "bengali": "Bengali",
+      "russian": "Russe",
+      "japanese": "Japonais",
+      "korean": "Coréen",
+      "chinese": "Chinois",
+      "turkish": "Turc",
+      "vietnamese": "Vietnamien",
+      "polish": "Polonais",
+      "ukrainian": "Ukrainien",
+      "romanian": "Roumain",
+      "dutch": "Néerlandais",
+      "swedish": "Suédois",
+      "finnish": "Finnois",
+      "norwegian": "Norvégien",
+      "danish": "Danois",
+      "hungarian": "Hongrois",
+      "czech": "Tchèque",
+      "greek": "Grec",
+      "thai": "Thaï",
+      "indonesian": "Indonésien",
+      "malay": "Malais",
+      "hebrew": "Hébreu",
+      "persian": "Persan"
+    },
+    "uiLanguage": {
+      "selector": "Langue d'Interface",
+      "options": {
+        "english": "Anglais",
+        "french": "Français",
+        "spanish": "Espagnol"
+      }
+    },
+    "auth": {
+      "login": "CONNEXION",
+      "signup": "S'INSCRIRE"
+    },
+    "userMenu": {
+      "toggle": "Menu utilisateur",
+      "avatar": "Avatar utilisateur",
+      "profile": "Profil",
+      "dashboard": "Tableau de Bord",
+      "settings": "Paramètres",
+      "logout": "Déconnexion"
     }
-  }
-},
+  },
   "sidebar": {
     "toggleSidebar": "Basculer la barre latérale",
     "companyLogo": "Logo de l'entreprise",
