@@ -8,6 +8,11 @@
   padding: 2rem;
   position: relative;
   overflow: hidden;
+  /* Fix for sidebar layout */
+  margin-left: 280px;
+  width: calc(100vw - 280px);
+  box-sizing: border-box;
+  padding-top: 120px; /* Account for top navigation */
 }
 
 /* Background Elements */
@@ -76,8 +81,8 @@
 .confetti-container {
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: 280px; /* Account for sidebar */
+  width: calc(100vw - 280px);
   height: 100%;
   pointer-events: none;
   z-index: 1000;
@@ -658,10 +663,63 @@
   transform: translateY(-2px);
 }
 
-/* Responsive Design */
+/* Responsive Design for smaller laptops */
+@media (max-width: 1399px) {
+  .success-page-container {
+    margin-left: 260px;
+    width: calc(100vw - 260px);
+    padding: 1.5rem;
+    padding-top: 100px;
+  }
+
+  .success-content {
+    max-width: 550px;
+  }
+
+  .transaction-card {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 1199px) {
+  .success-page-container {
+    margin-left: 280px;
+    width: calc(100vw - 280px);
+    padding: 1.5rem;
+    padding-top: 100px;
+  }
+
+  .confetti-container {
+    left: 280px;
+    width: calc(100vw - 280px);
+  }
+}
+
+@media (max-width: 991px) {
+  .success-page-container {
+    margin-left: 260px;
+    width: calc(100vw - 260px);
+    padding: 1rem;
+    padding-top: 100px;
+  }
+
+  .confetti-container {
+    left: 260px;
+    width: calc(100vw - 260px);
+  }
+}
+
 @media (max-width: 768px) {
   .success-page-container {
+    margin-left: 0;
+    width: 100vw;
     padding: 1rem;
+    padding-top: 100px;
+  }
+
+  .confetti-container {
+    left: 0;
+    width: 100vw;
   }
 
   .success-title {
@@ -703,6 +761,11 @@
 }
 
 @media (max-width: 480px) {
+  .success-page-container {
+    padding: 0.75rem;
+    padding-top: 80px;
+  }
+
   .success-icon {
     font-size: 4rem;
   }

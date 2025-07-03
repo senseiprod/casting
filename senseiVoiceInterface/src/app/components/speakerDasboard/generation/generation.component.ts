@@ -975,9 +975,10 @@ export class GenerationComponent implements OnInit {
   mapLahajatiVoices(lahajatiVoices: any[]): LahajatiVoice[] {
     return lahajatiVoices.map((voice) => ({
       id: voice.id_voice || voice.voice_id,
-      name: voice.name || voice.voice_name,
+      name: voice.display_name || voice.voice_name,
       gender: voice.gender || "unknown",
-      avatar: voice.avatar || voice.image || "/assets/default-avatar.png",
+     avatar: "https://ui-avatars.com/api/?name=" + encodeURIComponent(voice.display_name),
+
       originalVoiceUrl: voice.sample_url || voice.preview_url,
       clonedVoiceUrl: voice.sample_url || voice.preview_url,
       price: voice.price || 0.05,

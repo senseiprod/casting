@@ -180,84 +180,104 @@
   </div>
 
   <!-- Requests List -->
-  <div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-      <h6 class="m-0 fw-bold text-primary">{{ 'requestManagement.requestsList.title' | translate }}</h6>
-      <span class="badge bg-primary rounded-pill">{{ filteredRequests.length }} {{ 'requestManagement.requestsList.total' | translate }}</span>
-    </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead>
-          <tr>
-            <th>{{ 'requestManagement.requestsList.table.id' | translate }}</th>
-            <th>{{ 'requestManagement.requestsList.table.title' | translate }}</th>
-            <th>{{ 'requestManagement.requestsList.table.type' | translate }}</th>
-            <th>{{ 'requestManagement.requestsList.table.createdDate' | translate }}</th>
-            <th>{{ 'requestManagement.requestsList.table.status' | translate }}</th>
-            <th>{{ 'requestManagement.requestsList.table.actions' | translate }}</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let request of filteredRequests">
-            <td>{{ request.code }}</td>
-            <td>{{ request.titre }}</td>
-            <td>
-                <span class="d-flex align-items-center">
-                  <i class="bi {{ getTypeIcon(request.type) }} me-2"></i>
-                  {{ getTypeLabel(request.type) }}
-                </span>
-            </td>
-            <td>{{ request.dateCreation }}</td>
-            <td>
-                <span class="status-badge" [ngClass]="getStatusClass(request.statut)">
-                  {{ request.statut | titlecase }}
-                </span>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" [attr.data-bs-target]="'#detailsModal' + request.code">
-                <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-primary me-1" *ngIf="request.statut === 'pending'">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" *ngIf="request.statut === 'pending'">
-                <i class="bi bi-trash"></i>
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="filteredRequests.length === 0">
-            <td colspan="6" class="text-center py-4">
-              <i class="bi bi-search fs-1 text-muted d-block mb-2"></i>
-              <p class="mb-0">{{ 'requestManagement.requestsList.noRequests.message' | translate }}</p>
-              <button class="btn btn-sm btn-outline-primary mt-2" (click)="toggleNewRequestForm()">
-                {{ 'requestManagement.requestsList.noRequests.button' | translate }}
-              </button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card-footer bg-white py-3">
-      <nav aria-label="Requests pagination">
-        <ul class="pagination justify-content-center mb-0">
-          <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">{{ 'requestManagement.requestsList.pagination.previous' | translate }}</a>
-          </li>
-          <li class="page-item active"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#">{{ 'requestManagement.requestsList.pagination.next' | translate }}</a>
-          </li>
-        </ul>
-      </nav>
+<div class="requests-table-card">
+  <div class="card-header">
+    <div class="header-content">
+      <h6 class="table-title">{{ 'requestManagement.requestsList.title' | translate }}</h6>
+      <span class="requests-badge">{{ filteredRequests.length }} {{ 'requestManagement.requestsList.total' | translate }}</span>
     </div>
   </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table glassmorphism-table mb-0">
+        <thead>
+        <tr>
+          <th>{{ 'requestManagement.requestsList.table.id' | translate }}</th>
+          <th>{{ 'requestManagement.requestsList.table.title' | translate }}</th>
+          <th>{{ 'requestManagement.requestsList.table.type' | translate }}</th>
+          <th>{{ 'requestManagement.requestsList.table.createdDate' | translate }}</th>
+          <th>{{ 'requestManagement.requestsList.table.status' | translate }}</th>
+          <th>{{ 'requestManagement.requestsList.table.actions' | translate }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let request of filteredRequests" class="table-row-hover">
+          <td><span class="code-badge">{{ request.code }}</span></td>
+          <td class="title-cell">{{ request.titre }}</td>
+          <td>
+            <span class="type-indicator" [ngClass]="'type-' + request.type">
+              <i class="bi {{ getTypeIcon(request.type) }}"></i>
+              {{ getTypeLabel(request.type) }}
+            </span>
+          </td>
+          <td class="date-cell">{{ request.dateCreation }}</td>
+          <td>
+            <span class="status-pill" [ngClass]="getStatusClass(request.statut)">
+              <i class="status-icon bi bi-circle-fill"></i>
+              {{ request.statut | titlecase }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-action btn-view" data-bs-toggle="modal" [attr.data-bs-target]="'#detailsModal' + request.code">
+                <i class="bi bi-eye"></i>
+              </button>
+              <button class="btn-action btn-edit" *ngIf="request.statut === 'pending'">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn-action btn-delete" *ngIf="request.statut === 'pending'">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredRequests.length === 0" class="empty-row">
+          <td colspan="6">
+            <div class="empty-state-modern">
+              <div class="empty-icon">
+                <i class="bi bi-inbox"></i>
+              </div>
+              <h5 class="empty-title">{{ 'requestManagement.requestsList.noRequests.message' | translate }}</h5>
+              <button class="btn-create-new" (click)="toggleNewRequestForm()">
+                <i class="bi bi-plus-circle"></i>
+                {{ 'requestManagement.requestsList.noRequests.button' | translate }}
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card-footer">
+    <nav aria-label="Requests pagination" class="pagination-nav">
+      <ul class="pagination-modern">
+        <li class="page-item disabled">
+          <a class="page-link-modern" href="#" tabindex="-1" aria-disabled="true">
+            <i class="bi bi-chevron-left"></i>
+            {{ 'requestManagement.requestsList.pagination.previous' | translate }}
+          </a>
+        </li>
+        <li class="page-item active">
+          <a class="page-link-modern" href="#">1</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link-modern" href="#">2</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link-modern" href="#">
+            {{ 'requestManagement.requestsList.pagination.next' | translate }}
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
 
   <!-- Request Details Modals -->
   <div *ngFor="let request of requests" class="modal fade" [id]="'detailsModal' + request.code" tabindex="-1" [attr.aria-labelledby]="'detailsModalLabel' + request.code" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header" [ngClass]="{
           'bg-warning text-white': request.statut === 'pending',

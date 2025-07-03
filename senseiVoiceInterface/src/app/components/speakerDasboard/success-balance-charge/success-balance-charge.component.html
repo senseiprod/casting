@@ -51,7 +51,7 @@
         <div class="detail-row highlight">
           <span class="detail-label">{{ 'success.amountCharged' | translate }}:</span>
           <span class="detail-value amount-charged">
-            +${{ chargeDetails.amount.toFixed(2) }}
+            +MAD {{ chargeDetails.amount.toFixed(2) }}
           </span>
         </div>
 
@@ -74,7 +74,7 @@
           <div class="balance-comparison">
             <div class="balance-item previous">
               <span class="balance-label">{{ 'success.previousBalance' | translate }}</span>
-              <span class="balance-amount">${{ chargeDetails.previousBalance.toFixed(2) }}</span>
+              <span class="balance-amount">MAD {{ chargeDetails.previousBalance.toFixed(2) }}</span>
             </div>
             
             <div class="balance-arrow">
@@ -83,7 +83,7 @@
             
             <div class="balance-item current">
               <span class="balance-label">{{ 'success.newBalance' | translate }}</span>
-              <span class="balance-amount new-balance">${{ chargeDetails.newBalance.toFixed(2) }}</span>
+              <span class="balance-amount new-balance">MAD {{ chargeDetails.newBalance.toFixed(2) }}</span>
             </div>
           </div>
         </div>

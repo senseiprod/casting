@@ -1,113 +1,260 @@
-<div class="dashboard-container">
-  <div class="container">
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-      <h1 class="dashboard-title">Tableau de Bord</h1>
-      <p class="dashboard-subtitle">Bienvenue sur votre espace personnel</p>
+<div class="min-h-screen w-full bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden">
+  <!-- Background elements -->
+  <div class="absolute inset-0 overflow-hidden">
+    <img src="/assets/images/auth/bg-gradient.png" alt="" class="absolute inset-0 h-full w-full object-cover opacity-40" />
+    <div class="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-rose-900/30 mix-blend-multiply"></div>
+    <!-- Animated background elements -->
+    <div class="absolute top-0 left-0 w-full h-full">
+      <img src="/assets/images/auth/coming-soon-object2.png" alt="" class="absolute left-[5%] top-[5%] h-32 md:h-40 opacity-60 animate-float" />
+      <img src="/assets/images/auth/coming-soon-object3.png" alt="" class="absolute right-[5%] top-[10%] h-[200px] md:h-[300px] opacity-60 animate-float-delay" />
+      <img src="/assets/images/auth/polygon-object.svg" alt="" class="absolute bottom-[5%] right-[15%] opacity-60 animate-pulse" />
+      <img src="/assets/images/auth/coming-soon-object2.png" alt="" class="absolute left-[15%] bottom-[20%] h-24 md:h-32 opacity-40 animate-float-delay" />
+      <img src="/assets/images/auth/coming-soon-object3.png" alt="" class="absolute right-[20%] bottom-[30%] h-[150px] md:h-[200px] opacity-40 animate-float" />
     </div>
+  </div>
 
-    <!-- Stats Overview Cards -->
-    <div class="row stats-overview">
-      <div class="col-md-3 col-sm-6">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="bi bi-folder"></i>
-          </div>
-          <div class="stat-content">
-            <h3 class="stat-value">{{ projectStats.total }}</h3>
-            <p class="stat-label">Projets</p>
-          </div>
-          <div class="stat-progress">
-            <div class="progress-bar" [style.width.%]="projectStats.completionRate"></div>
-          </div>
-        </div>
+  <div class="dashboard-container">
+    <div class="container">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Tableau de Bord</h1>
+        <p class="dashboard-subtitle">Bienvenue sur votre espace personnel</p>
       </div>
 
-      <div class="col-md-3 col-sm-6">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="bi bi-play-circle"></i>
-          </div>
-          <div class="stat-content">
-            <h3 class="stat-value">{{ actionStats.total }}</h3>
-            <p class="stat-label">Actions</p>
-          </div>
-          <div class="stat-progress">
-            <div class="progress-bar" [style.width.%]="actionStats.completionRate"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3 col-sm-6">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="bi bi-file-earmark-text"></i>
-          </div>
-          <div class="stat-content">
-            <h3 class="stat-value">{{ demandeStats.total }}</h3>
-            <p class="stat-label">Demandes</p>
-          </div>
-          <div class="stat-progress">
-            <div class="progress-bar" [style.width.%]="demandeStats.completionRate"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3 col-sm-6">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="bi bi-calendar-check"></i>
-          </div>
-          <div class="stat-content">
-            <h3 class="stat-value">{{ reservationStats.total }}</h3>
-            <p class="stat-label">Réservations</p>
-          </div>
-          <div class="stat-progress">
-            <div class="progress-bar" [style.width.%]="reservationStats.completionRate"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Projects Section -->
-    <div class="dashboard-section">
-      <div class="section-header">
-        <h2 class="section-title">Mes Projets</h2>
-        <button class="btn-custom" routerLink="/projects/new">
-          <i class="bi bi-plus-circle"></i> Nouveau Projet
-        </button>
-      </div>
-
-      <div class="row">
-        <div class="col-lg-8">
-          <!-- Projects Chart -->
-          <div class="chart-card">
-            <h3 class="chart-title">Activité des Projets</h3>
-            <div class="chart-container">
-              <canvas id="projectsChart"></canvas>
+      <!-- Stats Overview Cards -->
+      <div class="row stats-overview">
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="bi bi-folder"></i>
+            </div>
+            <div class="stat-content">
+              <h3 class="stat-value">{{ projectStats.total }}</h3>
+              <p class="stat-label">Projets</p>
+            </div>
+            <div class="stat-progress">
+              <div class="progress-bar" [style.width.%]="projectStats.completionRate"></div>
             </div>
           </div>
         </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="bi bi-play-circle"></i>
+            </div>
+            <div class="stat-content">
+              <h3 class="stat-value">{{ actionStats.total }}</h3>
+              <p class="stat-label">Actions</p>
+            </div>
+            <div class="stat-progress">
+              <div class="progress-bar" [style.width.%]="actionStats.completionRate"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div class="stat-content">
+              <h3 class="stat-value">{{ demandeStats.total }}</h3>
+              <p class="stat-label">Demandes</p>
+            </div>
+            <div class="stat-progress">
+              <div class="progress-bar" [style.width.%]="demandeStats.completionRate"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="bi bi-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+              <h3 class="stat-value">{{ reservationStats.total }}</h3>
+              <p class="stat-label">Réservations</p>
+            </div>
+            <div class="stat-progress">
+              <div class="progress-bar" [style.width.%]="reservationStats.completionRate"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div class="col-lg-4">
-          <!-- Recent Projects -->
-          <div class="list-card">
-            <h3 class="list-title">Projets Récents</h3>
-            <div class="list-container">
-              <div class="empty-state" *ngIf="recentProjects.length === 0">
-                <i class="bi bi-folder-x"></i>
-                <p>Aucun projet récent</p>
+      <!-- Projects Section -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">Mes Projets</h2>
+          <button class="btn-custom" routerLink="/projects/new">
+            <i class="bi bi-plus-circle"></i> Nouveau Projet
+          </button>
+        </div>
+        <div class="row">
+          <div class="col-lg-8">
+            <!-- Projects Chart -->
+            <div class="chart-card">
+              <h3 class="chart-title">Activité des Projets</h3>
+              <div class="chart-container">
+                <canvas id="projectsChart"></canvas>
               </div>
-              <div class="list-item" *ngFor="let project of recentProjects">
-                <div class="item-icon">
-                  <i class="bi bi-folder2"></i>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <!-- Recent Projects -->
+            <div class="list-card">
+              <h3 class="list-title">Projets Récents</h3>
+              <div class="list-container">
+                <div class="empty-state" *ngIf="recentProjects.length === 0">
+                  <i class="bi bi-folder-x"></i>
+                  <p>Aucun projet récent</p>
+                </div>
+                <div class="list-item" *ngFor="let project of recentProjects">
+                  <div class="item-icon">
+                    <i class="bi bi-folder2"></i>
+                  </div>
+                  <div class="item-content">
+                    <h4 class="item-title">{{ project.name }}</h4>
+                    <p class="item-subtitle">{{ project.dateCreation | date:'dd/MM/yyyy' }}</p>
+                  </div>
+                  <div class="item-action">
+                    <button class="btn-icon" [routerLink]="['/projects', project.uuid]">
+                      <i class="bi bi-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions & Demands Section -->
+      <div class="row">
+        <div class="col-lg-6">
+          <!-- Actions Section -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <h2 class="section-title">Actions</h2>
+              <div class="status-filter">
+                <button class="status-btn" [class.active]="actionFilter === 'all'" (click)="filterActions('all')">Toutes</button>
+                <button class="status-btn" [class.active]="actionFilter === 'pending'" (click)="filterActions('pending')">En attente</button>
+                <button class="status-btn" [class.active]="actionFilter === 'completed'" (click)="filterActions('completed')">Terminées</button>
+              </div>
+            </div>
+            <div class="status-card">
+              <div class="status-header">
+                <div class="status-icon">
+                  <i class="bi bi-play-circle"></i>
+                </div>
+                <div class="status-content">
+                  <h3 class="status-title">Statut des Actions</h3>
+                  <p class="status-subtitle">Vue d'ensemble de vos actions</p>
+                </div>
+              </div>
+              <div class="status-body">
+                <div class="status-item">
+                  <div class="status-label">En attente</div>
+                  <div class="status-bar">
+                    <div class="status-progress" [style.width.%]="actionStats.pendingPercentage"></div>
+                  </div>
+                  <div class="status-value">{{ actionStats.pending }}</div>
+                </div>
+                <div class="status-item">
+                  <div class="status-label">En cours</div>
+                  <div class="status-bar">
+                    <div class="status-progress" [style.width.%]="actionStats.inProgressPercentage"></div>
+                  </div>
+                  <div class="status-value">{{ actionStats.inProgress }}</div>
+                </div>
+                <div class="status-item">
+                  <div class="status-label">Terminées</div>
+                  <div class="status-bar">
+                    <div class="status-progress" [style.width.%]="actionStats.completedPercentage"></div>
+                  </div>
+                  <div class="status-value">{{ actionStats.completed }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="list-card action-list">
+              <div class="empty-state" *ngIf="filteredActions.length === 0">
+                <i class="bi bi-play-circle-fill"></i>
+                <p>Aucune action {{ actionFilter === 'all' ? '' : actionFilter === 'pending' ? 'en attente' : 'terminée' }}</p>
+              </div>
+              <div class="list-item" *ngFor="let action of filteredActions">
+                <div class="item-icon" [ngClass]="{'pending': action.statutAction === 'EN_ATTENTE', 'in-progress': action.statutAction === 'EN_COURS', 'completed': action.statutAction === 'TERMINEE'}">
+                  <i class="bi" [ngClass]="{'bi-hourglass-split': action.statutAction === 'EN_ATTENTE', 'bi-arrow-repeat': action.statutAction === 'EN_COURS', 'bi-check-circle': action.statutAction === 'TERMINEE'}"></i>
                 </div>
                 <div class="item-content">
-                  <h4 class="item-title">{{ project.name }}</h4>
-                  <p class="item-subtitle">{{ project.dateCreation | date:'dd/MM/yyyy' }}</p>
+                  <h4 class="item-title">{{ action.text | slice:0:30 }}{{ action.text.length > 30 ? '...' : '' }}</h4>
+                  <p class="item-subtitle">{{ action.dateCreation | date:'dd/MM/yyyy' }}</p>
                 </div>
                 <div class="item-action">
-                  <button class="btn-icon" [routerLink]="['/projects', project.uuid]">
+                  <button class="btn-play" (click)="playAudio(action)">
+                    <i class="bi" [ngClass]="{'bi-play-fill': !isPlaying(action.uuid), 'bi-pause-fill': isPlaying(action.uuid)}"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <!-- Demands Section -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <h2 class="section-title">Demandes</h2>
+              <button class="btn-custom" routerLink="/demandes/new">
+                <i class="bi bi-plus-circle"></i> Nouvelle Demande
+              </button>
+            </div>
+            <div class="status-card">
+              <div class="status-header">
+                <div class="status-icon">
+                  <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div class="status-content">
+                  <h3 class="status-title">Statut des Demandes</h3>
+                  <p class="status-subtitle">Vue d'ensemble de vos demandes</p>
+                </div>
+              </div>
+              <div class="status-body">
+                <div class="status-item">
+                  <div class="status-label">En attente</div>
+                  <div class="status-bar">
+                    <div class="status-progress" [style.width.%]="demandeStats.pendingPercentage"></div>
+                  </div>
+                  <div class="status-value">{{ demandeStats.pending }}</div>
+                </div>
+                <div class="status-item">
+                  <div class="status-label">Acceptées</div>
+                  <div class="status-bar">
+                    <div class="status-progress" [style.width.%]="demandeStats.acceptedPercentage"></div>
+                  </div>
+                  <div class="status-value">{{ demandeStats.accepted }}</div>
+                </div>
+                <div class="status-item">
+                  <div class="status-label">Refusées</div>
+                  <div class="status-bar">
+                    <div class="status-progress" [style.width.%]="demandeStats.rejectedPercentage"></div>
+                  </div>
+                  <div class="status-value">{{ demandeStats.rejected }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="list-card demand-list">
+              <div class="empty-state" *ngIf="recentDemandes.length === 0">
+                <i class="bi bi-file-earmark-x"></i>
+                <p>Aucune demande récente</p>
+              </div>
+              <div class="list-item" *ngFor="let demande of recentDemandes">
+                <div class="item-icon" [ngClass]="{'pending': demande.statut === 'EN_ATTENTE', 'accepted': demande.statut === 'ACCEPTEE', 'rejected': demande.statut === 'REFUSEE'}">
+                  <i class="bi" [ngClass]="{'bi-hourglass-split': demande.statut === 'EN_ATTENTE', 'bi-check-circle': demande.statut === 'ACCEPTEE', 'bi-x-circle': demande.statut === 'REFUSEE'}"></i>
+                </div>
+                <div class="item-content">
+                  <h4 class="item-title">{{ demande.titre }}</h4>
+                  <p class="item-subtitle">{{ demande.dateCreation | date:'dd/MM/yyyy' }}</p>
+                </div>
+                <div class="item-action">
+                  <button class="btn-icon" [routerLink]="['/demandes', demande.uuid]">
                     <i class="bi bi-arrow-right"></i>
                   </button>
                 </div>
@@ -116,202 +263,59 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Actions & Demands Section -->
-    <div class="row">
-      <div class="col-lg-6">
-        <!-- Actions Section -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <h2 class="section-title">Actions</h2>
-            <div class="status-filter">
-              <button class="status-btn" [class.active]="actionFilter === 'all'" (click)="filterActions('all')">Toutes</button>
-              <button class="status-btn" [class.active]="actionFilter === 'pending'" (click)="filterActions('pending')">En attente</button>
-              <button class="status-btn" [class.active]="actionFilter === 'completed'" (click)="filterActions('completed')">Terminées</button>
-            </div>
-          </div>
-
-          <div class="status-card">
-            <div class="status-header">
-              <div class="status-icon">
-                <i class="bi bi-play-circle"></i>
-              </div>
-              <div class="status-content">
-                <h3 class="status-title">Statut des Actions</h3>
-                <p class="status-subtitle">Vue d'ensemble de vos actions</p>
-              </div>
-            </div>
-            <div class="status-body">
-              <div class="status-item">
-                <div class="status-label">En attente</div>
-                <div class="status-bar">
-                  <div class="status-progress" [style.width.%]="actionStats.pendingPercentage"></div>
-                </div>
-                <div class="status-value">{{ actionStats.pending }}</div>
-              </div>
-              <div class="status-item">
-                <div class="status-label">En cours</div>
-                <div class="status-bar">
-                  <div class="status-progress" [style.width.%]="actionStats.inProgressPercentage"></div>
-                </div>
-                <div class="status-value">{{ actionStats.inProgress }}</div>
-              </div>
-              <div class="status-item">
-                <div class="status-label">Terminées</div>
-                <div class="status-bar">
-                  <div class="status-progress" [style.width.%]="actionStats.completedPercentage"></div>
-                </div>
-                <div class="status-value">{{ actionStats.completed }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="list-card action-list">
-            <div class="empty-state" *ngIf="filteredActions.length === 0">
-              <i class="bi bi-play-circle-fill"></i>
-              <p>Aucune action {{ actionFilter === 'all' ? '' : actionFilter === 'pending' ? 'en attente' : 'terminée' }}</p>
-            </div>
-            <div class="list-item" *ngFor="let action of filteredActions">
-              <div class="item-icon" [ngClass]="{'pending': action.statutAction === 'EN_ATTENTE', 'in-progress': action.statutAction === 'EN_COURS', 'completed': action.statutAction === 'TERMINEE'}">
-                <i class="bi" [ngClass]="{'bi-hourglass-split': action.statutAction === 'EN_ATTENTE', 'bi-arrow-repeat': action.statutAction === 'EN_COURS', 'bi-check-circle': action.statutAction === 'TERMINEE'}"></i>
-              </div>
-              <div class="item-content">
-                <h4 class="item-title">{{ action.text | slice:0:30 }}{{ action.text.length > 30 ? '...' : '' }}</h4>
-                <p class="item-subtitle">{{ action.dateCreation | date:'dd/MM/yyyy' }}</p>
-              </div>
-              <div class="item-action">
-                <button class="btn-play" (click)="playAudio(action)">
-                  <i class="bi" [ngClass]="{'bi-play-fill': !isPlaying(action.uuid), 'bi-pause-fill': isPlaying(action.uuid)}"></i>
+      <!-- Reservations Section -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">Réservations</h2>
+          <button class="btn-custom" routerLink="/reservations/new">
+            <i class="bi bi-plus-circle"></i> Nouvelle Réservation
+          </button>
+        </div>
+        <div class="row">
+          <div class="col-lg-8">
+            <!-- Calendar View -->
+            <div class="calendar-card">
+              <div class="calendar-header">
+                <button class="btn-calendar" (click)="previousMonth()">
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+                <h3 class="calendar-title">{{ currentMonth }} {{ currentYear }}</h3>
+                <button class="btn-calendar" (click)="nextMonth()">
+                  <i class="bi bi-chevron-right"></i>
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-6">
-        <!-- Demands Section -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <h2 class="section-title">Demandes</h2>
-            <button class="btn-custom" routerLink="/demandes/new">
-              <i class="bi bi-plus-circle"></i> Nouvelle Demande
-            </button>
-          </div>
-
-          <div class="status-card">
-            <div class="status-header">
-              <div class="status-icon">
-                <i class="bi bi-file-earmark-text"></i>
-              </div>
-              <div class="status-content">
-                <h3 class="status-title">Statut des Demandes</h3>
-                <p class="status-subtitle">Vue d'ensemble de vos demandes</p>
-              </div>
-            </div>
-            <div class="status-body">
-              <div class="status-item">
-                <div class="status-label">En attente</div>
-                <div class="status-bar">
-                  <div class="status-progress" [style.width.%]="demandeStats.pendingPercentage"></div>
+              <div class="calendar-grid">
+                <div class="calendar-day-header" *ngFor="let day of weekDays">{{ day }}</div>
+                <div class="calendar-day" *ngFor="let day of calendarDays" [class.other-month]="day.otherMonth" [class.has-reservation]="day.hasReservation" [class.today]="day.isToday" (click)="selectDay(day)">
+                  <span class="day-number">{{ day.number }}</span>
+                  <span class="reservation-indicator" *ngIf="day.hasReservation"></span>
                 </div>
-                <div class="status-value">{{ demandeStats.pending }}</div>
-              </div>
-              <div class="status-item">
-                <div class="status-label">Acceptées</div>
-                <div class="status-bar">
-                  <div class="status-progress" [style.width.%]="demandeStats.acceptedPercentage"></div>
-                </div>
-                <div class="status-value">{{ demandeStats.accepted }}</div>
-              </div>
-              <div class="status-item">
-                <div class="status-label">Refusées</div>
-                <div class="status-bar">
-                  <div class="status-progress" [style.width.%]="demandeStats.rejectedPercentage"></div>
-                </div>
-                <div class="status-value">{{ demandeStats.rejected }}</div>
               </div>
             </div>
           </div>
-
-          <div class="list-card demand-list">
-            <div class="empty-state" *ngIf="recentDemandes.length === 0">
-              <i class="bi bi-file-earmark-x"></i>
-              <p>Aucune demande récente</p>
-            </div>
-            <div class="list-item" *ngFor="let demande of recentDemandes">
-              <div class="item-icon" [ngClass]="{'pending': demande.statut === 'EN_ATTENTE', 'accepted': demande.statut === 'ACCEPTEE', 'rejected': demande.statut === 'REFUSEE'}">
-                <i class="bi" [ngClass]="{'bi-hourglass-split': demande.statut === 'EN_ATTENTE', 'bi-check-circle': demande.statut === 'ACCEPTEE', 'bi-x-circle': demande.statut === 'REFUSEE'}"></i>
-              </div>
-              <div class="item-content">
-                <h4 class="item-title">{{ demande.titre }}</h4>
-                <p class="item-subtitle">{{ demande.dateCreation | date:'dd/MM/yyyy' }}</p>
-              </div>
-              <div class="item-action">
-                <button class="btn-icon" [routerLink]="['/demandes', demande.uuid]">
-                  <i class="bi bi-arrow-right"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reservations Section -->
-    <div class="dashboard-section">
-      <div class="section-header">
-        <h2 class="section-title">Réservations</h2>
-        <button class="btn-custom" routerLink="/reservations/new">
-          <i class="bi bi-plus-circle"></i> Nouvelle Réservation
-        </button>
-      </div>
-
-      <div class="row">
-        <div class="col-lg-8">
-          <!-- Calendar View -->
-          <div class="calendar-card">
-            <div class="calendar-header">
-              <button class="btn-calendar" (click)="previousMonth()">
-                <i class="bi bi-chevron-left"></i>
-              </button>
-              <h3 class="calendar-title">{{ currentMonth }} {{ currentYear }}</h3>
-              <button class="btn-calendar" (click)="nextMonth()">
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </div>
-            <div class="calendar-grid">
-              <div class="calendar-day-header" *ngFor="let day of weekDays">{{ day }}</div>
-              <div class="calendar-day" *ngFor="let day of calendarDays" [class.other-month]="day.otherMonth" [class.has-reservation]="day.hasReservation" [class.today]="day.isToday" (click)="selectDay(day)">
-                <span class="day-number">{{ day.number }}</span>
-                <span class="reservation-indicator" *ngIf="day.hasReservation"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-4">
-          <!-- Upcoming Reservations -->
-          <div class="list-card">
-            <h3 class="list-title">Réservations à Venir</h3>
-            <div class="list-container">
-              <div class="empty-state" *ngIf="upcomingReservations.length === 0">
-                <i class="bi bi-calendar-x"></i>
-                <p>Aucune réservation à venir</p>
-              </div>
-              <div class="list-item" *ngFor="let reservation of upcomingReservations">
-                <div class="item-icon">
-                  <i class="bi bi-calendar-check"></i>
+          <div class="col-lg-4">
+            <!-- Upcoming Reservations -->
+            <div class="list-card">
+              <h3 class="list-title">Réservations à Venir</h3>
+              <div class="list-container">
+                <div class="empty-state" *ngIf="upcomingReservations.length === 0">
+                  <i class="bi bi-calendar-x"></i>
+                  <p>Aucune réservation à venir</p>
                 </div>
-                <div class="item-content">
-                  <h4 class="item-title">{{ reservation.service }}</h4>
-                  <p class="item-subtitle">{{ reservation.date | date:'dd/MM/yyyy' }} - {{ reservation.heureDebut }} à {{ reservation.heureFin }}</p>
-                </div>
-                <div class="item-action">
-                  <button class="btn-icon" [routerLink]="['/reservations', reservation.date]">
-                    <i class="bi bi-arrow-right"></i>
-                  </button>
+                <div class="list-item" *ngFor="let reservation of upcomingReservations">
+                  <div class="item-icon">
+                    <i class="bi bi-calendar-check"></i>
+                  </div>
+                  <div class="item-content">
+                    <h4 class="item-title">{{ reservation.service }}</h4>
+                    <p class="item-subtitle">{{ reservation.date | date:'dd/MM/yyyy' }} - {{ reservation.heureDebut }} à {{ reservation.heureFin }}</p>
+                  </div>
+                  <div class="item-action">
+                    <button class="btn-icon" [routerLink]="['/reservations', reservation.date]">
+                      <i class="bi bi-arrow-right"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
