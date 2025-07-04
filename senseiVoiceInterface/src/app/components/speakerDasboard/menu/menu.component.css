@@ -323,7 +323,8 @@
   align-items: center;
   background: transparent;
   border: none;
-  padding: 0.5rem;
+  padding: 0rem;
+  padding-right:50px;
   cursor: pointer;
   min-height: 44px;
 }
