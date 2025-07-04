@@ -28,6 +28,53 @@
     "legal": "Aviso legal"
   },
   "header": {
+    "balance": {
+      "chargeAmount": "Cantidad a cargar",
+      "minimumCharge": "Carga mínima",
+      "selectChargeMethod": "Seleccionar método de carga",
+      "chargeWithPaypal": "Cargar tu saldo usando PayPal",
+      "chargeWithCard": "Cargar tu saldo con tarjeta de crédito",
+      "chargeWithBank": "Cargar tu saldo por transferencia bancaria",
+      "creditCard": "Tarjeta de crédito",
+      "bankTransfer": "Transferencia bancaria",
+      "cancel": "Cancelar",
+      "chargeNow": "Cargar ahora",
+      "processing": "Procesando...",
+      "bankTransferDetails": "Detalles de la transferencia bancaria",
+      "bankTransferInstructions": "Por favor transfiere el monto exacto a la siguiente cuenta bancaria:",
+      "transferDetails": "Detalles de la transferencia",
+      "bankName": "Nombre del banco",
+      "accountHolder": "Titular de la cuenta",
+      "rib": "RIB",
+      "amount": "Cantidad",
+      "includeReference": "Por favor incluye el número de referencia en la descripción de la transferencia",
+      "close": "Cerrar",
+      "confirmTransfer": "He realizado la transferencia",
+      "preparingPayment": "Preparando el pago",
+      "redirectingToPaypal": "Serás redirigido a PayPal para completar el pago",
+      "actionId": "ID de acción",
+      "retry": "Reintentar",
+      "button": "Saldo de la cuenta",
+      "label": "Saldo",
+      "title": "Saldo de la cuenta",
+      "current": "Saldo actual",
+      "loading": "Cargando...",
+      "error": "Error",
+      "refresh": "Actualizar saldo",
+      "addFunds": "Agregar fondos",
+      "history": "Historial de transacciones",
+      "manageWallet": "Gestionar monedero",
+      "status": {
+        "good": "Saldo alto",
+        "medium": "Saldo medio",
+        "low": "Saldo bajo",
+        "empty": "Sin saldo"
+      },
+      "warning": {
+        "title": "Advertencia: saldo bajo",
+        "message": "Tu saldo es bajo. Considera agregar fondos para seguir utilizando nuestros servicios."
+      }
+    },    
     "title": "Resumen del Panel",
     "breadcrumb": {
       "home": "Inicio",
@@ -176,6 +223,12 @@
     },
     "logout": "Cerrar Sesión"
   },
+  "cgv": {
+    "title": "Condiciones Generales de Venta",
+    "acceptanceText": "He leído y acepto las Condiciones Generales de Venta",
+    "decline": "Rechazar",
+    "acceptAndContinue": "Aceptar y Continuar"
+  },  
   "payment": {
     "selectMethod": "Seleccionar método de pago",
     "orderSummary": "Resumen del pedido",

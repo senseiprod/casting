@@ -30,6 +30,53 @@
   },
   "header": {
     "title": "Dashboard Overview",
+    "balance": {
+      "chargeAmount": "Charge Amount",
+      "minimumCharge": "Minimum Charge",
+      "selectChargeMethod": "Select Charging Method",
+      "chargeWithPaypal": "Charge your balance using PayPal",
+      "chargeWithCard": "Charge your balance using credit card",
+      "chargeWithBank": "Charge your balance via bank transfer",
+      "creditCard": "Credit Card",
+      "bankTransfer": "Bank Transfer",
+      "cancel": "Cancel",
+      "chargeNow": "Charge Now",
+      "processing": "Processing...",
+      "bankTransferDetails": "Bank Transfer Details",
+      "bankTransferInstructions": "Please transfer the exact amount to the following bank account:",
+      "transferDetails": "Transfer Details",
+      "bankName": "Bank Name",
+      "accountHolder": "Account Holder",
+      "rib": "RIB",
+      "amount": "Amount",
+      "includeReference": "Please include the reference number in your transfer description",
+      "close": "Close",
+      "confirmTransfer": "I have made the transfer",
+      "preparingPayment": "Preparing Payment",
+      "redirectingToPaypal": "You will be redirected to PayPal to complete the payment",
+      "actionId": "Action ID",
+      "retry": "Retry",
+      "button": "Account Balance",
+      "label": "Balance",
+      "title": "Account Balance",
+      "current": "Current Balance",
+      "loading": "Loading...",
+      "error": "Error",
+      "refresh": "Refresh Balance",
+      "addFunds": "Add Funds",
+      "history": "Transaction History",
+      "manageWallet": "Manage Wallet",
+      "status": {
+        "good": "Good Balance",
+        "medium": "Medium Balance",
+        "low": "Low Balance",
+        "empty": "No Balance"
+      },
+      "warning": {
+        "title": "Low Balance Warning",
+        "message": "Your balance is running low. Consider adding funds to continue using our services."
+      }
+    },
     "breadcrumb": {
       "home": "Home",
       "dashboard": "Dashboard"
@@ -813,6 +860,12 @@
     "english": "English",
     "french": "Français",
     "spanish": "Español",
+    "cgv": {
+      "title": "Terms and Conditions of Sale",
+      "acceptanceText": "I have read and accept the Terms and Conditions of Sale",
+      "decline": "Decline",
+      "acceptAndContinue": "Accept and Continue"
+    },
     "payment": {
       "selectMethod": "Select Payment Method",
       "orderSummary": "Order Summary",
