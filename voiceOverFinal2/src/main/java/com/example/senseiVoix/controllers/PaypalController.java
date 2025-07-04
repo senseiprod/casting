@@ -26,8 +26,8 @@ public class PaypalController {
             @RequestParam("clientUuid") String clientUuid
     ) {
         try {
-            String cancelUrl = "http://localhost:8080/payment/cancel";
-            String successUrl = "http://localhost:8080/payment/success";
+            String cancelUrl = "https://api.castingvoixoff.ma/payment/cancel";
+            String successUrl = "https://api.castingvoixoff.ma/payment/success";
             Payment payment = paypalService.createPayment(
                     Double.valueOf(amount),
                     currency,
