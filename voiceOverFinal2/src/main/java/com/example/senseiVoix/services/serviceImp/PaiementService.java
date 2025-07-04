@@ -60,10 +60,10 @@ public class PaiementService {
         String formattedAmount = String.format(Locale.US, "%.2f", amount); // 👈 FORMAT CORRECT ICI
         final String currency = "USD";
         final String description = "Add more credits";
-        final String cancelUrl = String.format("http://localhost:8080/api/payment/balance/cancel/%s", uuid);
+        final String cancelUrl = String.format("https://api.castingvoixoff.ma/api/payment/balance/cancel/%s", uuid);
         
         // ✅ Ne PAS reformatter avec %.2f, utiliser formattedAmount
-        final String successUrl = String.format("http://localhost:8080/api/payment/balance/success/%s/%s", uuid, formattedAmount);
+        final String successUrl = String.format("https://api.castingvoixoff.ma/api/payment/balance/success/%s/%s", uuid, formattedAmount);
     
         com.paypal.api.payments.Payment payment = paypalService.createPayment(
             amount,

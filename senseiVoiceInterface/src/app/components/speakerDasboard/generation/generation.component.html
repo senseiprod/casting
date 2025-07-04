@@ -15,6 +15,11 @@
 
   <div class="container py-4">
     <div class="content">
+      <app-cgv-modal 
+        [isVisible]="showCgvModal"
+        (accepted)="onCgvAccepted()"
+        (closed)="onCgvClosed()">
+      </app-cgv-modal>
       <!-- Voice Hero Card - Prominent Voice Showcase -->
       <div class="voice-hero-card" *ngIf="selectedVoice">
         <div class="voice-hero-content">

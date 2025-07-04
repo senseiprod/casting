@@ -93,6 +93,10 @@ export class GenerationComponent implements OnInit {
   isLoadingLahajatiData = false
   lahajatiDataLoaded = false
 
+  showCgvModal = false
+  cgvAccepted = false
+  pendingPaymentAction: (() => void) | null = null
+
   languages = [
     { code: "darija", name: "Darija", active: false },
     { code: "ar", name: "Arabe", active: false },
@@ -239,14 +243,24 @@ export class GenerationComponent implements OnInit {
   showPaymentMethodSelection() {
     this.calculatedPrice = this.price * this.actionData.text.length
 
-    // Always show balance options first if user has any balance or if balance is still loading
+    // Check if CGV has been accepted for this session
+    if (!this.cgvAccepted) {
+      // Store the payment action to execute after CGV acceptance
+      this.pendingPaymentAction = () => {
+        this.proceedToPaymentSelection()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.proceedToPaymentSelection()
+  }
+  private proceedToPaymentSelection() {
     console.log("Current balance:", this.userBalance.balance, "Calculated price:", this.calculatedPrice)
 
-    // Show balance options if user has balance or if we're still loading balance
     if (this.userBalance.balance >= 0 || this.isLoadingBalance) {
       this.showBalanceOptions = true
     } else {
-      // If no balance and not loading, go directly to payment methods
       this.showPaymentMethodModal = true
     }
 
@@ -254,6 +268,53 @@ export class GenerationComponent implements OnInit {
     this.balanceError = null
   }
 
+  // CGV Modal handlers
+  onCgvAccepted() {
+    this.cgvAccepted = true
+    this.showCgvModal = false
+
+    // Execute the pending payment action
+    if (this.pendingPaymentAction) {
+      this.pendingPaymentAction()
+      this.pendingPaymentAction = null
+    }
+  }
+
+  onCgvClosed() {
+    this.showCgvModal = false
+    this.pendingPaymentAction = null
+    // Reset any payment-related states
+    this.paymentError = null
+    this.balanceError = null
+  }
+
+  // Modified balance charge methods to also check CGV
+  showBalanceChargeOptions() {
+    if (!this.cgvAccepted) {
+      this.pendingPaymentAction = () => {
+        this.proceedToBalanceCharge()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.proceedToBalanceCharge()
+  }
+
+  private proceedToBalanceCharge() {
+    if (this.chargeAmount <= 0) {
+      const minimumCharge = this.getMinimumChargeAmount()
+      this.chargeAmount = minimumCharge
+    }
+    console.log("Showing balance charge options with amount:", this.chargeAmount)
+    this.closeBalanceOptions()
+    this.showBalanceChargeModal = true
+    this.selectedChargeMethod = null
+
+    setTimeout(() => {
+      console.log("Charge amount after modal transition:", this.chargeAmount)
+    }, 200)
+  }
   // Select balance option
   selectBalanceOption(option: "use-balance" | "charge-balance" | "pay-direct") {
     this.selectedBalanceOption = option
@@ -327,23 +388,6 @@ export class GenerationComponent implements OnInit {
   }
 
   // Show balance charge options
-  showBalanceChargeOptions() {
-    // Ensure we have the correct charge amount before showing the modal
-    if (this.chargeAmount <= 0) {
-      const minimumCharge = this.getMinimumChargeAmount()
-      this.chargeAmount = minimumCharge
-    }
-    console.log("Showing balance charge options with amount:", this.chargeAmount)
-    console.log("Selected balance option:", this.selectedBalanceOption)
-    this.closeBalanceOptions()
-    this.showBalanceChargeModal = true
-    this.selectedChargeMethod = null
-
-    // Force update the charge amount display after modal opens
-    setTimeout(() => {
-      console.log("Charge amount after modal transition:", this.chargeAmount)
-    }, 200)
-  }
 
   // Select charge method
   selectChargeMethod(method: "card" | "paypal" | "verment") {

@@ -52,6 +52,7 @@ import { PaymentSuccessComponent } from './components/speakerDasboard/payment-su
 import { PaymentFailedComponent } from './components/speakerDasboard/payment-failed/payment-failed.component';
 import { SuccessBalanceChargeComponent } from './components/speakerDasboard/success-balance-charge/success-balance-charge.component';
 import { ConditionsGeneralesVenteComponentComponent } from './components/mainSite/conditions-generales-vente-component/conditions-generales-vente-component.component';
+import { CgvModalComponent } from './components/speakerDasboard/cgv-modal/cgv-modal.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/', '.json');
 }
@@ -96,7 +97,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     PaymentSuccessComponent,
     PaymentFailedComponent,
     SuccessBalanceChargeComponent,
-    ConditionsGeneralesVenteComponentComponent
+    ConditionsGeneralesVenteComponentComponent,
+    CgvModalComponent
   ],
     imports: [
         BrowserModule,

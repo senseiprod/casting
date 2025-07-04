@@ -101,8 +101,8 @@ public class ActionController {
                         price,
                         "USD",
                         "Text-to-Speech Generation",
-                        "http://localhost:8080/api/actions/payment/cancel/" + action.getId(),
-                        "http://localhost:8080/api/actions/payment/success/" + action.getId()
+                        "https://api.castingvoixoff.ma/api/actions/payment/cancel/" + action.getId(),
+                        "https://api.castingvoixoff.ma/api/actions/payment/success/" + action.getId()
                 );
 
                 response.put("paymentId", payment.getId());
@@ -122,7 +122,7 @@ public class ActionController {
                 response.put("message", "Action created but PayPal payment failed: " + paypalError.getMessage());
 
                 // For testing, provide a direct test URL
-                response.put("testUrl", "http://localhost:8080/api/actions/test-success/" + action.getId());
+                response.put("testUrl", "https://api.castingvoixoff.ma/api/actions/test-success/" + action.getId());
             }
 
             return ResponseEntity.ok(response);

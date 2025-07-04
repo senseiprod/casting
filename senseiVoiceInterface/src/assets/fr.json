@@ -28,11 +28,59 @@
     "legal": "Mentions légales"
   },
   "header": {
+    "balance": {
+      "chargeAmount": "Montant à charger",
+      "minimumCharge": "Montant minimum",
+      "selectChargeMethod": "Sélectionner la méthode de recharge",
+      "chargeWithPaypal": "Recharger votre solde avec PayPal",
+      "chargeWithCard": "Recharger votre solde avec une carte bancaire",
+      "chargeWithBank": "Recharger votre solde par virement bancaire",
+      "creditCard": "Carte bancaire",
+      "bankTransfer": "Virement bancaire",
+      "cancel": "Annuler",
+      "chargeNow": "Recharger maintenant",
+      "processing": "Traitement en cours...",
+      "bankTransferDetails": "Détails du virement bancaire",
+      "bankTransferInstructions": "Veuillez transférer le montant exact vers le compte bancaire suivant :",
+      "transferDetails": "Détails du virement",
+      "bankName": "Nom de la banque",
+      "accountHolder": "Titulaire du compte",
+      "rib": "RIB",
+      "amount": "Montant",
+      "includeReference": "Veuillez inclure le numéro de référence dans la description du virement",
+      "close": "Fermer",
+      "confirmTransfer": "J’ai effectué le virement",
+      "preparingPayment": "Préparation du paiement",
+      "redirectingToPaypal": "Vous allez être redirigé vers PayPal pour finaliser le paiement",
+      "actionId": "ID de l'action",
+      "retry": "Réessayer",
+      "button": "Solde du compte",
+      "label": "Solde",
+      "title": "Solde du compte",
+      "current": "Solde actuel",
+      "loading": "Chargement...",
+      "error": "Erreur",
+      "refresh": "Actualiser le solde",
+      "addFunds": "Ajouter des fonds",
+      "history": "Historique des transactions",
+      "manageWallet": "Gérer le portefeuille",
+      "status": {
+        "good": "Solde suffisant",
+        "medium": "Solde moyen",
+        "low": "Solde faible",
+        "empty": "Aucun solde"
+      },
+      "warning": {
+        "title": "Avertissement : solde faible",
+        "message": "Votre solde est faible. Pensez à ajouter des fonds pour continuer à utiliser nos services."
+      }
+    },    
     "title": "Aperçu du Tableau de Bord",
     "breadcrumb": {
       "home": "Accueil",
       "dashboard": "Tableau de Bord"
     },
+    
     "search": {
       "placeholder": "Rechercher..."
     },
@@ -191,6 +239,12 @@
   "english": "English",
   "french": "Français",
   "spanish": "Español",
+  "cgv": {
+    "title": "Conditions Générales de Vente",
+    "acceptanceText": "J'ai lu et j'accepte les Conditions Générales de Vente",
+    "decline": "Refuser",
+    "acceptAndContinue": "Accepter et Continuer"
+  },
   "payment": {
     "selectMethod": "Sélectionner un mode de paiement",
     "orderSummary": "Résumé de la commande",

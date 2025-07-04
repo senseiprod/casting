@@ -28,6 +28,239 @@
         </div>
       </div>
 
+      <!-- Balance Display -->
+      <div class="balance-container">
+        <div class="dropdown">
+          <button 
+            class="balance-button" 
+            type="button" 
+            id="balanceDropdown" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            [attr.aria-label]="'header.balance.button' | translate"
+            [class]="getBalanceStatusClass()">
+            <div class="balance-icon">
+              <i class="bi bi-wallet2"></i>
+              <span class="balance-loading" *ngIf="isLoadingBalance">
+                <i class="bi bi-hourglass-split"></i>
+              </span>
+            </div>
+            <div class="balance-info d-none d-md-block">
+              <span class="balance-label">{{ 'header.balance.label' | translate }}</span>
+              <span class="balance-amount" *ngIf="!isLoadingBalance && !balanceError">
+                {{ formatBalance(userBalance) }}
+              </span>
+              <span class="balance-error" *ngIf="balanceError">
+                {{ 'header.balance.error' | translate }}
+              </span>
+              <span class="balance-loading-text" *ngIf="isLoadingBalance">
+                {{ 'header.balance.loading' | translate }}
+              </span>
+            </div>
+            <i class="bi bi-chevron-down balance-arrow d-none d-md-block"></i>
+          </button>
+
+          <div class="dropdown-menu dropdown-menu-end balance-dropdown" aria-labelledby="balanceDropdown">
+            <div class="balance-dropdown-header">
+              <h6>{{ 'header.balance.title' | translate }}</h6>
+              <button class="balance-refresh-btn" 
+                      (click)="refreshBalance()" 
+                      [disabled]="isLoadingBalance"
+                      [attr.title]="'header.balance.refresh' | translate">
+                <i class="bi" [ngClass]="isLoadingBalance ? 'bi-hourglass-split' : 'bi-arrow-clockwise'"></i>
+              </button>
+            </div>
+
+            <div class="balance-dropdown-body">
+              <!-- Current Balance -->
+              <div class="balance-item">
+                <div class="balance-item-icon" [class]="getBalanceStatusClass()">
+                  <i class="bi bi-wallet2"></i>
+                </div>
+                <div class="balance-item-content">
+                  <h6>{{ 'header.balance.current' | translate }}</h6>
+                  <p class="balance-value" *ngIf="!isLoadingBalance && !balanceError">
+                    {{ formatBalance(userBalance) }}
+                  </p>
+                  <p class="balance-status" *ngIf="!isLoadingBalance && !balanceError">
+                    {{ getBalanceStatusText() | translate }}
+                  </p>
+                  <p class="balance-error-text" *ngIf="balanceError">
+                    {{ balanceError }}
+                  </p>
+                  <p class="balance-loading-text" *ngIf="isLoadingBalance">
+                    <i class="bi bi-hourglass-split me-1"></i>
+                    {{ 'header.balance.loading' | translate }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Balance Actions -->
+              <div class="balance-actions" *ngIf="!isLoadingBalance">
+                <button class="balance-action-btn primary" (click)="showAddFundsModal()">
+                  <i class="bi bi-plus-circle me-1"></i>
+                  {{ 'header.balance.addFunds' | translate }}
+                </button>
+              </div>
+
+              <!-- Low Balance Warning -->
+              <div class="balance-warning" *ngIf="userBalance < 50 && !isLoadingBalance">
+                <div class="alert alert-warning">
+                  <i class="bi bi-exclamation-triangle me-2"></i>
+                  <div>
+                    <strong>{{ 'header.balance.warning.title' | translate }}</strong>
+                    <p>{{ 'header.balance.warning.message' | translate }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Balance Charge Modal -->
+      <div class="payment-method-modal" *ngIf="showBalanceChargeModal" (click)="closeBalanceChargeModal()">
+        <div class="payment-modal-content" (click)="$event.stopPropagation()">
+          <div class="payment-modal-header">
+            <h3>{{ 'header.balance.addFunds' | translate }}</h3>
+            <button class="modal-close-btn" (click)="closeBalanceChargeModal()">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          
+          <div class="payment-modal-body">
+            <!-- Charge Amount Section -->
+            <div class="charge-amount-section">
+              <label for="chargeAmount">{{ 'header.balance.chargeAmount' | translate }}:</label>
+              <div class="charge-input-group">
+                <span class="currency-symbol">MAD</span>
+                <input type="number" 
+                       id="chargeAmount"
+                       class="charge-amount-input"
+                       [value]="chargeAmount"
+                       (input)="onChargeAmountChange($event)"
+                       (blur)="onChargeAmountBlur($event)"
+                       [min]="getMinimumChargeAmount()"
+                       step="0.01"
+                       placeholder="0.00">
+              </div>
+              <small class="charge-hint">
+                {{ 'header.balance.minimumCharge' | translate }}: {{ getMinimumChargeAmount() }} MAD
+              </small>
+            </div>
+
+            <!-- Charge Methods -->
+            <div class="payment-methods">
+              <h5>{{ 'header.balance.selectChargeMethod' | translate }}</h5>
+              
+              <!-- PayPal Charge -->
+              <div class="payment-method-option" 
+                   [class.selected]="selectedChargeMethod === 'paypal'"
+                   (click)="selectChargeMethod('paypal')">
+                <div class="payment-method-icon">
+                  <i class="bi bi-paypal"></i>
+                </div>
+                <div class="payment-method-info">
+                  <h6>PayPal</h6>
+                  <p>{{ 'header.balance.chargeWithPaypal' | translate }}</p>
+                </div>
+                <div class="payment-method-check" *ngIf="selectedChargeMethod === 'paypal'">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
+              </div>
+
+              <!-- Credit Card Charge -->
+              <div class="payment-method-option" 
+                   [class.selected]="selectedChargeMethod === 'card'"
+                   (click)="selectChargeMethod('card')">
+                <div class="payment-method-icon">
+                  <i class="bi bi-credit-card"></i>
+                </div>
+                <div class="payment-method-info">
+                  <h6>{{ 'header.balance.creditCard' | translate }}</h6>
+                  <p>{{ 'header.balance.chargeWithCard' | translate }}</p>
+                </div>
+                <div class="payment-method-check" *ngIf="selectedChargeMethod === 'card'">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
+              </div>
+
+              <!-- Bank Transfer Charge -->
+              <div class="payment-method-option" 
+                   [class.selected]="selectedChargeMethod === 'verment'"
+                   (click)="selectChargeMethod('verment')">
+                <div class="payment-method-icon">
+                  <i class="bi bi-bank"></i>
+                </div>
+                <div class="payment-method-info">
+                  <h6>{{ 'header.balance.bankTransfer' | translate }}</h6>
+                  <p>{{ 'header.balance.chargeWithBank' | translate }}</p>
+                </div>
+                <div class="payment-method-check" *ngIf="selectedChargeMethod === 'verment'">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error Display -->
+            <div class="charge-error" *ngIf="chargeError">
+              <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ chargeError }}
+              </div>
+            </div>
+          </div>
+
+          <div class="payment-modal-footer">
+            <button class="btn-secondary" (click)="closeBalanceChargeModal()">
+              {{ 'header.balance.cancel' | translate }}
+            </button>
+            <button class="btn-primary" 
+                    (click)="proceedWithBalanceCharge()" 
+                    [disabled]="!selectedChargeMethod || isChargingBalance || chargeAmount <= 0">
+              <i class="bi" [ngClass]="isChargingBalance ? 'bi-hourglass-split' : 'bi-arrow-right'"></i>
+              {{ isChargingBalance ? 'header.balance.processing' : 'header.balance.chargeNow' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Processing Modal -->
+      <div class="payment-processing-modal" *ngIf="showPaymentProcessing" (click)="$event.stopPropagation()">
+        <div class="processing-modal-content">
+          <div class="processing-header">
+            <h3>{{ 'header.balance.processing' | translate }}</h3>
+          </div>
+          
+          <div class="processing-body">
+            <div class="processing-spinner">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+            <h5>{{ 'header.balance.preparingPayment' | translate }}</h5>
+            <p>{{ 'header.balance.redirectingToPaypal' | translate }}</p>
+            
+            <div class="payment-details">
+              <div class="detail-item">
+                <span>{{ 'header.balance.amount' | translate }}:</span>
+                <span>{{ chargeAmount }} MAD</span>
+              </div>
+            </div>
+
+            <div class="payment-error" *ngIf="chargeError">
+              <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ chargeError }}
+                <button class="btn-retry-payment" (click)="retryBalanceCharge()">
+                  <i class="bi bi-arrow-clockwise me-1"></i>
+                  {{ 'header.balance.retry' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rest of existing header content (Language, Notifications, Profile) -->
       <!-- Language Selector -->
       <div class="language-selector">
         <div class="dropdown">

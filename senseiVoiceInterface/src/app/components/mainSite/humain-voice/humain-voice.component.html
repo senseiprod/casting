@@ -186,18 +186,23 @@
           <div class="voice-profile">
             <!-- Use avatar for Darija voices, fallback for others -->
             <img
-              *ngIf="voice.language === 'darija' && voice.avatar"
-              [src]="voice.avatar"
+              *ngIf="voice.language === 'darija' && voice.gender === 'male'"
+              [src]="'assets/img/avatar men.png'"
               [alt]="voice.name + ' avatar'"
             >
             <img
+            *ngIf="voice.language === 'darija' && voice.gender === 'female'"
+            [src]="'assets/img/avatar women.png'"
+            [alt]="voice.name + ' avatar'"
+          >
+            <img
               *ngIf="voice.language !== 'darija' && voice.gender === 'male'"
-              [src]="'assets/img/avatar women.png'"
+              [src]="'assets/img/avatar men.png'"
               alt="Male voice profile"
             >
             <img
               *ngIf="voice.language !== 'darija' && voice.gender === 'female'"
-              [src]="'assets/img/avatar men.png'"
+              [src]="'assets/img/avatar women.png'"
               alt="Female voice profile"
             >
             <img
@@ -222,7 +227,8 @@
           </div>
           
           <div class="voice-info">
-            <h3 class="voice-name">{{ voice.name }}</h3>
+            <h3 class="voice-name" style="margin-top: 10px;"
+            >{{ voice.name }}</h3>
             
             <!-- Enhanced description for Darija voices -->
             <p class="voice-description">
