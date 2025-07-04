@@ -44,7 +44,7 @@ public class PaiementService {
 
     public void setBalanceClient(String uuid, Double balance) {
         Client client = utilisateurRepository.findByUuid(uuid);
-        client.setBalance(balance);
+        client.setBalance(client.getBalance() + balance);
         utilisateurRepository.save(client);
     }
 
