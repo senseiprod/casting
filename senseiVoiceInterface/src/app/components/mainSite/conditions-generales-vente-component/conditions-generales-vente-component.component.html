@@ -2,26 +2,23 @@
   <!-- Header Section -->
   <div class="header-section">
     <h1 class="main-heading">Conditions Générales de Vente (CGV)</h1>
-    <div class="last-updated">
-      <i class="bi bi-calendar-check"></i>
-      Dernière mise à jour : 2 juillet 2025
-    </div>
     <p class="sub-text">
       Le présent document constitue les conditions générales de vente (ci‑après « CGV ») du site castingvoixoff.ma (ci‑après « le Site »), édité par Sensei Prod SARL‑AU, société de droit marocain au capital social de 100000,00 MAD, immatriculée au RC de 339357, dont le siège social est sis 9 Rue Abou Moussa El jazouli, <br>  1er étage, N°1, Maarif, Casablanca, Maroc, (ci‑après « la Société », « nous », « notre »).
     </p>
-    <div class="important-notice">
-      <i class="bi bi-exclamation-triangle"></i>
-      <strong>ATTENTION :</strong> ces CGV peuvent évoluer. La version applicable est celle accessible en ligne au jour de la commande.
-    </div>
   </div>
 
   <!-- Table of Contents -->
   <div class="table-of-contents">
     <div class="card">
-      <div class="card-header">
-        <h3><i class="bi bi-list-ul"></i> Sommaire</h3>
+      <div class="card-header" (click)="toggleSommaire()">
+        <h3>
+          <i class="bi bi-list-ul"></i> 
+          Sommaire
+          <i class="bi" [ngClass]="isSommaireOpen ? 'bi-chevron-up' : 'bi-chevron-down'" 
+             style="margin-left: auto; font-size: 16px;"></i>
+        </h3>
       </div>
-      <div class="card-body">
+      <div class="card-body" [ngClass]="{'collapsed': !isSommaireOpen}">
         <div class="row">
           <div class="col-md-6">
             <ul class="toc-list">
@@ -334,6 +331,10 @@
         </div>
         <div class="card-body">
           <p class="section-content">Pour toute question concernant les CGV, veuillez nous écrire à : <strong>legal@castingvoixoff.ma</strong>.</p>
+          <div class="important-notice">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>ATTENTION :</strong> ces CGV peuvent évoluer. La version applicable est celle accessible en ligne au jour de la commande.
+          </div>
         </div>
       </div>
     </div>

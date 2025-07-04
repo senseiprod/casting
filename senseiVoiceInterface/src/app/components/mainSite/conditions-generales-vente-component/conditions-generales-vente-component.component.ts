@@ -6,13 +6,21 @@ import { Component } from '@angular/core';
   styleUrls: ['./conditions-generales-vente-component.component.css']
 })
 export class ConditionsGeneralesVenteComponentComponent {
+  isSommaireOpen = false;
+
   constructor() {}
+
+  toggleSommaire(): void {
+    this.isSommaireOpen = !this.isSommaireOpen;
+  }
 
   scrollToSection(sectionId: string): void {
     const element = document.getElementById(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" })
     }
+    // Close the sommaire after clicking a link
+    this.isSommaireOpen = false;
   }
 
   getCurrentDate(): string {
@@ -22,5 +30,4 @@ export class ConditionsGeneralesVenteComponentComponent {
       day: "numeric",
     })
   }
-
 }

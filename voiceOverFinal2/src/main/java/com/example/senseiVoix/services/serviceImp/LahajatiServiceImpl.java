@@ -17,7 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -153,16 +156,19 @@ public class LahajatiServiceImpl implements LahajatiService {
         }
     }
 
-    private Map<String, String> loadPreviewUrls(String csvFilePath) throws Exception {
-        Map<String, String> map = new HashMap<>();
+private Map<String, String> loadPreviewUrls(String csvFilePath) throws Exception {
+    Map<String, String> map = new HashMap<>();
 
-        // Assuming voices.csv is at project root, adjust path if needed
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(csvFilePath))) {
+    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(csvFilePath)) {
+        if (inputStream == null) {
+            throw new FileNotFoundException("File not found: " + csvFilePath);
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             String line;
             boolean firstLine = true;
             while ((line = br.readLine()) != null) {
                 if (firstLine) {
-                    // skip header line
                     firstLine = false;
                     continue;
                 }
@@ -174,8 +180,9 @@ public class LahajatiServiceImpl implements LahajatiService {
                 }
             }
         }
-        return map;
     }
+    return map;
+}
 
     @Override
     public ResponseEntity<String> getPerformanceStyles(Optional<Integer> page, Optional<Integer> perPage) {
