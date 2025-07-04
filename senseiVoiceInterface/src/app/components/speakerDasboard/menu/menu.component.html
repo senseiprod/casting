@@ -3,6 +3,13 @@
   <div class="header-container">
     <!-- Left Section: Toggle & Title -->
     <div class="header-left">
+      <!-- Home Button -->
+      <button class="home-btn" 
+              routerLink=""
+              [attr.aria-label]="'header.navigation.home' | translate">
+        <i class="bi bi-house-fill"></i>
+      </button>
+
       <div class="page-title">
         <h1>{{ 'header.title' | translate }}</h1>
         <div class="breadcrumb">
@@ -367,7 +374,7 @@
             [attr.aria-label]="'header.profile.menu' | translate">
             <div class="profile-avatar">
               <img 
-                [src]="profilePhotoUrl || 'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" 
+                [src]="'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" 
                 [alt]="'header.profile.avatar' | translate">
               <span class="status-indicator" [attr.title]="'header.profile.status.online' | translate"></span>
             </div>

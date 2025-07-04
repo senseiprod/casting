@@ -118,6 +118,15 @@ export class MenuComponent implements OnInit {
     this.router.navigate([`/client/${this.userId}/wallet`])
   }
 
+  // Navigation methods
+  navigateToHome(): void {
+    if (this.userId) {
+      this.router.navigate([`https://castingvoixoff.ma/`])
+    } else {
+      this.router.navigate(["/"])
+    }
+  }
+
   formatBalance(balance: number): string {
     return new Intl.NumberFormat("fr-MA", {
       style: "currency",
@@ -137,7 +146,7 @@ export class MenuComponent implements OnInit {
     if (this.userBalance <= 0) return "header.balance.status.empty"
     if (this.userBalance < 50) return "header.balance.status.low"
     if (this.userBalance < 200) return "header.balance.status.medium"
-    return "header.balance.status.good"
+    return "balance-good"
   }
 
   // Balance charging methods
