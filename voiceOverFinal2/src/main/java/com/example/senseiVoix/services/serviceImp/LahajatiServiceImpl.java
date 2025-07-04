@@ -16,9 +16,19 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Slf4j
 @Service
@@ -82,7 +92,10 @@ public class LahajatiServiceImpl implements LahajatiService {
     public ResponseEntity<String> getVoices(Optional<Integer> page, Optional<Integer> perPage, Optional<String> gender) {
         try {
             log.info("Getting voices with page: {}, perPage: {}, gender: {}", page, perPage, gender);
-            
+
+            // Load CSV file into Map<display_name, preview_url>
+            Map<String, String> previewUrlMap = loadPreviewUrls("voices.csv");
+
             HttpHeaders headers = createRequestHeaders();
 
             String url = UriComponentsBuilder
@@ -93,16 +106,35 @@ public class LahajatiServiceImpl implements LahajatiService {
                     .toUriString();
 
             log.info("Making request to URL: {}", url);
-            
+
             HttpEntity<Void> entity = new HttpEntity<>(headers);
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            
+
             log.info("Response status: {}", response.getStatusCode());
-            
+
+            // Parse JSON response and add preview_url
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            if (root.path("success").asBoolean(false)) {
+                ArrayNode dataArray = (ArrayNode) root.path("data");
+                for (JsonNode voiceNode : dataArray) {
+                    String displayName = voiceNode.path("display_name").asText();
+                    String previewUrl = previewUrlMap.get(displayName);
+                    if (previewUrl != null) {
+                        ((ObjectNode) voiceNode).put("preview_url", previewUrl);
+                    } else {
+                        ((ObjectNode) voiceNode).putNull("preview_url");
+                    }
+                }
+            }
+
+            String modifiedJson = mapper.writeValueAsString(root);
+
             return ResponseEntity.status(response.getStatusCode())
                     .headers(createCleanHeaders())
-                    .body(response.getBody());
-            
+                    .body(modifiedJson);
+
         } catch (HttpClientErrorException e) {
             log.error("Client error getting voices: Status: {}, Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
             return ResponseEntity.status(e.getStatusCode())
@@ -119,6 +151,30 @@ public class LahajatiServiceImpl implements LahajatiService {
                     .headers(createCleanHeaders())
                     .body("Unexpected error: " + e.getMessage());
         }
+    }
+
+    private Map<String, String> loadPreviewUrls(String csvFilePath) throws Exception {
+        Map<String, String> map = new HashMap<>();
+
+        // Assuming voices.csv is at project root, adjust path if needed
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(csvFilePath))) {
+            String line;
+            boolean firstLine = true;
+            while ((line = br.readLine()) != null) {
+                if (firstLine) {
+                    // skip header line
+                    firstLine = false;
+                    continue;
+                }
+                String[] parts = line.split(",", 2);
+                if (parts.length == 2) {
+                    String name = parts[0].trim();
+                    String url = parts[1].trim();
+                    map.put(name, url);
+                }
+            }
+        }
+        return map;
     }
 
     @Override
