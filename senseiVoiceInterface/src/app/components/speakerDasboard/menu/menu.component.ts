@@ -8,7 +8,7 @@ import  { DomSanitizer, SafeUrl } from "@angular/platform-browser"
 import  { TranslateService } from "@ngx-translate/core"
 import  { AuthService } from "../../../services/auth.service"
 import  { TranslationService, Language } from "../../../services/translation.service"
-import { PaypalService } from "src/app/services/paypal-service.service"
+import  { PaypalService } from "src/app/services/paypal-service.service"
 
 @Component({
   selector: "app-menu",
@@ -45,6 +45,11 @@ export class MenuComponent implements OnInit {
   paymentError: string | null = null
   showPaymentProcessing = false
 
+  // CGV Modal properties - Added from generation component
+  showCgvModal = false
+  cgvAccepted = false
+  pendingPaymentAction: (() => void) | null = null
+
   constructor(
     private route: ActivatedRoute,
     private speakerService: ClientService,
@@ -54,7 +59,7 @@ export class MenuComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private sanitizer: DomSanitizer,
-    private paypalService: PaypalService, // Only PayPal service needed
+    private paypalService: PaypalService,
   ) {}
 
   ngOnInit() {
@@ -149,8 +154,42 @@ export class MenuComponent implements OnInit {
     return "balance-good"
   }
 
-  // Balance charging methods
+  // CGV Modal handlers - Added from generation component
+  onCgvAccepted() {
+    this.cgvAccepted = true
+    this.showCgvModal = false
+
+    // Execute the pending payment action
+    if (this.pendingPaymentAction) {
+      this.pendingPaymentAction()
+      this.pendingPaymentAction = null
+    }
+  }
+
+  onCgvClosed() {
+    this.showCgvModal = false
+    this.pendingPaymentAction = null
+    // Reset any payment-related states
+    this.chargeError = null
+    this.paymentError = null
+  }
+
+  // Modified balance charging methods to check CGV first
   showAddFundsModal(): void {
+    // Check if CGV has been accepted for this session
+    if (!this.cgvAccepted) {
+      // Store the payment action to execute after CGV acceptance
+      this.pendingPaymentAction = () => {
+        this.proceedToShowAddFundsModal()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.proceedToShowAddFundsModal()
+  }
+
+  private proceedToShowAddFundsModal(): void {
     this.chargeAmount = Math.max(50, 100) // Default minimum charge amount
     this.showBalanceChargeModal = true
     this.selectedChargeMethod = null

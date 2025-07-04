@@ -1,4 +1,4 @@
-import { Component,  ElementRef, OnInit, ViewChild } from "@angular/core"
+import { Component,  ElementRef,  OnInit, ViewChild } from "@angular/core"
 import  { ActivatedRoute } from "@angular/router"
 import  { ElevenLabsService } from "../../../services/eleven-labs.service"
 import  { Voice } from "../../../services/eleven-labs.service"
@@ -8,6 +8,8 @@ import  { Project } from "../../../services/project.service"
 import  { ActionService } from "../../../services/action.service"
 import  { TranslateService } from "@ngx-translate/core"
 import  { LahajatiService } from "../../../services/lahajati.service"
+import  { PaypalService } from "src/app/services/paypal-service.service"
+import  { ClientService } from "src/app/services/client-service.service"
 
 // Interface for Lahajati voices
 interface LahajatiVoice {
@@ -39,6 +41,23 @@ interface LahajatiPerformanceStyle {
   description?: string
 }
 
+// Interface for user balance
+interface UserBalance {
+  balance: number
+  currency: string
+}
+
+// Interface for Bank Transfer Response
+interface BankTransferResponse {
+  actionId: number
+  libelle: string
+  rib: string
+  price: number
+  message: string
+  bankName: string
+  accountHolder: string
+}
+
 @Component({
   selector: "app-generate-with-slected-voice",
   templateUrl: "./generate-with-slected-voice.component.html",
@@ -47,6 +66,8 @@ interface LahajatiPerformanceStyle {
 export class GenerateWithSlectedVoiceComponent implements OnInit {
   @ViewChild("audioElement") audioElement!: ElementRef<HTMLAudioElement>
   @ViewChild("progressBar") progressBar!: ElementRef<HTMLDivElement>
+  @ViewChild("audioPlayer") audioPlayerRef!: ElementRef<HTMLAudioElement>
+
   voices: Voice[] = []
   filteredVoices: Voice[] = []
   selectedVoice: Voice | null = null
@@ -70,6 +91,20 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   uuid: string | null = null
   currentPlayingVoiceId: string | null = null
 
+  // Balance-related properties
+  userBalance: UserBalance = { balance: 0, currency: "USD" }
+  balance = 0
+  isLoadingBalance = false
+  showBalanceOptions = false
+  selectedBalanceOption: "use-balance" | "charge-balance" | "pay-direct" | null = null
+  chargeAmount = 0
+  isChargingBalance = false
+  balanceError: string | null = null
+
+  // Balance charging payment methods
+  showBalanceChargeModal = false
+  selectedChargeMethod: "card" | "paypal" | "verment" | null = null
+
   // Lahajati-specific properties
   lahajatiVoices: LahajatiVoice[] = []
   lahajatiDialects: LahajatiDialect[] = []
@@ -78,6 +113,11 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   selectedPerformanceStyle = ""
   isLoadingLahajatiData = false
   lahajatiDataLoaded = false
+
+  // CGV Modal
+  showCgvModal = false
+  cgvAccepted = false
+  pendingPaymentAction: (() => void) | null = null
 
   languages = [
     { code: "darija", name: "Darija", active: false }, // Added Darija
@@ -122,6 +162,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   duration = 0
   progressPercentage = 0
   waveformBars: number[] = []
+  isAudioPlaying = false
 
   // Project related properties
   projects: Project[] = []
@@ -159,6 +200,11 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   showGenerationProgress = false
   generationProgress = 0
 
+  // Bank transfer specific properties
+  showBankTransferModal = false
+  bankTransferDetails: BankTransferResponse | null = null
+  bankTransferReference: string | null = null
+
   // Filters
   filters = {
     search: "",
@@ -183,13 +229,21 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     private projectService: ProjectService,
     private actionService: ActionService,
     private translate: TranslateService,
-    private lahajatiService: LahajatiService, // Added Lahajati service
+    private lahajatiService: LahajatiService,
+    private paypalService: PaypalService,
+    private clientService: ClientService,
   ) {
     // Generate random waveform bars for visualization
     this.generateWaveformBars()
   }
 
   ngOnInit(): void {
+    this.route.parent?.paramMap.subscribe((params) => {
+      this.uuid = params.get("uuid") || ""
+      if (this.uuid) {
+        this.loadUserBalance()
+      }
+    })
     this.route.params.subscribe((params) => {
       const voice_id = params["voice_id"]
       const voice_name = params["voice_name"]
@@ -199,8 +253,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       const voice_category = params["voice_category"]
       const voice_language = params["voice_language"]
       const voice_preview_url = params["voice_preview_url"]
-      this.uuid = params["uuid"] || null
-
       // Create voice object from URL parameters
       this.voice = {
         id: voice_id,
@@ -215,6 +267,11 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
         clonedVoiceUrl: "",
       }
       this.selectedVoice = this.voice
+
+      // Load user balance if UUID is available
+      if (this.uuid) {
+        this.loadUserBalance()
+      }
 
       // If it's a Darija voice, load Lahajati data
       if (voice_language === "darija") {
@@ -235,6 +292,309 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     if (browserLang) {
       this.translate.use(browserLang.match(/en|fr|es/) ? browserLang : "en")
     }
+  }
+
+  // Load user balance
+  loadUserBalance() {
+    if (!this.uuid) return
+
+    this.isLoadingBalance = true
+    this.clientService.getClientByUuid(this.uuid).subscribe({
+      next: (data) => {
+        this.balance = data.balance || 0
+        this.userBalance = { balance: this.balance, currency: "USD" }
+        this.isLoadingBalance = false
+        console.log("User balance loaded:", this.userBalance)
+      },
+      error: (error) => {
+        console.error("Error loading user balance:", error)
+        this.balance = 0
+        this.userBalance = { balance: 0, currency: "USD" }
+        this.isLoadingBalance = false
+      },
+    })
+  }
+
+
+  // Check if user has sufficient balance
+  hasSufficientBalance(): boolean {
+    return this.userBalance.balance >= this.calculatedPrice
+  }
+
+  // Show balance options when generating paid content
+  showPaymentMethodSelection() {
+    this.calculatedPrice = this.price * this.actionData.text.length
+
+    // Check if CGV has been accepted for this session
+    if (!this.cgvAccepted) {
+      // Store the payment action to execute after CGV acceptance
+      this.pendingPaymentAction = () => {
+        this.proceedToPaymentSelection()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.proceedToPaymentSelection()
+  }
+
+  private proceedToPaymentSelection() {
+    console.log("Current balance:", this.userBalance.balance, "Calculated price:", this.calculatedPrice)
+
+    if (this.userBalance.balance >= 0 || this.isLoadingBalance) {
+      this.showBalanceOptions = true
+    } else {
+      this.showPaymentMethodModal = true
+    }
+
+    this.paymentError = null
+    this.balanceError = null
+  }
+
+  // CGV Modal handlers
+  onCgvAccepted() {
+    this.cgvAccepted = true
+    this.showCgvModal = false
+
+    // Execute the pending payment action
+    if (this.pendingPaymentAction) {
+      this.pendingPaymentAction()
+      this.pendingPaymentAction = null
+    }
+  }
+
+  onCgvClosed() {
+    this.showCgvModal = false
+    this.pendingPaymentAction = null
+    // Reset any payment-related states
+    this.paymentError = null
+    this.balanceError = null
+  }
+
+  // Modified balance charge methods to also check CGV
+  showBalanceChargeOptions() {
+    if (!this.cgvAccepted) {
+      this.pendingPaymentAction = () => {
+        this.proceedToBalanceCharge()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.proceedToBalanceCharge()
+  }
+
+  private proceedToBalanceCharge() {
+    if (this.chargeAmount <= 0) {
+      const minimumCharge = this.getMinimumChargeAmount()
+      this.chargeAmount = minimumCharge
+    }
+    console.log("Showing balance charge options with amount:", this.chargeAmount)
+    this.closeBalanceOptions()
+    this.showBalanceChargeModal = true
+    this.selectedChargeMethod = null
+
+    setTimeout(() => {
+      console.log("Charge amount after modal transition:", this.chargeAmount)
+    }, 200)
+  }
+
+  // Select balance option
+  selectBalanceOption(option: "use-balance" | "charge-balance" | "pay-direct") {
+    this.selectedBalanceOption = option
+    this.balanceError = null
+
+    if (option === "charge-balance") {
+      // Calculate minimum charge amount (current cost + some buffer)
+      const minimumCharge = this.getMinimumChargeAmount()
+      this.chargeAmount = minimumCharge
+
+      // Force update the input value after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        const input = document.getElementById("chargeAmount") as HTMLInputElement
+        if (input) {
+          input.value = this.chargeAmount.toString()
+          console.log("Updated input value to:", input.value)
+        }
+      }, 100)
+    }
+  }
+
+  // Handle charge amount input changes
+  onChargeAmountChange(event: any) {
+    const value = Number.parseFloat(event.target.value) || 0
+    this.chargeAmount = value
+    console.log("Charge amount changed to:", this.chargeAmount)
+  }
+
+  // Handle charge amount blur event
+  onChargeAmountBlur(event: any) {
+    const value = Number.parseFloat(event.target.value) || 0
+    this.chargeAmount = value
+    console.log("Charge amount blur, final value:", this.chargeAmount)
+
+    // Validate minimum amount
+    const minimumAmount = this.getMinimumChargeAmount()
+    if (this.chargeAmount < minimumAmount) {
+      this.chargeAmount = minimumAmount
+      event.target.value = this.chargeAmount.toString()
+      console.log("Adjusted to minimum amount:", this.chargeAmount)
+    }
+  }
+
+  // Proceed with selected balance option
+  proceedWithBalanceOption() {
+    if (!this.selectedBalanceOption) {
+      this.balanceError = "Please select a payment option"
+      return
+    }
+
+    switch (this.selectedBalanceOption) {
+      case "use-balance":
+        if (!this.hasSufficientBalance()) {
+          this.balanceError = "Insufficient balance. Please charge your account or pay directly."
+          return
+        }
+        // Deduct from balance and proceed with generation
+        this.userBalance.balance -= this.calculatedPrice
+        this.closeBalanceOptions()
+        this.processAudioGeneration()
+        break
+      case "charge-balance":
+        this.showBalanceChargeOptions()
+        break
+      case "pay-direct":
+        this.closeBalanceOptions()
+        this.showPaymentMethodModal = true
+        break
+    }
+  }
+
+  // Select charge method
+  selectChargeMethod(method: "card" | "paypal" | "verment") {
+    this.selectedChargeMethod = method
+  }
+
+  // Close balance charge modal
+  closeBalanceChargeModal() {
+    this.showBalanceChargeModal = false
+    this.selectedChargeMethod = null
+    this.balanceError = null
+    this.resetChargeAmount()
+  }
+
+  // Proceed with balance charging
+  proceedWithBalanceCharge() {
+    console.log("=== PROCEEDING WITH BALANCE CHARGE ===")
+    console.log("Selected charge method:", this.selectedChargeMethod)
+    console.log("Current charge amount:", this.chargeAmount)
+
+    if (!this.selectedChargeMethod) {
+      this.balanceError = "Please select a charging method"
+      return
+    }
+
+    const minimumAmount = this.getMinimumChargeAmount()
+    console.log("Minimum amount required:", minimumAmount)
+
+    if (this.chargeAmount < minimumAmount) {
+      this.balanceError = `Minimum charge amount is $${minimumAmount.toFixed(2)}`
+      return
+    }
+
+    if (this.chargeAmount <= 0) {
+      this.balanceError = "Please enter a valid charge amount"
+      return
+    }
+
+    console.log("All validations passed. Proceeding with charge amount:", this.chargeAmount)
+
+    this.isChargingBalance = true
+    this.balanceError = null
+
+    if (this.selectedChargeMethod === "paypal") {
+      this.chargeBalanceWithPayPal()
+    } else if (this.selectedChargeMethod === "card") {
+      this.balanceError = "Credit card charging not implemented yet"
+      this.isChargingBalance = false
+    } else if (this.selectedChargeMethod === "verment") {
+      this.chargeBalanceWithBankTransfer()
+    }
+  }
+
+  // Charge balance with PayPal
+  chargeBalanceWithPayPal() {
+    if (!this.uuid) {
+      this.balanceError = "User ID not found"
+      this.isChargingBalance = false
+      return
+    }
+
+    console.log("Charging balance with PayPal, amount:", this.chargeAmount)
+
+    this.paypalService.chargeBalance(this.uuid, this.chargeAmount).subscribe({
+      next: (response) => {
+        console.log("PayPal balance charge response:", response)
+
+        if (response.redirectUrl) {
+          // Redirect to PayPal for balance charging
+          window.location.href = response.redirectUrl
+        } else {
+          this.balanceError = "Failed to initiate PayPal balance charging"
+          this.isChargingBalance = false
+        }
+      },
+      error: (error) => {
+        console.error("Error charging balance with PayPal:", error)
+        this.balanceError = error.error?.message || "Failed to charge balance with PayPal"
+        this.isChargingBalance = false
+      },
+    })
+  }
+
+  // Charge balance with bank transfer
+  chargeBalanceWithBankTransfer() {
+    if (!this.uuid) {
+      this.balanceError = "User ID not found"
+      this.isChargingBalance = false
+      return
+    }
+
+    console.log("Charging balance with bank transfer, amount:", this.chargeAmount)
+
+    // For now, show it's not implemented
+    this.balanceError = "Bank transfer balance charging not implemented yet"
+    this.isChargingBalance = false
+  }
+
+  // Close balance options modal
+  closeBalanceOptions() {
+    this.showBalanceOptions = false
+    this.selectedBalanceOption = null
+    this.balanceError = null
+  }
+
+  // Reset charge amount
+  resetChargeAmount() {
+    this.chargeAmount = 0
+    console.log("Charge amount reset to:", this.chargeAmount)
+  }
+
+  // Get minimum charge amount
+  getMinimumChargeAmount(): number {
+    const deficit = Math.max(0, this.calculatedPrice - this.userBalance.balance)
+    const minimumCharge = Math.max(deficit, 10) // At least $10 or the deficit amount
+    console.log(
+      "Calculated minimum charge:",
+      minimumCharge,
+      "Deficit:",
+      deficit,
+      "Calculated price:",
+      this.calculatedPrice,
+      "Balance:",
+      this.userBalance.balance,
+    )
+    return minimumCharge
   }
 
   // Audio player methods
@@ -274,6 +634,12 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.isPlaying = false
     this.currentTime = 0
     this.progressPercentage = 0
+  }
+
+  onAudioError(event: any): void {
+    console.error("Audio error:", event)
+    this.isAudioPlaying = false
+    this.generationError = "Error playing audio. Please try again."
   }
 
   seekTo(event: MouseEvent) {
@@ -320,6 +686,13 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = Math.floor(seconds % 60)
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+  }
+
+  get volumeIcon(): string {
+    if (this.isMuted || this.volume === 0) return "bi-volume-mute-fill"
+    if (this.volume < 30) return "bi-volume-down-fill"
+    if (this.volume < 70) return "bi-volume-up-fill"
+    return "bi-volume-up-fill"
   }
 
   fetchUserProjects() {
@@ -424,29 +797,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     }))
   }
 
-  findAndSelectVoiceById(voiceId: string) {
-    // Find the voice with the matching ID
-    const voice = this.voices.find((v) => v.id === voiceId)
-    if (voice) {
-      // Select the voice
-      this.selectedVoice = voice
-      this.price = voice.price || this.price
-
-      // Update filters based on the selected voice properties
-      this.filters.gender = voice.gender || ""
-      this.filters.language = voice.language || ""
-      this.filters.ageZone = voice.ageZone || ""
-      this.filters.type = voice.type || ""
-
-      // Apply filters to show similar voices
-      this.applyFilters()
-
-      console.log("Selected voice from URL:", voice.name)
-    } else {
-      console.warn(`Voice with ID ${voiceId} not found`)
-    }
-  }
-
   selectProject(project: Project) {
     this.selectedProject = project
     this.showProjectSelection = false
@@ -462,6 +812,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.generationError = null
     this.generationSuccess = false
     this.paymentError = null
+    this.balanceError = null
   }
 
   isTextOverLimit(): boolean {
@@ -490,17 +841,10 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       }
       this.processAudioGeneration()
     }
-    // For audio request, show payment method selection
+    // For audio request, show balance/payment options
     else if (this.activeTab === "request") {
       this.showPaymentMethodSelection()
     }
-  }
-
-  showPaymentMethodSelection() {
-    // Calculate price
-    this.calculatedPrice = this.price * this.actionData.text.length
-    this.showPaymentMethodModal = true
-    this.paymentError = null
   }
 
   selectPaymentMethod(method: "card" | "paypal" | "verment") {
@@ -522,11 +866,9 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     if (this.selectedPaymentMethod === "paypal") {
       this.processPayPalPayment()
     } else if (this.selectedPaymentMethod === "card") {
-      // Handle card payment - you can implement this later
       this.paymentError = "Card payment not implemented yet"
     } else if (this.selectedPaymentMethod === "verment") {
-      // Handle verment payment - you can implement this later
-      this.paymentError = "Verment payment not implemented yet"
+      this.processBankTransferPayment()
     }
   }
 
@@ -563,12 +905,10 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
           this.isProcessingPayment = false
           this.showPaymentProcessing = false
 
-          // For testing, you can use the test URL
           if (response.testUrl) {
             console.log("Test URL available:", response.testUrl)
           }
         } else if (this.approvalUrl) {
-          // Redirect to PayPal for payment approval
           this.redirectToPayPal()
         } else {
           this.paymentError = "Failed to create PayPal payment"
@@ -585,13 +925,85 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     )
   }
 
+  // Updated method for bank transfer payment with new response structure
+  processBankTransferPayment() {
+    if (!this.selectedVoice || !this.uuid) {
+      this.paymentError = "Missing required information"
+      return
+    }
+
+    this.isProcessingPayment = true
+    this.paymentError = null
+    this.showPaymentProcessing = true
+
+    // Create bank transfer request
+    const bankTransferRequest = {
+      text: this.actionData.text,
+      voiceUuid: this.selectedVoice.id,
+      utilisateurUuid: this.uuid,
+      language: this.selectedVoice.language,
+      projectUuid: this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+    }
+
+    this.actionService.createActionWithBankTransfer(bankTransferRequest).subscribe(
+      (response: BankTransferResponse) => {
+        console.log("Bank transfer payment response:", response)
+
+        this.actionId = response.actionId
+        this.bankTransferReference = response.libelle
+        this.bankTransferDetails = response
+        this.calculatedPrice = response.price
+
+        this.isProcessingPayment = false
+        this.showPaymentProcessing = false
+        this.closePaymentMethodModal()
+
+        // Show bank transfer details modal
+        this.showBankTransferModal = true
+      },
+      (error) => {
+        console.error("Error creating bank transfer payment:", error)
+        this.paymentError = error.error?.error || "Failed to process bank transfer payment"
+        this.isProcessingPayment = false
+        this.showPaymentProcessing = false
+      },
+    )
+  }
+
+  // Method to close bank transfer modal
+  closeBankTransferModal() {
+    this.showBankTransferModal = false
+    this.bankTransferDetails = null
+    this.bankTransferReference = null
+  }
+
+  // Method to copy bank details to clipboard
+  copyToClipboard(text: string) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        console.log("Copied to clipboard:", text)
+      })
+      .catch((err) => {
+        console.error("Failed to copy to clipboard:", err)
+      })
+  }
+
+  // Method to confirm bank transfer payment
+  confirmBankTransferPayment() {
+    if (this.actionId) {
+      console.log("Bank transfer payment confirmed for action:", this.actionId)
+      this.closeBankTransferModal()
+
+      this.generationSuccess = true
+      this.generationError = null
+    }
+  }
+
   redirectToPayPal() {
     if (this.approvalUrl) {
-      // Close modals before redirect
       this.closePaymentMethodModal()
       this.showPaymentProcessing = false
-
-      // Redirect to PayPal
       window.location.href = this.approvalUrl
     }
   }
@@ -616,8 +1028,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.isProcessingPayment = false
     this.showPaymentProcessing = false
     this.closePaymentMethodModal()
-
-    // Start generation process
     this.startAudioGeneration()
   }
 
@@ -626,7 +1036,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.generationProgress = 0
     this.isGenerating = true
 
-    // Simulate generation progress
     const progressInterval = setInterval(() => {
       this.generationProgress += 10
       if (this.generationProgress >= 100) {
@@ -640,9 +1049,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.showGenerationProgress = false
     this.isGenerating = false
     this.generationSuccess = true
-
-    // Here you would typically get the generated audio from the backend
-    // For now, we'll simulate it
     console.log("Audio generation completed for action:", this.actionId)
   }
 
@@ -690,7 +1096,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     const requestBody = {
       text: this.actionData.text,
       id_voice: this.selectedVoice!.id,
-      dialect_id:  "35",
+      dialect_id: "35",
       performance_id: "1284",
       input_mode: "0",
     }
@@ -714,34 +1120,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
         this.generationError = "Failed to generate Darija speech. Please try again."
       },
     )
-  }
-
-  proceedToCheckout() {
-    if (!this.selectedVoice) return
-
-    // Prepare checkout data
-    this.checkoutData = {
-      textLength: this.actionData.text.length,
-      price: this.selectedVoice.price || this.price,
-      totalPrice: (this.selectedVoice.price || this.price) * this.actionData.text.length,
-      voiceId: this.selectedVoice.id,
-      voiceName: this.selectedVoice.name,
-    }
-
-    // Navigate to checkout with data
-    // Using state to pass data to the checkout component
-    window.location.href = `/checkout?data=${encodeURIComponent(
-      JSON.stringify({
-        checkoutData: this.checkoutData,
-        text: this.actionData.text,
-        voiceSettings: {
-          emotion: this.selectedEmotion,
-          speed: this.vitess,
-          sampleRate: this.rate,
-          temperature: this.temperature,
-        },
-      }),
-    )}`
   }
 
   saveAudioToProject(audioBlob: Blob) {
@@ -852,11 +1230,11 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       this.audio.src === voice.originalVoiceUrl &&
       this.currentPlayingVoiceId === voiceId
     ) {
-      this.stopVoice() // Stop if the same audio is playing
-      this.currentPlayingVoiceId = null // Reset current playing voice ID
+      this.stopVoice()
+      this.currentPlayingVoiceId = null
     } else {
-      this.stopVoice() // Stop any previous audio
-      this.currentPlayingVoiceId = voiceId // Set current playing voice ID
+      this.stopVoice()
+      this.currentPlayingVoiceId = voiceId
       this.audio = new Audio(voice.originalVoiceUrl)
       this.audio.play().catch((error) => console.error("Error playing voice:", error))
     }
@@ -871,11 +1249,11 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       this.audio.src === voice.originalVoiceUrl &&
       this.currentPlayingVoiceId === voiceId
     ) {
-      this.stopVoice() // Stop if the same audio is playing
-      this.currentPlayingVoiceId = null // Reset current playing voice ID
+      this.stopVoice()
+      this.currentPlayingVoiceId = null
     } else {
-      this.stopVoice() // Stop any previous audio
-      this.currentPlayingVoiceId = voiceId // Set current playing voice ID
+      this.stopVoice()
+      this.currentPlayingVoiceId = voiceId
       this.audio = new Audio(voice.originalVoiceUrl)
       this.audio.play().catch((error) => console.error("Error playing original voice:", error))
     }
@@ -883,9 +1261,9 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
 
   playClonedVoice(voice: Voice): void {
     if (this.audio && !this.audio.paused && this.audio.src === voice.clonedVoiceUrl) {
-      this.stopVoice() // Stop if the same audio is playing
+      this.stopVoice()
     } else {
-      this.stopVoice() // Stop any previous audio
+      this.stopVoice()
       this.audio = new Audio(voice.clonedVoiceUrl)
       this.audio.play().catch((error) => console.error("Error playing cloned voice:", error))
     }
@@ -894,8 +1272,8 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   stopVoice(): void {
     if (this.audio) {
       this.audio.pause()
-      this.audio.currentTime = 0 // Reset playback position
-      this.audio = new Audio() // Clear the audio instance
+      this.audio.currentTime = 0
+      this.audio = new Audio()
     }
   }
 

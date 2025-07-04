@@ -1,6 +1,13 @@
 <!-- Header -->
 <header class="topbar">
   <div class="header-container">
+    <!-- CGV Modal - Added exactly like in generation component -->
+    <app-cgv-modal 
+      [isVisible]="showCgvModal"
+      (accepted)="onCgvAccepted()"
+      (closed)="onCgvClosed()">
+    </app-cgv-modal>
+
     <!-- Left Section: Toggle & Title -->
     <div class="header-left">
       <!-- Home Button -->
