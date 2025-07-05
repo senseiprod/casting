@@ -667,11 +667,17 @@ h1, h2, h3, h4, h5 {
   .header {
     height: auto;
     padding-bottom: 100px;
+    
   }
 
   .header-content {
     padding-top: 120px;
     text-align: center;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    
   }
 
   .header h1 {
@@ -681,6 +687,13 @@ h1, h2, h3, h4, h5 {
   .header h1:after {
     left: 50%;
     transform: translateX(-50%);
+  }
+  
+  .header h1, 
+  .header p {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
   }
 
   .header p {
