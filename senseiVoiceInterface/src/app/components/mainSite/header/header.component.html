@@ -133,11 +133,26 @@
              (click)="navigateToLogin()">
             {{ 'header.auth.login' | translate }}
           </a>
-          <a routerLink="signup" 
-             class="btn btn-signup" 
-             (click)="navigateToSignup()">
-            {{ 'header.auth.signup' | translate }}
-          </a>
+          <a class="btn btn-signup dropdown-toggle"
+     href="javascript:void(0)"
+     id="signupDropdown"
+     role="button"
+     data-bs-toggle="dropdown"
+     aria-expanded="false">
+    {{ 'header.auth.signup' | translate }}
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="signupDropdown">
+    <li>
+      <a class="dropdown-item" href="javascript:void(0)">
+        Client
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item" href="javascript:void(0)">
+        Speaker
+      </a>
+    </li>
+  </ul>
         </ng-container>
 
         <!-- Show when user IS logged in -->
