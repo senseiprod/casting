@@ -14,35 +14,34 @@
       type="button" 
       data-bs-toggle="collapse" 
       data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
       [attr.aria-label]="'header.navigation.toggleMenu' | translate">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+    <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mx-auto">
         <!-- Voice Language Filter Dropdown -->
-        <li class="nav-item">
-          <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-              <a 
-                class="nav-link dropdown-toggle" 
-                href="javascript:void(0)" 
-                id="languageDropdown" 
-                role="button"
-                (click)="toggleLanguageDropdown()"
-                [attr.aria-label]="'header.navigation.voiceLanguages' | translate">
-                {{ 'header.navigation.languages' | translate }}
+        <li class="nav-item dropdown">
+          <a 
+            class="nav-link dropdown-toggle" 
+            href="javascript:void(0)" 
+            id="languageDropdown" 
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            [attr.aria-label]="'header.navigation.voiceLanguages' | translate">
+            {{ 'header.navigation.languages' | translate }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+            <li *ngFor="let lang of voiceLanguages">
+              <a class="dropdown-item" (click)="selectVoiceLanguage(lang.code)">
+                {{ lang.nativeName }}
+                <span class="text-muted ms-2">({{ lang.name | translate }})</span>
               </a>
-              <ul class="dropdown-menu language-dropdown" [class.show]="isLanguageDropdownOpen">
-                <li *ngFor="let lang of voiceLanguages">
-                  <a class="dropdown-item" (click)="selectVoiceLanguage(lang.code)">
-                    {{ lang.nativeName }}
-                    <span class="text-muted ms-2">({{ lang.name | translate }})</span>
-                  </a>
-                </li>
-              </ul>              
             </li>
-          </ul>
+          </ul>              
         </li>
 
         <!-- Main Navigation Links -->
@@ -81,26 +80,26 @@
             {{ 'header.navigation.contact' | translate }}
           </a>
         </li>
-
-          <li class="nav-item">
-    <a class="nav-link" 
-       routerLink="condition-of-sale" 
-       (click)="navigateToConditionOfSale(); $event.preventDefault()">
-      {{ 'footer.terms' | translate }}
-    </a>
-  </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             routerLink="condition-of-sale" 
+             (click)="navigateToConditionOfSale(); $event.preventDefault()">
+            {{ 'footer.terms' | translate }}
+          </a>
+        </li>
       </ul>
 
       <!-- Right side: UI Language Selector + Auth Section -->
-      <div class="d-flex align-items-center">
+      <div class="navbar-nav ms-auto">
         <!-- UI Language Selector -->
-        <div class="nav-item dropdown me-3">
+        <li class="nav-item dropdown">
           <a 
             class="nav-link dropdown-toggle" 
             href="javascript:void(0)" 
             id="uiLanguageDropdown" 
             role="button"
             data-bs-toggle="dropdown"
+            aria-expanded="false"
             [attr.aria-label]="'header.uiLanguage.selector' | translate">
             <i class="bi bi-globe me-1"></i>
             {{ getUILanguageDisplayName() }}
@@ -131,91 +130,95 @@
               </a>
             </li>
           </ul>
-        </div>
+        </li>
 
         <!-- Conditional rendering based on authentication state -->
         <!-- Show when user is NOT logged in -->
         <ng-container *ngIf="!isLoggedIn; else userAvatar">
-          <a routerLink="login" 
-             class="nav-link me-3" 
-             (click)="navigateToLogin()">
-            {{ 'header.auth.login' | translate }}
-          </a>
-          <a class="btn btn-signup dropdown-toggle"
-     href="javascript:void(0)"
-     id="signupDropdown"
-     role="button"
-     data-bs-toggle="dropdown"
-     aria-expanded="false">
-    {{ 'header.auth.signup' | translate }}
-  </a>
- <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="signupDropdown">
-  <li>
-    <a class="dropdown-item" href="#" (click)="navigateToSignup3($event)">
-      Client
-    </a>
-  </li>
-  <li>
-    <a class="dropdown-item" href="#" (click)="navigateToSignup2($event)">
-      Speaker
-    </a>
-  </li>
-</ul>
-
-
+          <li class="nav-item">
+            <a routerLink="login" 
+               class="nav-link" 
+               (click)="navigateToLogin()">
+              {{ 'header.auth.login' | translate }}
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle btn-signup"
+               href="javascript:void(0)"
+               id="signupDropdown"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false">
+              {{ 'header.auth.signup' | translate }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="signupDropdown">
+              <li>
+                <a class="dropdown-item" href="#" (click)="navigateToSignup3($event)">
+                  Client
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" (click)="navigateToSignup2($event)">
+                  Speaker
+                </a>
+              </li>
+            </ul>
+          </li>
         </ng-container>
 
         <!-- Show when user IS logged in -->
         <ng-template #userAvatar>
-          <div class="user-avatar-dropdown">
-            <div class="avatar-container" 
-                 (click)="toggleUserDropdown()"
-                 [attr.aria-label]="'header.userMenu.toggle' | translate">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" 
+               href="javascript:void(0)" 
+               id="userDropdown" 
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false"
+               [attr.aria-label]="'header.userMenu.toggle' | translate">
               <img
                 [src]="'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'"
                 [alt]="'header.userMenu.avatar' | translate"
-                class="user-avatar"
+                class="user-avatar me-2"
               >
-              <span class="ms-2 d-none d-md-inline">{{ getUserDisplayName() }}</span>
-              <i class="bi bi-chevron-down ms-1"></i>
-            </div>
-
-            <li class="nav-item">
-  <a class="nav-link" routerLink="condition-of-sale" (click)="$event.preventDefault(); navigateToConditionOfSale()">
-    {{ 'footer.terms' | translate }}
-  </a>
-</li>
-
-
-            <!-- User dropdown menu -->
-            <div class="user-dropdown" [class.show]="isUserDropdownOpen">
-              <a href="#" 
-                 class="dropdown-item" 
-                 (click)="navigateToProfile(); $event.preventDefault()">
-                <i class="bi bi-person me-2"></i>
-                {{ 'header.userMenu.profile' | translate }}
-              </a>
-              <a href="#" 
-                 class="dropdown-item" 
-                 (click)="navigateToDashboard(); $event.preventDefault()">
-                <i class="bi bi-speedometer2 me-2"></i>
-                {{ 'header.userMenu.dashboard' | translate }}
-              </a>
-              <a href="#" 
-                 class="dropdown-item" 
-                 (click)="navigateToSettings(); $event.preventDefault()">
-                <i class="bi bi-gear me-2"></i>
-                {{ 'header.userMenu.settings' | translate }}
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="javascript:void(0)" 
-                 class="dropdown-item text-danger" 
-                 (click)="logout()">
-                <i class="bi bi-box-arrow-right me-2"></i>
-                {{ 'header.userMenu.logout' | translate }}
-              </a>
-            </div>
-          </div>
+              <span class="d-none d-md-inline">{{ getUserDisplayName() }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item" 
+                   href="#" 
+                   (click)="navigateToProfile(); $event.preventDefault()">
+                  <i class="bi bi-person me-2"></i>
+                  {{ 'header.userMenu.profile' | translate }}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" 
+                   href="#" 
+                   (click)="navigateToDashboard(); $event.preventDefault()">
+                  <i class="bi bi-speedometer2 me-2"></i>
+                  {{ 'header.userMenu.dashboard' | translate }}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" 
+                   href="#" 
+                   (click)="navigateToSettings(); $event.preventDefault()">
+                  <i class="bi bi-gear me-2"></i>
+                  {{ 'header.userMenu.settings' | translate }}
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" 
+                   href="javascript:void(0)" 
+                   (click)="logout()">
+                  <i class="bi bi-box-arrow-right me-2"></i>
+                  {{ 'header.userMenu.logout' | translate }}
+                </a>
+              </li>
+            </ul>
+          </li>
         </ng-template>
       </div>
     </div>
