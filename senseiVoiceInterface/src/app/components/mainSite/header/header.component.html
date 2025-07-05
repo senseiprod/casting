@@ -81,6 +81,14 @@
             {{ 'header.navigation.contact' | translate }}
           </a>
         </li>
+
+          <li class="nav-item">
+    <a class="nav-link" 
+       routerLink="condition-of-sale" 
+       (click)="navigateToConditionOfSale(); $event.preventDefault()">
+      {{ 'footer.terms' | translate }}
+    </a>
+  </li>
       </ul>
 
       <!-- Right side: UI Language Selector + Auth Section -->
@@ -141,18 +149,20 @@
      aria-expanded="false">
     {{ 'header.auth.signup' | translate }}
   </a>
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="signupDropdown">
-    <li>
-      <a class="dropdown-item" href="javascript:void(0)">
-        Client
-      </a>
-    </li>
-    <li>
-      <a class="dropdown-item" href="javascript:void(0)">
-        Speaker
-      </a>
-    </li>
-  </ul>
+ <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="signupDropdown">
+  <li>
+    <a class="dropdown-item" href="#" (click)="navigateToSignup3($event)">
+      Client
+    </a>
+  </li>
+  <li>
+    <a class="dropdown-item" href="#" (click)="navigateToSignup2($event)">
+      Speaker
+    </a>
+  </li>
+</ul>
+
+
         </ng-container>
 
         <!-- Show when user IS logged in -->
@@ -169,6 +179,13 @@
               <span class="ms-2 d-none d-md-inline">{{ getUserDisplayName() }}</span>
               <i class="bi bi-chevron-down ms-1"></i>
             </div>
+
+            <li class="nav-item">
+  <a class="nav-link" routerLink="condition-of-sale" (click)="$event.preventDefault(); navigateToConditionOfSale()">
+    {{ 'footer.terms' | translate }}
+  </a>
+</li>
+
 
             <!-- User dropdown menu -->
             <div class="user-dropdown" [class.show]="isUserDropdownOpen">

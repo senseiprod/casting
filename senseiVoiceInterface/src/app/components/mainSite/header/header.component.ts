@@ -104,6 +104,11 @@ export class HeaderComponent implements OnInit {
     })
   }
 
+  navigateToConditionOfSale(): void {
+  this.router.navigate(['condition-of-sale']);
+}
+
+
   private loadTranslations(): void {
     this.translate.get("header.navigation.languages").subscribe({
       next: (translation) => {
@@ -218,6 +223,17 @@ export class HeaderComponent implements OnInit {
   navigateToSignup(): void {
     this.router.navigate(["/signup"])
   }
+
+  navigateToSignup2(event: Event): void {
+    event.preventDefault(); // Prevent full page reload
+    this.router.navigate(['/signup2']);
+  }
+
+  navigateToSignup3(event: Event): void {
+    event.preventDefault(); // Prevent full page reload
+    this.router.navigate(['/signup3']);
+  }
+
 
   navigateToHome(): void {
     this.router.navigate(["/"])

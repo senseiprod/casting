@@ -68,4 +68,9 @@ export class LoginComponent implements OnInit {
   forgotPassword(): void {
     alert('Password reset functionality would be implemented here.');
   }
+
+
+  navigateToSignup(): void {
+    this.router.navigate(["/signup3"])
+  }
 }

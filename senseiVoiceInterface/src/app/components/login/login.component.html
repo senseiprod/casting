@@ -107,6 +107,17 @@
       <span class="button-text">{{ 'sign_in' | translate }}</span>
     </div>
   </button>
+
+  <!-- Navigation to Signup -->
+<div class="navigation-section">
+  <p class="signup-prompt">Vous n'avez pas encore de compte ?</p>
+  <button type="button" class="signup-link-button" (click)="navigateToSignup()">
+    <span class="button-text">Créer un compte</span>
+    <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M5 12h14M12 5l7 7-7 7"/>
+    </svg>
+  </button>
+</div>
 </form>
 
       </div>

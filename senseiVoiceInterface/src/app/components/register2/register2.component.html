@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire d'inscription – Devenez Speaker Voix Off</title>
+    <style>
+        /* Main container styles */
+        .signup-container {
+            min-height: 100vh;
+            width: 100%;
+            background: linear-gradient(to bottom right, #0f172a, #1e293b);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .signup-container {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .signup-container {
+                padding: 2.5rem;
+            }
+        }
+
+        /* Background elements */
+        .background-overlay {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .background-image {
+            position: absolute;
+            inset: 0;
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+        }
+
+        .gradient-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom right, rgba(88, 28, 135, 0.3), rgba(136, 19, 55, 0.3));
+            mix-blend-mode: multiply;
+        }
+
+        /* Animated background elements */
+        .animated-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .floating-object-1 {
+            position: absolute;
+            left: 5%;
+            top: 5%;
+            height: 8rem;
+            opacity: 0.6;
+        }
+
+        @media (min-width: 768px) {
+            .floating-object-1 {
+                height: 10rem;
+            }
+        }
+
+        .floating-object-2 {
+            position: absolute;
+            right: 5%;
+            top: 10%;
+            height: 200px;
+            opacity: 0.6;
+        }
+
+        @media (min-width: 768px) {
+            .floating-object-2 {
+                height: 300px;
+            }
+        }
+
+        .floating-object-3 {
+            position: absolute;
+            bottom: 5%;
+            right: 15%;
+            opacity: 0.6;
+        }
+
+        /* Main card container */
+        .main-card {
+            width: 100%;
+            max-width: 90rem;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (min-width: 1024px) {
+            .main-card {
+                flex-direction: row;
+            }
+        }
+
+        /* Left side branding panel */
+        .branding-panel {
+            width: 100%;
+            background: linear-gradient(to bottom right, #e11d48, #000000);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 1024px) {
+            .branding-panel {
+                width: 35%;
+            }
+        }
+
+        .pattern-overlay {
+            position: absolute;
+            inset: 0;
+            opacity: 0.2;
+            background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+        }
+
+        /* Logo container */
+        .logo-container {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .logo-container {
+                padding: 3rem;
+            }
+        }
+
+        .logo-link {
+            display: block;
+            width: 16rem;
+            margin-bottom: 1.5rem;
+            transform: scale(1);
+            transition: all 0.5s;
+        }
+
+        @media (min-width: 1024px) {
+            .logo-link {
+                width: 18rem;
+            }
+        }
+
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-image {
+            width: 100%;
+            filter: drop-shadow(0 5px 15px rgba(255, 255, 255, 0.5));
+        }
+
+        /* Decorative elements */
+        .decorative-line {
+            width: 6rem;
+            height: 0.25rem;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 9999px;
+            margin-bottom: 2rem;
+        }
+
+        /* Tagline */
+        .tagline {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            font-size: 1.125rem;
+            font-weight: 300;
+            max-width: 20rem;
+        }
+
+        /* Right side signup form */
+        .form-panel {
+            width: 100%;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 1024px) {
+            .form-panel {
+                width: 65%;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .form-panel {
+                padding: 2.5rem;
+            }
+        }
+
+        /* Form container */
+        .form-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 48rem;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Header */
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.75rem;
+        }
+
+        .gradient-text {
+            display: inline-block;
+            background: linear-gradient(to right, #e11d48, #ffffff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* Form */
+        .signup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Collapsible sections */
+        .form-section {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
+
+        .form-section.expanded {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .section-header {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .section-header:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .section-heading {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .section-toggle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .section-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .section-content.expanded {
+            max-height: 2000px;
+        }
+
+        .section-inner {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Form groups */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input {
+            width: 100%;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            padding: 0.875rem;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-input:focus {
+            border-color: rgba(229, 29, 72, 0.5);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(229, 29, 72, 0.2);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Checkbox and radio groups */
+        .checkbox-group, .radio-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .checkbox-group {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .checkbox-group label, .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .checkbox-group label:hover, .radio-group label:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .checkbox-group input[type="checkbox"], .radio-group input[type="radio"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: #e11d48;
+        }
+
+        /* Terms group */
+        .terms-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .terms-group input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: #e11d48;
+            margin-top: 0.25rem;
+        }
+
+        .terms-group label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .terms-link {
+            color: #e11d48;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+
+        .terms-link:hover {
+            color: #be185d;
+        }
+
+        /* Error message */
+        .error-message {
+            color: #fecdd3;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: rgba(239, 68, 68, 0.1);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Success message */
+        .alert-success {
+            color: #bbf7d0;
+            font-size: 0.875rem;
+            padding: 1rem;
+            background-color: rgba(34, 197, 94, 0.1);
+            border-radius: 0.75rem;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Submit button */
+        .submit-button {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: linear-gradient(to right, #e11d48, #be185d);
+            box-shadow: 0 10px 15px -3px rgba(229, 29, 72, 0.2);
+            transform: translateY(0);
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(to right, #dc2626, #a21caf);
+            box-shadow: 0 10px 15px -3px rgba(229, 29, 72, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .submit-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(229, 29, 72, 0.5);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        .form-footer {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+        }
+
+        /* Document requirements */
+        .documents-list {
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+        }
+
+        .documents-list li {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Declaration */
+        .declaration {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-top: 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0); 
+            }
+            50% { 
+                transform: translateY(-15px); 
+            }
+        }
+
+        @keyframes float-delay {
+            0%, 100% { 
+                transform: translateY(0); 
+            }
+            50% { 
+                transform: translateY(-10px); 
+            }
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Animation classes */
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-delay {
+            animation: float-delay 7s ease-in-out infinite;
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1023px) {
+            .branding-panel {
+                min-height: 300px;
+            }
+            
+            .logo-container {
+                padding: 1.5rem;
+            }
+            
+            .form-panel {
+                padding: 1.5rem;
+            }
+        }
+
+        /* File input styling */
+        input[type="file"] {
+            width: 100%;
+            padding: 0.875rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background: linear-gradient(to right, #e11d48, #be185d);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-right: 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background: linear-gradient(to right, #dc2626, #a21caf);
+        }
+
+        /* Progress indicator */
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .section-counter {
+            font-weight: 600;
+            color: #e11d48;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <!-- Background elements -->
+        <div class="background-overlay">
+            <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1920&q=80" alt="" class="background-image" />
+            <div class="gradient-overlay"></div>
+            
+            <!-- Animated background elements -->
+            <div class="animated-background">
+                <div class="floating-object-1 animate-float" style="width: 60px; height: 60px; background: radial-gradient(circle, rgba(225, 29, 72, 0.3), transparent); border-radius: 50%;"></div>
+                <div class="floating-object-2 animate-float-delay" style="width: 80px; height: 80px; background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent); border-radius: 50%;"></div>
+                <div class="floating-object-3 animate-pulse" style="width: 40px; height: 40px; background: linear-gradient(45deg, #e11d48, #be185d); clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
+            </div>
+        </div>
+        
+        <!-- Main card container -->
+        <div class="main-card">
+            <!-- Left side branding panel -->
+            <div class="branding-panel">
+                <!-- Overlay pattern -->
+                <div class="pattern-overlay"></div>
+                
+                <!-- Logo container -->
+                <div class="logo-container">
+                    <a href="/" class="logo-link">
+                        <img src="assets/img/LOGO NOIR (2).png" alt="Casting Voixoff.ma Logo" class="logo-image" style="filter: brightness(0) invert(1);" />
+                    </a>
+                    
+                    <!-- Decorative elements -->
+                    <div class="decorative-line"></div>
+                    
+                    <!-- Tagline -->
+                    <p class="tagline">Rejoignez notre communauté de speakers professionnels</p>
+                </div>
+            </div>
+            
+            <!-- Right side signup form -->
+            <div class="form-panel">
+                <!-- Form container -->
+                <div class="form-container">
+                    <!-- Header -->
+                    <div class="form-header">
+                        <h1 class="form-title">
+                            <span class="gradient-text">Formulaire d'inscription</span>
+                        </h1>
+                        <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.875rem;">Devenez Speaker Voix Off</p>
+                    </div>
+                    
+                    <!-- Progress indicator -->
+                  <!-- Progress indicator -->
+<div class="progress-indicator" *ngIf="!signupSuccess">
+    <span>Sections complètes: <span class="section-counter" id="sectionCounter">{{getCompletedSectionsCount()}}/10</span></span>
+    <span>Cliquez sur chaque section pour la compléter</span>
+</div>
+                    
+                    <!-- Success Message -->
+                    <div class="alert-success" *ngIf="signupSuccess" id="successMessage">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 40px; height: 40px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white;">✓</div>
+                            <div>
+                                <h4 style="margin: 0; color: #22c55e; font-size: 1.1rem;">Merci pour votre inscription !</h4>
+                                <p style="margin: 0; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">Votre compte a bien été enregistré et est en attente d’activation.
+
+🔒 L’accès à la plateforme sera ouvert très bientôt.
+En vous inscrivant dès maintenant, vous bénéficiez d’un accès prioritaire à nos offres exclusives, codes promo et fonctionnalités réservées au lancement.
+
+📩 Restez connecté(e), on vous envoie toutes les infos très bientôt !</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form -->
+                    <!-- Form -->
+<form class="signup-form" (ngSubmit)="onSubmit()" [formGroup]="signupForm" *ngIf="!signupSuccess">
+                        <!-- Personal Information -->
+                        <div class="form-section" [class.expanded]="expandedSections['personal']">
+                            <div class="section-header" (click)="toggleSection('personal')">
+                                <h3 class="section-heading">👤 Informations personnelles</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['personal']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['personal']">
+                                <div class="section-inner">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="fullName" class="form-label">Nom complet *</label>
+                                            <input id="fullName" type="text" placeholder="Votre nom complet" class="form-input" formControlName="fullName" />
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="artistName" class="form-label">Nom d'artiste (facultatif)</label>
+                                            <input id="artistName" type="text" placeholder="Nom d'artiste" class="form-input" formControlName="artistName" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="email" class="form-label">Adresse email *</label>
+                                            <input id="email" type="email" placeholder="Votre email" class="form-input" formControlName="email" />
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="phone" class="form-label">Téléphone *</label>
+                                            <input id="phone" type="tel" placeholder="Votre téléphone" class="form-input" formControlName="phone" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="birthdate" class="form-label">Date de naissance *</label>
+                                            <input id="birthdate" type="date" class="form-input" formControlName="birthdate" />
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="location" class="form-label">Ville / Pays de résidence *</label>
+                                            <input id="location" type="text" placeholder="Ville / Pays" class="form-input" formControlName="location" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Professional Information -->
+                        <div class="form-section" [class.expanded]="expandedSections['professional']">
+                            <div class="section-header" (click)="toggleSection('professional')">
+                                <h3 class="section-heading">💼 Profession</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['professional']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['professional']">
+                                <div class="section-inner">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="currentJob" class="form-label">Métier actuel *</label>
+                                            <input id="currentJob" type="text" placeholder="Votre métier" class="form-input" formControlName="currentJob" />
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="experienceYears" class="form-label">Années d'expérience (voix off / médias / com.) *</label>
+                                            <input id="experienceYears" type="number" min="0" placeholder="Nombre d'années" class="form-input" formControlName="experienceYears" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Languages -->
+                        <div class="form-section" [class.expanded]="expandedSections['languages']">
+                            <div class="section-header" (click)="toggleSection('languages')">
+                                <h3 class="section-heading">🗣️ Langues parlées et accents maîtrisés</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['languages']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['languages']">
+                                <div class="section-inner">
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" formControlName="langArabicClassical" /> Arabe Classique</label>
+                                        <label><input type="checkbox" formControlName="langDarija" /> Darija (marocain)</label>
+                                        <label><input type="checkbox" formControlName="langFrench" /> Français</label>
+                                        <label><input type="checkbox" formControlName="langEnglish" /> Anglais</label>
+                                        <label><input type="checkbox" formControlName="langSpanish" /> Espagnol</label>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="otherLanguages" class="form-label">Autres</label>
+                                        <input id="otherLanguages" type="text" placeholder="Autres langues ou accents" class="form-input" formControlName="otherLanguages" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Voice Type -->
+                        <div class="form-section" [class.expanded]="expandedSections['voiceType']">
+                            <div class="section-header" (click)="toggleSection('voiceType')">
+                                <h3 class="section-heading">🎤 Type de voix</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['voiceType']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['voiceType']">
+                                <div class="section-inner">
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" formControlName="voiceFemale" /> Féminine</label>
+                                        <label><input type="checkbox" formControlName="voiceMale" /> Masculine</label>
+                                        <label><input type="checkbox" formControlName="voiceTeenChild" /> Ado / Enfant</label>
+                                        <label><input type="checkbox" formControlName="voiceSenior" /> Senior</label>
+                                        <label><input type="checkbox" formControlName="voiceNeutral" /> Voix neutre</label>
+                                        <label><input type="checkbox" formControlName="voiceDeep" /> Voix grave</label>
+                                        <label><input type="checkbox" formControlName="voiceDynamic" /> Voix dynamique</label>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="voiceOther" class="form-label">Autre</label>
+                                        <input id="voiceOther" type="text" placeholder="Autre type de voix" class="form-input" formControlName="voiceOther" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Demo -->
+                        <div class="form-section" [class.expanded]="expandedSections['demo']">
+                            <div class="section-header" (click)="toggleSection('demo')">
+                                <h3 class="section-heading">🎧 Démo vocale</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['demo']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['demo']">
+                                <div class="section-inner">
+                                    <div class="form-group">
+                                        <label for="demoLink" class="form-label">🔗 Lien vers votre démo</label>
+                                        <input id="demoLink" type="url" placeholder="URL de votre démo vocale" class="form-input" formControlName="demoLink" />
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="demoFile" class="form-label">📤 Ou charger un fichier audio (MP3, WAV – max 10 Mo)</label>
+                                        <input id="demoFile" type="file" accept=".mp3, .wav" class="form-input" (change)="onFileSelected($event)" />
+                                        <div *ngIf="fileError" style="color: #ef4444; margin-top: 0.5rem;">{{fileError}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Studio -->
+                        <div class="form-section" [class.expanded]="expandedSections['studio']">
+                            <div class="section-header" (click)="toggleSection('studio')">
+                                <h3 class="section-heading">🎙️ Studio personnel</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['studio']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['studio']">
+                                <div class="section-inner">
+                                    <div class="radio-group">
+    <label><input type="radio" value="yes" formControlName="hasStudio" /> Oui</label>
+    <label><input type="radio" value="no" formControlName="hasStudio" /> Non</label>
+</div>
+                                    
+                                    <div class="form-group">
+                                        <label for="studioDesc" class="form-label">Si oui, décrivez brièvement votre équipement :</label>
+                                        <textarea id="studioDesc" rows="3" placeholder="Description de votre équipement" class="form-input" formControlName="studioDescription"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional Experience -->
+                        <div class="form-section" [class.expanded]="expandedSections['experience']">
+                            <div class="section-header" (click)="toggleSection('experience')">
+                                <h3 class="section-heading">📈 Expérience professionnelle</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['experience']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['experience']">
+                                <div class="section-inner">
+                                    <div class="form-group">
+                                        <textarea rows="4" placeholder="Décrivez vos collaborations, clients, formations, etc." class="form-input" formControlName="professionalExperience"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Links -->
+                        <div class="form-section" [class.expanded]="expandedSections['social']">
+                            <div class="section-header" (click)="toggleSection('social')">
+                                <h3 class="section-heading">🌐 Réseaux sociaux ou site web (facultatif)</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['social']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['social']">
+                                <div class="section-inner">
+                                    <div class="form-group">
+                                        <input type="url" placeholder="URL de vos réseaux sociaux ou site web" class="form-input" formControlName="socialLinks" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Voice Cloning -->
+                        <div class="form-section" [class.expanded]="expandedSections['voiceCloning']">
+                            <div class="section-header" (click)="toggleSection('voiceCloning')">
+                                <h3 class="section-heading">🤖 Clonage vocal par IA</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['voiceCloning']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['voiceCloning']">
+                                <div class="section-inner">
+                                    <div class="radio-group">
+    <label><input type="radio" value="yes" formControlName="voiceCloningConsent" /> Oui, j'accepte que ma voix soit utilisée pour générer des contenus TTS par l'IA</label>
+    <label><input type="radio" value="no" formControlName="voiceCloningConsent" /> Non</label>
+</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents -->
+                        <div class="form-section" [class.expanded]="expandedSections['documents']">
+                            <div class="section-header" (click)="toggleSection('documents')">
+                                <h3 class="section-heading">📄 Documents à fournir</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['documents']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['documents']">
+                                <div class="section-inner">
+                                    <ul class="documents-list">
+                                        <li>Pièce d'identité (CNI / Passeport)</li>
+                                        <li>Contrat signé (fourni après validation)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Declaration -->
+                        <div class="form-section" [class.expanded]="expandedSections['declaration']">
+                            <div class="section-header" (click)="toggleSection('declaration')">
+                                <h3 class="section-heading">✅ Déclaration</h3>
+                                <span class="section-toggle" [class.expanded]="expandedSections['declaration']">▼</span>
+                            </div>
+                            <div class="section-content" [class.expanded]="expandedSections['declaration']">
+                                <div class="section-inner">
+                                    <p class="declaration">Je certifie que les informations fournies sont exactes et je m'engage à respecter les conditions d'utilisation de la plateforme.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Terms -->
+                        <div class="terms-group">
+                            <input type="checkbox" id="agreeTerms" formControlName="agreeTerms" />
+                            <label for="agreeTerms">
+                                J'accepte les <a href="#" class="terms-link">Conditions Générales d'Utilisation</a> et la <a href="#" class="terms-link">Politique de Confidentialité</a>.
+                            </label>
+                        </div>
+                        
+                        <!-- Signature -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="digitalSignature" class="form-label">🖊️ Signature numérique *</label>
+                                <input id="digitalSignature" type="text" placeholder="Votre signature numérique" class="form-input" formControlName="digitalSignature" />
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="signatureDate" class="form-label">📅 Date *</label>
+                                <input id="signatureDate" type="date" class="form-input" formControlName="signatureDate" />
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-button" [disabled]="isSubmitting">
+                            <span *ngIf="!isSubmitting">Créer un compte</span>
+                            <span *ngIf="isSubmitting">Création en cours...</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+                                    

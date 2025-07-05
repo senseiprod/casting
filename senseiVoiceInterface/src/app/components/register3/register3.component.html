@@ -1,0 +1,145 @@
+<div class="signup-container">
+  <div class="signup-content">
+    <div class="signup-form-container">
+      <div class="logo">
+        <img src="assets/img/LOGO NOIR (2).png" alt="Casting Voixoff.ma Logo" />
+      </div>
+
+      <h1 class="signup-title">{{ 'signupPage.title' | translate }}</h1>
+      <p class="signup-subtitle">{{ 'signupPage.subtitle' | translate }}</p>
+
+      <!-- Success message -->
+      <div *ngIf="signupSuccess" class="thank-you-message">
+        <h2>Merci pour votre inscription !</h2>
+        <p>Votre compte a bien été enregistré et est en attente d’activation.</p>
+        <p>🔒 L’accès à la plateforme sera ouvert très bientôt.</p>
+        <p>
+          En vous inscrivant dès maintenant, vous bénéficiez d’un accès prioritaire
+          à nos offres exclusives, codes promo et fonctionnalités réservées au lancement.
+        </p>
+        <p>📩 Restez connecté(e), on vous envoie toutes les infos très bientôt !</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" *ngIf="!signupSuccess" novalidate>
+        <!-- First and Last Name -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">{{ 'signupPage.firstName' | translate }}</label>
+            <input type="text" id="firstName" formControlName="firstName" [placeholder]="'signupPage.enterYourFirst' | translate" [class.is-invalid]="signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched" />
+            <div *ngIf="signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched" class="error-message">
+              {{ 'signupPage.firstName' | translate }} is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">{{ 'signupPage.lastName' | translate }}</label>
+            <input type="text" id="lastName" formControlName="lastName" [placeholder]="'signupPage.enterYourLast' | translate" [class.is-invalid]="signupForm.get('lastName')?.invalid && signupForm.get('lastName')?.touched" />
+            <div *ngIf="signupForm.get('lastName')?.invalid && signupForm.get('lastName')?.touched" class="error-message">
+              {{ 'signupPage.lastName' | translate }} is required
+            </div>
+          </div>
+        </div>
+
+        <!-- Company Name -->
+        <div class="form-group">
+          <label for="companyName">{{ 'signupPage.companyName' | translate }}</label>
+          <input type="text" id="companyName" formControlName="companyName" [placeholder]="'signupPage.enterYourCompany' | translate" [class.is-invalid]="signupForm.get('companyName')?.invalid && signupForm.get('companyName')?.touched" />
+          <div *ngIf="signupForm.get('companyName')?.invalid && signupForm.get('companyName')?.touched" class="error-message">
+            {{ 'signupPage.companyName' | translate }} is required
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">{{ 'signupPage.email' | translate }}</label>
+          <input type="email" id="email" formControlName="email" [placeholder]="'signupPage.enterYourEmail' | translate" [class.is-invalid]="signupForm.get('email')?.invalid && signupForm.get('email')?.touched" />
+          <div *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched" class="error-message">
+            <span *ngIf="signupForm.get('email')?.errors?.['required']">Email is required</span>
+            <span *ngIf="signupForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+          <label for="phone">{{ 'signupPage.phone' | translate }}</label>
+          <input type="tel" id="phone" formControlName="phone" [placeholder]="'signupPage.enterYourPhone' | translate" [class.is-invalid]="signupForm.get('phone')?.invalid && signupForm.get('phone')?.touched" />
+          <div *ngIf="signupForm.get('phone')?.invalid && signupForm.get('phone')?.touched" class="error-message">
+            Please enter a valid phone number
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">{{ 'signupPage.password' | translate }}</label>
+          <div class="password-input">
+            <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" [placeholder]="'signupPage.createStrongPassword' | translate" [class.is-invalid]="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" />
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
+              <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+            </button>
+          </div>
+          <div *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" class="error-message">
+            <span *ngIf="signupForm.get('password')?.errors?.['required']">Password is required</span>
+            <span *ngIf="signupForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</span>
+            <span *ngIf="signupForm.get('password')?.errors?.['pattern']">Password must include uppercase, lowercase, number, and special character</span>
+          </div>
+
+          <div class="password-requirements">
+            <small>{{ 'signupPage.passwordRequirements.title' | translate }}</small>
+            <ul>
+              <li>{{ 'signupPage.passwordRequirements.chars' | translate }}</li>
+              <li>{{ 'signupPage.passwordRequirements.letters' | translate }}</li>
+              <li>{{ 'signupPage.passwordRequirements.number' | translate }}</li>
+              <li>{{ 'signupPage.passwordRequirements.special' | translate }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="confirmPassword">{{ 'signupPage.confirmPassword' | translate }}</label>
+          <div class="password-input">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" formControlName="confirmPassword" [placeholder]="'signupPage.confirmYourPassword' | translate" [class.is-invalid]="signupForm.get('confirmPassword')?.invalid && signupForm.get('confirmPassword')?.touched" />
+            <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()" tabindex="-1">
+              <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
+            </button>
+          </div>
+          <div *ngIf="signupForm.get('confirmPassword')?.invalid && signupForm.get('confirmPassword')?.touched" class="error-message">
+            <span *ngIf="signupForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
+            <span *ngIf="signupForm.errors?.['passwordMismatch']">Passwords do not match</span>
+          </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="form-group terms-group">
+          <div class="terms-checkbox">
+            <input type="checkbox" id="agreeTerms" formControlName="agreeTerms" />
+            <label for="agreeTerms">
+              {{ 'signupPage.agreeTerms' | translate }}
+              <a href="#" class="terms-link">{{ 'signupPage.termsOfService' | translate }}</a>
+              {{ 'signupPage.and' | translate }}
+              <a href="#" class="terms-link">{{ 'signupPage.privacyPolicy' | translate }}</a>
+            </label>
+          </div>
+          <div *ngIf="signupForm.get('agreeTerms')?.invalid && signupForm.get('agreeTerms')?.touched" class="error-message">
+            You must agree to the terms and conditions
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="signup-button" [disabled]="isSubmitting">
+          <span *ngIf="!isSubmitting">{{ 'signupPage.createAccount' | translate }}</span>
+          <span *ngIf="isSubmitting">{{ 'signupPage.creatingAccount' | translate }}</span>
+        </button>
+
+        <!-- Login Link -->
+        <div class="login-link">
+          {{ 'signupPage.alreadyHaveAccount' | translate }}
+          <a routerLink="/login">{{ 'signupPage.logIn' | translate }}</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="signup-image-container"></div>
+  </div>
+</div>

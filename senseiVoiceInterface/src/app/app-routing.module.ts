@@ -33,6 +33,9 @@ import { PaymentSuccessComponent } from './components/speakerDasboard/payment-su
 import { PaymentFailedComponent } from './components/speakerDasboard/payment-failed/payment-failed.component';
 import { SuccessBalanceChargeComponent } from './components/speakerDasboard/success-balance-charge/success-balance-charge.component';
 import { ConditionsGeneralesVenteComponentComponent } from './components/mainSite/conditions-generales-vente-component/conditions-generales-vente-component.component';
+import { Register2Component} from './components/register2/register2.component';
+import { Register3Component} from './components/register3/register3.component';
+
 
 
 
@@ -66,6 +69,10 @@ const routes: Routes = [
     component: RegisterComponent,
     canActivate: [GuestGuard]
   },
+  { path: 'signup2', component: Register2Component },
+
+  { path: 'signup3', component: Register3Component },
+
     {
     path: 'reset',
     component: ResetPasswordComponent,

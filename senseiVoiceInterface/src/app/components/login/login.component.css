@@ -11,6 +11,49 @@
   padding: 1rem;
 }
 
+
+.navigation-section {
+  margin-top: 1.5rem;
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signup-prompt {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.signup-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 2px solid #CB1025;
+  color: #CB1025;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.signup-link-button:hover {
+  background: #CB1025;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.arrow-icon {
+  transition: transform 0.3s ease;
+}
+
+.signup-link-button:hover .arrow-icon {
+  transform: translateX(4px);
+}
+
 @media (min-width: 640px) {
   .login-container {
     padding: 1.5rem;
