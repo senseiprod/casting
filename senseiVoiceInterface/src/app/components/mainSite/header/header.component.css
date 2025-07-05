@@ -1,6 +1,8 @@
 /* Navigation Bar */
 .navbar {
   padding: 15px 0;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Logo styling */
@@ -30,11 +32,6 @@
   width: 100%;
 }
 
-
-#signupDropdown + .dropdown-menu {
-  margin-top: 0.1rem;
-}
-
 .logo-lines:before {
   top: 0;
 }
@@ -61,7 +58,7 @@
   color: #CB1025;
 }
 
-/* Better centering for navigation items */
+/* Desktop navigation centering */
 .navbar-nav.mx-auto {
   display: flex;
   justify-content: center;
@@ -103,6 +100,10 @@
 
 .dropdown-menu.show {
   display: block;
+}
+
+#signupDropdown + .dropdown-menu {
+  margin-top: 0.1rem;
 }
 
 /* Language Dropdown */
@@ -206,85 +207,73 @@
   border-top: 1px solid #e9ecef;
 }
 
-
-/* Center navbar content horizontally */
+/* Desktop container layout */
 .navbar .container {
   display: flex;
-  justify-content: center; /* center horizontally */
+  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* wrap on small screens */
-  gap: 1rem; /* space between logo, nav, right side */
-  padding: 0 1rem; /* some horizontal padding */
-  max-width: 100%;
+  padding: 0 1rem;
 }
 
-/* Center nav items in middle */
 .navbar-collapse {
   display: flex !important;
   justify-content: center !important;
   flex: 1 1 auto;
 }
 
-/* Make nav ul flex container centered */
-.navbar-nav.mx-auto {
-  justify-content: center !important;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  width: 100%;
-  max-width: 900px; /* optional max width for nav */
+/* Make CGV link uppercase and black */
+.navbar-nav.mx-auto li:last-child .nav-link {
+  text-transform: uppercase;
+  color: #000 !important;
+  font-weight: 500;
+  letter-spacing: 0.05em;
 }
 
-/* Adjust right side (UI language + auth) to stay on right but responsive */
-.d-flex.align-items-center {
-  flex-shrink: 0;
-  margin-left: auto;
+.navbar-nav.mx-auto li:last-child .nav-link:hover {
+  color: #CB1025 !important;
 }
-
-/* On smaller screens, stack vertically and center */
-@media (max-width: 768px) {
-  .navbar .container {
-    flex-direction: column;
-    align-items: center;
-  }
-  .navbar-collapse {
-    justify-content: center !important;
-    width: 100%;
-  }
-  .d-flex.align-items-center {
-    margin-left: 0;
-    margin-top: 0.75rem;
-  }
-}
-
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive Design for Laptop Screens */
-@media (max-width: 1400px) {
+/* RESPONSIVE DESIGN */
+
+/* Large Desktop */
+@media (min-width: 1400px) {
   .navbar {
-    padding: 12px 0;
+    padding: 20px 0;
   }
-  
   .logo-box {
-    width: 70px;
-    height: 70px;
-  }
-  
-  .nav-link {
-    margin: 0 6px;
-    font-size: 0.9rem;
-  }
-  
-  .btn-signup {
-    padding: 6px 12px;
-    font-size: 0.9rem;
+    width: 90px;
+    height: 90px;
   }
 }
 
-@media (max-width: 1200px) {
+/* Desktop */
+@media (min-width: 992px) {
+  .navbar .container {
+    justify-content: space-between;
+  }
+  
+  .navbar-collapse {
+    justify-content: center;
+  }
+  
+  .navbar-nav.mx-auto {
+    max-width: 900px;
+    justify-content: center;
+  }
+  
+  .d-flex.align-items-center {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+}
+
+/* Tablet */
+@media (max-width: 991.98px) {
   .navbar {
     padding: 10px 0;
   }
@@ -294,38 +283,59 @@
     height: 60px;
   }
   
-  .nav-link {
-    margin: 0 4px;
-    font-size: 0.85rem;
-    padding: 0.4rem 0.6rem;
+  .navbar-toggler {
+    border: none;
+    padding: 0.25rem 0.5rem;
   }
   
-  .btn-signup {
-    padding: 6px 10px;
-    font-size: 0.85rem;
+  .navbar-collapse {
+    margin-top: 1rem;
   }
   
-  /* Better spacing for smaller screens */
   .navbar-nav.mx-auto {
-    gap: 0.25rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 1rem;
   }
   
   .navbar-nav .nav-item {
-    margin: 0 0.1rem;
+    margin: 0.25rem 0;
+    width: 100%;
+    text-align: center;
   }
   
-  /* Adjust dropdown positioning */
-  .dropdown-menu {
-    margin-top: 0.1rem;
-  }
-}
-
-@media (max-width: 992px) {
-  .navbar {
-    padding: 8px 0;
+  .nav-link {
+    padding: 0.75rem 1rem;
+    display: block;
+    width: 100%;
   }
   
-  /* Mobile adjustments */
+  /* Language dropdown adjustments */
+  .language-dropdown {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    border: 1px solid #e9ecef;
+    margin-top: 0.5rem;
+    max-height: none;
+  }
+  
+  /* Right side elements */
+  .d-flex.align-items-center {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  /* UI Language dropdown */
+  .d-flex.align-items-center > .nav-item.dropdown {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* User dropdown adjustments */
   .user-dropdown {
     position: static;
     width: 100%;
@@ -334,40 +344,89 @@
     margin-top: 0.5rem;
   }
   
-  .navbar-nav {
-    text-align: center;
+  .avatar-container {
+    justify-content: center;
+    padding: 0.75rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767.98px) {
+  .navbar {
+    padding: 8px 0;
   }
   
-  .navbar-nav .nav-item {
-    margin: 0.25rem 0;
+  .logo-box {
+    width: 50px;
+    height: 50px;
   }
   
+  .navbar-brand {
+    margin-right: 0;
+  }
+  
+  .navbar-toggler {
+    margin-left: auto;
+  }
+  
+  .navbar .container {
+    padding: 0 0.75rem;
+  }
+  
+  .navbar-collapse {
+    margin-top: 0.75rem;
+    border-top: 1px solid #e9ecef;
+    padding-top: 0.75rem;
+  }
+  
+  .nav-link {
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+  }
+  
+  .btn-signup {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    width: auto;
+    display: inline-flex;
+    justify-content: center;
+  }
+  
+  /* Mobile dropdown menus */
   .dropdown-menu {
     position: static;
     width: 100%;
     box-shadow: none;
     border: 1px solid #e9ecef;
     margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Mobile language selector */
+  .d-flex.align-items-center > .nav-item.dropdown .dropdown-menu {
+    margin-bottom: 1rem;
+  }
+  
+  /* Mobile user avatar */
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .avatar-container span {
+    font-size: 0.9rem;
   }
 }
 
-@media (max-width: 768px) {
-
-   .navbar .container {
-    flex-direction: column;
-    align-items: center;
+/* Extra Small Mobile */
+@media (max-width: 575.98px) {
+  .navbar .container {
+    padding: 0 0.5rem;
   }
-  .navbar-collapse {
-    justify-content: center !important;
-    width: 100%;
-  }
-  .d-flex.align-items-center {
-    margin-left: 0;
-    margin-top: 0.75rem;
-  }
+  
   .logo-box {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
   }
   
   .nav-link {
@@ -376,39 +435,12 @@
   }
   
   .btn-signup {
-    padding: 8px 12px;
-    font-size: 0.9rem;
-  }
-}
-
-/* Additional centering improvements for specific screen sizes */
-@media (min-width: 992px) and (max-width: 1400px) {
-  .navbar-collapse {
-    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
   }
   
-  .navbar-nav.mx-auto {
-    flex: 1;
-    justify-content: center;
-    max-width: none;
+  /* Hide user name on very small screens */
+  .avatar-container .d-none.d-md-inline {
+    display: none !important;
   }
-  
-  .d-flex.align-items-center {
-    flex-shrink: 0;
-  }
-
-
-
-  /* Make CGV link uppercase and black */
-.navbar-nav.mx-auto li:last-child .nav-link {
-  text-transform: uppercase;
-  color: #000 !important;
-  font-weight: 500;
-  letter-spacing: 0.05em; /* optional for nice spacing */
-}
-
-.navbar-nav.mx-auto li:last-child .nav-link:hover {
-  color: #CB1025 !important;
-}
-
 }
