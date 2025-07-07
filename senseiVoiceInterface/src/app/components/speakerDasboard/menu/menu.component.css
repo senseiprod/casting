@@ -3076,3 +3076,14 @@
     font-size: 0.9rem;
   }
 }
+
+
+/* Ensure CGV modal appears above payment processing modal */
+.payment-processing-modal {
+  z-index: 1003;
+}
+
+/* Ensure CGV modal appears above payment method modal */
+.payment-method-modal {
+  z-index: 1002;
+}

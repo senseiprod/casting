@@ -324,17 +324,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   // Show balance options when generating paid content
   showPaymentMethodSelection() {
     this.calculatedPrice = this.price * this.actionData.text.length
-
-    // Check if CGV has been accepted for this session
-    if (!this.cgvAccepted) {
-      // Store the payment action to execute after CGV acceptance
-      this.pendingPaymentAction = () => {
-        this.proceedToPaymentSelection()
-      }
-      this.showCgvModal = true
-      return
-    }
-
     this.proceedToPaymentSelection()
   }
 
@@ -373,14 +362,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
 
   // Modified balance charge methods to also check CGV
   showBalanceChargeOptions() {
-    if (!this.cgvAccepted) {
-      this.pendingPaymentAction = () => {
-        this.proceedToBalanceCharge()
-      }
-      this.showCgvModal = true
-      return
-    }
-
     this.proceedToBalanceCharge()
   }
 
@@ -507,6 +488,20 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       return
     }
 
+    // Check if CGV has been accepted for this session
+    if (!this.cgvAccepted) {
+      // Store the payment action to execute after CGV acceptance
+      this.pendingPaymentAction = () => {
+        this.executeBalanceCharge()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.executeBalanceCharge()
+  }
+
+  private executeBalanceCharge() {
     console.log("All validations passed. Proceeding with charge amount:", this.chargeAmount)
 
     this.isChargingBalance = true
@@ -521,7 +516,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       this.chargeBalanceWithBankTransfer()
     }
   }
-
   // Charge balance with PayPal
   chargeBalanceWithPayPal() {
     if (!this.uuid) {
@@ -566,7 +560,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.balanceError = "Bank transfer balance charging not implemented yet"
     this.isChargingBalance = false
   }
-
   // Close balance options modal
   closeBalanceOptions() {
     this.showBalanceOptions = false
@@ -847,6 +840,35 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     }
   }
 
+  proceedWithPayment() {
+    if (!this.selectedPaymentMethod) {
+      this.paymentError = "Please select a payment method"
+      return
+    }
+
+    // Check if CGV has been accepted for this session
+    if (!this.cgvAccepted) {
+      // Store the payment action to execute after CGV acceptance
+      this.pendingPaymentAction = () => {
+        this.executeSelectedPayment()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.executeSelectedPayment()
+  }
+
+  private executeSelectedPayment() {
+    if (this.selectedPaymentMethod === "paypal") {
+      this.processPayPalPayment()
+    } else if (this.selectedPaymentMethod === "card") {
+      this.paymentError = "Card payment not implemented yet"
+    } else if (this.selectedPaymentMethod === "verment") {
+      this.processBankTransferPayment()
+    }
+  }
+
   selectPaymentMethod(method: "card" | "paypal" | "verment") {
     this.selectedPaymentMethod = method
   }
@@ -855,21 +877,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.showPaymentMethodModal = false
     this.selectedPaymentMethod = null
     this.paymentError = null
-  }
-
-  proceedWithPayment() {
-    if (!this.selectedPaymentMethod) {
-      this.paymentError = "Please select a payment method"
-      return
-    }
-
-    if (this.selectedPaymentMethod === "paypal") {
-      this.processPayPalPayment()
-    } else if (this.selectedPaymentMethod === "card") {
-      this.paymentError = "Card payment not implemented yet"
-    } else if (this.selectedPaymentMethod === "verment") {
-      this.processBankTransferPayment()
-    }
   }
 
   processPayPalPayment() {

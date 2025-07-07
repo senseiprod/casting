@@ -80,13 +80,6 @@
             {{ 'header.navigation.contact' | translate }}
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" 
-             routerLink="condition-of-sale" 
-             (click)="navigateToConditionOfSale(); $event.preventDefault()">
-            {{ 'footer.terms' | translate }}
-          </a>
-        </li>
       </ul>
 
       <!-- Right side: UI Language Selector + Auth Section -->
@@ -109,7 +102,7 @@
               <a class="dropdown-item" 
                  href="#" 
                  (click)="changeUILanguage('en'); $event.preventDefault()"
-                 [class.active]="getCurrentUILanguage() === 'en'">
+                 >
                 🇺🇸 {{ 'header.uiLanguage.options.english' | translate }}
               </a>
             </li>
@@ -117,7 +110,7 @@
               <a class="dropdown-item" 
                  href="#" 
                  (click)="changeUILanguage('fr'); $event.preventDefault()"
-                 [class.active]="getCurrentUILanguage() === 'fr'">
+                 >
                 🇫🇷 {{ 'header.uiLanguage.options.french' | translate }}
               </a>
             </li>
@@ -125,7 +118,7 @@
               <a class="dropdown-item" 
                  href="#" 
                  (click)="changeUILanguage('es'); $event.preventDefault()"
-                 [class.active]="getCurrentUILanguage() === 'es'">
+                 >
                 🇪🇸 {{ 'header.uiLanguage.options.spanish' | translate }}
               </a>
             </li>

@@ -169,6 +169,10 @@ export class MenuComponent implements OnInit {
   onCgvClosed() {
     this.showCgvModal = false
     this.pendingPaymentAction = null
+    
+    // Reopen the payment method modal if user cancels CGV
+    this.showBalanceChargeModal = true
+    
     // Reset any payment-related states
     this.chargeError = null
     this.paymentError = null
@@ -176,18 +180,8 @@ export class MenuComponent implements OnInit {
 
   // Modified balance charging methods to check CGV first
   showAddFundsModal(): void {
-    // Check if CGV has been accepted for this session
-    if (!this.cgvAccepted) {
-      // Store the payment action to execute after CGV acceptance
-      this.pendingPaymentAction = () => {
-        this.proceedToShowAddFundsModal()
-      }
-      this.showCgvModal = true
-      return
-    }
-
-    this.proceedToShowAddFundsModal()
-  }
+  this.proceedToShowAddFundsModal()
+}
 
   private proceedToShowAddFundsModal(): void {
     this.chargeAmount = Math.max(50, 100) // Default minimum charge amount
@@ -230,37 +224,54 @@ export class MenuComponent implements OnInit {
   }
 
   proceedWithBalanceCharge(): void {
-    if (!this.selectedChargeMethod) {
-      this.chargeError = "Please select a charging method"
-      return
-    }
-
-    const minimumAmount = this.getMinimumChargeAmount()
-    if (this.chargeAmount < minimumAmount) {
-      this.chargeError = `Minimum charge amount is ${minimumAmount} MAD`
-      return
-    }
-
-    if (this.chargeAmount <= 0) {
-      this.chargeError = "Please enter a valid charge amount"
-      return
-    }
-
-    this.isChargingBalance = true
-    this.chargeError = null
-
-    switch (this.selectedChargeMethod) {
-      case "paypal":
-        this.chargeBalanceWithPayPal()
-        break
-      case "card":
-        this.chargeBalanceWithCard()
-        break
-      case "verment":
-        this.chargeBalanceWithBankTransfer()
-        break
-    }
+  if (!this.selectedChargeMethod) {
+    this.chargeError = "Please select a charging method"
+    return
   }
+
+  const minimumAmount = this.getMinimumChargeAmount()
+  if (this.chargeAmount < minimumAmount) {
+    this.chargeError = `Minimum charge amount is ${minimumAmount} MAD`
+    return
+  }
+
+  if (this.chargeAmount <= 0) {
+    this.chargeError = "Please enter a valid charge amount"
+    return
+  }
+
+  // Check if CGV has been accepted for this session
+  if (!this.cgvAccepted) {
+    // Close the payment method modal before showing CGV modal
+    this.showBalanceChargeModal = false
+    
+    // Store the payment action to execute after CGV acceptance
+    this.pendingPaymentAction = () => {
+      this.executeBalanceCharge()
+    }
+    this.showCgvModal = true
+    return
+  }
+
+  this.executeBalanceCharge()
+}
+
+private executeBalanceCharge(): void {
+  this.isChargingBalance = true
+  this.chargeError = null
+
+  switch (this.selectedChargeMethod) {
+    case "paypal":
+      this.chargeBalanceWithPayPal()
+      break
+    case "card":
+      this.chargeBalanceWithCard()
+      break
+    case "verment":
+      this.chargeBalanceWithBankTransfer()
+      break
+  }
+}
 
   // PayPal balance charging - Updated to match your service
   chargeBalanceWithPayPal(): void {

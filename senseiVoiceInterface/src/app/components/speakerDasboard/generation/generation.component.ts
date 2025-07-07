@@ -242,17 +242,6 @@ export class GenerationComponent implements OnInit {
   // Show balance options when generating paid content
   showPaymentMethodSelection() {
     this.calculatedPrice = this.price * this.actionData.text.length
-
-    // Check if CGV has been accepted for this session
-    if (!this.cgvAccepted) {
-      // Store the payment action to execute after CGV acceptance
-      this.pendingPaymentAction = () => {
-        this.proceedToPaymentSelection()
-      }
-      this.showCgvModal = true
-      return
-    }
-
     this.proceedToPaymentSelection()
   }
   private proceedToPaymentSelection() {
@@ -290,14 +279,6 @@ export class GenerationComponent implements OnInit {
 
   // Modified balance charge methods to also check CGV
   showBalanceChargeOptions() {
-    if (!this.cgvAccepted) {
-      this.pendingPaymentAction = () => {
-        this.proceedToBalanceCharge()
-      }
-      this.showCgvModal = true
-      return
-    }
-
     this.proceedToBalanceCharge()
   }
 
@@ -427,6 +408,20 @@ export class GenerationComponent implements OnInit {
       return
     }
 
+    // Check if CGV has been accepted for this session
+    if (!this.cgvAccepted) {
+      // Store the payment action to execute after CGV acceptance
+      this.pendingPaymentAction = () => {
+        this.executeBalanceCharge()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.executeBalanceCharge()
+  }
+
+  private executeBalanceCharge() {
     console.log("All validations passed. Proceeding with charge amount:", this.chargeAmount)
 
     this.isChargingBalance = true
@@ -442,6 +437,70 @@ export class GenerationComponent implements OnInit {
     }
   }
 
+  // Close balance options modal
+  closeBalanceOptions() {
+    this.showBalanceOptions = false
+    this.selectedBalanceOption = null
+    this.balanceError = null
+    // DON'T reset chargeAmount here - keep it for the next modal
+    // this.chargeAmount = 0  // Remove this line
+  }
+
+  // Reset charge amount only when completely canceling the process
+  resetChargeAmount() {
+    this.chargeAmount = 0
+    console.log("Charge amount reset to:", this.chargeAmount)
+  }
+
+  // Modified generateSpeech method
+  generateSpeech() {
+    if (!this.selectedVoice) {
+      this.generationError = "Please select a voice first"
+      return
+    }
+
+    // For free test, enforce character limit
+    if (this.activeTab === "free") {
+      if (this.actionData.text.length > this.freeTestCharLimit) {
+        this.limitText()
+      }
+      this.processAudioGeneration()
+    }
+    // For audio request, show balance/payment options
+    else if (this.activeTab === "request") {
+      this.showPaymentMethodSelection()
+    }
+  }
+
+  // Get minimum charge amount
+  getMinimumChargeAmount(): number {
+    const deficit = Math.max(0, this.calculatedPrice - this.userBalance.balance)
+    const minimumCharge = Math.max(deficit, 10) // At least $10 or the deficit amount
+    console.log(
+      "Calculated minimum charge:",
+      minimumCharge,
+      "Deficit:",
+      deficit,
+      "Calculated price:",
+      this.calculatedPrice,
+      "Balance:",
+      this.userBalance.balance,
+    ) // Debug log
+    return minimumCharge
+  }
+
+  // Rest of the existing methods remain the same...
+  fetchUserProjects() {
+    this.projectService.getAllProjects().subscribe(
+      (data) => {
+        this.projects = data
+        console.log("Projects retrieved:", this.projects)
+      },
+      (error) => {
+        console.error("Error retrieving projects:", error)
+      },
+    )
+  }
   // Charge balance with PayPal
   chargeBalanceWithPayPal() {
     if (!this.userId) {
@@ -514,72 +573,6 @@ export class GenerationComponent implements OnInit {
     })
     */
   }
-
-  // Close balance options modal
-  closeBalanceOptions() {
-    this.showBalanceOptions = false
-    this.selectedBalanceOption = null
-    this.balanceError = null
-    // DON'T reset chargeAmount here - keep it for the next modal
-    // this.chargeAmount = 0  // Remove this line
-  }
-
-  // Reset charge amount only when completely canceling the process
-  resetChargeAmount() {
-    this.chargeAmount = 0
-    console.log("Charge amount reset to:", this.chargeAmount)
-  }
-
-  // Modified generateSpeech method
-  generateSpeech() {
-    if (!this.selectedVoice) {
-      this.generationError = "Please select a voice first"
-      return
-    }
-
-    // For free test, enforce character limit
-    if (this.activeTab === "free") {
-      if (this.actionData.text.length > this.freeTestCharLimit) {
-        this.limitText()
-      }
-      this.processAudioGeneration()
-    }
-    // For audio request, show balance/payment options
-    else if (this.activeTab === "request") {
-      this.showPaymentMethodSelection()
-    }
-  }
-
-  // Get minimum charge amount
-  getMinimumChargeAmount(): number {
-    const deficit = Math.max(0, this.calculatedPrice - this.userBalance.balance)
-    const minimumCharge = Math.max(deficit, 10) // At least $10 or the deficit amount
-    console.log(
-      "Calculated minimum charge:",
-      minimumCharge,
-      "Deficit:",
-      deficit,
-      "Calculated price:",
-      this.calculatedPrice,
-      "Balance:",
-      this.userBalance.balance,
-    ) // Debug log
-    return minimumCharge
-  }
-
-  // Rest of the existing methods remain the same...
-  fetchUserProjects() {
-    this.projectService.getAllProjects().subscribe(
-      (data) => {
-        this.projects = data
-        console.log("Projects retrieved:", this.projects)
-      },
-      (error) => {
-        console.error("Error retrieving projects:", error)
-      },
-    )
-  }
-
   selectProject(project: Project) {
     this.selectedProject = project
     this.showProjectSelection = false
@@ -627,6 +620,20 @@ export class GenerationComponent implements OnInit {
       return
     }
 
+    // Check if CGV has been accepted for this session
+    if (!this.cgvAccepted) {
+      // Store the payment action to execute after CGV acceptance
+      this.pendingPaymentAction = () => {
+        this.executeSelectedPayment()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.executeSelectedPayment()
+  }
+
+  private executeSelectedPayment() {
     if (this.selectedPaymentMethod === "paypal") {
       this.processPayPalPayment()
     } else if (this.selectedPaymentMethod === "card") {
