@@ -402,9 +402,11 @@ body {
   }
 }
 .header-container {
-  width: 100%;
-  margin-top: -100px;
+   width: 100%;
+  margin-top: -35px;
   text-align: center;
+  position: relative;
+  z-index: 999;
 }
 
 .nav-buttons {
@@ -412,6 +414,8 @@ body {
   justify-content: center;
   gap: 10px;
   margin-bottom: 15px;
+  position: relative;
+  z-index: 1000;
 }
 
 .nav-button {
@@ -424,12 +428,28 @@ body {
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .nav-button:hover {
   background-color: #a51a30;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-decoration: none;
+}
+
+
+.nav-button:active {
+  transform: translateY(0px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.3);
 }
 
 .main-title {

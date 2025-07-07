@@ -89,7 +89,7 @@
                       <div class="play-icon"></div>
                     </div>
                     <div class="card-name">YOUNESS RAFIA</div>
-                    <div class="card-subtitle">{{ 'landingPage.profiles.artist' | translate }}</div>
+                    <div class="card-subtitle">{{ 'Speaker' | translate }}</div>
                   </div>
                 </div>
               </div>
@@ -106,7 +106,7 @@
                       <div class="play-icon"></div>
                     </div>
                     <div class="card-name">HOUDA BOUKHALEF</div>
-                    <div class="card-subtitle">{{ 'landingPage.profiles.artist' | translate }}</div>
+                    <div class="card-subtitle">{{ 'Speaker' | translate }}</div>
                   </div>
                 </div>
               </div>
@@ -123,7 +123,7 @@
                       <div class="play-icon"></div>
                     </div>
                     <div class="card-name">SARA EL RHANI</div>
-                    <div class="card-subtitle">{{ 'landingPage.profiles.artist' | translate }} <span class="text-danger">{{ 'landingPage.profiles.textAnalysis' | translate }}</span></div>
+                    <div class="card-subtitle">{{ 'Speaker' | translate }} <span class="text-danger">{{ 'landingPage.profiles.textAnalysis' | translate }}</span></div>
                   </div>
                 </div>
               </div>
@@ -140,7 +140,7 @@
                       <div class="play-icon"></div>
                     </div>
                     <div class="card-name">SAAD ESSABIL</div>
-                    <div class="card-subtitle">{{ 'landingPage.profiles.artist' | translate }} <span class="text-danger">{{ 'landingPage.profiles.textAnalysis' | translate }}</span></div>
+                    <div class="card-subtitle">{{ 'Speaker' | translate }} <span class="text-danger">{{ 'landingPage.profiles.textAnalysis' | translate }}</span></div>
                   </div>
                 </div>
               </div>
@@ -154,13 +154,14 @@
 </div>
 <div class="header-container" style="margin-top:-35px">
   <div class="nav-buttons">
-    <button class="nav-button" routerLink="login">{{ 'landingPage.navigation.speakers' | translate }}</button>
-    <button class="nav-button" routerLink="login">{{ 'landingPage.navigation.celebrities' | translate }}</button>
-    <button class="nav-button" routerLink="login">{{ 'landingPage.navigation.advertisers' | translate }}</button>
-    <button class="nav-button" routerLink="login">{{ 'landingPage.navigation.creators' | translate }}</button>
+    <a class="nav-button" [routerLink]="['/signup2']">{{ 'landingPage.navigation.speakers' | translate }}</a>
+    <a class="nav-button" [routerLink]="['/signup2']">{{ 'landingPage.navigation.celebrities' | translate }}</a>
+    <a class="nav-button" [routerLink]="['/signup3']">{{ 'landingPage.navigation.advertisers' | translate }}</a>
+    <a class="nav-button" [routerLink]="['/signup3']">{{ 'landingPage.navigation.creators' | translate }}</a>
   </div>
   <h1 class="main-title">{{ 'landingPage.aiSection.title' | translate }}</h1>
 </div>
+
 <div class="container py-4">
   <div class="content-section">
     <div class="row align-items-center">
@@ -190,7 +191,10 @@
           <p style="color: white">{{ 'landingPage.aiSection.description2' | translate }}</p>
         </div>
 
-        <button class="btn btn-custom">{{ 'landingPage.aiSection.signUp' | translate }}</button>
+        <a class="btn btn-custom" [routerLink]="['/signup3']">
+  {{ 'landingPage.aiSection.signUp' | translate }}
+</a>
+
       </div>
       <div class="col-md-6 mt-4 mt-md-0">
         <img src="assets/img/Capture.png" alt="Application mobile voix" class="device-image" style="width:400px;hieght:500px">
