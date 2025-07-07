@@ -1,5 +1,11 @@
 {
-  
+  "darija": {
+    "options": "Darija Options",
+    "dialect": "Dialect",
+    "selectDialect": "Select Dialect",
+    "performanceStyle": "Performance Style",
+    "selectPerformance": "Select Performance Style"
+},
   "footer": {
     "about": "Our platform offers a selection of professional speakers ready to bring your advertising projects, videos, podcasts, e-learning, and more to life.",
     "quickLinks": "Quick Links",
