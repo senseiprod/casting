@@ -445,63 +445,6 @@ export class GenerationComponent implements OnInit {
     // DON'T reset chargeAmount here - keep it for the next modal
     // this.chargeAmount = 0  // Remove this line
   }
-
-  // Reset charge amount only when completely canceling the process
-  resetChargeAmount() {
-    this.chargeAmount = 0
-    console.log("Charge amount reset to:", this.chargeAmount)
-  }
-
-  // Modified generateSpeech method
-  generateSpeech() {
-    if (!this.selectedVoice) {
-      this.generationError = "Please select a voice first"
-      return
-    }
-
-    // For free test, enforce character limit
-    if (this.activeTab === "free") {
-      if (this.actionData.text.length > this.freeTestCharLimit) {
-        this.limitText()
-      }
-      this.processAudioGeneration()
-    }
-    // For audio request, show balance/payment options
-    else if (this.activeTab === "request") {
-      this.showPaymentMethodSelection()
-    }
-  }
-
-  // Get minimum charge amount
-  getMinimumChargeAmount(): number {
-    const deficit = Math.max(0, this.calculatedPrice - this.userBalance.balance)
-    const minimumCharge = Math.max(deficit, 10) // At least $10 or the deficit amount
-    console.log(
-      "Calculated minimum charge:",
-      minimumCharge,
-      "Deficit:",
-      deficit,
-      "Calculated price:",
-      this.calculatedPrice,
-      "Balance:",
-      this.userBalance.balance,
-    ) // Debug log
-    return minimumCharge
-  }
-
-  // Rest of the existing methods remain the same...
-  fetchUserProjects() {
-    this.projectService.getAllProjects().subscribe(
-      (data) => {
-        this.projects = data
-        console.log("Projects retrieved:", this.projects)
-      },
-      (error) => {
-        console.error("Error retrieving projects:", error)
-      },
-    )
-  }
-  // Charge balance with PayPal
   chargeBalanceWithPayPal() {
     if (!this.userId) {
       this.balanceError = "User ID not found"
@@ -573,6 +516,62 @@ export class GenerationComponent implements OnInit {
     })
     */
   }
+  // Reset charge amount only when completely canceling the process
+  resetChargeAmount() {
+    this.chargeAmount = 0
+    console.log("Charge amount reset to:", this.chargeAmount)
+  }
+
+  // Modified generateSpeech method
+  generateSpeech() {
+    if (!this.selectedVoice) {
+      this.generationError = "Please select a voice first"
+      return
+    }
+
+    // For free test, enforce character limit
+    if (this.activeTab === "free") {
+      if (this.actionData.text.length > this.freeTestCharLimit) {
+        this.limitText()
+      }
+      this.processAudioGeneration()
+    }
+    // For audio request, show balance/payment options
+    else if (this.activeTab === "request") {
+      this.showPaymentMethodSelection()
+    }
+  }
+
+  // Get minimum charge amount
+  getMinimumChargeAmount(): number {
+    const deficit = Math.max(0, this.calculatedPrice - this.userBalance.balance)
+    const minimumCharge = Math.max(deficit, 10) // At least $10 or the deficit amount
+    console.log(
+      "Calculated minimum charge:",
+      minimumCharge,
+      "Deficit:",
+      deficit,
+      "Calculated price:",
+      this.calculatedPrice,
+      "Balance:",
+      this.userBalance.balance,
+    ) // Debug log
+    return minimumCharge
+  }
+
+  // Rest of the existing methods remain the same...
+  fetchUserProjects() {
+    this.projectService.getAllProjects().subscribe(
+      (data) => {
+        this.projects = data
+        console.log("Projects retrieved:", this.projects)
+      },
+      (error) => {
+        console.error("Error retrieving projects:", error)
+      },
+    )
+  }
+
   selectProject(project: Project) {
     this.selectedProject = project
     this.showProjectSelection = false
@@ -885,8 +884,8 @@ export class GenerationComponent implements OnInit {
     const requestBody = {
       text: this.actionData.text,
       id_voice: this.selectedVoice!.id,
-      dialect_id: "35",
-      performance_id: "1284",
+      dialect_id: this.selectedDialect || "35", // Use selected dialect or default
+      performance_id: this.selectedPerformanceStyle || "1284", // Use selected performance or default
       input_mode: "0",
     }
 
@@ -1041,13 +1040,15 @@ export class GenerationComponent implements OnInit {
     }))
   }
 
-  onDialectChange(dialectId: string): void {
+  onDialectChange(event: any): void {
+    const dialectId = event.target.value
     this.selectedDialect = dialectId
     this.filters.dialect = dialectId
     this.applyFilters()
   }
 
-  onPerformanceStyleChange(styleId: string): void {
+  onPerformanceStyleChange(event: any): void {
+    const styleId = event.target.value
     this.selectedPerformanceStyle = styleId
     this.filters.performanceStyle = styleId
     this.applyFilters()
@@ -1261,6 +1262,11 @@ export class GenerationComponent implements OnInit {
   selectVoice(voice: Voice | LahajatiVoice): void {
     this.selectedVoice = voice as Voice
     this.price = voice.price || this.price
+    
+    // Load Lahajati data if Darija voice is selected
+    if (voice.language === 'darija' && !this.lahajatiDataLoaded) {
+      this.fetchLahajatiData()
+    }
   }
 
   closeModal() {

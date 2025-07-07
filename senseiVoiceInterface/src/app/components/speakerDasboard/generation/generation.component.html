@@ -102,6 +102,37 @@
                 </div>
               </div>
             </div>
+            <!-- Darija-specific options -->
+            <div class="darija-options" *ngIf="selectedVoice && selectedVoice.language === 'darija'">
+              <h5>{{ 'darija.options' | translate }}</h5>
+              <div class="darija-selectors">
+                <div class="selector-group">
+                  <label for="dialectSelect">{{ 'darija.dialect' | translate }}:</label>
+                  <select id="dialectSelect" 
+                          class="filter-select" 
+                          [(ngModel)]="selectedDialect" 
+                          (change)="onDialectChange($event)">
+                    <option value="">{{ 'darija.selectDialect' | translate }}</option>
+                    <option *ngFor="let dialect of lahajatiDialects" [value]="dialect.dialect_id">
+                      {{ dialect.display_name }}
+                    </option>
+                  </select>
+                </div>
+                
+                <div class="selector-group">
+                  <label for="performanceSelect">{{ 'darija.performanceStyle' | translate }}:</label>
+                  <select id="performanceSelect" 
+                          class="filter-select" 
+                          [(ngModel)]="selectedPerformanceStyle" 
+                          (change)="onPerformanceStyleChange($event)">
+                    <option value="">{{ 'darija.selectPerformance' | translate }}</option>
+                    <option *ngFor="let style of lahajatiPerformanceStyles" [value]="style.performance_id">
+                      {{ style.display_name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
             <div class="generation-info">
               <div class="info-badges">
                 <span class="info-badge">
@@ -211,6 +242,37 @@
                 [(ngModel)]="actionData.text"
                 [placeholder]="'Enter your text for audio request...' | translate">
               </textarea>
+            </div>
+            <!-- Darija-specific options -->
+            <div class="darija-options" *ngIf="selectedVoice && selectedVoice.language === 'darija'">
+              <h5>{{ 'darija.options' | translate }}</h5>
+              <div class="darija-selectors">
+                <div class="selector-group">
+                  <label for="dialectSelect">{{ 'darija.dialect' | translate }}:</label>
+                  <select id="dialectSelect" 
+                          class="filter-select" 
+                          [(ngModel)]="selectedDialect" 
+                          (change)="onDialectChange($event.target)">
+                    <option value="">{{ 'darija.selectDialect' | translate }}</option>
+                    <option *ngFor="let dialect of lahajatiDialects" [value]="dialect.dialect_id">
+                      {{ dialect.display_name }}
+                    </option>
+                  </select>
+                </div>
+                
+                <div class="selector-group">
+                  <label for="performanceSelect">{{ 'darija.performanceStyle' | translate }}:</label>
+                  <select id="performanceSelect" 
+                          class="filter-select" 
+                          [(ngModel)]="selectedPerformanceStyle" 
+                          (change)="onPerformanceStyleChange($event)">
+                    <option value="">{{ 'darija.selectPerformance' | translate }}</option>
+                    <option *ngFor="let style of lahajatiPerformanceStyles" [value]="style.performance_id">
+                      {{ style.display_name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
             </div>
             <div class="generation-info">
               <div class="info-badges">
