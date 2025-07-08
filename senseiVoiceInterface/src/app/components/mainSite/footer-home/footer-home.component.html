@@ -68,15 +68,22 @@
       </div>
     </div>
 
-    <div class="footer-bottom">
-      <div class="copyright">
-        &copy; {{ currentYear }} senseiprod. {{ 'footer.copyright' | translate }}
-      </div>
-      <div class="footer-bottom-links">
-        <a routerLink="condition-of-sale">{{ 'footer.terms' | translate }}</a>
-        <!-- <a routerLink="condition-of-sale">{{ 'footer.privacy' | translate }}</a>
-        <a routerLink="condition-of-sale">{{ 'footer.legal' | translate }}</a> -->
-      </div>
+  <div class="footer-bottom">
+  <div class="footer-bottom-inner">
+    <div class="copyright">
+      &copy; {{ currentYear }} senseiprod. {{ 'footer.copyright' | translate }}
     </div>
+    <div class="payzone">
+      <img src="/assets/img/Box1.png" alt="payzone">
+    </div>
+    <div class="footer-bottom-links">
+      <a routerLink="condition-of-sale">{{ 'footer.terms' | translate }}</a>
+    </div>
+  </div>
+</div>
+
+
+
+
   </div>
 </footer>
