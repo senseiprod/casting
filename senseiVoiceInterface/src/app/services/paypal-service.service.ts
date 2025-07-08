@@ -22,4 +22,12 @@ export class PaypalService {
       { params }
     );
   }
+
+  createBankTransfer(uuid: string, price: number): Observable<any> {
+    const params = new HttpParams()
+      .set('uuid', uuid)
+      .set('price', price.toString());
+
+    return this.http.post<any>(`${this.baseUrl}/create`, null, { params });
+  }
 }

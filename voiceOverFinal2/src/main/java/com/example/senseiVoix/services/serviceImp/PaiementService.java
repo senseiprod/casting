@@ -82,14 +82,21 @@ public class PaiementService {
         throw new IllegalStateException("Approval URL not found in PayPal response.");
     }
     
-        public BankTransferResponse createBankTransferResponse(String uuid, double price) {
+    public BankTransferResponse createBankTransferResponse(String uuid, double price) {
         try {
            Utilisateur utilisateur =  utilisateurRepository.findByUuid(uuid);
            Payment payment = new Payment();
             payment.setUtilisateur(utilisateur);
-            payment.setLibelle(generateUniqueLibelle());
             // Generate unique libellé and update action
             String libelle = generateUniqueLibelle();
+            payment.setLibelle(generateUniqueLibelle());
+            payment.setLibelle(libelle);
+            payment.setPrice(price);
+            payment.setStatus(PaymentStatus.PENDING);
+            payment.setRib(COMPANY_RIB);
+            payment.setBankName(BANK_NAME);
+            payment.setAccountHolder(ACCOUNT_HOLDER);
+            paymentRepository.save(payment);
             // Create response
             BankTransferResponse response = new BankTransferResponse();
             response.setLibelle(libelle);

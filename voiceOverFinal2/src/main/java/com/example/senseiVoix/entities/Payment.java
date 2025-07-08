@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+import com.example.senseiVoix.enumeration.PaymentStatus;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -25,6 +27,9 @@ public class Payment extends BaseModel{
     private String message;
     private String bankName;
     private String accountHolder;
+    
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
 
     public Utilisateur getUtilisateur() {
         return utilisateur;

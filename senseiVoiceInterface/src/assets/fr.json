@@ -253,6 +253,12 @@
     "acceptAndContinue": "Accepter et Continuer"
   },
   "payment": {
+    "bankTransferInstructions": "Veuillez suivre les instructions ci-dessous pour effectuer votre virement bancaire.",
+    "transferDetails": "Détails du virement bancaire",
+    "bankName": "Nom de la banque",
+    "accountHolder": "Titulaire du compte",
+    "rib": "IBAN/RIB",
+    "includeReference": "Veuillez inclure la référence lors du virement.",
     "selectMethod": "Sélectionner un mode de paiement",
     "orderSummary": "Résumé de la commande",
     "textLength": "Longueur du texte",

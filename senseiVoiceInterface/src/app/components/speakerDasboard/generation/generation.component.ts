@@ -477,44 +477,33 @@ export class GenerationComponent implements OnInit {
   // Charge balance with bank transfer
   chargeBalanceWithBankTransfer() {
     if (!this.userId) {
-      this.balanceError = "User ID not found"
-      this.isChargingBalance = false
-      return
+      this.balanceError = "User ID not found";
+      this.isChargingBalance = false;
+      return;
     }
-
-    console.log("Charging balance with bank transfer, amount:", this.chargeAmount)
-
-    // Create bank transfer request for balance charging
-    const bankTransferRequest = {
-      userId: this.userId,
-      amount: this.chargeAmount,
-      type: "balance_charge", // Distinguish from regular payments
-    }
-
-    // You would call your service method here for bank transfer balance charging
-    // For now, we'll show it's not implemented
-    this.balanceError = "Bank transfer balance charging not implemented yet"
-    this.isChargingBalance = false
-
-    // When implemented, it would look something like:
-    /*
-    this.paypalService.chargeBalanceWithBankTransfer(bankTransferRequest).subscribe({
-      next: (response) => {
-        console.log("Bank transfer balance charge response:", response)
+  
+    console.log("Charging balance with bank transfer, amount:", this.chargeAmount);
+  
+    this.paypalService.createBankTransfer(this.userId, this.chargeAmount).subscribe({
+      next: (response: any) => {
+        console.log("Bank transfer balance charge response:", response);
         
-        // Handle the response - might show bank details for manual transfer
-        this.bankTransferDetails = response
-        this.isChargingBalance = false
-        this.closeBalanceChargeModal()
-        this.showBankTransferModal = true
+        // Store the bank transfer details
+        this.bankTransferDetails = response;
+        this.bankTransferReference = response.libelle; // Using libelle as reference
+        
+        this.isChargingBalance = false;
+        this.closeBalanceChargeModal();
+        
+        // Show bank transfer details modal
+        this.showBankTransferModal = true;
       },
       error: (error) => {
-        console.error("Error charging balance with bank transfer:", error)
-        this.balanceError = error.error?.message || "Failed to charge balance with bank transfer"
-        this.isChargingBalance = false
+        console.error("Error charging balance with bank transfer:", error);
+        this.balanceError = error.error?.message || "Failed to charge balance with bank transfer";
+        this.isChargingBalance = false;
       },
-    })
-    */
+    });
   }
   // Reset charge amount only when completely canceling the process
   resetChargeAmount() {

@@ -549,16 +549,33 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   // Charge balance with bank transfer
   chargeBalanceWithBankTransfer() {
     if (!this.uuid) {
-      this.balanceError = "User ID not found"
-      this.isChargingBalance = false
-      return
+      this.balanceError = "User ID not found";
+      this.isChargingBalance = false;
+      return;
     }
-
-    console.log("Charging balance with bank transfer, amount:", this.chargeAmount)
-
-    // For now, show it's not implemented
-    this.balanceError = "Bank transfer balance charging not implemented yet"
-    this.isChargingBalance = false
+  
+    console.log("Charging balance with bank transfer, amount:", this.chargeAmount);
+  
+    this.paypalService.createBankTransfer(this.uuid, this.chargeAmount).subscribe({
+      next: (response: any) => {
+        console.log("Bank transfer balance charge response:", response);
+        
+        // Store the bank transfer details
+        this.bankTransferDetails = response;
+        this.bankTransferReference = response.libelle; // Using libelle as reference
+        
+        this.isChargingBalance = false;
+        this.closeBalanceChargeModal();
+        
+        // Show bank transfer details modal
+        this.showBankTransferModal = true;
+      },
+      error: (error) => {
+        console.error("Error charging balance with bank transfer:", error);
+        this.balanceError = error.error?.message || "Failed to charge balance with bank transfer";
+        this.isChargingBalance = false;
+      },
+    });
   }
   // Close balance options modal
   closeBalanceOptions() {

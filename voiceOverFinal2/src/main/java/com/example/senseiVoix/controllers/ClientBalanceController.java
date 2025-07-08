@@ -1,5 +1,6 @@
 package com.example.senseiVoix.controllers;
 
+import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.services.serviceImp.PaiementService;
 import com.paypal.base.rest.PayPalRESTException;
 
@@ -55,5 +56,11 @@ public class ClientBalanceController {
         }
     }
 
-    
+        @PostMapping("/create")
+    public BankTransferResponse createBankTransfer(
+            @RequestParam("uuid") String uuid,
+            @RequestParam("price") double price) {
+
+        return paiementService.createBankTransferResponse(uuid, price);
+    }
 }
