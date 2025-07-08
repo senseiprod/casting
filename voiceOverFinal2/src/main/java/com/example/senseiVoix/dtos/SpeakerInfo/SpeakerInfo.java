@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
 
 
@@ -28,8 +29,9 @@ public class SpeakerInfo {
     @Size(max = 150)
     private String email;
 
-    @NotBlank(message = "Phone is required")
-    @Size(max = 20)
+
+
+
     private String phone;
 
     @NotNull(message = "Birthdate is required")

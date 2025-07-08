@@ -21,6 +21,7 @@ export class Register3Component implements OnInit {
       lastName: ['', Validators.required],
       companyName: [''], // Optional
       email: ['', [Validators.required, Validators.email]],
+      // This line is already correct. It has a pattern validator but does not require a value.
       phone: ['', [Validators.pattern(/^\+?[0-9\s\-]+$/)]],
       password: ['', [
         Validators.required,
@@ -58,24 +59,20 @@ export class Register3Component implements OnInit {
 
     const formValue = this.signupForm.value;
 
-    // --- Create a payload that matches the full SpeakerInfo DTO ---
     const speakerData = {
       // 1. Map fields from this form
       fullName: `CLIENT ${formValue.firstName.trim()} ${formValue.lastName.trim()}`,
       email: formValue.email,
-      phone: formValue.phone,
+      // --- FIX: If phone is an empty string, send null instead. ---
+      phone: formValue.phone || null,
       agreeTerms: formValue.agreeTerms,
       artistName: formValue.companyName,
 
-      // =================================================================
-      // === FIX: Provide dummy data for fields that are required     ===
-      // === by the backend but not present in this form.            ===
-      // =================================================================
-      birthdate: '1900-01-01', // A valid, non-null date string to pass @NotNull
-      location: 'Not Specified',  // A non-blank string to pass @NotBlank
-      // =================================================================
-
-      // 2. Provide default values for all other non-required fields
+      // Dummy data for required fields
+      birthdate: '1900-01-01',
+      location: 'Not Specified',
+      
+      // Default values for other fields
       currentJob: 'Client',
       experienceYears: 0,
       langArabicClassical: false,
@@ -102,13 +99,11 @@ export class Register3Component implements OnInit {
       signatureDate: new Date().toISOString().split('T')[0],
     };
 
-    // 3. Use FormData because the endpoint consumes multipart/form-data
     const formData = new FormData();
     formData.append('speakerData', new Blob([JSON.stringify(speakerData)], {
         type: 'application/json'
     }));
 
-    // 4. Send the request
     this.http.post(`${environment.apiUrl}/api/speakersInfo/register`, formData).subscribe({
       next: () => {
         this.signupSuccess = true;

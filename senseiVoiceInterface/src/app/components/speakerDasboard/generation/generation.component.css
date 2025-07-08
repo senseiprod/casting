@@ -287,7 +287,7 @@ body {
 
 .waveform-visualization {
   display: flex;
-  align-items: end;
+  align-items: flex-end; /* FIX: Changed from 'end' for better browser compatibility */
   gap: 3px;
   height: 60px;
 }
@@ -643,7 +643,7 @@ body {
 
 .audio-waveform-bars {
   display: flex;
-  align-items: end;
+  align-items: flex-end; /* FIX: Changed from 'end' for better browser compatibility */
   justify-content: center;
   gap: 3px;
   height: 60px;
@@ -956,11 +956,62 @@ body {
   border-color: rgba(244, 63, 94, 0.2);
 }
 
+/**************************************************/
+/* === START: CORRECTED SELECTED CARD STYLES === */
+/**************************************************/
+
 .voice-card.selected {
-  border-color: #f43f5e;
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.05) 0%, rgba(244, 63, 94, 0.02) 100%);
-  box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  /* The new red-to-black gradient background */
+   background: linear-gradient(135deg, #cb1025 0%, #000000 75%);
+  
+  /* A border and shadow that match the new theme */
+  border-color: #cb1025;
+  box-shadow: 0 8px 30px rgba(203, 16, 37, 0.5);
+  
+  /* Set the default text color for everything inside to white */
+  color: #ffffff; 
 }
+
+/* Override specific text elements to be white for readability */
+.voice-card.selected .voice-card-name,
+.voice-card.selected .voice-card-meta,
+.voice-card.selected .voice-meta-separator {
+  color: #ffffff;
+}
+
+/* Override the badges to look good on the dark background */
+.voice-card.selected .voice-badge {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+/* Override the buttons to look good on the dark background */
+.voice-card.selected .voice-preview-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.voice-card.selected .voice-preview-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.voice-card.selected .voice-select-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+.voice-card.selected .voice-select-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/************************************************/
+/* === END: CORRECTED SELECTED CARD STYLES === */
+/************************************************/
+
 
 .voice-card-header {
   position: relative;
