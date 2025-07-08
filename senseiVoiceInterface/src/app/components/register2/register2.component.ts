@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register2.component.html',
@@ -14,7 +15,7 @@ export class Register2Component implements OnInit {
   isSubmitting = false;
   fileError = '';
   expandedSections: { [key: string]: boolean } = {
-    personal: true, // First section expanded by default
+    personal: true,
     professional: false,
     languages: false,
     voiceType: false,
@@ -27,18 +28,22 @@ export class Register2Component implements OnInit {
     declaration: false
   };
 
+  // This will hold the actual file object for submission
+  private selectedAudioFile: File | null = null;
+
   constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
+    // Form group definition remains the same
     this.signupForm = this.fb.group({
-      fullName: [''],
+      fullName: ['', Validators.required],
       artistName: [''],
-      email: [''],
-      phone: [''],
-      birthdate: [''],
-      location: [''],
-      currentJob: [''],
-      experienceYears: [''],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      birthdate: ['', Validators.required],
+      location: ['', Validators.required],
+      currentJob: ['', Validators.required],
+      experienceYears: ['', [Validators.required, Validators.min(0)]],
       langArabicClassical: [false],
       langDarija: [false],
       langFrench: [false],
@@ -54,29 +59,28 @@ export class Register2Component implements OnInit {
       voiceDynamic: [false],
       voiceOther: [''],
       demoLink: [''],
-      demoFile: [''],
-      hasStudio: [''], // Changed from boolean to string
+      demoFile: [''], // Control is used for display and validation UI, but not sent directly
+      hasStudio: ['', Validators.required],
       studioDescription: [''],
-      professionalExperience: [''],
+      professionalExperience: ['', Validators.required],
       socialLinks: [''],
-      voiceCloningConsent: [''], // Changed from boolean to string
-      agreeTerms: [false],
-      digitalSignature: [''],
-      signatureDate: [''],
+      voiceCloningConsent: ['', Validators.required],
+      agreeTerms: [false, Validators.requiredTrue],
+      digitalSignature: ['', Validators.required],
+      signatureDate: ['', Validators.required],
     });
 
-    // Set today's date as default for signature date
     const today = new Date().toISOString().split('T')[0];
     this.signupForm.patchValue({ signatureDate: today });
 
-    // React to hasStudio to toggle studioDescription validator
     this.signupForm.get('hasStudio')?.valueChanges.subscribe(value => {
+      const studioDescControl = this.signupForm.get('studioDescription');
       if (value === 'yes') {
-        this.signupForm.get('studioDescription')?.setValidators(Validators.required);
+        studioDescControl?.setValidators(Validators.required);
       } else {
-        this.signupForm.get('studioDescription')?.clearValidators();
+        studioDescControl?.clearValidators();
       }
-      this.signupForm.get('studioDescription')?.updateValueAndValidity();
+      studioDescControl?.updateValueAndValidity();
     });
   }
 
@@ -85,56 +89,18 @@ export class Register2Component implements OnInit {
   }
 
   getCompletedSectionsCount(): number {
+    // This logic does not need to change
     let count = 0;
-    
-    // Personal section
-    if (this.signupForm.get('fullName')?.value && 
-        this.signupForm.get('email')?.value && 
-        this.signupForm.get('phone')?.value &&
-        this.signupForm.get('birthdate')?.value &&
-        this.signupForm.get('location')?.value) count++;
-    
-    // Professional section
-    if (this.signupForm.get('currentJob')?.value && 
-        this.signupForm.get('experienceYears')?.value) count++;
-    
-    // Languages section
-    if (this.signupForm.get('langArabicClassical')?.value || 
-        this.signupForm.get('langDarija')?.value ||
-        this.signupForm.get('langFrench')?.value ||
-        this.signupForm.get('langEnglish')?.value ||
-        this.signupForm.get('langSpanish')?.value ||
-        this.signupForm.get('otherLanguages')?.value) count++;
-    
-    // Voice type section
-    if (this.signupForm.get('voiceFemale')?.value || 
-        this.signupForm.get('voiceMale')?.value ||
-        this.signupForm.get('voiceTeenChild')?.value ||
-        this.signupForm.get('voiceSenior')?.value ||
-        this.signupForm.get('voiceNeutral')?.value ||
-        this.signupForm.get('voiceDeep')?.value ||
-        this.signupForm.get('voiceDynamic')?.value ||
-        this.signupForm.get('voiceOther')?.value) count++;
-    
-    // Demo section
-    if (this.signupForm.get('demoLink')?.value || 
-        this.signupForm.get('demoFile')?.value) count++;
-    
-    // Studio section
-    if (this.signupForm.get('hasStudio')?.value) count++;
-    
-    // Experience section
-    if (this.signupForm.get('professionalExperience')?.value) count++;
-    
-    // Social section
+    if (this.signupForm.get('fullName')?.valid && this.signupForm.get('email')?.valid && this.signupForm.get('phone')?.valid && this.signupForm.get('birthdate')?.valid && this.signupForm.get('location')?.valid) count++;
+    if (this.signupForm.get('currentJob')?.valid && this.signupForm.get('experienceYears')?.valid) count++;
+    if (this.signupForm.get('langArabicClassical')?.value || this.signupForm.get('langDarija')?.value || this.signupForm.get('langFrench')?.value || this.signupForm.get('langEnglish')?.value || this.signupForm.get('langSpanish')?.value || this.signupForm.get('otherLanguages')?.value) count++;
+    if (this.signupForm.get('voiceFemale')?.value || this.signupForm.get('voiceMale')?.value || this.signupForm.get('voiceTeenChild')?.value || this.signupForm.get('voiceSenior')?.value || this.signupForm.get('voiceNeutral')?.value || this.signupForm.get('voiceDeep')?.value || this.signupForm.get('voiceDynamic')?.value || this.signupForm.get('voiceOther')?.value) count++;
+    if (this.signupForm.get('demoLink')?.value || this.signupForm.get('demoFile')?.value) count++;
+    if (this.signupForm.get('hasStudio')?.valid) count++;
+    if (this.signupForm.get('professionalExperience')?.valid) count++;
     if (this.signupForm.get('socialLinks')?.value) count++;
-    
-    // Voice cloning section
-    if (this.signupForm.get('voiceCloningConsent')?.value) count++;
-    
-    // Declaration section (always considered complete)
-    count++;
-    
+    if (this.signupForm.get('voiceCloningConsent')?.valid) count++;
+    if (this.signupForm.get('digitalSignature')?.valid && this.signupForm.get('signatureDate')?.valid) count++;
     return count;
   }
 
@@ -143,62 +109,74 @@ export class Register2Component implements OnInit {
     if (file) {
       if (!['audio/mpeg', 'audio/wav'].includes(file.type)) {
         this.fileError = 'Seuls les fichiers MP3 ou WAV sont acceptés.';
+        this.selectedAudioFile = null;
         this.signupForm.patchValue({ demoFile: null });
-      } else if (file.size > 10 * 1024 * 1024) {
+        (event.target as HTMLInputElement).value = '';
+      } else if (file.size > 10 * 1024 * 1024) { // 10 MB
         this.fileError = 'Le fichier ne doit pas dépasser 10 Mo.';
+        this.selectedAudioFile = null;
         this.signupForm.patchValue({ demoFile: null });
+        (event.target as HTMLInputElement).value = '';
       } else {
         this.fileError = '';
+        // Store the actual file object for later submission
+        this.selectedAudioFile = file;
         this.signupForm.patchValue({ demoFile: file.name });
       }
     }
   }
 
- onSubmit(): void {
-  if (this.signupForm.invalid) {
-    this.signupForm.markAllAsTouched();
-    console.log('Form is invalid:', this.signupForm.errors);
-    Object.keys(this.signupForm.controls).forEach(key => {
-      const control = this.signupForm.get(key);
-      if (control && control.errors) {
-        console.log(`${key} errors:`, control.errors);
+  onSubmit(): void {
+    if (this.signupForm.invalid) {
+      this.signupForm.markAllAsTouched();
+      console.error('Form is invalid. Please fill all required fields.');
+      const firstInvalidControl = document.querySelector('form .ng-invalid');
+      if (firstInvalidControl) {
+        firstInvalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    // Use FormData to send both the file and the form's JSON data
+    const formData = new FormData();
+
+    // 1. Get the form data and prepare it as a JSON object
+    const speakerData = this.signupForm.value;
+    delete speakerData.demoFile; // We don't need the filename in the JSON part
+    speakerData.fullName = `SPEAKER ${speakerData.fullName}`;
+
+    // 2. Append the JSON data as a Blob. The backend's @RequestPart("speakerData") expects this key.
+    formData.append('speakerData', new Blob([JSON.stringify(speakerData)], {
+        type: 'application/json'
+    }));
+
+    // 3. Append the audio file if one was selected. The backend's @RequestPart("audioFile") expects this key.
+    if (this.selectedAudioFile) {
+        formData.append('audioFile', this.selectedAudioFile, this.selectedAudioFile.name);
+    }
+
+    const finalUrl = `${environment.apiUrl}/api/speakersInfo/register`;
+
+    // 4. Send the FormData object. DO NOT set the Content-Type header manually.
+    // The browser will handle setting it to 'multipart/form-data' with the correct boundary.
+    this.http.post(finalUrl, formData).subscribe({
+      next: (response) => {
+        console.log('Speaker registered successfully:', response);
+        this.signupSuccess = true;
+        this.isSubmitting = false;
+        const successElement = document.getElementById('successMessage');
+        if (successElement) {
+          successElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+      error: (error) => {
+        console.error('Error registering speaker:', error);
+        this.isSubmitting = false;
+        const errorMessage = error.error?.message || 'An unexpected error occurred. Please try again later.';
+        alert(`Registration Failed: ${errorMessage}`);
       }
     });
-    return;
   }
-
-  this.isSubmitting = true;
-
-
-  const fullNameWithPrefix = `SPEAKER ${this.signupForm.get('fullName')?.value}`;
-
-  // Prepare payload with only the 4 required fields
-  const payload = {
-    fullName: fullNameWithPrefix,
-    artistName: this.signupForm.get('artistName')?.value,
-    email: this.signupForm.get('email')?.value,
-    phone: this.signupForm.get('phone')?.value
-  };
-
-  // Send POST request to your backend endpoint
-  this.http.post(`${environment.apiUrl}/api/speakersInfo/register`, payload).subscribe({
-    next: (response) => {
-      console.log('Speaker registered successfully:', response);
-      this.signupSuccess = true;
-      this.isSubmitting = false;
-
-      // Scroll to success message
-      const successElement = document.getElementById('successMessage');
-      if (successElement) {
-        successElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    },
-    error: (error) => {
-      console.error('Error registering speaker:', error);
-      this.isSubmitting = false;
-      // You can also add error handling UI here
-    }
-  });
-}
-
 }

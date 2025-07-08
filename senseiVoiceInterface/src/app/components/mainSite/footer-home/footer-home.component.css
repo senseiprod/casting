@@ -202,6 +202,30 @@
   flex-wrap: wrap;
 }
 
+
+
+.footer-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* ⬅️ distributes 3 items left, center, right */
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+
+.footer-bottom .copyright,
+.footer-bottom-links {
+  font-size: 14px;
+  color: #333;
+}
+
+.footer-bottom .payzone img {
+  height: 55px;
+  width: auto;
+  display: block;
+  margin-right:100px;
+  
+}
 .copyright {
   color: #666;
   font-size: 14px;

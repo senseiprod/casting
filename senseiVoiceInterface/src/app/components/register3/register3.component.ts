@@ -19,7 +19,7 @@ export class Register3Component implements OnInit {
     this.signupForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      companyName: ['', Validators.required],
+      companyName: [''], // Optional
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.pattern(/^\+?[0-9\s\-]+$/)]],
       password: ['', [
@@ -49,34 +49,76 @@ export class Register3Component implements OnInit {
   }
 
   onSubmit() {
-  if (this.signupForm.invalid) {
-    Object.values(this.signupForm.controls).forEach(control => control.markAsTouched());
-    return;
-  }
-
-  this.isSubmitting = true;
-
-  const fullName = `CLIENT ${this.signupForm.value.firstName.trim()} ${this.signupForm.value.lastName.trim()}`;
-
-  const payload = {
-    fullName: fullName,
-    companyName: this.signupForm.value.companyName,
-    email: this.signupForm.value.email,
-    phone: this.signupForm.value.phone,
-    password: this.signupForm.value.password,
-  };
-
-  this.http.post(`${environment.apiUrl}/api/speakersInfo/register`, payload).subscribe({
-    next: () => {
-      this.signupSuccess = true;
-      this.isSubmitting = false;
-    },
-    error: (err) => {
-      console.error('Signup error:', err);
-      this.isSubmitting = false;
-      // Show error message if you want
+    if (this.signupForm.invalid) {
+      Object.values(this.signupForm.controls).forEach(control => control.markAsTouched());
+      return;
     }
-  });
-}
 
+    this.isSubmitting = true;
+
+    const formValue = this.signupForm.value;
+
+    // --- Create a payload that matches the full SpeakerInfo DTO ---
+    const speakerData = {
+      // 1. Map fields from this form
+      fullName: `CLIENT ${formValue.firstName.trim()} ${formValue.lastName.trim()}`,
+      email: formValue.email,
+      phone: formValue.phone,
+      agreeTerms: formValue.agreeTerms,
+      artistName: formValue.companyName,
+
+      // =================================================================
+      // === FIX: Provide dummy data for fields that are required     ===
+      // === by the backend but not present in this form.            ===
+      // =================================================================
+      birthdate: '1900-01-01', // A valid, non-null date string to pass @NotNull
+      location: 'Not Specified',  // A non-blank string to pass @NotBlank
+      // =================================================================
+
+      // 2. Provide default values for all other non-required fields
+      currentJob: 'Client',
+      experienceYears: 0,
+      langArabicClassical: false,
+      langDarija: false,
+      langFrench: false,
+      langEnglish: false,
+      langSpanish: false,
+      otherLanguages: '',
+      voiceFemale: false,
+      voiceMale: false,
+      voiceTeenChild: false,
+      voiceSenior: false,
+      voiceNeutral: false,
+      voiceDeep: false,
+      voiceDynamic: false,
+      voiceOther: '',
+      demoLink: '',
+      hasStudio: 'no',
+      studioDescription: '',
+      professionalExperience: '',
+      socialLinks: '',
+      voiceCloningConsent: 'no',
+      digitalSignature: `${formValue.firstName.trim()} ${formValue.lastName.trim()}`,
+      signatureDate: new Date().toISOString().split('T')[0],
+    };
+
+    // 3. Use FormData because the endpoint consumes multipart/form-data
+    const formData = new FormData();
+    formData.append('speakerData', new Blob([JSON.stringify(speakerData)], {
+        type: 'application/json'
+    }));
+
+    // 4. Send the request
+    this.http.post(`${environment.apiUrl}/api/speakersInfo/register`, formData).subscribe({
+      next: () => {
+        this.signupSuccess = true;
+        this.isSubmitting = false;
+      },
+      error: (err) => {
+        console.error('Signup error:', err);
+        alert(`Registration failed: ${err.error?.message || 'Please try again later.'}`);
+        this.isSubmitting = false;
+      }
+    });
+  }
 }
