@@ -930,21 +930,31 @@ En vous inscrivant dès maintenant, vous bénéficiez d’un accès prioritaire 
                             </div>
                         </div>
 
-                        <!-- Documents -->
-                        <div class="form-section" [class.expanded]="expandedSections['documents']">
-                            <div class="section-header" (click)="toggleSection('documents')">
-                                <h3 class="section-heading">📄 Documents à fournir</h3>
-                                <span class="section-toggle" [class.expanded]="expandedSections['documents']">▼</span>
-                            </div>
-                            <div class="section-content" [class.expanded]="expandedSections['documents']">
-                                <div class="section-inner">
-                                    <ul class="documents-list">
-                                        <li>Pièce d'identité (CNI / Passeport)</li>
-                                        <li>Contrat signé (fourni après validation)</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                       <!-- Documents -->
+<div class="form-section" [class.expanded]="expandedSections['documents']">
+  <div class="section-header" (click)="toggleSection('documents')">
+    <h3 class="section-heading">📄 Documents à fournir</h3>
+    <span class="section-toggle" [class.expanded]="expandedSections['documents']">▼</span>
+  </div>
+  <div class="section-content" [class.expanded]="expandedSections['documents']">
+    <div class="section-inner">
+      <ul class="documents-list">
+        <li>Pièce d'identité (CNI / Passeport)</li>
+        <li>Contrat signé (fourni après validation)</li>
+      </ul>
+
+      <!-- Upload inputs -->
+      <div class="upload-group">
+        <label for="idUpload">📎 Télécharger votre pièce d'identité :</label>
+        <input type="file" id="idUpload" name="idDocument" accept=".pdf,.jpg,.jpeg,.png" />
+
+        <label for="contractUpload">📎 Télécharger votre contrat signé :</label>
+        <input type="file" id="contractUpload" name="signedContract" accept=".pdf,.jpg,.jpeg,.png" />
+      </div>
+    </div>
+  </div>
+</div>
+
 
                         <!-- Declaration -->
                         <div class="form-section" [class.expanded]="expandedSections['declaration']">
@@ -963,7 +973,7 @@ En vous inscrivant dès maintenant, vous bénéficiez d’un accès prioritaire 
                         <div class="terms-group">
                             <input type="checkbox" id="agreeTerms" formControlName="agreeTerms" />
                             <label for="agreeTerms">
-                                J'accepte les <a href="#" class="terms-link">Conditions Générales d'Utilisation</a> et la <a href="#" class="terms-link">Politique de Confidentialité</a>.
+                                J'accepte les <a href="/condition-of-sale" class="terms-link">Conditions Générales d'Utilisation</a>.
                             </label>
                         </div>
                         

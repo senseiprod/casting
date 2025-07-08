@@ -1,4 +1,11 @@
 {
+  "darija": {
+    "options": "Options Darija",
+    "dialect": "Dialecte",
+    "selectDialect": "Sélectionner le dialecte",
+    "performanceStyle": "Style de performance",
+    "selectPerformance": "Sélectionner le style de performance"
+   },
   "footer": {
     "about": "Nuestra plataforma ofrece una selección de locutores profesionales listos para dar vida a tus proyectos publicitarios, videos, podcasts, e-learning y más.",
     "quickLinks": "Enlaces Rápidos",

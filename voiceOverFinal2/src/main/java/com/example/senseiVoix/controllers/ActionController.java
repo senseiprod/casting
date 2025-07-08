@@ -3,6 +3,7 @@ import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
 import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.entities.Action;
+import com.example.senseiVoix.repositories.ActionRepository;
 import com.example.senseiVoix.services.serviceImp.ActionServiceImpl;
 import com.example.senseiVoix.services.serviceImp.PaypalService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,11 +17,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ui.Model;
 
 @RestController
 @RequestMapping("/api/actions")
 @CrossOrigin(origins = "*")
 public class ActionController {
+
+
+    private static final Logger log = LoggerFactory.getLogger(ActionController.class);
 
     @Autowired
     private ActionServiceImpl actionService;
@@ -30,6 +37,8 @@ public class ActionController {
 
     // Temporary storage for voice IDs during payment flow (BOTH PayPal and Bank Transfer)
     private final Map<Long, String> tempVoiceStorage = new ConcurrentHashMap<>();
+    @Autowired
+    private ActionRepository actionRepository;
 
     // EXISTING ENDPOINTS (keeping all your existing code)
     @PostMapping("/create")
@@ -326,6 +335,175 @@ public class ActionController {
         }
     }
 
+    // ###############################################################
+    // #################### LAHAJATI WORKFLOW ENDPOINTS ####################
+    // ###############################################################
+
+    // --- LAHAJATI PAYPAL WORKFLOW (Mirrors ElevenLabs logic) ---
+    @PostMapping("/lahajati/create-action-paypal")
+    public ResponseEntity<Map<String, Object>> createLahajatiActionWithPaypal(@RequestBody ActionRequest actionRequest) {
+        try {
+            // Step 1: Create initial action (generic step)
+            Action action = actionService.createInitialAction(actionRequest);
+
+            // Step 2: Store Lahajati voice ID temporarily
+            tempVoiceStorage.put(action.getId(), actionRequest.getVoiceUuid());
+
+            // Step 3: Calculate price (generic step)
+            double price = actionService.calculatePrice(actionRequest.getText());
+            if (price < 0.01) {
+                price = 0.01;
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("actionId", action.getId());
+            response.put("price", price);
+
+            try {
+                // Step 4: Create PayPal payment with Lahajati-specific callback URLs
+                Payment payment = paypalService.createPayment(
+                        price,
+                        "USD",
+                        "Lahajati TTS Generation",
+                        "http://localhost:8080/api/actions/lahajati/payment/cancel/" + action.getId(),
+                        "http://localhost:8080/api/actions/lahajati/payment/success/" + action.getId()
+                );
+
+                response.put("paymentId", payment.getId());
+                String approvalUrl = payment.getLinks().stream()
+                        .filter(link -> "approval_url".equals(link.getRel()))
+                        .findFirst()
+                        .map(link -> link.getHref())
+                        .orElse("");
+                response.put("approvalUrl", approvalUrl);
+
+            } catch (PayPalRESTException paypalError) {
+                response.put("paypalError", paypalError.getMessage());
+                response.put("message", "Action created but PayPal payment for Lahajati failed: " + paypalError.getMessage());
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to create Lahajati action: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @GetMapping("/lahajati/payment/success/{actionId}")
+    public ResponseEntity<Map<String, Object>> lahajatiPaymentSuccess(
+            @PathVariable Long actionId,
+            @RequestParam("paymentId") String paymentId,
+            @RequestParam("PayerID") String payerId) {
+        try {
+            // --- THIS IS THE FIX ---
+            // Call executePayment2 to use the correct API context from properties,
+            // just like the createPayment method does.
+            Payment payment = paypalService.executePayment2(paymentId, payerId);
+
+            if ("approved".equals(payment.getState())) {
+                // Get voice ID from temporary storage
+                String voiceId = tempVoiceStorage.get(actionId);
+                if (voiceId == null) {
+                    // To be safe, let's use a default for testing if it's missing
+                    log.warn("VoiceId not found for actionId {}. Using default.", actionId);
+                    voiceId = "21m00Tcm4TlvDq8ikWAM"; // Default fallback voice ID
+                }
+
+                // Generate audio and update action
+                Action updatedAction = actionService.generateLahajatiAudioAndUpdateAction(actionId, voiceId);
+
+                // Clean up temporary storage
+                tempVoiceStorage.remove(actionId);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Payment successful and Lahajati audio generated");
+                response.put("actionId", updatedAction.getId());
+                response.put("status", updatedAction.getStatutAction());
+                response.put("voiceIdUsed", voiceId);
+
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Payment not approved. State: " + payment.getState()));
+            }
+
+        } catch (Exception e) {
+            // Clean up temporary storage on error
+            tempVoiceStorage.remove(actionId);
+            log.error("Error executing Lahajati payment for actionId {}", actionId, e);
+            return ResponseEntity.badRequest().body(Map.of("error", "Payment execution failed: " + e.getMessage()));
+        }
+    }
+
+
+    @GetMapping("/lahajati/payment/cancel/{actionId}")
+    public ResponseEntity<Map<String, Object>> lahajatiPaymentCancel(@PathVariable Long actionId) {
+        try {
+            tempVoiceStorage.remove(actionId);
+            // The cancel logic is generic
+            actionService.cancelAction(actionId);
+            return ResponseEntity.ok(Map.of("message", "Lahajati payment cancelled", "actionId", actionId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Failed to cancel Lahajati action: " + e.getMessage()));
+        }
+    }
+
+    // --- LAHAJATI BANK TRANSFER WORKFLOW (Mirrors ElevenLabs logic) ---
+    @PostMapping("/lahajati/create-action-bank-transfer")
+    public ResponseEntity<BankTransferResponse> createLahajatiActionWithBankTransfer(@RequestBody ActionRequest actionRequest) {
+        try {
+            // Logic is identical to the other service, as these steps are generic
+            Action action = actionService.createInitialAction(actionRequest);
+            tempVoiceStorage.put(action.getId(), actionRequest.getVoiceUuid());
+            BankTransferResponse response = actionService.createBankTransferResponse(action, actionRequest.getText());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            BankTransferResponse errorResponse = new BankTransferResponse();
+            errorResponse.setMessage("Failed to create Lahajati action for bank transfer: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PostMapping("/admin/lahajati/validate-bank-transfer/{actionId}")
+    public ResponseEntity<Map<String, Object>> validateLahajatiBankTransferAction(@PathVariable Long actionId) {
+        try {
+            String voiceId = tempVoiceStorage.get(actionId);
+            if (voiceId == null) {
+                throw new RuntimeException("Lahajati voice ID not found in temp storage for action " + actionId);
+            }
+
+            // Generate audio using the NEW Lahajati service method
+            Action validatedAction = actionService.generateLahajatiAudioAndUpdateAction(actionId, voiceId);
+            tempVoiceStorage.remove(actionId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Bank transfer validated and Lahajati audio generated");
+            response.put("actionId", validatedAction.getId());
+            response.put("status", validatedAction.getStatutAction());
+            response.put("libelle", validatedAction.getLibelle());
+            response.put("voiceIdUsed", voiceId);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            tempVoiceStorage.remove(actionId);
+            return ResponseEntity.badRequest().body(Map.of("success", false, "error", "Failed to validate Lahajati bank transfer: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/admin/lahajati/reject-bank-transfer/{actionId}")
+    public ResponseEntity<Map<String, Object>> rejectLahajatiBankTransferAction(@PathVariable Long actionId) {
+        try {
+            tempVoiceStorage.remove(actionId);
+            // The rejection logic is generic
+            actionService.rejectBankTransferAction(actionId);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Lahajati bank transfer action rejected", "actionId", actionId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "error", "Failed to reject Lahajati bank transfer: " + e.getMessage()));
+        }
+    }
+
     // DEBUG ENDPOINTS
     @GetMapping("/debug/voice-storage")
     public ResponseEntity<Map<String, Object>> debugVoiceStorage() {
@@ -344,5 +522,23 @@ public class ActionController {
         response.put("message", "Voice storage cleared");
         response.put("clearedCount", clearedCount);
         return ResponseEntity.ok(response);
+    }
+
+
+    /**
+     * Gets the current status of an action.
+     * This is used by the frontend to poll for payment completion.
+     * @param actionId The ID of the action to check.
+     * @return The Action entity with its current status.
+     */
+    @GetMapping("/status/{actionId}")
+    public ResponseEntity<Action> getActionStatus(@PathVariable Long actionId) {
+        Action action = actionRepository.findById(actionId)
+                .orElse(null);
+
+        if (action == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(action);
     }
 }

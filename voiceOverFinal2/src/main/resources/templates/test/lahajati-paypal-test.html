@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lahajati PayPal Test (Single Page Flow)</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; line-height: 1.6; }
+        .container { max-width: 800px; margin: auto; }
+        input, button, label { display: block; width: 100%; box-sizing: border-box; }
+        input, button { font-size: 1em; padding: 10px; margin-top: 5px; margin-bottom: 15px; }
+        #results { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9; white-space: pre-wrap; word-wrap: break-word; }
+        .status { font-weight: bold; padding: 5px; border-radius: 4px; color: white; }
+        .status-generated { background-color: #28a745; }
+        .status-rejected { background-color: #dc3545; }
+        .status-pending { background-color: #ffc107; color: black; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Lahajati Voice Generation - PayPal Test</h1>
+    <form id="paypal-form">
+        <div>
+            <label for="text">Text to generate:</label>
+            <input type="text" id="text" value="مرحبا بك في عالم الأصوات الرقمية">
+        </div>
+        <div>
+            <label for="voice_id">Lahajati Voice ID:</label>
+            <input type="text" id="voice_id" value="2">
+        </div>
+        <div>
+            <label for="user_uuid">Utilisateur UUID:</label>
+            <input type="text" id="user_uuid" value="user-uuid-12345">
+        </div>
+        <div>
+            <label for="project_uuid">Project UUID:</label>
+            <input type="text" id="project_uuid" value="project-uuid-67890">
+        </div>
+        <div>
+            <label for="language">Language:</label>
+            <input type="text" id="language" value="ar">
+        </div>
+        <button type="submit">1. Create Action & Get PayPal Link</button>
+    </form>
+
+    <div id="results">
+        API results will be shown here.
+    </div>
+</div>
+
+<script>
+    let currentActionId = null;
+
+    // Function to check the status of the action
+    async function checkActionStatus(actionId) {
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = `<p><div class="spinner"></div>Checking payment status for Action ID: ${actionId}...</p>`;
+
+        try {
+            const response = await fetch(`/api/actions/status/${actionId}`);
+            if (!response.ok) {
+                resultsDiv.innerHTML += `<p style="color:red;">Error checking status: Server returned ${response.status}</p>`;
+                return;
+            }
+            const action = await response.json();
+
+            let statusHtml = '';
+            switch(action.statutAction) {
+                case 'GENERE':
+                    statusHtml = `<span class="status status-generated">GENERATED</span>`;
+                    resultsDiv.innerHTML = `<p><strong>Payment Complete & Audio Generated!</strong></p>
+                                            <p>Action ID: ${action.id}</p>
+                                            <p>Status: ${statusHtml}</p>
+                                            <p>Audio is now available in the database.</p>`;
+                    // Provide a link to download the audio
+                    const audioBlob = new Blob([new Uint8Array(atob(action.audioGenerated).split("").map(c => c.charCodeAt(0)))], { type: 'audio/mpeg' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    resultsDiv.innerHTML += `<br><audio controls src="${audioUrl}"></audio><br><a href="${audioUrl}" download="generated_audio.mp3">Download Audio</a>`;
+                    break;
+                case 'REJETE':
+                    statusHtml = `<span class="status status-rejected">REJECTED</span>`;
+                    resultsDiv.innerHTML = `<p><strong>Payment Cancelled or Failed.</strong></p>
+                                            <p>Action ID: ${action.id}</p>
+                                            <p>Status: ${statusHtml}</p>
+                                            <p>The action has been rejected. Please try again.</p>`;
+                    break;
+                default: // EN_ATTENTE
+                    statusHtml = `<span class="status status-pending">PENDING</span>`;
+                    resultsDiv.innerHTML = `<p><strong>Payment not yet confirmed.</strong></p>
+                                            <p>Action ID: ${action.id}</p>
+                                            <p>Status: ${statusHtml}</p>
+                                            <p>Please complete the payment in the PayPal window. If you have, please wait a moment.</p>`;
+                    break;
+            }
+
+        } catch (error) {
+            resultsDiv.innerHTML += `<p style="color:red;">Fetch Error while checking status: ${error}</p>`;
+        }
+    }
+
+    // Main form submission logic
+    document.getElementById('paypal-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const resultsDiv = document.getElementById('results');
+        const formData = {
+            text: document.getElementById('text').value,
+            voiceUuid: document.getElementById('voice_id').value,
+            utilisateurUuid: document.getElementById('user_uuid').value,
+            projectUuid: document.getElementById('project_uuid').value,
+            language: document.getElementById('language').value
+        };
+
+        resultsDiv.innerHTML = 'Creating action and getting PayPal payment link...';
+
+        try {
+            const response = await fetch('/api/actions/lahajati/create-action-paypal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.approvalUrl) {
+                currentActionId = data.actionId; // Store the action ID
+
+                let html = `<p><strong>Action created successfully!</strong></p>
+                            <p>Action ID: ${currentActionId}</p>
+                            <p>Price: ${data.price}</p>
+                            <p><strong>Please complete the payment in the new window that just opened.</strong></p>
+                            <p>This page will automatically update once you complete the payment.</p>`;
+                resultsDiv.innerHTML = html;
+
+                // Open PayPal in a new window
+                window.open(data.approvalUrl, 'paypalPaymentWindow', 'width=800,height=600');
+            } else {
+                resultsDiv.innerHTML = `<strong>Error creating action:</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+
+        } catch (error) {
+            resultsDiv.innerHTML = `<strong>Fetch Error:</strong><br>${error.toString()}`;
+        }
+    });
+
+    // Listen for when the user returns to this window
+    window.addEventListener('focus', () => {
+        if (currentActionId) {
+            console.log('Window refocused, checking status for action ID:', currentActionId);
+            checkActionStatus(currentActionId);
+        }
+    });
+</script>
+</body>
+</html>
