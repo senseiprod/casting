@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lahajati Bank Transfer Test (Corrected)</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        .container { max-width: 800px; margin: auto; }
+        input, button, label { display: block; width: 100%; box-sizing: border-box; }
+        input, button { font-size: 1em; padding: 10px; margin-top: 5px; margin-bottom: 15px; }
+        .results { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9; white-space: pre-wrap; word-wrap: break-word; }
+        hr { margin: 40px 0; }
+        h1, h2 { color: #333; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- User Section -->
+    <h1>Lahajati Voice Generation - Bank Transfer Test</h1>
+    <h2>Part 1: User Creates Action</h2>
+    <form id="bank-form">
+        <div>
+            <label for="text">Text to generate:</label>
+            <input type="text" id="text" value="هذا اختبار للتحويل البنكي">
+        </div>
+        <div>
+            <label for="voice_id">Lahajati Voice ID:</label>
+            <input type="text" id="voice_id" value="3">
+        </div>
+        <div>
+            <label for="user_uuid">Utilisateur UUID:</label>
+            <input type="text" id="user_uuid" value="user-uuid-12345"> <!-- Provide a valid test UUID -->
+        </div>
+        <div>
+            <label for="project_uuid">Project UUID:</label>
+            <input type="text" id="project_uuid" value="project-uuid-67890"> <!-- Provide a valid test UUID -->
+        </div>
+        <div>
+            <label for="language">Language:</label>
+            <input type="text" id="language" value="ar">
+        </div>
+        <button type="submit">1. Create Action & Get Bank Info</button>
+    </form>
+    <div id="user-results" class="results">User results will be shown here.</div>
+
+    <hr>
+
+    <!-- Admin Section -->
+    <h2>Part 2: Admin Validates Transfer</h2>
+    <form id="admin-form">
+        <div>
+            <label for="action_id">Action ID (from Part 1):</label>
+            <input type="text" id="action_id" placeholder="Enter Action ID from above">
+        </div>
+        <button type="button" id="validate-btn">2. Validate Transfer</button>
+        <button type="button" id="reject-btn" style="background-color: #dc3545; color: white;">Reject Transfer</button>
+    </form>
+    <div id="admin-results" class="results">Admin action results will be shown here.</div>
+</div>
+
+<script>
+    // --- User Form Logic ---
+    document.getElementById('bank-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const resultsDiv = document.getElementById('user-results');
+        const adminActionIdInput = document.getElementById('action_id');
+
+        // Get all values from the form
+        const text = document.getElementById('text').value;
+        const voiceId = document.getElementById('voice_id').value;
+        const userUuid = document.getElementById('user_uuid').value;
+        const projectUuid = document.getElementById('project_uuid').value;
+        const language = document.getElementById('language').value;
+
+        resultsDiv.innerHTML = 'Creating action...';
+
+        try {
+            const response = await fetch('/api/actions/lahajati/create-action-bank-transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                // Send the complete ActionRequest object
+                body: JSON.stringify({
+                    text: text,
+                    voiceUuid: voiceId,
+                    utilisateurUuid: userUuid,
+                    projectUuid: projectUuid,
+                    language: language
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                resultsDiv.innerHTML = `<strong>Action Created!</strong> Please make the transfer with these details:<br><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                // Auto-fill the action ID for the admin part
+                if (data.actionId) {
+                    adminActionIdInput.value = data.actionId;
+                }
+            } else {
+                resultsDiv.innerHTML = `<strong>Error:</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+        } catch (error) {
+            resultsDiv.innerHTML = `<strong>Fetch Error:</strong><br>${error.toString()}`;
+        }
+    });
+
+    // --- Admin Form Logic (remains unchanged) ---
+    async function handleAdminAction(action) {
+        const actionId = document.getElementById('action_id').value;
+        const resultsDiv = document.getElementById('admin-results');
+
+        if (!actionId) {
+            resultsDiv.textContent = 'Please enter an Action ID.';
+            return;
+        }
+
+        const endpoint = `/api/actions/admin/lahajati/${action}-bank-transfer/${actionId}`;
+        resultsDiv.innerHTML = `Sending request to ${endpoint}...`;
+
+        try {
+            const response = await fetch(endpoint, { method: 'POST' });
+            const data = await response.json();
+
+            resultsDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            if (data.success && action === 'validate') {
+                resultsDiv.innerHTML += `<br><br><strong>Audio generation triggered!</strong>`;
+            }
+        } catch (error) {
+            resultsDiv.innerHTML = `<strong>Fetch Error:</strong><br>${error.toString()}`;
+        }
+    }
+
+    document.getElementById('validate-btn').addEventListener('click', () => handleAdminAction('validate'));
+    document.getElementById('reject-btn').addEventListener('click', () => handleAdminAction('reject'));
+</script>
+</body>
+</html>

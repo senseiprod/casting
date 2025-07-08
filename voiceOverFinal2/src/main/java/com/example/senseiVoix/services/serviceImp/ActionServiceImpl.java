@@ -9,12 +9,14 @@ import com.example.senseiVoix.enumeration.StatutAction;
 import com.example.senseiVoix.enumeration.TypeAudio;
 import com.example.senseiVoix.repositories.*;
 import com.example.senseiVoix.services.ElevenLabsService;
+import com.example.senseiVoix.services.LahajatiService;
 import com.example.senseiVoix.services.PlayHtService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.base.rest.PayPalRESTException;
 import jakarta.transaction.Transactional;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -28,9 +30,13 @@ import java.util.stream.Collectors;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ActionServiceImpl {
+
+    private static final Logger log = LoggerFactory.getLogger(ActionServiceImpl.class);
     @Autowired
     private ActionRepository actionRepository;
     @Autowired
@@ -56,6 +62,8 @@ public class ActionServiceImpl {
     private ResourceLoader resourceLoader;
     @Autowired
     private ElevenLabsService elevenLabsService;
+    @Autowired
+    private LahajatiService lahajatiService;
 
     // FIXED RIB FOR BANK TRANSFERS
     private static final String COMPANY_RIB = "FR76 1234 5678 9012 3456 7890 123";
@@ -346,5 +354,52 @@ public class ActionServiceImpl {
         action1.setLanguage(action.getLanguage());
         action1.setAudioGenerated(action.getAudioGenerated());
         return action1;
+    }
+
+    // ###############################################################
+    // ############## LAHAJATI VOICE GENERATION WORKFLOW #############
+    // ###############################################################
+
+    /**
+     * Generates audio using the Lahajati service and updates the action.
+     * This method is called after a payment is successfully processed (for both PayPal and Bank Transfer).
+     * The logic is identical to the ElevenLabs version but calls LahajatiService.
+     *
+     * @param actionId The ID of the action to process.
+     * @param voiceId  The Lahajati voice ID to use for generation.
+     * @return The updated Action entity.
+     */
+    public Action generateLahajatiAudioAndUpdateAction(Long actionId, String voiceId) {
+        log.info("Inside generateLahajatiAudio for actionId {}, voiceId {}", actionId, voiceId);
+        Action action = actionRepository.findById(actionId)
+                .orElseThrow(() -> new RuntimeException("Action not found with ID: " + actionId));
+
+        try {
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("text", action.getText());
+            requestBody.put("id_voice", voiceId);
+            requestBody.put("professional_quality", true);
+            log.info("Sending request to Lahajati API with body: {}", requestBody);
+
+            ResponseEntity<byte[]> responseEntity = lahajatiService.textToSpeechPro(requestBody);
+            log.info("Received response from Lahajati API with status code: {}", responseEntity.getStatusCode());
+
+            if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.hasBody()) {
+                byte[] audioData = responseEntity.getBody();
+                action.setAudioGenerated(audioData);
+                action.setStatutAction(StatutAction.GENERE);
+                log.info("Successfully updated action {} with generated audio.", actionId);
+                return actionRepository.save(action);
+
+            } else {
+                throw new RuntimeException("Failed to generate audio from Lahajati, status: " + responseEntity.getStatusCode() + ", Body: " + new String(responseEntity.getBody()));
+            }
+
+        } catch (Exception e) {
+            log.error("EXCEPTION in generateLahajatiAudioAndUpdateAction for actionId {}:", actionId, e);
+            action.setStatutAction(StatutAction.REJETE);
+            actionRepository.save(action);
+            throw new RuntimeException("Failed to generate Lahajati audio: " + e.getMessage(), e);
+        }
     }
 }
