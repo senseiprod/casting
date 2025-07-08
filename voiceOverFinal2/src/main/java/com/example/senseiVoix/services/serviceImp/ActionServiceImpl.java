@@ -1,5 +1,6 @@
 package com.example.senseiVoix.services.serviceImp;
 
+import com.example.senseiVoix.dtos.action.ActionDarija;
 import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
 import com.example.senseiVoix.dtos.action.BankTransferResponse;
@@ -212,6 +213,31 @@ public class ActionServiceImpl {
 
     // PAYPAL METHODS (EXISTING)
     public Action createInitialAction(ActionRequest actionRequest) {
+        Action action = new Action();
+        action.setText(actionRequest.getText());
+        action.setLanguage(actionRequest.getLanguage());
+        action.setStatutAction(StatutAction.EN_ATTENTE);
+        action.setDateCreation(new Date());
+
+        // DON'T STORE VOICE ID IN DATABASE - it goes to tempVoiceStorage
+
+        if (actionRequest.getUtilisateurUuid() != null) {
+            Utilisateur utilisateur = utilisateurRepository.findByUuid(actionRequest.getUtilisateurUuid());
+            if (utilisateur == null) throw new RuntimeException("User not found");
+            action.setUtilisateur(utilisateur);
+        }
+
+        if (actionRequest.getProjectUuid() != null) {
+            Object rawProject = projectRepository.findByUuid(actionRequest.getProjectUuid())
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+            Project project = (Project) rawProject;
+            action.setProject(project);
+        }
+
+        return actionRepository.save(action);
+    }
+
+    public Action createInitial(ActionDarija actionRequest) {
         Action action = new Action();
         action.setText(actionRequest.getText());
         action.setLanguage(actionRequest.getLanguage());

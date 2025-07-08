@@ -1,4 +1,5 @@
 package com.example.senseiVoix.controllers;
+import com.example.senseiVoix.dtos.action.ActionDarija;
 import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
 import com.example.senseiVoix.dtos.action.BankTransferResponse;
@@ -341,10 +342,10 @@ public class ActionController {
 
     // --- LAHAJATI PAYPAL WORKFLOW (Mirrors ElevenLabs logic) ---
     @PostMapping("/lahajati/create-action-paypal")
-    public ResponseEntity<Map<String, Object>> createLahajatiActionWithPaypal(@RequestBody ActionRequest actionRequest) {
+    public ResponseEntity<Map<String, Object>> createLahajatiActionWithPaypal(@RequestBody ActionDarija actionRequest) {
         try {
             // Step 1: Create initial action (generic step)
-            Action action = actionService.createInitialAction(actionRequest);
+            Action action = actionService.createInitial(actionRequest);
 
             // Step 2: Store Lahajati voice ID temporarily
             tempVoiceStorage.put(action.getId(), actionRequest.getVoiceUuid());
@@ -451,10 +452,10 @@ public class ActionController {
 
     // --- LAHAJATI BANK TRANSFER WORKFLOW (Mirrors ElevenLabs logic) ---
     @PostMapping("/lahajati/create-action-bank-transfer")
-    public ResponseEntity<BankTransferResponse> createLahajatiActionWithBankTransfer(@RequestBody ActionRequest actionRequest) {
+    public ResponseEntity<BankTransferResponse> createLahajatiActionWithBankTransfer(@RequestBody ActionDarija actionRequest) {
         try {
             // Logic is identical to the other service, as these steps are generic
-            Action action = actionService.createInitialAction(actionRequest);
+            Action action = actionService.createInitial(actionRequest);
             tempVoiceStorage.put(action.getId(), actionRequest.getVoiceUuid());
             BankTransferResponse response = actionService.createBankTransferResponse(action, actionRequest.getText());
             return ResponseEntity.ok(response);

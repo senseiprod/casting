@@ -39,6 +39,15 @@ export class ActionRequest {
     this.audioGenerated = audioGenerated;
   }
 }
+export interface ActionRequestLahajati {
+  text: string;
+  voiceUuid: string;
+  utilisateurUuid: string;
+  language: string;
+  projectUuid: string;
+  dialectId?: string;
+  performanceId?: string;
+}
 
 export interface ActionResponse {
   uuid: string;
@@ -133,5 +142,15 @@ export class ActionService {
 
   createActionWithBankTransfer(request: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/create-action-bank-transfer`, request);
+  }
+
+  createActionLahajatiWithBankTransfer(actionRequest: ActionRequestLahajati): Observable<any> {
+    const url = `${this.apiUrl}/lahajati/create-action-bank-transfer`;
+    return this.http.post<any>(url, actionRequest);
+  }
+
+  createActionWithPaypal(actionRequest: ActionRequestLahajati): Observable<any> {
+    const url = `${this.apiUrl}/lahajati/create-action-paypal`;
+    return this.http.post<any>(url, actionRequest);
   }
 }

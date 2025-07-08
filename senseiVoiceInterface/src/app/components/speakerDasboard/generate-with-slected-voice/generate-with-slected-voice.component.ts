@@ -315,7 +315,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     })
   }
 
-
   // Check if user has sufficient balance
   hasSufficientBalance(): boolean {
     return this.userBalance.balance >= this.calculatedPrice
@@ -516,6 +515,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       this.chargeBalanceWithBankTransfer()
     }
   }
+
   // Charge balance with PayPal
   chargeBalanceWithPayPal() {
     if (!this.uuid) {
@@ -549,34 +549,35 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   // Charge balance with bank transfer
   chargeBalanceWithBankTransfer() {
     if (!this.uuid) {
-      this.balanceError = "User ID not found";
-      this.isChargingBalance = false;
-      return;
+      this.balanceError = "User ID not found"
+      this.isChargingBalance = false
+      return
     }
-  
-    console.log("Charging balance with bank transfer, amount:", this.chargeAmount);
-  
+
+    console.log("Charging balance with bank transfer, amount:", this.chargeAmount)
+
     this.paypalService.createBankTransfer(this.uuid, this.chargeAmount).subscribe({
       next: (response: any) => {
-        console.log("Bank transfer balance charge response:", response);
-        
+        console.log("Bank transfer balance charge response:", response)
+
         // Store the bank transfer details
-        this.bankTransferDetails = response;
-        this.bankTransferReference = response.libelle; // Using libelle as reference
-        
-        this.isChargingBalance = false;
-        this.closeBalanceChargeModal();
-        
+        this.bankTransferDetails = response
+        this.bankTransferReference = response.libelle // Using libelle as reference
+
+        this.isChargingBalance = false
+        this.closeBalanceChargeModal()
+
         // Show bank transfer details modal
-        this.showBankTransferModal = true;
+        this.showBankTransferModal = true
       },
       error: (error) => {
-        console.error("Error charging balance with bank transfer:", error);
-        this.balanceError = error.error?.message || "Failed to charge balance with bank transfer";
-        this.isChargingBalance = false;
+        console.error("Error charging balance with bank transfer:", error)
+        this.balanceError = error.error?.message || "Failed to charge balance with bank transfer"
+        this.isChargingBalance = false
       },
-    });
+    })
   }
+
   // Close balance options modal
   closeBalanceOptions() {
     this.showBalanceOptions = false
@@ -913,9 +914,20 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       utilisateurUuid: this.uuid,
       language: this.selectedVoice.language,
       projectUuid: this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+      // Add Darija-specific parameters if applicable
+      ...(this.selectedVoice.language === "darija" && {
+        dialectId: this.selectedDialect || "35",
+        performanceId: this.selectedPerformanceStyle || "1284",
+      }),
     }
 
-    this.actionService.createActionPayed(actionRequest).subscribe(
+    // Use appropriate service method based on voice language
+    const paymentObservable =
+      this.selectedVoice.language === "darija"
+        ? this.actionService.createActionWithPaypal(actionRequest)
+        : this.actionService.createActionPayed(actionRequest)
+
+    paymentObservable.subscribe(
       (response) => {
         console.log("PayPal payment response:", response)
 
@@ -967,9 +979,20 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       utilisateurUuid: this.uuid,
       language: this.selectedVoice.language,
       projectUuid: this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+      // Add Darija-specific parameters if applicable
+      ...(this.selectedVoice.language === "darija" && {
+        dialectId: this.selectedDialect || "35",
+        performanceId: this.selectedPerformanceStyle || "1284",
+      }),
     }
 
-    this.actionService.createActionWithBankTransfer(bankTransferRequest).subscribe(
+    // Use appropriate service method based on voice language
+    const bankTransferObservable =
+      this.selectedVoice.language === "darija"
+        ? this.actionService.createActionLahajatiWithBankTransfer(bankTransferRequest)
+        : this.actionService.createActionWithBankTransfer(bankTransferRequest)
+
+    bankTransferObservable.subscribe(
       (response: BankTransferResponse) => {
         console.log("Bank transfer payment response:", response)
 
@@ -1120,8 +1143,8 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     const requestBody = {
       text: this.actionData.text,
       id_voice: this.selectedVoice!.id,
-      dialect_id: "35",
-      performance_id: "1284",
+      dialect_id: this.selectedDialect || "35", // Use selected dialect or default
+      performance_id: this.selectedPerformanceStyle || "1284", // Use selected performance or default
       input_mode: "0",
     }
 

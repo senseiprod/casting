@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 @EntityScan("com.example.senseiVoix.entities")
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class SenseiVoixApplication {
-	public static void main(String[] args) {
+ 	public static void main(String[] args) {
 		SpringApplication.run(SenseiVoixApplication.class, args);
 	}
 	@Bean

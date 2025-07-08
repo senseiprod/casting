@@ -1,10 +1,10 @@
-import { Component,  ElementRef, ViewChild,  OnInit } from "@angular/core"
+import { Component,  ElementRef, ViewChild, OnInit } from "@angular/core"
 import  { ElevenLabsService } from "../../../services/eleven-labs.service"
 import  { Voice } from "../../../services/eleven-labs.service"
 import  { DomSanitizer, SafeUrl } from "@angular/platform-browser"
 import  { ProjectService } from "../../../services/project.service"
 import  { Project } from "../../../services/project.service"
-import  { ActionService } from "../../../services/action.service"
+import  { ActionRequestLahajati, ActionService } from "../../../services/action.service"
 import  { ActivatedRoute, Router } from "@angular/router"
 import  { LahajatiService } from "../../../services/lahajati.service"
 import  { PaypalService } from "src/app/services/paypal-service.service"
@@ -445,6 +445,7 @@ export class GenerationComponent implements OnInit {
     // DON'T reset chargeAmount here - keep it for the next modal
     // this.chargeAmount = 0  // Remove this line
   }
+
   chargeBalanceWithPayPal() {
     if (!this.userId) {
       this.balanceError = "User ID not found"
@@ -477,34 +478,35 @@ export class GenerationComponent implements OnInit {
   // Charge balance with bank transfer
   chargeBalanceWithBankTransfer() {
     if (!this.userId) {
-      this.balanceError = "User ID not found";
-      this.isChargingBalance = false;
-      return;
+      this.balanceError = "User ID not found"
+      this.isChargingBalance = false
+      return
     }
-  
-    console.log("Charging balance with bank transfer, amount:", this.chargeAmount);
-  
+
+    console.log("Charging balance with bank transfer, amount:", this.chargeAmount)
+
     this.paypalService.createBankTransfer(this.userId, this.chargeAmount).subscribe({
       next: (response: any) => {
-        console.log("Bank transfer balance charge response:", response);
-        
+        console.log("Bank transfer balance charge response:", response)
+
         // Store the bank transfer details
-        this.bankTransferDetails = response;
-        this.bankTransferReference = response.libelle; // Using libelle as reference
-        
-        this.isChargingBalance = false;
-        this.closeBalanceChargeModal();
-        
+        this.bankTransferDetails = response
+        this.bankTransferReference = response.libelle // Using libelle as reference
+
+        this.isChargingBalance = false
+        this.closeBalanceChargeModal()
+
         // Show bank transfer details modal
-        this.showBankTransferModal = true;
+        this.showBankTransferModal = true
       },
       error: (error) => {
-        console.error("Error charging balance with bank transfer:", error);
-        this.balanceError = error.error?.message || "Failed to charge balance with bank transfer";
-        this.isChargingBalance = false;
+        console.error("Error charging balance with bank transfer:", error)
+        this.balanceError = error.error?.message || "Failed to charge balance with bank transfer"
+        this.isChargingBalance = false
       },
-    });
+    })
   }
+
   // Reset charge amount only when completely canceling the process
   resetChargeAmount() {
     this.chargeAmount = 0
@@ -548,7 +550,7 @@ export class GenerationComponent implements OnInit {
     return minimumCharge
   }
 
-  // Rest of the existing methods remain the same...
+  // Rest of existing methods remain the same...
   fetchUserProjects() {
     this.projectService.getAllProjects().subscribe(
       (data) => {
@@ -643,7 +645,7 @@ export class GenerationComponent implements OnInit {
     this.showPaymentProcessing = true
 
     // Create action request
-    const actionRequest = {
+    const actionRequest : ActionRequestLahajati = {
       text: this.actionData.text,
       voiceUuid: this.selectedVoice.id,
       utilisateurUuid: this.userId,
@@ -651,9 +653,20 @@ export class GenerationComponent implements OnInit {
       projectUuid:
         this.selectedProject?.uuid ||
         "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+      // Add Darija-specific parameters if applicable
+      ...(this.selectedVoice.language === "darija" && {
+        dialectId: this.selectedDialect || "35",
+        performanceId: this.selectedPerformanceStyle || "1284",
+      }),
     }
 
-    this.actionService.createActionPayed(actionRequest).subscribe(
+    // Use appropriate service method based on voice language
+    const paymentObservable =
+      this.selectedVoice.language === "darija"
+        ? this.actionService.createActionWithPaypal(actionRequest)
+        : this.actionService.createActionPayed(actionRequest)
+
+    paymentObservable.subscribe(
       (response) => {
         console.log("PayPal payment response:", response)
 
@@ -707,9 +720,20 @@ export class GenerationComponent implements OnInit {
       utilisateurUuid: this.userId,
       language: this.selectedVoice.language,
       projectUuid: this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+      // Add Darija-specific parameters if applicable
+      ...(this.selectedVoice.language === "darija" && {
+        dialectId: this.selectedDialect || "35",
+        performanceId: this.selectedPerformanceStyle || "1284",
+      }),
     }
 
-    this.actionService.createActionWithBankTransfer(bankTransferRequest).subscribe(
+    // Use appropriate service method based on voice language
+    const bankTransferObservable =
+      this.selectedVoice.language === "darija"
+        ? this.actionService.createActionLahajatiWithBankTransfer(bankTransferRequest)
+        : this.actionService.createActionWithBankTransfer(bankTransferRequest)
+
+    bankTransferObservable.subscribe(
       (response: BankTransferResponse) => {
         console.log("Bank transfer payment response:", response)
 
@@ -1016,7 +1040,7 @@ export class GenerationComponent implements OnInit {
       id: voice.id_voice || voice.voice_id,
       name: voice.display_name || voice.voice_name,
       gender: voice.gender || "unknown",
-     avatar: "https://ui-avatars.com/api/?name=" + encodeURIComponent(voice.display_name),
+      avatar: "https://ui-avatars.com/api/?name=" + encodeURIComponent(voice.display_name),
 
       originalVoiceUrl: voice.sample_url || voice.preview_url,
       clonedVoiceUrl: voice.sample_url || voice.preview_url,
@@ -1251,9 +1275,9 @@ export class GenerationComponent implements OnInit {
   selectVoice(voice: Voice | LahajatiVoice): void {
     this.selectedVoice = voice as Voice
     this.price = voice.price || this.price
-    
+
     // Load Lahajati data if Darija voice is selected
-    if (voice.language === 'darija' && !this.lahajatiDataLoaded) {
+    if (voice.language === "darija" && !this.lahajatiDataLoaded) {
       this.fetchLahajatiData()
     }
   }
