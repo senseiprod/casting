@@ -964,9 +964,14 @@ export class GenerationComponent implements OnInit {
   }
 
   // Rest of existing methods for voice selection, filters, audio player, etc.
-  fetchVoices() {
-    this.elevenLabsService.listVoicesFiltter().subscribe(
+  fetchVoices(pageSize: number = 100,
+    gender: string | null = null,
+    age: string | null = null,
+    language: string | null = null,
+    nextPageToken: number = 1,) {
+    this.elevenLabsService.listVoicesFiltter(pageSize,gender,age,language,nextPageToken).subscribe(
       (voices: Voice[]) => {
+        console.log("Voices retrieved:", voices)
         this.voices = voices
         this.filteredVoices = this.voices
         console.log("Voices retrieved:", this.voices)
@@ -1240,7 +1245,13 @@ export class GenerationComponent implements OnInit {
     if (this.filters.language === "darija") {
       voicesToFilter = this.lahajatiVoices
     } else {
-      voicesToFilter = this.voices
+      this.fetchVoices(
+        100,
+        this.filters.gender,
+        this.filters.ageZone,
+        this.filters.language,
+        1 
+      )
     }
 
     this.filteredVoices = voicesToFilter.filter(

@@ -718,15 +718,17 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     )
   }
 
-  fetchVoices() {
-    this.elevenLabsService.listVoicesFiltter().subscribe(
+  fetchVoices(pageSize: number = 100,
+    gender: string | null = null,
+    age: string | null = null,
+    language: string | null = null,
+    nextPageToken: number = 1,) {
+    this.elevenLabsService.listVoicesFiltter(pageSize,gender,age,language,nextPageToken).subscribe(
       (voices: Voice[]) => {
+        console.log("Voices retrieved:", voices)
         this.voices = voices
         this.filteredVoices = this.voices
-        // Apply filters if a voice was selected
-        if (this.selectedVoice) {
-          this.applyFilters()
-        }
+        console.log("Voices retrieved:", this.voices)
       },
       (error) => {
         console.error("Error retrieving voices:", error)
@@ -1223,7 +1225,13 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       voicesToFilter = this.lahajatiVoices
     } else {
       // Use ElevenLabs voices for other languages
-      voicesToFilter = this.voices
+      this.fetchVoices(
+        100,
+        this.filters.gender,
+        this.filters.ageZone,
+        this.filters.language,
+        1 
+      )
     }
 
     this.filteredVoices = voicesToFilter.filter(

@@ -61,29 +61,56 @@ export class ElevenLabsService {
   listVoices(params: any = {}): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/voices`, { params });
   }
-  listVoicesFiltter(params: any = {page_size:100}): Observable<Voice[]> {
-    return this.http.get<any>(`${this.baseUrl}/voices`, { params }).pipe(
+  listVoicesFiltter( pageSize: number = 100,
+    gender: string | null = null,
+    age: string | null = null,
+    language: string | null = null,
+    nextPageToken: number = 0,
+  ): Observable<Voice[]> {
+    let params = new HttpParams()
+    .set('page_size', pageSize.toString());
+    if (gender) params = params.set('gender', gender);
+    if (age) params = params.set('age', age);
+    if (language) params = params.set('language', language);
+    if (nextPageToken) params = params.set('nextPageToken', nextPageToken);
+
+    return this.http.get<any>(`${this.baseUrl}/shared-voices`, { params }).pipe(
       map(response => {
-        console.log(response)
+        console.log(response);
         if (!response || !Array.isArray(response.voices)) {
           console.error("Réponse invalide :", response);
           return [];
         }
-        return response.voices.map((voice: any, index: number) => ({
-          id: voice.voice_id,
-          name: voice.name || 'Inconnu',
-          gender: voice.labels?.gender || 'Non défini',
-          ageZone: voice.labels?.age || 'Non défini',
-          type: voice.category || 'Non classé',
-          language: voice.fine_tuning.language || 'Non défini',
-          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${voice.name}`,
-          price: voice.sharing?.rate || 0,
-          originalVoiceUrl: voice.preview_url || '',
-          clonedVoiceUrl: voice.samples?.[0]?.file_name || ''
-        }));
+  
+        return response.voices.map((voice: any) => {
+          let avatarUrl = '';
+        
+          if (voice.gender === 'male') {
+            avatarUrl = 'assets/img/avatar men.png';
+          } else if (voice.gender === 'female') {
+            avatarUrl = 'assets/img/avatar women.png';
+          } else {
+            avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${voice.name}`;
+          }
+        
+          return {
+            id: voice.voice_id,
+            name: voice.name || 'Inconnu',
+            gender: voice.gender || 'Non défini',
+            ageZone: voice.age || 'Non défini',
+            type: voice.category || 'Non classé',
+            language: voice.language || 'Non défini',
+            avatar: avatarUrl,
+            price: voice.rate || 0,
+            originalVoiceUrl: voice.preview_url || '',
+            clonedVoiceUrl: voice.verified_languages?.[0]?.preview_url || ''
+          };
+        });
+        
       })
     );
   }
+  
 
   listSharedVoices(
     pageSize: number = 100,
