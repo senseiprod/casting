@@ -873,6 +873,12 @@
       "acceptAndContinue": "Accept and Continue"
     },
     "payment": {
+      "bankTransferInstructions": "Please follow the instructions below to complete your bank transfer.",
+      "transferDetails": "Bank Transfer Details",
+      "bankName": "Bank Name",
+      "accountHolder": "Account Holder",
+      "rib": "IBAN/RIB",
+      "includeReference": "Please include the reference when making the transfer.",
       "selectMethod": "Select Payment Method",
       "orderSummary": "Order Summary",
       "textLength": "Text Length",

@@ -237,6 +237,12 @@
     "acceptAndContinue": "Aceptar y Continuar"
   },  
   "payment": {
+    "bankTransferInstructions": "Siga las instrucciones a continuación para completar su transferencia bancaria.",
+    "transferDetails": "Detalles de la transferencia bancaria",
+    "bankName": "Nombre del banco",
+    "accountHolder": "Titular de la cuenta",
+    "rib": "IBAN/RIB",
+    "includeReference": "Por favor, incluya la referencia al realizar la transferencia.",
     "selectMethod": "Seleccionar método de pago",
     "orderSummary": "Resumen del pedido",
     "textLength": "Longitud del texto",
