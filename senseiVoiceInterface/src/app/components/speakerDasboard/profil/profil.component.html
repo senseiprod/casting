@@ -53,69 +53,112 @@
 
     <div class="col-lg-9">
       <!-- General Settings -->
-      <div *ngIf="activeTab === 'general'" class="card shadow mb-4">
-        <div class="card-header py-3">
-          <h6 class="m-0 fw-bold text-primary">General Settings</h6>
-        </div>
-        <div class="card-body">
-          <form (ngSubmit)="updateGeneralSettings()">
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="language" class="form-label">Language</label>
-                <select class="form-select" id="language" [(ngModel)]="generalSettings.language" name="language">
-                  <option value="english">English</option>
-                  <option value="spanish">Spanish</option>
-                  <option value="french">French</option>
-                  <option value="german">German</option>
-                  <option value="chinese">Chinese</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="timezone" class="form-label">Timezone</label>
-                <select class="form-select" id="timezone" [(ngModel)]="generalSettings.timezone" name="timezone">
-                  <option value="America/New_York">Eastern Time (ET)</option>
-                  <option value="America/Chicago">Central Time (CT)</option>
-                  <option value="America/Denver">Mountain Time (MT)</option>
-                  <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                  <option value="Europe/London">Greenwich Mean Time (GMT)</option>
-                </select>
+<!-- General Settings with Photo Upload -->
+<div *ngIf="activeTab === 'general'" class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h6 class="m-0 fw-bold text-primary">General Settings</h6>
+  </div>
+  <div class="card-body">
+    <!-- Profile Photo Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h6 class="fw-bold mb-3">Profile Photo</h6>
+        <div class="d-flex align-items-center">
+          <div class="me-3">
+            <div class="position-relative">
+              <img 
+                [src]="userPhotoUrl || '/assets/default-avatar.png'" 
+                alt="Profile Photo" 
+                class="rounded-circle"
+                style="width: 80px; height: 80px; object-fit: cover;"
+                *ngIf="!isLoadingPhoto">
+              <div 
+                *ngIf="isLoadingPhoto" 
+                class="d-flex align-items-center justify-content-center rounded-circle bg-light"
+                style="width: 80px; height: 80px;">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
               </div>
             </div>
-
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="dateFormat" class="form-label">Date Format</label>
-                <select class="form-select" id="dateFormat" [(ngModel)]="generalSettings.dateFormat" name="dateFormat">
-                  <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                  <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="timeFormat" class="form-label">Time Format</label>
-                <select class="form-select" id="timeFormat" [(ngModel)]="generalSettings.timeFormat" name="timeFormat">
-                  <option value="12h">12-hour (AM/PM)</option>
-                  <option value="24h">24-hour</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="autoSave" [(ngModel)]="generalSettings.autoSave" name="autoSave">
-                <label class="form-check-label" for="autoSave">Auto-save changes</label>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="darkMode" [(ngModel)]="generalSettings.darkMode" name="darkMode">
-                <label class="form-check-label" for="darkMode">Dark Mode</label>
-              </div>
-            </div>
-          </form>
+          </div>
+          <div>
+            <input 
+              type="file" 
+              id="photoUpload" 
+              accept="image/*" 
+              (change)="onPhotoSelected($event)"
+              class="d-none">
+            <label for="photoUpload" class="btn btn-outline-primary btn-sm me-2">
+              Choose Photo
+            </label>
+            <button 
+              type="button" 
+              class="btn btn-primary btn-sm"
+              (click)="uploadPhoto()"
+              [disabled]="!selectedPhotoFile || isUploadingPhoto">
+              <span *ngIf="isUploadingPhoto" class="spinner-border spinner-border-sm me-1"></span>
+              {{ isUploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- User Information Form -->
+    <form (ngSubmit)="updateAccountSettings()">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="firstName" class="form-label">First Name</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="firstName" 
+            [(ngModel)]="accountSettings.firstName" 
+            name="firstName">
+        </div>
+        <div class="col-md-6">
+          <label for="lastName" class="form-label">Last Name</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="lastName" 
+            [(ngModel)]="accountSettings.lastName" 
+            name="lastName">
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="email" class="form-label">Email</label>
+          <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            [(ngModel)]="accountSettings.email" 
+            name="email">
+        </div>
+        <div class="col-md-6">
+          <label for="phone" class="form-label">Phone</label>
+          <input 
+            type="tel" 
+            class="form-control" 
+            id="phone" 
+            [(ngModel)]="accountSettings.phone" 
+            name="phone">
+        </div>
+      </div>
+
+      <!-- ... existing general settings form fields ... -->
+
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="isUpdatingProfile">
+        <span *ngIf="isUpdatingProfile" class="spinner-border spinner-border-sm me-1"></span>
+        {{ isUpdatingProfile ? 'Updating...' : 'Update Profile' }}
+      </button>
+    </form>
+  </div>
+</div>
 
 
       <!-- Notification Settings -->
@@ -170,78 +213,141 @@
 
 
       <!-- Security Settings -->
-      <div *ngIf="activeTab === 'security'" class="card shadow mb-4">
-        <div class="card-header py-3">
-          <h6 class="m-0 fw-bold text-primary">Security Settings</h6>
+<!-- Security Settings -->
+<div *ngIf="activeTab === 'security'" class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h6 class="m-0 fw-bold text-primary">Security Settings</h6>
+  </div>
+  <div class="card-body">
+    <div class="mb-4">
+      <h5 class="h6 fw-bold">Two-Factor Authentication</h5>
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <p class="mb-0">Add an extra layer of security to your account</p>
+          <p class="text-muted small mb-0">{{ securitySettings.twoFactorAuth ? 'Currently enabled' : 'Currently disabled' }}</p>
         </div>
-        <div class="card-body">
-          <div class="mb-4">
-            <h5 class="h6 fw-bold">Two-Factor Authentication</h5>
-            <div class="d-flex align-items-center justify-content-between">
-              <div>
-                <p class="mb-0">Add an extra layer of security to your account</p>
-                <p class="text-muted small mb-0">{{ securitySettings.twoFactorAuth ? 'Currently enabled' : 'Currently disabled' }}</p>
-              </div>
-              <button class="btn btn-sm" [ngClass]="securitySettings.twoFactorAuth ? 'btn-danger' : 'btn-primary'" (click)="toggleTwoFactorAuth()">
-                {{ securitySettings.twoFactorAuth ? 'Disable' : 'Enable' }}
-              </button>
-            </div>
-          </div>
+        <button class="btn btn-sm" [ngClass]="securitySettings.twoFactorAuth ? 'btn-danger' : 'btn-primary'" (click)="toggleTwoFactorAuth()">
+          {{ securitySettings.twoFactorAuth ? 'Disable' : 'Enable' }}
+        </button>
+      </div>
+    </div>
 
-          <div class="mb-4">
-            <h5 class="h6 fw-bold">Security Preferences</h5>
-            <div class="mb-3">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="loginNotifications" [(ngModel)]="securitySettings.loginNotifications" name="loginNotifications">
-                <label class="form-check-label" for="loginNotifications">Email me when there's a new login to my account</label>
-              </div>
-            </div>
-
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="sessionTimeout" class="form-label">Session Timeout</label>
-                <select class="form-select" id="sessionTimeout" [(ngModel)]="securitySettings.sessionTimeout" name="sessionTimeout">
-                  <option value="15m">15 minutes</option>
-                  <option value="30m">30 minutes</option>
-                  <option value="1h">1 hour</option>
-                  <option value="4h">4 hours</option>
-                  <option value="8h">8 hours</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="passwordExpiry" class="form-label">Password Expiry</label>
-                <select class="form-select" id="passwordExpiry" [(ngModel)]="securitySettings.passwordExpiry" name="passwordExpiry">
-                  <option value="30d">30 days</option>
-                  <option value="60d">60 days</option>
-                  <option value="90d">90 days</option>
-                  <option value="180d">180 days</option>
-                  <option value="never">Never</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="mb-4">
-            <h5 class="h6 fw-bold">Change Password</h5>
-            <form (ngSubmit)="changePassword()">
-              <div class="mb-3">
-                <label for="currentPassword" class="form-label">Current Password</label>
-                <input type="password" class="form-control" id="currentPassword" [(ngModel)]="passwordForm.currentPassword" name="currentPassword">
-              </div>
-              <div class="mb-3">
-                <label for="newPassword" class="form-label">New Password</label>
-                <input type="password" class="form-control" id="newPassword" [(ngModel)]="passwordForm.newPassword" name="newPassword">
-              </div>
-              <div class="mb-3">
-                <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                <input type="password" class="form-control" id="confirmPassword" [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword">
-              </div>
-              <button type="submit" class="btn btn-primary">Change Password</button>
-            </form>
-          </div>
-          <button type="button" class="btn btn-primary" (click)="updateSecuritySettings()">Save Security Settings</button>
+    <div class="mb-4">
+      <h5 class="h6 fw-bold">Security Preferences</h5>
+      <div class="mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="loginNotifications" [(ngModel)]="securitySettings.loginNotifications" name="loginNotifications">
+          <label class="form-check-label" for="loginNotifications">Email me when there's a new login to my account</label>
         </div>
       </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="sessionTimeout" class="form-label">Session Timeout</label>
+          <select class="form-select" id="sessionTimeout" [(ngModel)]="securitySettings.sessionTimeout" name="sessionTimeout">
+            <option value="15m">15 minutes</option>
+            <option value="30m">30 minutes</option>
+            <option value="1h">1 hour</option>
+            <option value="4h">4 hours</option>
+            <option value="8h">8 hours</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="passwordExpiry" class="form-label">Password Expiry</label>
+          <select class="form-select" id="passwordExpiry" [(ngModel)]="securitySettings.passwordExpiry" name="passwordExpiry">
+            <option value="30d">30 days</option>
+            <option value="60d">60 days</option>
+            <option value="90d">90 days</option>
+            <option value="180d">180 days</option>
+            <option value="never">Never</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <h5 class="h6 fw-bold">Change Password</h5>
+      
+      <!-- Success Message -->
+      <div *ngIf="passwordValidation.successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>
+        {{ passwordValidation.successMessage }}
+        <button type="button" class="btn-close" (click)="passwordValidation.successMessage = ''"></button>
+      </div>
+
+      <!-- General Error Message -->
+      <div *ngIf="passwordValidation.generalError" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ passwordValidation.generalError }}
+        <button type="button" class="btn-close" (click)="passwordValidation.generalError = ''"></button>
+      </div>
+
+      <form (ngSubmit)="changePassword()" #passwordChangeForm="ngForm">
+        <div class="mb-3">
+          <label for="currentPassword" class="form-label">Current Password <span class="text-danger">*</span></label>
+          <input 
+            type="password" 
+            class="form-control" 
+            [class.is-invalid]="passwordValidation.currentPasswordError"
+            id="currentPassword" 
+            [(ngModel)]="passwordForm.currentPassword" 
+            name="currentPassword"
+            required
+            autocomplete="current-password">
+          <div *ngIf="passwordValidation.currentPasswordError" class="invalid-feedback">
+            {{ passwordValidation.currentPasswordError }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="newPassword" class="form-label">New Password <span class="text-danger">*</span></label>
+          <input 
+            type="password" 
+            class="form-control" 
+            [class.is-invalid]="passwordValidation.newPasswordError"
+            id="newPassword" 
+            [(ngModel)]="passwordForm.newPassword" 
+            name="newPassword"
+            required
+            autocomplete="new-password">
+          <div *ngIf="passwordValidation.newPasswordError" class="invalid-feedback">
+            {{ passwordValidation.newPasswordError }}
+          </div>
+          <div class="form-text">
+            Password must be at least 8 characters long and contain uppercase, lowercase, and numeric characters.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirm New Password <span class="text-danger">*</span></label>
+          <input 
+            type="password" 
+            class="form-control" 
+            [class.is-invalid]="passwordValidation.confirmPasswordError"
+            id="confirmPassword" 
+            [(ngModel)]="passwordForm.confirmPassword" 
+            name="confirmPassword"
+            required
+            autocomplete="new-password">
+          <div *ngIf="passwordValidation.confirmPasswordError" class="invalid-feedback">
+            {{ passwordValidation.confirmPasswordError }}
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="isChangingPassword || !passwordChangeForm.form.valid">
+          <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          <i *ngIf="!isChangingPassword" class="bi bi-key me-2"></i>
+          {{ isChangingPassword ? 'Changing Password...' : 'Change Password' }}
+        </button>
+      </form>
+    </div>
+
+    <button type="button" class="btn btn-primary" (click)="updateSecuritySettings()">Save Security Settings</button>
+  </div>
+</div>
     </div>
   </div>
 </main>

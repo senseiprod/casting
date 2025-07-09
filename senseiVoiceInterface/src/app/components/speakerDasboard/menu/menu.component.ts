@@ -50,6 +50,12 @@ export class MenuComponent implements OnInit {
   cgvAccepted = false
   pendingPaymentAction: (() => void) | null = null
 
+  isLoadingPhoto = false;
+  isUpdatingProfile = false;
+  isUploadingPhoto = false;
+  userPhotoUrl: SafeUrl | null = null;
+
+
   constructor(
     private route: ActivatedRoute,
     private speakerService: ClientService,
@@ -65,6 +71,7 @@ export class MenuComponent implements OnInit {
   ngOnInit() {
     this.userId = this.route.snapshot.paramMap.get("uuid")
     this.loadUserData()
+    this.loadUserPhoto()
     this.loadNotifications()
     this.initializeTranslations()
     this.loadUserBalance()
@@ -86,7 +93,7 @@ export class MenuComponent implements OnInit {
         },
       )
 
-      this.loadUserPhoto(this.userId)
+      
     }
   }
 
@@ -452,18 +459,6 @@ private executeBalanceCharge(): void {
     this.router.navigate(["/login"])
   }
 
-  loadUserPhoto(userId: string): void {
-    this.utilisateurService.getPhoto(userId).subscribe({
-      next: (blob) => {
-        const objectURL = URL.createObjectURL(blob)
-        this.profilePhotoUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL)
-      },
-      error: (error) => {
-        console.error("Error loading user photo:", error)
-        this.profilePhotoUrl = null
-      },
-    })
-  }
 
   onSearchSubmit(searchTerm: string): void {
     if (searchTerm.trim()) {
@@ -482,4 +477,22 @@ private executeBalanceCharge(): void {
   navigateToSettings(): void {
     this.router.navigate(["/settings"])
   }
+
+    // Load user photo
+    loadUserPhoto(): void {
+      if (this.userId) {
+        this.isLoadingPhoto = true;
+        this.utilisateurService.getPhoto(this.userId).subscribe({
+          next: (photoBlob: Blob) => {
+            const objectURL = URL.createObjectURL(photoBlob);
+            this.userPhotoUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+            this.isLoadingPhoto = false;
+          },
+          error: (error) => {
+            console.error('Error loading photo:', error);
+            this.isLoadingPhoto = false;
+          }
+        });
+      }
+    }
 }

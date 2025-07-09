@@ -17,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -152,4 +154,24 @@ public class AuthenticationService {
       }
     }
   }
+  @Transactional
+  public void changePassword(String email, String oldPassword, String newPassword) {
+      Utilisateur user = repository.findByEmail(email)
+          .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+   
+      if (user.getPassword() == null || user.getPassword().isEmpty()) {
+          throw new IllegalStateException("No password is set for this account");
+      }
+  
+      if (!passwordEncoder.matches(oldPassword, user.getMotDePasse())) {
+          throw new IllegalArgumentException("Current password is incorrect");
+      }
+  
+      user.setMotDePasse(passwordEncoder.encode(newPassword));
+      repository.save(user);
+  
+      revokeAllUserTokens(user);
+  }
+  
+  
 }

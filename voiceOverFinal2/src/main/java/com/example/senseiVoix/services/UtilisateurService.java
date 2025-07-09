@@ -36,5 +36,5 @@ public interface UtilisateurService {
     // Méthode pour supprimer un utilisateur par son ID
     void deleteUser(Long id);
 
-    Utilisateur updateUser(Long id, UtilisateurRequest utilisateur);
+    Utilisateur updateUser(String id, UtilisateurRequest utilisateur);
 }

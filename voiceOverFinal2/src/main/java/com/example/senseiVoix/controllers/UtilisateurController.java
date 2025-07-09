@@ -89,7 +89,7 @@ public class UtilisateurController {
 
     // Endpoint pour mettre à jour un utilisateur par ID
     @PutMapping("/{id}")
-    public ResponseEntity<Utilisateur> updateUser(@PathVariable Long id, @RequestBody UtilisateurRequest utilisateur) {
+    public ResponseEntity<Utilisateur> updateUser(@PathVariable String id, @RequestBody UtilisateurRequest utilisateur) {
         // You should call a service method that handles the update logic
         Utilisateur updatedUtilisateur = utilisateurService.updateUser(id, utilisateur);
 

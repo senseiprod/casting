@@ -78,8 +78,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         return utilisateurRepository.findByUuid(id);
     }
 
-    public Utilisateur updateUser(Long id, UtilisateurRequest dto) {
-        Utilisateur existingUtilisateur = utilisateurRepository.findById(id).orElse(null);
+    public Utilisateur updateUser(String id, UtilisateurRequest dto) {
+        Utilisateur existingUtilisateur = utilisateurRepository.findByUuid(id);
 
         if (existingUtilisateur != null) {
             // Update all the specified fields if they're provided in the DTO
@@ -94,8 +94,6 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                 existingUtilisateur.setPrenom(dto.getPrenom());
             if (dto.getEmail() != null)
                 existingUtilisateur.setEmail(dto.getEmail());
-            if (dto.getMotDePasse() != null)
-                existingUtilisateur.setMotDePasse(dto.getMotDePasse());
             if (dto.getPhone() != null)
                 existingUtilisateur.setPhone(dto.getPhone());
             if (dto.getVerified() != null)

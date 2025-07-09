@@ -4,6 +4,7 @@ import {Observable, tap} from 'rxjs';
 import {jwtDecode} from "jwt-decode";
 import {ClientResponse, ClientService} from "./client-service.service";
 import { environment } from 'src/environments/environment';
+import { ChangePasswordRequest } from './utilisateur-service.service';
 
 
 interface RegisterRequest {
@@ -107,5 +108,9 @@ export class AuthService {
 
   logout() {
     localStorage.clear()
+  }
+  
+  changePassword(request: ChangePasswordRequest) {
+    return this.http.put(`${this.apiUrl}/change-password`, request);
   }
 }

@@ -381,7 +381,7 @@
             [attr.aria-label]="'header.profile.menu' | translate">
             <div class="profile-avatar">
               <img 
-                [src]="'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" 
+                [src]="userPhotoUrl || 'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" 
                 [alt]="'header.profile.avatar' | translate">
               <span class="status-indicator" [attr.title]="'header.profile.status.online' | translate"></span>
             </div>
