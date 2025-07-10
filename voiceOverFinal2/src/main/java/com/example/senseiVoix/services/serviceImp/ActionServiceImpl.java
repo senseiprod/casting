@@ -428,4 +428,17 @@ public class ActionServiceImpl {
             throw new RuntimeException("Failed to generate Lahajati audio: " + e.getMessage(), e);
         }
     }
+
+    public void setBalanceClient(String uuid, Double balance) {
+        Utilisateur utilisateur = utilisateurRepository.findByUuid(uuid);
+        if (utilisateur instanceof Client) {
+            Client client = (Client) utilisateur;
+            client.setBalance(client.getBalance() - balance);
+            utilisateurRepository.save(client);
+        } else {
+            throw new RuntimeException("Utilisateur is not a Client");
+        }
+    }
+
+    
 }
