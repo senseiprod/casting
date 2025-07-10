@@ -366,8 +366,8 @@ public class ActionController {
                         price,
                         "USD",
                         "Lahajati TTS Generation",
-                        "http://localhost:8080/api/actions/lahajati/payment/cancel/" + action.getId(),
-                        "http://localhost:8080/api/actions/lahajati/payment/success/" + action.getId()
+                        "https://api.castingvoixoff.ma/api/actions/lahajati/payment/cancel/" + action.getId(),
+                        "https://api.castingvoixoff.ma/api/actions/lahajati/payment/success/" + action.getId()
                 );
 
                 response.put("paymentId", payment.getId());
