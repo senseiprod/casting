@@ -2,24 +2,26 @@ package com.example.senseiVoix.services.serviceImp;
 
 import com.example.senseiVoix.dtos.SpeakerInfo.SpeakerInfo;
 import com.example.senseiVoix.repositories.SpeakerInfoRepository;
+
 import com.example.senseiVoix.services.SpeakerInfoService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException; // Import IOException
+import java.io.IOException;
 
 @Service
 public class SpeakerInfoServiceImpl implements SpeakerInfoService {
 
     private final SpeakerInfoRepository speakerRepository;
+    private final com.example.senseiVoix.services.serviceImp.EmailService emailService;
 
     @Autowired
-    public SpeakerInfoServiceImpl(SpeakerInfoRepository speakerInfoRepository) {
+    public SpeakerInfoServiceImpl(SpeakerInfoRepository speakerInfoRepository, com.example.senseiVoix.services.serviceImp.EmailService emailService) {
         this.speakerRepository = speakerInfoRepository;
+        this.emailService = emailService;
     }
 
     @Override
-    // FIX: Add 'throws IOException' to the method signature to handle the checked exception from getBytes().
     public com.example.senseiVoix.entities.SpeakerInfo saveSpeaker(SpeakerInfo dto, MultipartFile audioFile) throws IOException {
         com.example.senseiVoix.entities.SpeakerInfo speakerEntity = new com.example.senseiVoix.entities.SpeakerInfo();
 
@@ -50,7 +52,7 @@ public class SpeakerInfoServiceImpl implements SpeakerInfoService {
 
         // Handle the audio file
         if (audioFile != null && !audioFile.isEmpty()) {
-            speakerEntity.setDemoAudio(audioFile.getBytes()); // This line is the source of the IOException
+            speakerEntity.setDemoAudio(audioFile.getBytes());
             speakerEntity.setDemoAudioType(audioFile.getContentType());
         }
 
@@ -63,6 +65,18 @@ public class SpeakerInfoServiceImpl implements SpeakerInfoService {
         speakerEntity.setDigitalSignature(dto.getDigitalSignature());
         speakerEntity.setSignatureDate(dto.getSignatureDate());
 
-        return speakerRepository.save(speakerEntity);
+        // Save the entity to the database
+        com.example.senseiVoix.entities.SpeakerInfo savedSpeaker = speakerRepository.save(speakerEntity);
+
+        // Send the confirmation email after successfully saving
+        try {
+            emailService.sendRegistrationConfirmation(savedSpeaker.getEmail(), savedSpeaker.getFullName());
+        } catch (Exception e) {
+            // Log the exception, but don't fail the registration process if the email fails.
+            // A logging framework like SLF4J would be better here.
+            System.err.println("Failed to send registration email to " + savedSpeaker.getEmail() + ": " + e.getMessage());
+        }
+
+        return savedSpeaker;
     }
 }

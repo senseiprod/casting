@@ -60,8 +60,8 @@ public class EmailService {
 
     }
 
-    public void sendCalendarInvitation(String to, String subject, String description, 
-                                       LocalDateTime startDateTime, LocalDateTime endDateTime, 
+    public void sendCalendarInvitation(String to, String subject, String description,
+                                       LocalDateTime startDateTime, LocalDateTime endDateTime,
                                        String location) throws MessagingException, IOException {
 
         // Format des dates pour l'événement (Format standard UTC pour les calendriers)
@@ -150,5 +150,24 @@ public class EmailService {
 
         emailSender.send(message);
     }
-}
 
+    /**
+     * Sends a registration confirmation email to the new speaker.
+     * @param to The recipient's email address.
+     * @param fullName The full name of the person who registered.
+     */
+    public void sendRegistrationConfirmation(String to, String fullName) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Welcome to SenseiVoix! Your Registration is Complete.");
+        message.setText("Dear " + fullName + ",\n\n" +
+                "Thank you for registering with Castingvoixoff!\n\n" +
+                "We have successfully received your information. Our team will review your profile, and we will get back to you shortly if any further details are needed.\n\n" +
+                "We are excited to have you as part of our community of talented voice artists.\n\n" +
+                "Best regards,\n" +
+                "The CastingVoixoff Team\n" +
+                "castingvoixoff.ma");
+
+        emailSender.send(message);
+    }
+}
