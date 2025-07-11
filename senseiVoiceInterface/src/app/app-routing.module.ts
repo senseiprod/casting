@@ -35,6 +35,7 @@ import { SuccessBalanceChargeComponent } from './components/speakerDasboard/succ
 import { ConditionsGeneralesVenteComponentComponent } from './components/mainSite/conditions-generales-vente-component/conditions-generales-vente-component.component';
 import { Register2Component} from './components/register2/register2.component';
 import { Register3Component} from './components/register3/register3.component';
+import { NotificationComponent } from './components/speakerDasboard/notification/notification.component';
 
 
 
@@ -95,6 +96,7 @@ const routes: Routes = [
       { path: 'payment-success/:uuid', component: PaymentSuccessComponent },
       { path: 'payment-failed', component: PaymentFailedComponent },
       { path: 'charge-success/:amount/:newBalance', component: SuccessBalanceChargeComponent },
+      { path: 'notification', component: NotificationComponent },
 
       
     ]

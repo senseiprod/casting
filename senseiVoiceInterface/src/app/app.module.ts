@@ -55,6 +55,7 @@ import { ConditionsGeneralesVenteComponentComponent } from './components/mainSit
 import { CgvModalComponent } from './components/speakerDasboard/cgv-modal/cgv-modal.component';
 import { Register2Component } from './components/register2/register2.component';
 import { Register3Component } from './components/register3/register3.component';
+import { NotificationComponent } from './components/speakerDasboard/notification/notification.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/', '.json');
 }
@@ -102,7 +103,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ConditionsGeneralesVenteComponentComponent,
     CgvModalComponent,
     Register2Component,
-    Register3Component
+    Register3Component,
+    NotificationComponent
   ],
     imports: [
         BrowserModule,

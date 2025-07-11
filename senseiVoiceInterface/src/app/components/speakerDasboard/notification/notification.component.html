@@ -1,0 +1,184 @@
+<div class="notification-component" [class.compact]="compact">
+    <!-- Header -->
+    <div class="notification-header">
+      <div class="header-title">
+        <h3>
+          <i class="bi bi-bell me-2"></i>
+          Notifications
+          <span class="notification-count-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </h3>
+        <p class="header-subtitle" *ngIf="!compact">
+          {{ totalNotifications }} total notifications
+        </p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="action-btn refresh-btn" 
+                (click)="refreshNotifications()" 
+                [disabled]="isLoading"
+                title="Refresh notifications">
+          <i class="bi" [ngClass]="isLoading ? 'bi-hourglass-split spin' : 'bi-arrow-clockwise'"></i>
+        </button>
+        
+        <button class="action-btn mark-all-btn" 
+                (click)="markAllAsRead()" 
+                [disabled]="unreadCount === 0 || isMarkingAsRead"
+                *ngIf="unreadCount > 0"
+                title="Mark all as read">
+          <i class="bi bi-check-all me-1"></i>
+          <span class="d-none d-sm-inline">Mark all read</span>
+        </button>
+      </div>
+    </div>
+  
+    <!-- Filters -->
+    <div class="notification-filters" *ngIf="showFilters && !compact">
+      <div class="filter-group">
+        <label class="filter-label">Status:</label>
+        <div class="filter-buttons">
+          <button class="filter-btn" 
+                  [class.active]="currentFilter.status === 'all'"
+                  (click)="applyFilter({ status: 'all' })">
+            All
+          </button>
+          <button class="filter-btn" 
+                  [class.active]="currentFilter.status === 'unread'"
+                  (click)="applyFilter({ status: 'unread' })">
+            Unread
+            <span class="filter-count" *ngIf="unreadCount > 0">({{ unreadCount }})</span>
+          </button>
+          <button class="filter-btn" 
+                  [class.active]="currentFilter.status === 'read'"
+                  (click)="applyFilter({ status: 'read' })">
+            Read
+          </button>
+        </div>
+      </div>
+  
+      <div class="filter-group" *ngIf="availableTypes.length > 1">
+        <label class="filter-label">Type:</label>
+        <select class="filter-select" 
+                [value]="currentFilter.type || ''"
+                >
+          <option value="">All types</option>
+          <option *ngFor="let type of availableTypes" [value]="type">
+            {{ type | titlecase }}
+          </option>
+        </select>
+      </div>
+  
+      <button class="clear-filters-btn" 
+              (click)="clearFilters()"
+              *ngIf="currentFilter.type || currentFilter.status !== 'all'">
+        <i class="bi bi-x-circle me-1"></i>
+        Clear filters
+      </button>
+    </div>
+  
+    <!-- Content -->
+    <div class="notification-content">
+      <!-- Loading State -->
+      <div class="notification-state loading-state" *ngIf="isLoading">
+        <div class="state-icon">
+          <i class="bi bi-hourglass-split spin"></i>
+        </div>
+        <h4>Loading notifications...</h4>
+        <p>Please wait while we fetch your notifications</p>
+      </div>
+  
+      <!-- Error State -->
+      <div class="notification-state error-state" *ngIf="error && !isLoading">
+        <div class="state-icon">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <h4>Something went wrong</h4>
+        <p>{{ error }}</p>
+        <button class="retry-btn" (click)="refreshNotifications()">
+          <i class="bi bi-arrow-clockwise me-1"></i>
+          Try again
+        </button>
+      </div>
+  
+      <!-- Empty State -->
+      <div class="notification-state empty-state" 
+           *ngIf="!isLoading && !error && notifications.length === 0">
+        <div class="state-icon">
+          <i class="bi bi-bell-slash"></i>
+        </div>
+        <h4>No notifications</h4>
+        <p *ngIf="currentFilter.status === 'all'">You don't have any notifications yet</p>
+        <p *ngIf="currentFilter.status === 'unread'">All caught up! No unread notifications</p>
+        <p *ngIf="currentFilter.status === 'read'">No read notifications found</p>
+        <p *ngIf="currentFilter.type">No notifications of type "{{ currentFilter.type }}" found</p>
+      </div>
+  
+      <!-- Notifications List -->
+      <div class="notification-list" *ngIf="!isLoading && !error && notifications.length > 0">
+        <div class="notification-item" 
+             *ngFor="let notification of notifications; trackBy: trackNotificationById"
+             [class.unread]="!notification.readAt"
+             [class.compact]="compact"
+             (click)="handleNotificationClick(notification)">
+          
+          <div class="notification-icon">
+            <i [class]="getNotificationIcon(notification.type)"></i>
+          </div>
+  
+          <div class="notification-body">
+            <div class="notification-header-item">
+              <h5 class="notification-title">{{ notification.title }}</h5>
+              <div class="notification-actions">
+                <button class="notification-action-btn mark-read-btn" 
+                        *ngIf="!notification.readAt"
+                        (click)="markAsRead(notification); $event.stopPropagation()"
+                        [disabled]="isMarkingAsRead"
+                        title="Mark as read">
+                  <i class="bi bi-check"></i>
+                </button>
+                <button class="notification-action-btn delete-btn" 
+                        (click)="deleteNotification(notification); $event.stopPropagation()"
+                        [disabled]="isDeleting"
+                        title="Delete notification">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+  
+            <p class="notification-message">{{ notification.message }}</p>
+  
+            <div class="notification-meta">
+              <span class="notification-time">
+                <i class="bi bi-clock me-1"></i>
+                {{ formatNotificationTime(notification.createdAt) }}
+              </span>
+              
+              <span class="notification-sender" *ngIf="notification.senderName">
+                <i class="bi bi-person me-1"></i>
+                {{ notification.senderName }}
+              </span>
+              
+              <span class="notification-type-badge" [class]="'type-' + notification.type.toLowerCase()">
+                {{ notification.type | titlecase }}
+              </span>
+            </div>
+          </div>
+  
+          <div class="notification-status" *ngIf="!notification.readAt">
+            <span class="unread-indicator"></span>
+          </div>
+        </div>
+  
+        <!-- Load More -->
+        <div class="load-more-section" *ngIf="showPagination && hasMoreNotifications">
+          <button class="load-more-btn" 
+                  (click)="loadMore()" 
+                  [disabled]="isLoadingMore">
+            <i class="bi" [ngClass]="isLoadingMore ? 'bi-hourglass-split spin' : 'bi-arrow-down'"></i>
+            <span *ngIf="!isLoadingMore">Load more notifications</span>
+            <span *ngIf="isLoadingMore">Loading...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
