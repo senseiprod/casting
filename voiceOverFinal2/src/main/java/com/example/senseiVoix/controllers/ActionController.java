@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
-
+import com.example.senseiVoix.services.NotificationService;
 @RestController
 @RequestMapping("/api/actions")
 @CrossOrigin(origins = "*")
@@ -40,6 +40,9 @@ public class ActionController {
     private final Map<Long, String> tempVoiceStorage = new ConcurrentHashMap<>();
     @Autowired
     private ActionRepository actionRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     // EXISTING ENDPOINTS (keeping all your existing code)
     @PostMapping("/create")
@@ -174,6 +177,9 @@ public class ActionController {
                 response.put("status", updatedAction.getStatutAction());
                 response.put("voiceIdUsed", voiceId);
 
+                // Send payment success notification
+                notificationService.notifyPaymentSuccess(updatedAction.getUtilisateur(), updatedAction.getUuid(), 10);
+
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.badRequest().body(Map.of("error", "Payment not approved"));
@@ -292,6 +298,9 @@ public class ActionController {
             response.put("status", validatedAction.getStatutAction());
             response.put("libelle", validatedAction.getLibelle());
             response.put("voiceIdUsed", voiceId);
+
+            // Send bank transfer validation notification
+            notificationService.notifyBankTransferValidated(validatedAction.getUtilisateur(), validatedAction.getUuid());
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -424,6 +433,9 @@ public class ActionController {
                 response.put("status", updatedAction.getStatutAction());
                 response.put("voiceIdUsed", voiceId);
 
+                // Send payment success notification
+                notificationService.notifyPaymentSuccess(updatedAction.getUtilisateur(), updatedAction.getUuid(), 10);
+
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.badRequest().body(Map.of("error", "Payment not approved. State: " + payment.getState()));
@@ -486,6 +498,9 @@ public class ActionController {
             response.put("libelle", validatedAction.getLibelle());
             response.put("voiceIdUsed", voiceId);
 
+            // Send bank transfer validation notification
+            notificationService.notifyBankTransferValidated(validatedAction.getUtilisateur(), validatedAction.getUuid());
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             tempVoiceStorage.remove(actionId);
@@ -541,5 +556,15 @@ public class ActionController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(action);
+    }
+
+    @PostMapping("/set-balance")
+    public ResponseEntity<?> setClientBalance(@RequestParam String uuid, @RequestParam Double balance) {
+        try {
+            actionService.setBalanceClient(uuid, balance);
+            return ResponseEntity.ok("Balance updated successfully.");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 }

@@ -9,4 +9,3 @@ import java.io.IOException;
 public interface SpeakerInfoService {
     SpeakerInfo saveSpeaker(com.example.senseiVoix.dtos.SpeakerInfo.SpeakerInfo speakerDTO, MultipartFile audioFile) throws IOException;
 }
-

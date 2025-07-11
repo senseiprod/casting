@@ -58,4 +58,3 @@ public class ProjectController {
         return ResponseEntity.ok(deleted);
     }
 }
-

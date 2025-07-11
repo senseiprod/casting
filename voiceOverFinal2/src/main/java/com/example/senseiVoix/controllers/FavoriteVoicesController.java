@@ -40,4 +40,3 @@ public class FavoriteVoicesController {
         return ResponseEntity.noContent().build();
     }
 }
-

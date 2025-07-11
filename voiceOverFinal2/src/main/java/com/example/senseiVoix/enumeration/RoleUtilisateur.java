@@ -63,4 +63,3 @@ public enum RoleUtilisateur {
         return authorities;
     }
 }
-

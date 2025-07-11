@@ -23,4 +23,3 @@ public interface SpeakerService {
 
     void deleteSpeaker(String uuid);
 }
-

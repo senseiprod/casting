@@ -53,4 +53,3 @@ public class FavoriteVoicesServiceImpl {
         return entity;
     }
 }
-

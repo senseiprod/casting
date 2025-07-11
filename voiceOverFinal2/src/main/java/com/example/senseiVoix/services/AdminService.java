@@ -17,4 +17,3 @@ public interface AdminService {
     AdminResponse updateAdmin(String uuid, AdminRequest adminRequest);
     void deleteAdmin(String uuid);
 }
-

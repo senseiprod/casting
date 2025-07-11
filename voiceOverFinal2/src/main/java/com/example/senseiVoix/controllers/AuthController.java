@@ -7,6 +7,7 @@ import com.example.senseiVoix.enumeration.RoleUtilisateur;
 import com.example.senseiVoix.repositories.ClientRepository;
 import com.example.senseiVoix.repositories.VerificationTokenRepository;
 import com.example.senseiVoix.services.EmailService2;
+import com.example.senseiVoix.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +38,9 @@ public class AuthController {
     private EmailService2 emailService2;
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping("/auth/choose")
     public String chooseAuthMethod() {
@@ -75,6 +79,9 @@ public class AuthController {
         // Save client entity
         client = clientRepository.save(client);
 
+        // Send welcome notification
+        notificationService.notifyUserRegistration(client);
+
         // Generate verification token
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken();
@@ -102,6 +109,10 @@ public class AuthController {
         Client client = (Client) verificationToken.getUser();  // Cast to Client
         client.setVerified(true);
         clientRepository.save(client);
+
+        // Send email verification success notification
+        notificationService.notifyEmailVerification(client);
+
         tokenRepository.delete(verificationToken);
 
         return ResponseEntity.ok("Email verified successfully!");

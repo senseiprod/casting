@@ -24,4 +24,3 @@ public class AuthorityDeserializer extends JsonDeserializer<List<GrantedAuthorit
         return authorities;
     }
 }
-

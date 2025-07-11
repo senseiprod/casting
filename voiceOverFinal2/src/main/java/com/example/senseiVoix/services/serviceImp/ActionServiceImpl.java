@@ -11,6 +11,7 @@ import com.example.senseiVoix.enumeration.TypeAudio;
 import com.example.senseiVoix.repositories.*;
 import com.example.senseiVoix.services.ElevenLabsService;
 import com.example.senseiVoix.services.LahajatiService;
+import com.example.senseiVoix.services.NotificationService;
 import com.example.senseiVoix.services.PlayHtService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.base.rest.PayPalRESTException;
@@ -65,6 +66,8 @@ public class ActionServiceImpl {
     private ElevenLabsService elevenLabsService;
     @Autowired
     private LahajatiService lahajatiService;
+    @Autowired
+    private NotificationService notificationService;
 
     // FIXED RIB FOR BANK TRANSFERS
     private static final String COMPANY_RIB = "FR76 1234 5678 9012 3456 7890 123";
@@ -89,6 +92,10 @@ public class ActionServiceImpl {
         action1.setVoice(voixRepository.findByUuid(voiceUuid));
         action1.setAudioGenerated(audioFile.getBytes());
         actionRepository.save(action1);
+        
+        // Send notification for action creation
+        Utilisateur user = utilisateurRepository.findByUuid(utilisateurUuid);
+        notificationService.notifyActionCreated(user, action1.getUuid());
     }
 
     public void createActionPyee(String text, String statutAction, String voiceUuid, String utilisateurUuid,
@@ -103,6 +110,10 @@ public class ActionServiceImpl {
         action1.setVoice(voixRepository.findByUuid(voiceUuid));
         action1.setAudioGenerated(audioFile.getBytes());
         actionRepository.save(action1);
+        
+        // Send notification for action creation
+        Utilisateur user = utilisateurRepository.findByUuid(utilisateurUuid);
+        notificationService.notifyActionCreated(user, action1.getUuid());
     }
 
 
@@ -123,6 +134,9 @@ public class ActionServiceImpl {
         Speaker speaker = speakerRepository.findByUuid(speakerUuid);
         emailService.sendNotificationGeneration(utilisateur.getEmail(), utilisateur.getNom(), LocalDate.now());
         emailService.NotificationSpeaker(speaker.getEmail(), speaker.getNom(), LocalDate.now(), action.getText());
+        
+        // Send push notifications
+        notificationService.notifyActionCreated(utilisateur, actionUuid);
     }
 
     public void generateSpeech(String actionUuid) throws JsonProcessingException {
@@ -138,6 +152,9 @@ public class ActionServiceImpl {
         audio1.setSpeaker(speakerRepository.getSpeakerByVoix(voix));
         audio1.setFormat(audioFormat);
         audioRepository.save(audio1);
+        
+        // Notify user of successful audio generation
+        notificationService.notifyAudioGenerated(action.getUtilisateur(), actionUuid);
     }
 
     private String detectAudioFormat(byte[] audioBytes) {
@@ -190,6 +207,9 @@ public class ActionServiceImpl {
 
         actionRepository.save(newAction);
         emailService.NotificationSpeaker(speaker.getEmail(), speaker.getNom(), LocalDate.now(), action.getText());
+        
+        // Send notifications
+        notificationService.notifyActionCreated(utilisateur, newAction.getUuid());
     }
 
 
@@ -234,7 +254,14 @@ public class ActionServiceImpl {
             action.setProject(project);
         }
 
-        return actionRepository.save(action);
+        Action savedAction = actionRepository.save(action);
+        
+        // Send notification for action creation
+        if (savedAction.getUtilisateur() != null) {
+            notificationService.notifyActionCreated(savedAction.getUtilisateur(), savedAction.getUuid());
+        }
+        
+        return savedAction;
     }
 
     public Action createInitial(ActionDarija actionRequest) {
@@ -259,7 +286,14 @@ public class ActionServiceImpl {
             action.setProject(project);
         }
 
-        return actionRepository.save(action);
+        Action savedAction = actionRepository.save(action);
+        
+        // Send notification for action creation
+        if (savedAction.getUtilisateur() != null) {
+            notificationService.notifyActionCreated(savedAction.getUtilisateur(), savedAction.getUuid());
+        }
+        
+        return savedAction;
     }
 
     public double calculatePrice(String text) {
@@ -297,11 +331,20 @@ public class ActionServiceImpl {
             action.setAudioGenerated(audioData);
             action.setStatutAction(StatutAction.GENERE);
 
-            return actionRepository.save(action);
+            Action savedAction = actionRepository.save(action);
+            
+            // Send notification for successful audio generation
+            notificationService.notifyAudioGenerated(action.getUtilisateur(), action.getUuid());
+            
+            return savedAction;
 
         } catch (Exception e) {
             action.setStatutAction(StatutAction.REJETE);
             actionRepository.save(action);
+            
+            // Send notification for failed audio generation
+            notificationService.notifyAudioGenerationFailed(action.getUtilisateur(), action.getUuid(), e.getMessage());
+            
             throw new RuntimeException("Failed to generate audio: " + e.getMessage());
         }
     }
@@ -336,6 +379,9 @@ public class ActionServiceImpl {
             response.setAccountHolder(ACCOUNT_HOLDER);
             response.setMessage("Action créée avec succès. Effectuez le virement bancaire avec le libellé fourni.");
 
+            // Notify admins that validation is required
+            notificationService.notifyAdminValidationRequired(action.getUuid(), libelle);
+
             return response;
 
         } catch (Exception e) {
@@ -363,6 +409,9 @@ public class ActionServiceImpl {
 
         action.setStatutAction(StatutAction.REJETE);
         actionRepository.save(action);
+        
+        // Send notification for bank transfer rejection
+        notificationService.notifyBankTransferRejected(action.getUtilisateur(), action.getUuid(), "Virement bancaire rejeté par l'administrateur");
     }
 
     public Action getActionByLibelle(String libelle) {
@@ -415,7 +464,13 @@ public class ActionServiceImpl {
                 action.setAudioGenerated(audioData);
                 action.setStatutAction(StatutAction.GENERE);
                 log.info("Successfully updated action {} with generated audio.", actionId);
-                return actionRepository.save(action);
+                
+                Action savedAction = actionRepository.save(action);
+                
+                // Send notification for successful audio generation
+                notificationService.notifyAudioGenerated(action.getUtilisateur(), action.getUuid());
+                
+                return savedAction;
 
             } else {
                 throw new RuntimeException("Failed to generate audio from Lahajati, status: " + responseEntity.getStatusCode() + ", Body: " + new String(responseEntity.getBody()));
@@ -425,6 +480,10 @@ public class ActionServiceImpl {
             log.error("EXCEPTION in generateLahajatiAudioAndUpdateAction for actionId {}:", actionId, e);
             action.setStatutAction(StatutAction.REJETE);
             actionRepository.save(action);
+            
+            // Send notification for failed audio generation
+            notificationService.notifyAudioGenerationFailed(action.getUtilisateur(), action.getUuid(), e.getMessage());
+            
             throw new RuntimeException("Failed to generate Lahajati audio: " + e.getMessage(), e);
         }
     }
@@ -433,8 +492,12 @@ public class ActionServiceImpl {
         Utilisateur utilisateur = utilisateurRepository.findByUuid(uuid);
         if (utilisateur instanceof Client) {
             Client client = (Client) utilisateur;
+            double oldBalance = client.getBalance();
             client.setBalance(client.getBalance() - balance);
             utilisateurRepository.save(client);
+            
+            // Send notification for balance update
+            notificationService.notifyBalanceUpdated(client, client.getBalance());
         } else {
             throw new RuntimeException("Utilisateur is not a Client");
         }

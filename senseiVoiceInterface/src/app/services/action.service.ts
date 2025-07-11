@@ -153,4 +153,12 @@ export class ActionService {
     const url = `${this.apiUrl}/lahajati/create-action-paypal`;
     return this.http.post<any>(url, actionRequest);
   }
+
+  setBalanceClient(uuid: string, balance: number) {
+    const params = new HttpParams()
+      .set('uuid', uuid)
+      .set('balance', balance.toString());
+
+    return this.http.post(`${this.apiUrl}/set-balance`, null, { params });
+  }
 }

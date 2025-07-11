@@ -24,4 +24,3 @@ public class MultipartInputStreamFileResource extends InputStreamResource {
         return -1; // we do not know the content length in advance
     }
 }
-

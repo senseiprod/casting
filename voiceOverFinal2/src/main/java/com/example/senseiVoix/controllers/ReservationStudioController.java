@@ -57,4 +57,3 @@ public class ReservationStudioController {
         return ResponseEntity.ok(reservationService.getReservedHoursByDate(date));
     }
 }
-
