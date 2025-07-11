@@ -160,12 +160,12 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Welcome to SenseiVoix! Your Registration is Complete.");
-        message.setText("Dear " + fullName + ",\n\n" +
-                "Thank you for registering with Castingvoixoff!\n\n" +
-                "We have successfully received your information. Our team will review your profile, and we will get back to you shortly if any further details are needed.\n\n" +
-                "We are excited to have you as part of our community of talented voice artists.\n\n" +
-                "Best regards,\n" +
-                "The CastingVoixoff Team\n" +
+        message.setText("Cher(e) " + fullName + ",\n\n" +
+                "Nous vous remercions de votre inscription sur Castingvoixoff !\n\n" +
+                "Nous avons bien reçu vos informations. Notre équipe examinera votre profil et vous contactera prochainement si des détails supplémentaires sont nécessaires.\n\n" +
+                "Nous sommes ravis de vous compter parmi notre communauté d'artistes voix-off talentueux.\n\n" +
+                "Cordialement,\n" +
+                "L'équipe CastingVoixoff\n" +
                 "castingvoixoff.ma");
 
         emailSender.send(message);
