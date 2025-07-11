@@ -40,7 +40,7 @@ export interface PushSubscriptionRequest {
   providedIn: 'root'
 })
 export class NotificationService {
-  private baseUrl = 'http://localhost:8080/api/notifications'; // À adapter selon ton backend
+  private baseUrl = 'https://castingvoixoff.ma/api/notifications'; // À adapter selon ton backend
 
   constructor(private http: HttpClient) {}
 
