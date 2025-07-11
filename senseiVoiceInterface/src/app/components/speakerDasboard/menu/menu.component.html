@@ -6,8 +6,6 @@
   (closed)="onCgvClosed()">
 </app-cgv-modal>
   <div class="header-container">
-    <!-- CGV Modal - Added exactly like in generation component -->
-
     <!-- Left Section: Toggle & Title -->
     <div class="header-left">
       <!-- Home Button -->
@@ -274,7 +272,6 @@
         </div>
       </div>
 
-      <!-- Rest of existing header content (Language, Notifications, Profile) -->
       <!-- Language Selector -->
       <div class="language-selector">
         <div class="dropdown">
@@ -320,7 +317,7 @@
         </div>
       </div>
 
-      <!-- Notifications -->
+      <!-- Notifications - Updated to use real data -->
       <div class="notification-container">
         <div class="dropdown">
           <button 
@@ -329,37 +326,97 @@
             data-bs-toggle="dropdown" 
             aria-expanded="false"
             [attr.aria-label]="'header.notifications.button' | translate">
-            <i class="bi bi-bell"></i>
+            <i class="bi bi-bell" [class.text-muted]="isLoadingNotifications"></i>
             <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+            <!-- Loading indicator -->
+            <span class="notification-loading" *ngIf="isLoadingNotifications">
+              <i class="bi bi-hourglass-split"></i>
+            </span>
           </button>
           <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationsDropdown">
             <div class="notification-header">
               <h6>{{ 'header.notifications.title' | translate }}</h6>
-              <a href="#" 
-                 class="mark-all" 
-                 (click)="markAllNotificationsAsRead(); $event.preventDefault()">
-                {{ 'header.notifications.markAllRead' | translate }}
-              </a>
+              <div class="notification-actions">
+                <button class="refresh-notifications-btn" 
+                        (click)="refreshNotifications()" 
+                        [disabled]="isLoadingNotifications"
+                        [attr.title]="'Refresh notifications'">
+                  <i class="bi" [ngClass]="isLoadingNotifications ? 'bi-hourglass-split' : 'bi-arrow-clockwise'"></i>
+                </button>
+                <a href="#" 
+                   class="mark-all" 
+                   (click)="markAllNotificationsAsRead(); $event.preventDefault()"
+                   *ngIf="notificationCount > 0">
+                  {{ 'header.notifications.markAllRead' | translate }}
+                </a>
+              </div>
             </div>
             <div class="notification-body">
-              <div *ngIf="notifications.length === 0" class="no-notifications">
+              <!-- Loading State -->
+              <div *ngIf="isLoadingNotifications" class="notification-loading-state">
+                <div class="loading-spinner">
+                  <i class="bi bi-hourglass-split"></i>
+                </div>
+                <p>{{ 'Loading notifications...' | translate }}</p>
+              </div>
+
+              <!-- Error State -->
+              <div *ngIf="notificationError && !isLoadingNotifications" class="notification-error-state">
+                <div class="error-icon">
+                  <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <p>{{ notificationError }}</p>
+                <button class="btn-retry" (click)="refreshNotifications()">
+                  <i class="bi bi-arrow-clockwise me-1"></i>
+                  {{ 'Retry' | translate }}
+                </button>
+              </div>
+
+              <!-- Empty State -->
+              <div *ngIf="!isLoadingNotifications && !notificationError && notifications.length === 0" class="no-notifications">
+                <div class="empty-icon">
+                  <i class="bi bi-bell-slash"></i>
+                </div>
                 <p>{{ 'header.notifications.noNotifications' | translate }}</p>
               </div>
-              <a href="#" 
-                 class="notification-item" 
-                 *ngFor="let notification of notifications"
-                 [class.unread]="notification.unread"
-                 (click)="markNotificationAsRead(notification.id); $event.preventDefault()">
-                <div class="notification-icon">
-                  <i [class]="notification.icon"></i>
-                </div>
-                <div class="notification-content">
-                  <p class="notification-text">{{ notification.text | translate }}</p>
-                  <p class="notification-time">{{ notification.time | translate }}</p>
-                </div>
-              </a>
+
+              <!-- Notifications List -->
+              <div *ngIf="!isLoadingNotifications && !notificationError && notifications.length > 0">
+                <a href="#" 
+                   class="notification-item" 
+                   *ngFor="let notification of notifications; trackBy: trackNotificationById"
+                   [class.unread]="!notification.readAt"
+                   (click)="handleNotificationAction(notification); $event.preventDefault()">
+                  <div class="notification-icon">
+                    <i [class]="getNotificationIcon(notification.type)"></i>
+                  </div>
+                  <div class="notification-content">
+                    <div class="notification-header-item">
+                      <p class="notification-title">{{ notification.title }}</p>
+                      <button class="notification-delete-btn" 
+                              (click)="deleteNotification(notification.id); $event.stopPropagation()"
+                              [attr.title]="'Delete notification'">
+                        <i class="bi bi-x"></i>
+                      </button>
+                    </div>
+                    <p class="notification-text">{{ notification.message }}</p>
+                    <div class="notification-meta">
+                      <span class="notification-time">{{ formatNotificationTime(notification.createdAt) }}</span>
+                      <span class="notification-sender" *ngIf="notification.senderName">
+                        {{ 'from' | translate }} {{ notification.senderName }}
+                      </span>
+                      <span class="notification-type-badge" [class]="'type-' + notification.type.toLowerCase()">
+                        {{ notification.type | titlecase }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="notification-status" *ngIf="!notification.readAt">
+                    <span class="unread-indicator"></span>
+                  </div>
+                </a>
+              </div>
             </div>
-            <div class="notification-footer">
+            <div class="notification-footer" *ngIf="notifications.length > 0">
               <a href="#" 
                  class="view-all" 
                  (click)="navigateToNotifications(); $event.preventDefault()">

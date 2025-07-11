@@ -1,4 +1,4 @@
-import { Component,  OnInit } from "@angular/core"
+import { Component,  OnInit,  OnDestroy } from "@angular/core"
 import  { VoixResponse } from "../../../services/voix.service"
 import { ClientResponse,  ClientService } from "../../../services/client-service.service"
 import  { ActivatedRoute } from "@angular/router"
@@ -9,13 +9,15 @@ import  { TranslateService } from "@ngx-translate/core"
 import  { AuthService } from "../../../services/auth.service"
 import  { TranslationService, Language } from "../../../services/translation.service"
 import  { PaypalService } from "src/app/services/paypal-service.service"
+import  { NotificationService, NotificationResponse } from "../../../services/notification.service"
+import {  Subscription, interval } from "rxjs"
 
 @Component({
   selector: "app-menu",
   templateUrl: "./menu.component.html",
   styleUrls: ["./menu.component.css"],
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, OnDestroy {
   voices: VoixResponse[] = []
   userId: string | null = ""
   audio = ""
@@ -24,8 +26,14 @@ export class MenuComponent implements OnInit {
   photoUrl: string | ArrayBuffer | null = null
   id = 0
   profilePhotoUrl: SafeUrl | null = null
-  notificationCount = 3
-  notifications: any[] = []
+
+  // Notification properties - Updated to use real data
+  notificationCount = 0
+  notifications: NotificationResponse[] = []
+  isLoadingNotifications = false
+  notificationError: string | null = null
+  private notificationSubscription?: Subscription
+  private notificationRefreshInterval?: Subscription
 
   // Balance related properties
   userBalance = 0
@@ -45,16 +53,15 @@ export class MenuComponent implements OnInit {
   paymentError: string | null = null
   showPaymentProcessing = false
 
-  // CGV Modal properties - Added from generation component
+  // CGV Modal properties
   showCgvModal = false
   cgvAccepted = false
   pendingPaymentAction: (() => void) | null = null
 
-  isLoadingPhoto = false;
-  isUpdatingProfile = false;
-  isUploadingPhoto = false;
-  userPhotoUrl: SafeUrl | null = null;
-
+  isLoadingPhoto = false
+  isUpdatingProfile = false
+  isUploadingPhoto = false
+  userPhotoUrl: SafeUrl | null = null
 
   constructor(
     private route: ActivatedRoute,
@@ -66,6 +73,7 @@ export class MenuComponent implements OnInit {
     private authService: AuthService,
     private sanitizer: DomSanitizer,
     private paypalService: PaypalService,
+    private notificationService: NotificationService, // Added NotificationService
   ) {}
 
   ngOnInit() {
@@ -75,6 +83,17 @@ export class MenuComponent implements OnInit {
     this.loadNotifications()
     this.initializeTranslations()
     this.loadUserBalance()
+    this.startNotificationRefresh()
+  }
+
+  ngOnDestroy() {
+    // Clean up subscriptions
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe()
+    }
+    if (this.notificationRefreshInterval) {
+      this.notificationRefreshInterval.unsubscribe()
+    }
   }
 
   private loadUserData(): void {
@@ -92,8 +111,6 @@ export class MenuComponent implements OnInit {
           console.error("Error loading user data:", error)
         },
       )
-
-      
     }
   }
 
@@ -116,6 +133,206 @@ export class MenuComponent implements OnInit {
         this.isLoadingBalance = false
       },
     })
+  }
+
+  // Updated notification methods to use NotificationService
+  private loadNotifications(): void {
+    if (!this.userId) {
+      console.warn("User ID not available for loading notifications")
+      return
+    }
+
+    this.isLoadingNotifications = true
+    this.notificationError = null
+
+    // Load recent notifications (last 24 hours)
+    this.notificationSubscription = this.notificationService.getRecentNotifications(this.userId, 24).subscribe({
+      next: (notifications) => {
+        this.notifications = notifications
+        this.updateNotificationCount()
+        this.isLoadingNotifications = false
+        console.log("Notifications loaded:", notifications.length)
+      },
+      error: (error) => {
+        console.error("Error loading notifications:", error)
+        this.notificationError = "Failed to load notifications"
+        this.isLoadingNotifications = false
+        // Fallback to empty array
+        this.notifications = []
+        this.notificationCount = 0
+      },
+    })
+  }
+
+  private updateNotificationCount(): void {
+    if (!this.userId) return
+
+    this.notificationService.getUnreadCount(this.userId).subscribe({
+      next: (response) => {
+        this.notificationCount = response.unreadCount
+      },
+      error: (error) => {
+        console.error("Error getting unread count:", error)
+        // Fallback: count unread notifications manually
+        this.notificationCount = this.notifications.filter((n) => !n.readAt).length
+      },
+    })
+  }
+
+  private startNotificationRefresh(): void {
+    // Refresh notifications every 30 seconds
+    this.notificationRefreshInterval = interval(30000).subscribe(() => {
+      this.refreshNotifications()
+    })
+  }
+
+  refreshNotifications(): void {
+    this.loadNotifications()
+  }
+
+  markAllNotificationsAsRead(): void {
+    if (!this.userId) return
+
+    this.notificationService.markAllAsRead(this.userId).subscribe({
+      next: (response) => {
+        console.log("All notifications marked as read:", response)
+        // Update local state
+        this.notifications.forEach((notification) => {
+          if (!notification.readAt) {
+            notification.readAt = new Date().toISOString()
+          }
+        })
+        this.notificationCount = 0
+      },
+      error: (error) => {
+        console.error("Error marking all notifications as read:", error)
+        // Show error message to user
+        this.notificationError = "Failed to mark notifications as read"
+      },
+    })
+  }
+
+  markNotificationAsRead(notificationId: number): void {
+    const notification = this.notifications.find((n) => n.id === notificationId)
+    if (!notification || notification.readAt) {
+      return // Already read or not found
+    }
+
+    this.notificationService.markAsRead(notificationId).subscribe({
+      next: (response) => {
+        console.log("Notification marked as read:", response)
+        // Update local state
+        notification.readAt = new Date().toISOString()
+        this.notificationCount = Math.max(0, this.notificationCount - 1)
+      },
+      error: (error) => {
+        console.error("Error marking notification as read:", error)
+        this.notificationError = "Failed to mark notification as read"
+      },
+    })
+  }
+
+  deleteNotification(notificationId: number): void {
+    this.notificationService.deleteNotification(notificationId).subscribe({
+      next: (response) => {
+        console.log("Notification deleted:", response)
+        // Remove from local array
+        const index = this.notifications.findIndex((n) => n.id === notificationId)
+        if (index > -1) {
+          const wasUnread = !this.notifications[index].readAt
+          this.notifications.splice(index, 1)
+          if (wasUnread) {
+            this.notificationCount = Math.max(0, this.notificationCount - 1)
+          }
+        }
+      },
+      error: (error) => {
+        console.error("Error deleting notification:", error)
+        this.notificationError = "Failed to delete notification"
+      },
+    })
+  }
+
+  // Method to get filtered notifications
+  loadFilteredNotifications(type?: string, status?: string): void {
+    if (!this.userId) return
+
+    this.isLoadingNotifications = true
+    this.notificationError = null
+
+    this.notificationService.getFilteredNotifications(this.userId, type, status, 0, 20).subscribe({
+      next: (response) => {
+        this.notifications = response.content || response // Handle different response formats
+        this.updateNotificationCount()
+        this.isLoadingNotifications = false
+      },
+      error: (error) => {
+        console.error("Error loading filtered notifications:", error)
+        this.notificationError = "Failed to load filtered notifications"
+        this.isLoadingNotifications = false
+      },
+    })
+  }
+
+  // Method to handle notification click actions
+  handleNotificationAction(notification: NotificationResponse): void {
+    // Mark as read if not already read
+    if (!notification.readAt) {
+      this.markNotificationAsRead(notification.id)
+    }
+
+    // Navigate to action URL if available
+    if (notification.actionUrl) {
+      this.router.navigate([notification.actionUrl])
+    }
+  }
+
+  // Method to get notification icon based on type
+  getNotificationIcon(type: string): string {
+    switch (type.toLowerCase()) {
+      case "voice_completed":
+      case "task_completed":
+        return "bi-check-circle"
+      case "new_message":
+      case "comment":
+        return "bi-chat-dots"
+      case "payment":
+      case "balance":
+        return "bi-wallet2"
+      case "system":
+        return "bi-gear"
+      case "warning":
+        return "bi-exclamation-triangle"
+      case "info":
+        return "bi-info-circle"
+      default:
+        return "bi-bell"
+    }
+  }
+
+  // Method to format notification time
+  formatNotificationTime(createdAt: string): string {
+    const now = new Date()
+    const notificationTime = new Date(createdAt)
+    const diffInMinutes = Math.floor((now.getTime() - notificationTime.getTime()) / (1000 * 60))
+
+    if (diffInMinutes < 1) {
+      return "Just now"
+    } else if (diffInMinutes < 60) {
+      return `${diffInMinutes} min ago`
+    } else if (diffInMinutes < 1440) {
+      // 24 hours
+      const hours = Math.floor(diffInMinutes / 60)
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`
+    } else {
+      const days = Math.floor(diffInMinutes / 1440)
+      return `${days} day${days > 1 ? "s" : ""} ago`
+    }
+  }
+
+  // TrackBy function for Angular *ngFor to improve performance
+  trackNotificationById(index: number, notification: NotificationResponse): number {
+    return notification.id || index
   }
 
   refreshBalance(): void {
@@ -161,12 +378,11 @@ export class MenuComponent implements OnInit {
     return "balance-good"
   }
 
-  // CGV Modal handlers - Added from generation component
+  // CGV Modal handlers
   onCgvAccepted() {
     this.cgvAccepted = true
     this.showCgvModal = false
 
-    // Execute the pending payment action
     if (this.pendingPaymentAction) {
       this.pendingPaymentAction()
       this.pendingPaymentAction = null
@@ -176,22 +392,19 @@ export class MenuComponent implements OnInit {
   onCgvClosed() {
     this.showCgvModal = false
     this.pendingPaymentAction = null
-    
-    // Reopen the payment method modal if user cancels CGV
+
     this.showBalanceChargeModal = true
-    
-    // Reset any payment-related states
+
     this.chargeError = null
     this.paymentError = null
   }
 
-  // Modified balance charging methods to check CGV first
   showAddFundsModal(): void {
-  this.proceedToShowAddFundsModal()
-}
+    this.proceedToShowAddFundsModal()
+  }
 
   private proceedToShowAddFundsModal(): void {
-    this.chargeAmount = Math.max(50, 100) // Default minimum charge amount
+    this.chargeAmount = Math.max(50, 100)
     this.showBalanceChargeModal = true
     this.selectedChargeMethod = null
     this.chargeError = null
@@ -218,7 +431,6 @@ export class MenuComponent implements OnInit {
     const value = Number.parseFloat(event.target.value) || 0
     this.chargeAmount = value
 
-    // Validate minimum amount
     const minimumAmount = 50
     if (this.chargeAmount < minimumAmount) {
       this.chargeAmount = minimumAmount
@@ -227,60 +439,56 @@ export class MenuComponent implements OnInit {
   }
 
   getMinimumChargeAmount(): number {
-    return 50 // Minimum charge amount in MAD
+    return 50
   }
 
   proceedWithBalanceCharge(): void {
-  if (!this.selectedChargeMethod) {
-    this.chargeError = "Please select a charging method"
-    return
-  }
-
-  const minimumAmount = this.getMinimumChargeAmount()
-  if (this.chargeAmount < minimumAmount) {
-    this.chargeError = `Minimum charge amount is ${minimumAmount} MAD`
-    return
-  }
-
-  if (this.chargeAmount <= 0) {
-    this.chargeError = "Please enter a valid charge amount"
-    return
-  }
-
-  // Check if CGV has been accepted for this session
-  if (!this.cgvAccepted) {
-    // Close the payment method modal before showing CGV modal
-    this.showBalanceChargeModal = false
-    
-    // Store the payment action to execute after CGV acceptance
-    this.pendingPaymentAction = () => {
-      this.executeBalanceCharge()
+    if (!this.selectedChargeMethod) {
+      this.chargeError = "Please select a charging method"
+      return
     }
-    this.showCgvModal = true
-    return
+
+    const minimumAmount = this.getMinimumChargeAmount()
+    if (this.chargeAmount < minimumAmount) {
+      this.chargeError = `Minimum charge amount is ${minimumAmount} MAD`
+      return
+    }
+
+    if (this.chargeAmount <= 0) {
+      this.chargeError = "Please enter a valid charge amount"
+      return
+    }
+
+    if (!this.cgvAccepted) {
+      this.showBalanceChargeModal = false
+
+      this.pendingPaymentAction = () => {
+        this.executeBalanceCharge()
+      }
+      this.showCgvModal = true
+      return
+    }
+
+    this.executeBalanceCharge()
   }
 
-  this.executeBalanceCharge()
-}
+  private executeBalanceCharge(): void {
+    this.isChargingBalance = true
+    this.chargeError = null
 
-private executeBalanceCharge(): void {
-  this.isChargingBalance = true
-  this.chargeError = null
-
-  switch (this.selectedChargeMethod) {
-    case "paypal":
-      this.chargeBalanceWithPayPal()
-      break
-    case "card":
-      this.chargeBalanceWithCard()
-      break
-    case "verment":
-      this.chargeBalanceWithBankTransfer()
-      break
+    switch (this.selectedChargeMethod) {
+      case "paypal":
+        this.chargeBalanceWithPayPal()
+        break
+      case "card":
+        this.chargeBalanceWithCard()
+        break
+      case "verment":
+        this.chargeBalanceWithBankTransfer()
+        break
+    }
   }
-}
 
-  // PayPal balance charging - Updated to match your service
   chargeBalanceWithPayPal(): void {
     if (!this.userId) {
       this.chargeError = "User ID not found"
@@ -292,17 +500,14 @@ private executeBalanceCharge(): void {
 
     this.showPaymentProcessing = true
 
-    // Use your PayPal service with the exact method signature
     this.paypalService.chargeBalance(this.userId, this.chargeAmount).subscribe({
       next: (response) => {
         console.log("PayPal balance charge response:", response)
 
         if (response.redirectUrl) {
-          // Close modals and redirect to PayPal
           this.closeBalanceChargeModal()
           this.showPaymentProcessing = false
 
-          // Redirect to PayPal
           window.location.href = response.redirectUrl
         } else {
           this.chargeError = "Failed to get PayPal redirect URL"
@@ -319,16 +524,12 @@ private executeBalanceCharge(): void {
     })
   }
 
-  // Card balance charging
   chargeBalanceWithCard(): void {
-    // Implement card payment logic here
     this.chargeError = "Credit card charging not implemented yet"
     this.isChargingBalance = false
   }
 
-  // Bank transfer balance charging
   chargeBalanceWithBankTransfer(): void {
-    // Implement bank transfer logic here
     this.chargeError = "Bank transfer charging not implemented yet"
     this.isChargingBalance = false
   }
@@ -340,20 +541,14 @@ private executeBalanceCharge(): void {
     this.showBalanceChargeModal = true
   }
 
-  // Handle successful balance charge (called when user returns from PayPal)
   handleBalanceChargeSuccess(): void {
     this.isChargingBalance = false
     this.showPaymentProcessing = false
     this.closeBalanceChargeModal()
 
-    // Refresh balance after successful charge
     this.loadUserBalance()
 
-    // Show success message
     console.log("Balance charged successfully!")
-
-    // You can add a toast notification here
-    // this.showSuccessToast("Balance charged successfully!")
   }
 
   copyToClipboard(text: string): void {
@@ -361,38 +556,10 @@ private executeBalanceCharge(): void {
       .writeText(text)
       .then(() => {
         console.log("Copied to clipboard:", text)
-        // You can show a toast notification here
       })
       .catch((err) => {
         console.error("Failed to copy to clipboard:", err)
       })
-  }
-
-  // Existing methods remain the same...
-  private loadNotifications(): void {
-    this.notifications = [
-      {
-        id: 1,
-        icon: "bi-file-earmark-text",
-        text: "header.notifications.items.voiceCompleted",
-        time: "header.notifications.times.twoMinAgo",
-        unread: true,
-      },
-      {
-        id: 2,
-        icon: "bi-person",
-        text: "header.notifications.items.newComment",
-        time: "header.notifications.times.oneHourAgo",
-        unread: true,
-      },
-      {
-        id: 3,
-        icon: "bi-check-circle",
-        text: "header.notifications.items.requestApproved",
-        time: "header.notifications.times.twoHoursAgo",
-        unread: true,
-      },
-    ]
   }
 
   private initializeTranslations(): void {
@@ -438,27 +605,11 @@ private executeBalanceCharge(): void {
     }
   }
 
-  markAllNotificationsAsRead(): void {
-    this.notifications.forEach((notification) => {
-      notification.unread = false
-    })
-    this.notificationCount = 0
-  }
-
-  markNotificationAsRead(notificationId: number): void {
-    const notification = this.notifications.find((n) => n.id === notificationId)
-    if (notification && notification.unread) {
-      notification.unread = false
-      this.notificationCount = Math.max(0, this.notificationCount - 1)
-    }
-  }
-
   logout(): void {
     console.log("Logging out...")
     localStorage.clear()
     this.router.navigate(["/login"])
   }
-
 
   onSearchSubmit(searchTerm: string): void {
     if (searchTerm.trim()) {
@@ -478,21 +629,20 @@ private executeBalanceCharge(): void {
     this.router.navigate(["/settings"])
   }
 
-    // Load user photo
-    loadUserPhoto(): void {
-      if (this.userId) {
-        this.isLoadingPhoto = true;
-        this.utilisateurService.getPhoto(this.userId).subscribe({
-          next: (photoBlob: Blob) => {
-            const objectURL = URL.createObjectURL(photoBlob);
-            this.userPhotoUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL);
-            this.isLoadingPhoto = false;
-          },
-          error: (error) => {
-            console.error('Error loading photo:', error);
-            this.isLoadingPhoto = false;
-          }
-        });
-      }
+  loadUserPhoto(): void {
+    if (this.userId) {
+      this.isLoadingPhoto = true
+      this.utilisateurService.getPhoto(this.userId).subscribe({
+        next: (photoBlob: Blob) => {
+          const objectURL = URL.createObjectURL(photoBlob)
+          this.userPhotoUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL)
+          this.isLoadingPhoto = false
+        },
+        error: (error) => {
+          console.error("Error loading photo:", error)
+          this.isLoadingPhoto = false
+        },
+      })
     }
+  }
 }
