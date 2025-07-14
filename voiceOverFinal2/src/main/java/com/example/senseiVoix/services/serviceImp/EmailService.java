@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -21,6 +22,9 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender emailSender;
+
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     public void sendDmandeRecord(String to, String demandeurNom, LocalDate date) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -170,4 +174,28 @@ public class EmailService {
 
         emailSender.send(message);
     }
+
+    public void sendPasswordResetEmail(String toEmail, String resetToken) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Password Reset Request");
+        
+        String resetUrl = frontendUrl + "/reset?token=" + resetToken;
+        String emailBody = "Hello,\n\n" +
+                "You have requested to reset your password. Please click the link below to reset your password:\n\n" +
+                resetUrl + "\n\n" +
+                "This link will expire in 1 hour.\n\n" +
+                "If you did not request this password reset, please ignore this email.\n\n" +
+                "Best regards,\n" +
+                "SenseiVoix Team";
+        
+        message.setText(emailBody);
+        
+        try {
+                emailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
+    }
 }
+

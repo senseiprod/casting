@@ -1,6 +1,7 @@
 import { Component,  OnInit,  OnDestroy, Input, Output, EventEmitter } from "@angular/core"
 import  { NotificationService, NotificationResponse } from "../../../services/notification.service"
 import {  Subscription, interval } from "rxjs"
+import { ActivatedRoute } from "@angular/router"
 
 export interface NotificationFilter {
   type?: string
@@ -14,7 +15,6 @@ export interface NotificationFilter {
   styleUrls: ["./notification.component.css"],
 })
 export class NotificationComponent implements OnInit, OnDestroy {
-  @Input() userUuid!: string
   @Input() autoRefresh = true
   @Input() refreshInterval = 30000 // 30 seconds
   @Input() pageSize = 20
@@ -30,6 +30,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   totalNotifications = 0
   unreadCount = 0
   currentPage = 0
+  userUuid : string = ""
 
   // Loading states
   isLoading = false
@@ -48,15 +49,18 @@ export class NotificationComponent implements OnInit, OnDestroy {
   private refreshSubscription?: Subscription
   private notificationSubscription?: Subscription
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(private notificationService: NotificationService,
+    private route: ActivatedRoute,
+
+  ) {}
 
   ngOnInit() {
-    if (!this.userUuid) {
-      this.error = "User UUID is required"
-      return
-    }
-
-    this.loadNotifications()
+    this.route.parent?.paramMap.subscribe((params) => {
+      this.userUuid = params.get("uuid") || ""
+      if (this.userUuid) {
+        this.loadNotifications()
+      }
+    })
     this.loadUnreadCount()
 
     if (this.autoRefresh) {

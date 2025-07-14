@@ -53,16 +53,39 @@ public class AuthenticationController {
       HttpServletResponse response) throws IOException {
     service.refreshToken(request, response);
   }
-@PutMapping("/change-password")
-public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
-    try {
-      service.changePassword(request.getEmail(), request.getOldPassword(), request.getNewPassword());
-        return ResponseEntity.ok("Password changed successfully.");
-    } catch (UsernameNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-}
 
+  @PutMapping("/change-password")
+  public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+      try {
+        service.changePassword(request.getEmail(), request.getOldPassword(), request.getNewPassword());
+          return ResponseEntity.ok("Password changed successfully.");
+      } catch (UsernameNotFoundException e) {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+      } catch (IllegalArgumentException e) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
+  }
+
+  @PostMapping("/forgot-password")
+  public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+      try {
+          service.forgotPassword(request.getEmail());
+          return ResponseEntity.ok("If the email exists, a password reset link has been sent.");
+      } catch (Exception e) {
+          // Don't reveal if email exists or not for security reasons
+          return ResponseEntity.ok("If the email exists, a password reset link has been sent.");
+      }
+  }
+
+  @PostMapping("/reset-password")
+  public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+      try {
+          service.resetPassword(request.getToken(), request.getNewPassword());
+          return ResponseEntity.ok("Password has been reset successfully.");
+      } catch (IllegalArgumentException e) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while resetting password.");
+      }
+  }
 }

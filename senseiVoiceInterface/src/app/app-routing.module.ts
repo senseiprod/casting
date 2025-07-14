@@ -65,6 +65,7 @@ const routes: Routes = [
     component: LoginComponent,
     canActivate: [GuestGuard]
   },
+  
   {
     path: 'signup',
     component: RegisterComponent,

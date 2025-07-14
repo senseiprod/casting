@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface NotificationResponse {
   id: number;
@@ -40,7 +41,7 @@ export interface PushSubscriptionRequest {
   providedIn: 'root'
 })
 export class NotificationService {
-  private baseUrl = 'https://castingvoixoff.ma/api/notifications'; // À adapter selon ton backend
+  private baseUrl = `${environment.apiUrl}/api/notifications`; // À adapter selon ton backend
 
   constructor(private http: HttpClient) {}
 

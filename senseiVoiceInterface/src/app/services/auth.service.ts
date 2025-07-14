@@ -1,11 +1,22 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import {Observable, tap} from 'rxjs';
+import { Injectable } from "@angular/core"
+import {  HttpClient, HttpHeaders } from "@angular/common/http"
+import {  Observable, BehaviorSubject } from "rxjs"
+import { tap, catchError } from "rxjs/operators"
+import { throwError } from "rxjs"
 import {jwtDecode} from "jwt-decode";
 import {ClientResponse, ClientService} from "./client-service.service";
 import { environment } from 'src/environments/environment';
 import { ChangePasswordRequest } from './utilisateur-service.service';
 
+
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+export interface ResetPasswordRequest {
+  token: string
+  newPassword: string
+}
 
 interface RegisterRequest {
   firstname: string;
@@ -64,19 +75,34 @@ export class AuthService {
     }
   }
 
-  requestPasswordReset(email: string) {
-    return this.http.post<any>(`${this.apiUrl}/auth/request-reset-password`, { email });
-  }
+// Fixed forgot password methods
+forgotPassword(email: string): Observable<string> {
+  const request: ForgotPasswordRequest = { email }
+  return this.http
+    .post(`${this.apiUrl}/forgot-password`, request, {
+      responseType: "text", // Explicitly set response type to text
+    })
+    .pipe(
+      catchError((error) => {
+        console.error("Forgot password error:", error)
+        return throwError(() => error)
+      }),
+    )
+}
 
-  /**
-   * Reset password using token and new password
-   */
-  resetPassword(token: string, newPassword: string) {
-    return this.http.post<any>(`${this.apiUrl}/auth/reset-password`, {
-      token,
-      newPassword
-    });
-  }
+resetPassword(token: string, newPassword: string): Observable<string> {
+  const request: ResetPasswordRequest = { token, newPassword }
+  return this.http
+    .post(`${this.apiUrl}/reset-password`, request, {
+      responseType: "text", // Explicitly set response type to text
+    })
+    .pipe(
+      catchError((error) => {
+        console.error("Reset password error:", error)
+        return throwError(() => error)
+      }),
+    )
+}
   getUsername(token: string): string | null {
     const decodedToken = this.decodeToken(token);
     return decodedToken ? decodedToken.sub : null;

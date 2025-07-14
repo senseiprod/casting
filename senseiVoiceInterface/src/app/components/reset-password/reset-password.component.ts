@@ -1,7 +1,7 @@
 import { Component,  OnInit } from "@angular/core"
 import {  FormBuilder,  FormGroup, Validators } from "@angular/forms"
 import  { ActivatedRoute, Router } from "@angular/router"
-import { AuthService } from '../../services/auth.service';
+import  { AuthService } from "../../services/auth.service"
 
 @Component({
   selector: "app-reset-password",
@@ -35,33 +35,27 @@ export class ResetPasswordComponent implements OnInit {
     })
 
     // Form for resetting password with token
-    this.resetPasswordForm = this.fb.group(
-      {
-        password: ["", [Validators.required, Validators.minLength(8)]],
-        confirmPassword: ["", [Validators.required]],
-      },
-      { validator: this.passwordMatchValidator },
-    )
+    this.resetPasswordForm = this.fb.group({
+      newPassword: ["", [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ["", [Validators.required]],
+    })
+
+    // Add the password match validation after form creation
+    this.resetPasswordForm.get("confirmPassword")?.valueChanges.subscribe(() => {
+      this.checkPasswordMatch()
+    })
+
+    this.resetPasswordForm.get("newPassword")?.valueChanges.subscribe(() => {
+      this.checkPasswordMatch()
+    })
   }
 
   ngOnInit(): void {
     // Check if there's a token in the URL
     this.route.queryParams.subscribe((params) => {
       this.token = params["token"]
+      console.log("Token from URL:", this.token)
     })
-  }
-
-  // Custom validator to check if passwords match
-  passwordMatchValidator(form: FormGroup) {
-    const password = form.get("password")?.value
-    const confirmPassword = form.get("confirmPassword")?.value
-
-    if (password !== confirmPassword) {
-      form.get("confirmPassword")?.setErrors({ passwordMismatch: true })
-      return { passwordMismatch: true }
-    }
-
-    return null
   }
 
   togglePasswordVisibility(): void {
@@ -73,6 +67,9 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   onRequestSubmit(): void {
+    console.log("Request form submitted")
+    console.log("Request form valid:", this.requestResetForm.valid)
+
     if (this.requestResetForm.valid) {
       this.isRequestSubmitting = true
       this.requestError = false
@@ -87,7 +84,14 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   onResetSubmit(): void {
-    if (this.resetPasswordForm.valid) {
+    console.log("Reset form submitted")
+    console.log("Reset form valid:", this.resetPasswordForm.valid)
+    console.log("Token available:", this.token)
+
+    // Force check password match before submission
+    this.checkPasswordMatch()
+
+    if (this.resetPasswordForm.valid && this.token) {
       this.isResetSubmitting = true
       this.resetError = false
       this.resetSuccess = false
@@ -97,23 +101,36 @@ export class ResetPasswordComponent implements OnInit {
       Object.keys(this.resetPasswordForm.controls).forEach((key) => {
         this.resetPasswordForm.get(key)?.markAsTouched()
       })
+
+      // Show specific error if no token
+      if (!this.token) {
+        this.resetError = true
+        this.errorMessage = "Invalid or missing reset token. Please request a new password reset."
+      }
     }
   }
 
   requestPasswordReset(): void {
     const email = this.requestResetForm.value.email
 
-    this.authService.requestPasswordReset(email).subscribe({
-      next: (response) => {
+    this.authService.forgotPassword(email).subscribe({
+      next: (response: string) => {
         console.log("Reset request sent:", response)
         this.requestSuccess = true
-        this.successMessage = "Password reset instructions have been sent to your email."
+        this.successMessage = response || "If the email exists, a password reset link has been sent."
         this.isRequestSubmitting = false
       },
       error: (err) => {
         console.error("Error:", err)
         this.requestError = true
-        this.errorMessage = "Failed to send reset instructions. Please try again."
+        // Handle different error scenarios
+        if (err.status === 0) {
+          this.errorMessage = "Unable to connect to server. Please try again later."
+        } else if (err.error && typeof err.error === "string") {
+          this.errorMessage = err.error
+        } else {
+          this.errorMessage = "Failed to send reset instructions. Please try again."
+        }
         this.isRequestSubmitting = false
       },
     })
@@ -127,13 +144,14 @@ export class ResetPasswordComponent implements OnInit {
       return
     }
 
-    const newPassword = this.resetPasswordForm.value.password
+    const newPassword = this.resetPasswordForm.value.newPassword
+    console.log("Attempting to reset password with token:", this.token)
 
     this.authService.resetPassword(this.token, newPassword).subscribe({
-      next: (response) => {
+      next: (response: string) => {
         console.log("Password reset successful:", response)
         this.resetSuccess = true
-        this.successMessage = "Your password has been reset successfully."
+        this.successMessage = response || "Your password has been reset successfully. Redirecting to login..."
         this.isResetSubmitting = false
 
         // Redirect to login page after 3 seconds
@@ -142,9 +160,22 @@ export class ResetPasswordComponent implements OnInit {
         }, 3000)
       },
       error: (err) => {
-        console.error("Error:", err)
+        console.error("Password reset error:", err)
         this.resetError = true
-        this.errorMessage = "Failed to reset password. The link may have expired."
+
+        // Handle different error scenarios
+        if (err.status === 0) {
+          this.errorMessage = "Unable to connect to server. Please try again later."
+        } else if (err.status === 400) {
+          this.errorMessage = err.error || "Invalid or expired password reset token."
+        } else if (err.status === 500) {
+          this.errorMessage = "Server error occurred. Please try again later."
+        } else if (err.error && typeof err.error === "string") {
+          this.errorMessage = err.error
+        } else {
+          this.errorMessage = "Failed to reset password. The link may have expired."
+        }
+
         this.isResetSubmitting = false
       },
     })
@@ -152,5 +183,39 @@ export class ResetPasswordComponent implements OnInit {
 
   backToLogin(): void {
     this.router.navigate(["/login"])
+  }
+
+  private checkPasswordMatch(): void {
+    const password = this.resetPasswordForm.get("newPassword")?.value
+    const confirmPassword = this.resetPasswordForm.get("confirmPassword")?.value
+    const confirmPasswordControl = this.resetPasswordForm.get("confirmPassword")
+
+    if (confirmPasswordControl && confirmPassword) {
+      if (password !== confirmPassword) {
+        confirmPasswordControl.setErrors({ passwordMismatch: true })
+      } else {
+        // Clear passwordMismatch error but keep other errors
+        const errors = confirmPasswordControl.errors
+        if (errors && errors["passwordMismatch"]) {
+          delete errors["passwordMismatch"]
+          confirmPasswordControl.setErrors(Object.keys(errors).length === 0 ? null : errors)
+        }
+      }
+    }
+  }
+
+  // Helper method to check if form is ready for submission
+  isFormReadyForSubmission(): boolean {
+    const password = this.resetPasswordForm.get("newPassword")?.value
+    const confirmPassword = this.resetPasswordForm.get("confirmPassword")?.value
+
+    return !!(
+      this.token &&
+      password &&
+      confirmPassword &&
+      password.length >= 8 &&
+      password === confirmPassword &&
+      this.resetPasswordForm.valid
+    )
   }
 }
