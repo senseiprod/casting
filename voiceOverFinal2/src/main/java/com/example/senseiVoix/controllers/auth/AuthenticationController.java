@@ -2,15 +2,11 @@ package com.example.senseiVoix.controllers.auth;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,51 +16,48 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
-  @Autowired
-  private AuthenticationService service;
 
-  @PostMapping("/register")
-  public ResponseEntity<AuthenticationResponse> register(
-      @RequestBody RegisterRequest request) {
-    return ResponseEntity.ok(service.register(request));
-  }
+    private final AuthenticationService service;
 
-  @PostMapping("/registerSpeaker")
-  public ResponseEntity<AuthenticationResponse> registerSpeaker(
-      @RequestBody RegisterRequest request) {
-    return ResponseEntity.ok(service.registerSpeaker(request));
-  }
+    @Value("${app.verification.redirect.success-url}")
+    private String successRedirectUrl;
 
-  @PostMapping("/registerAdmin")
-  public ResponseEntity<AuthenticationResponse> registerAdmin(
-      @RequestBody RegisterRequest request) {
-    return ResponseEntity.ok(service.registerAdmin(request));
-  }
+    @Value("${app.verification.redirect.failure-url}")
+    private String failureRedirectUrl;
 
-  @PostMapping("/authenticate")
-  public ResponseEntity<AuthenticationResponse> authenticate(
-      @RequestBody AuthenticationRequest request) {
-    return ResponseEntity.ok(service.authenticate(request));
-  }
+    @PostMapping("/register")
+    public ResponseEntity<String> register(
+            @RequestBody RegisterRequest request) {
+        try {
+            service.register(request);
+            return ResponseEntity.ok("Registration successful. Please check your email to verify your account.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
 
-  @PostMapping("/refresh-token")
-  public void refreshToken(
-      HttpServletRequest request,
-      HttpServletResponse response) throws IOException {
-    service.refreshToken(request, response);
-  }
+    @PostMapping("/registerSpeaker")
+    public ResponseEntity<String> registerSpeaker(
+            @RequestBody RegisterRequest request) {
+        try {
+            service.registerSpeaker(request);
+            return ResponseEntity.ok("Registration successful. Please check your email to verify your account.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
 
-  @PutMapping("/change-password")
-  public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
-      try {
-        service.changePassword(request.getEmail(), request.getOldPassword(), request.getNewPassword());
-          return ResponseEntity.ok("Password changed successfully.");
-      } catch (UsernameNotFoundException e) {
-          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-      } catch (IllegalArgumentException e) {
-          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-      }
-  }
+    @PostMapping("/registerAdmin")
+    public ResponseEntity<String> registerAdmin(
+            @RequestBody RegisterRequest request) {
+        try {
+            service.registerAdmin(request);
+            return ResponseEntity.ok("Registration successful. Please check your email to verify your account.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
+
 
   @PostMapping("/forgot-password")
   public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
@@ -88,4 +81,45 @@ public class AuthenticationController {
           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while resetting password.");
       }
   }
+
+    @GetMapping("/verify-email")
+    public void verifyEmail(@RequestParam("token") String token, HttpServletResponse httpServletResponse) throws IOException {
+        try {
+            service.verifyUser(token);
+            httpServletResponse.sendRedirect(successRedirectUrl);
+        } catch (IllegalArgumentException e) {
+            // Log the error for debugging purposes if you have a logger
+            // log.error("Invalid token verification attempt: {}", e.getMessage());
+            httpServletResponse.sendRedirect(failureRedirectUrl);
+        }
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> authenticate(
+            @RequestBody AuthenticationRequest request) {
+        try {
+            return ResponseEntity.ok(service.authenticate(request));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/refresh-token")
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        service.refreshToken(request, response);
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            service.changePassword(request.getEmail(), request.getOldPassword(), request.getNewPassword());
+            return ResponseEntity.ok("Password changed successfully.");
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

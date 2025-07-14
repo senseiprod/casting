@@ -77,18 +77,20 @@ export class RegisterComponent implements OnInit {
         phone:this.signupForm.value.phone,
         role: 'CLIENT', // ou dynamique si besoin
       };
-
+      
+      // MODIFICATION: The logic inside the subscription is changed.
       this.authService.register(formData).subscribe({
         next: (response) => {
-          console.log('Inscription réussie:', response);
-          localStorage.setItem('access_token', response.access_token);
+          console.log('Registration request successful:', response);
+          // We no longer log the user in. We just show the success message.
           this.signupSuccess = true;
-          this.router.navigate(['/speakerDasboard/generate']);
+          this.isSubmitting = false; // Stop the loading spinner
         },
         error: (err) => {
           console.error('Erreur:', err);
           this.signupError = true;
-          this.errorMessage = 'Une erreur est survenue lors de l’inscription.';
+          // You might want to get the specific error message from the backend
+          this.errorMessage = err.error.message || 'Une erreur est survenue lors de l’inscription.';
           this.isSubmitting = false;
         },
       });
