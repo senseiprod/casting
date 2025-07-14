@@ -1,13 +1,12 @@
 import { Injectable } from "@angular/core"
-import {  HttpClient, HttpHeaders } from "@angular/common/http"
-import {  Observable, BehaviorSubject } from "rxjs"
+import { HttpClient } from "@angular/common/http"
+import { Observable } from "rxjs"
 import { tap, catchError } from "rxjs/operators"
 import { throwError } from "rxjs"
-import {jwtDecode} from "jwt-decode";
-import {ClientResponse, ClientService} from "./client-service.service";
+import { jwtDecode } from "jwt-decode";
+import { ClientResponse, ClientService } from "./client-service.service";
 import { environment } from 'src/environments/environment';
 import { ChangePasswordRequest } from './utilisateur-service.service';
-
 
 export interface ForgotPasswordRequest {
   email: string
@@ -49,29 +48,50 @@ interface User {
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/api/v1/auth`;
-  client : ClientResponse =new ClientResponse();
+  // --- ADDED --- The base URL is needed for the OAuth endpoint which is not under /api/v1/auth
+  private baseApiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient,private userService : ClientService) {}
-  public tokenKey = '';
+  client: ClientResponse = new ClientResponse();
+
+  constructor(private http: HttpClient, private userService: ClientService) { }
+  // --- MODIFIED --- Gave the key a consistent name.
+  public tokenKey = 'access_token';
+  // --- ADDED --- Key for the refresh token.
+  public refreshTokenKey = 'refresh_token';
+
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem(this.tokenKey);
   }
 
-  // MODIFICATION: The register method now expects a plain text response from the server.
-  // This is the fix for the JSON parsing error.
   register(request: RegisterRequest): Observable<string> {
     return this.http.post(`${this.apiUrl}/register`, request, { responseType: 'text' });
   }
 
   login(request: AuthenticationRequest): Observable<AuthenticationResponse> {
     return this.http.post<AuthenticationResponse>(`${this.apiUrl}/authenticate`, request).pipe(
+      // --- MODIFIED --- Now stores both the access and refresh tokens from a standard login.
       tap((response: AuthenticationResponse) => {
-        // Store the token in localStorage and set it to tokenKey
         localStorage.setItem(this.tokenKey, response.access_token);
+        localStorage.setItem(this.refreshTokenKey, response.refresh_token);
       })
     );
   }
+
+  // --- ADDED ---
+  // This method redirects the browser to the backend's Google authorization URL.
+  loginWithGoogle(): void {
+    window.location.href = `${this.baseApiUrl}/oauth2/authorization/google`;
+  }
+
+  // --- ADDED ---
+  // This method is called by the LoginComponent to save tokens from the URL after a successful OAuth redirect.
+  storeOauthTokens(token: string, refreshToken: string): void {
+    localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.refreshTokenKey, refreshToken);
+    console.log('OAuth tokens stored in localStorage.');
+  }
+
   decodeToken(token: string): any {
     try {
       return jwtDecode(token);
@@ -80,41 +100,41 @@ export class AuthService {
     }
   }
 
-// Fixed forgot password methods
-forgotPassword(email: string): Observable<string> {
-  const request: ForgotPasswordRequest = { email }
-  return this.http
-    .post(`${this.apiUrl}/forgot-password`, request, {
-      responseType: "text", // Explicitly set response type to text
-    })
-    .pipe(
-      catchError((error) => {
-        console.error("Forgot password error:", error)
-        return throwError(() => error)
-      }),
-    )
-}
+  forgotPassword(email: string): Observable<string> {
+    const request: ForgotPasswordRequest = { email }
+    return this.http
+      .post(`${this.apiUrl}/forgot-password`, request, {
+        responseType: "text",
+      })
+      .pipe(
+        catchError((error) => {
+          console.error("Forgot password error:", error)
+          return throwError(() => error)
+        }),
+      )
+  }
 
-resetPassword(token: string, newPassword: string): Observable<string> {
-  const request: ResetPasswordRequest = { token, newPassword }
-  return this.http
-    .post(`${this.apiUrl}/reset-password`, request, {
-      responseType: "text", // Explicitly set response type to text
-    })
-    .pipe(
-      catchError((error) => {
-        console.error("Reset password error:", error)
-        return throwError(() => error)
-      }),
-    )
-}
+  resetPassword(token: string, newPassword: string): Observable<string> {
+    const request: ResetPasswordRequest = { token, newPassword }
+    return this.http
+      .post(`${this.apiUrl}/reset-password`, request, {
+        responseType: "text",
+      })
+      .pipe(
+        catchError((error) => {
+          console.error("Reset password error:", error)
+          return throwError(() => error)
+        }),
+      )
+  }
+
   getUsername(token: string): string | null {
     const decodedToken = this.decodeToken(token);
     return decodedToken ? decodedToken.sub : null;
   }
   getUserConnect(): Observable<ClientResponse> {
-    const uuid = this.getUserUuid(localStorage.getItem(this.tokenKey));
-    return this.userService.getClientByUuid(uuid);
+    const uuid = this.getUserUuid(localStorage.getItem(this.tokenKey)!); // Added non-null assertion
+    return this.userService.getClientByUuid(uuid!); // Added non-null assertion
   }
   getUserUuid(token: string): string | null {
     const decodedToken = this.decodeToken(token);
@@ -133,14 +153,16 @@ resetPassword(token: string, newPassword: string): Observable<string> {
     }
     return true;
   }
-  getAccessToken():  string | null {
+  getAccessToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
   logout() {
-    localStorage.clear()
+    // --- MODIFIED --- Use removeItem for clarity and to avoid clearing everything.
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.refreshTokenKey);
   }
-  
+
   changePassword(request: ChangePasswordRequest) {
     return this.http.put(`${this.apiUrl}/change-password`, request);
   }

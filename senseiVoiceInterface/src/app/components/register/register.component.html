@@ -11,7 +11,7 @@
       <h1 class="signup-title">{{ 'signupPage.title' | translate }}</h1>
       <p class="signup-subtitle">{{ 'signupPage.subtitle' | translate }}</p>
       
-      <!-- MODIFICATION: Success Message is updated for email verification -->
+      <!-- Success Message -->
       <div *ngIf="signupSuccess" class="alert alert-success text-center">
         <i class="bi bi-envelope-check-fill" style="font-size: 3rem; color: #28a745;"></i>
         <h4 class="alert-heading mt-2">{{ 'signupPage.verificationSentTitle' | translate }}</h4>
@@ -177,6 +177,17 @@
           <span *ngIf="!isSubmitting">{{ 'signupPage.createAccount' | translate }}</span>
           <span *ngIf="isSubmitting">{{ 'signupPage.creatingAccount' | translate }}</span>
         </button>
+
+        <!-- ===================== ADDED OAUTH SECTION ===================== -->
+        <div class="separator">
+          <span>OR</span>
+        </div>
+
+        <button type="button" class="google-signup-button" (click)="signUpWithGoogle()">
+          <img src="assets/img/google-logo.svg" alt="Google icon"> <!-- Make sure this image exists -->
+          <span>Sign up with Google</span>
+        </button>
+        <!-- =================== END OF ADDED OAUTH SECTION ================== -->
         
         <!-- Login Link -->
         <div class="login-link">

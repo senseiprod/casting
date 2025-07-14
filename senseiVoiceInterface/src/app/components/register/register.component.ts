@@ -25,7 +25,7 @@ export class RegisterComponent implements OnInit {
     this.signupForm = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      companyName: ['',[Validators.required]], // facultatif ? à ajuster
+      companyName: ['',[Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.pattern(/^\+?[0-9\s\-]+$/)]],
       password: [
@@ -75,21 +75,18 @@ export class RegisterComponent implements OnInit {
         password: this.signupForm.value.password,
         companyName:this.signupForm.value.companyName,
         phone:this.signupForm.value.phone,
-        role: 'CLIENT', // ou dynamique si besoin
+        role: 'CLIENT', 
       };
       
-      // MODIFICATION: The logic inside the subscription is changed.
       this.authService.register(formData).subscribe({
         next: (response) => {
           console.log('Registration request successful:', response);
-          // We no longer log the user in. We just show the success message.
           this.signupSuccess = true;
-          this.isSubmitting = false; // Stop the loading spinner
+          this.isSubmitting = false;
         },
         error: (err) => {
           console.error('Erreur:', err);
           this.signupError = true;
-          // You might want to get the specific error message from the backend
           this.errorMessage = err.error.message || 'Une erreur est survenue lors de l’inscription.';
           this.isSubmitting = false;
         },
@@ -99,6 +96,13 @@ export class RegisterComponent implements OnInit {
         this.signupForm.get(key)?.markAsTouched();
       });
     }
+  }
+
+  // --- ADDED ---
+  // This method is called when the "Sign up with Google" button is clicked.
+  signUpWithGoogle(): void {
+    this.isSubmitting = true; // Provides visual feedback that something is happening.
+    this.authService.loginWithGoogle();
   }
 
   getPasswordStrength(): { strength: string; color: string } {
