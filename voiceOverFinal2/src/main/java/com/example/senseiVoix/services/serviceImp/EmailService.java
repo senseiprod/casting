@@ -15,8 +15,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.example.senseiVoix.services.EmailService2;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
@@ -30,7 +28,7 @@ public class EmailService {
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
-    private static final Logger log = LoggerFactory.getLogger(EmailService2.class);
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
 
     public void sendDmandeRecord(String to, String demandeurNom, LocalDate date) {
