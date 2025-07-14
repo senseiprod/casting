@@ -5,6 +5,9 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 export interface Voix2Response {
+  ageZone: string;
+  avatar: string;
+  originalVoiceUrl: string;
   uuid: string;
   code: string;
   speakerId: string;
