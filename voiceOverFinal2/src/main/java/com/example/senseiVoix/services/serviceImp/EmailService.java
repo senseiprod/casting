@@ -6,12 +6,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import com.example.senseiVoix.services.EmailService2;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -25,6 +29,9 @@ public class EmailService {
 
     @Value("${app.frontend.url}")
     private String frontendUrl;
+
+    private static final Logger log = LoggerFactory.getLogger(EmailService2.class);
+
 
     public void sendDmandeRecord(String to, String demandeurNom, LocalDate date) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -195,6 +202,34 @@ public class EmailService {
                 emailSender.send(message);
         } catch (Exception e) {
             throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
+    }
+
+    public void sendVerificationEmail(String email, String token) {
+        // MODIFICATION: Construct the full, correct URL including "/v1"
+        String verificationUrl = frontendUrl + "/api/v1/auth/verify-email?token=" + token;
+
+        String subject = "Email Verification";
+        String body = "Click the link to verify your email: " + verificationUrl;
+
+        // --- For Local Testing ---
+        log.info("--- EMAIL VERIFICATION LINK ---");
+        log.info("To: {}", email);
+        log.info("Full Link: {}", verificationUrl);
+        log.info("-------------------------------");
+
+        // --- For Production ---
+        // This will now send the correct link in the real email
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            // It's good practice to set a 'From' address
+            message.setFrom("noreply@castingvoixoff.ma");
+            message.setTo(email);
+            message.setSubject(subject);
+            message.setText(body);
+            emailSender.send(message);
+        } catch (Exception e) {
+            log.error("Failed to send verification email to {}", email, e);
         }
     }
 }
