@@ -6,6 +6,7 @@ import com.example.senseiVoix.entities.Utilisateur;
 import com.example.senseiVoix.entities.VerificationToken;
 import com.example.senseiVoix.entities.token.Token;
 import com.example.senseiVoix.entities.token.PasswordResetToken;
+import com.example.senseiVoix.enumeration.AuthProvider;
 import com.example.senseiVoix.repositories.TokenRepository;
 import com.example.senseiVoix.repositories.PasswordResetTokenRepository;
 import com.example.senseiVoix.entities.token.TokenType;
@@ -162,6 +163,7 @@ public class AuthenticationService {
     user.setMotDePasse(passwordEncoder.encode(request.getPassword()));
     user.setRole(role);
     user.setVerified(false); // User is not verified upon registration
+      user.setProvider(AuthProvider.LOCAL.name());
 
     var savedUser = repository.save(user);
 
