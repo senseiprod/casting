@@ -39,21 +39,22 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
   private final EmailService emailService;
-  private final VerificationTokenRepository verificationTokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
 
-  @Autowired
-  public AuthenticationService(UtilisateurRepository repository, TokenRepository tokenRepository,
-      PasswordResetTokenRepository passwordResetTokenRepository, PasswordEncoder passwordEncoder, 
-      JwtService jwtService, AuthenticationManager authenticationManager, EmailService emailService) {
-    this.repository = repository;
-    this.tokenRepository = tokenRepository;
-    this.passwordResetTokenRepository = passwordResetTokenRepository;
-    this.passwordEncoder = passwordEncoder;
-    this.jwtService = jwtService;
-    this.authenticationManager = authenticationManager;
-    this.emailService = emailService;
-    this.verificationTokenRepository = null;
-  }
+    @Autowired
+    public AuthenticationService(UtilisateurRepository repository, TokenRepository tokenRepository,
+                                 PasswordResetTokenRepository passwordResetTokenRepository, PasswordEncoder passwordEncoder,
+                                 JwtService jwtService, AuthenticationManager authenticationManager, EmailService emailService,
+                                 VerificationTokenRepository verificationTokenRepository) { // <-- 1. ADD PARAMETER HERE
+        this.repository = repository;
+        this.tokenRepository = tokenRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.emailService = emailService;
+        this.verificationTokenRepository = verificationTokenRepository; // <-- 2. ASSIGN IT CORRECTLY
+    }
 
   @Transactional
   public void verifyUser(String token) {

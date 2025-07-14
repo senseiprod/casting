@@ -164,10 +164,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationResponse> getRecentNotifications(String userUuid, int hours) {
+
         Utilisateur user = utilisateurRepository.findByUuid(userUuid);
+
+
         if (user == null) {
+
             throw new RuntimeException("User not found");
         }
+
 
         LocalDateTime since = LocalDateTime.now().minusHours(hours);
         List<Notification> notifications = notificationRepository.findRecentNotifications(user, since);

@@ -25,6 +25,11 @@ public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
 
+
+    @Value("${app.api.base-url}")
+    private String apiBaseUrl;
+
+
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
@@ -205,7 +210,7 @@ public class EmailService {
 
     public void sendVerificationEmail(String email, String token) {
         // MODIFICATION: Construct the full, correct URL including "/v1"
-        String verificationUrl = frontendUrl + "/api/v1/auth/verify-email?token=" + token;
+        String verificationUrl = apiBaseUrl + "/api/v1/auth/verify-email?token=" + token;
 
         String subject = "Email Verification";
         String body = "Click the link to verify your email: " + verificationUrl;
