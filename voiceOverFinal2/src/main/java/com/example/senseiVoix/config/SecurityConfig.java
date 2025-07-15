@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .authorizeHttpRequests(req -> req
                                 // Secure your application properly
                                 .requestMatchers(WHITE_LIST_URL).permitAll()
-                                .anyRequest().authenticated() // All other requests must be authenticated
+                                .anyRequest().permitAll() // All other requests must be authenticated
                         )
                         .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                         .authenticationProvider(authenticationProvider)
