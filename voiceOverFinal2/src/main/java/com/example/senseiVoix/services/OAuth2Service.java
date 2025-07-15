@@ -28,50 +28,55 @@ public class OAuth2Service {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
 
-    // Logger instance to provide detailed output
     private static final Logger logger = LoggerFactory.getLogger(OAuth2Service.class);
 
     @Transactional
     public AuthenticationResponse processOAuth2User(OAuth2User oAuth2User) {
-        // 1. Get email from Google's response
         String email = oAuth2User.getAttribute("email");
         if (email == null || email.isEmpty()) {
             throw new InternalAuthenticationServiceException("Critical: Email not found from OAuth2 provider.");
         }
 
-        // Add a clear starting log message for each request
         logger.info("--- [OAuth2 Start] Processing login for email: {}", email);
 
-        // 2. Check if a user with this email ALREADY exists in our database
         Optional<Utilisateur> userOptional = utilisateurRepository.findByEmail(email);
+        Utilisateur user;
 
-        Utilisateur user; // This will hold the user we will work with
+        // ============================ CHANGE START ============================
+        // This entire logic block is rewritten for clarity and to handle account linking.
 
-        // 3. The CORE DECISION LOGIC BLOCK
         if (userOptional.isPresent()) {
             // --- PATH A: USER ALREADY EXISTS ---
             Utilisateur existingUser = userOptional.get();
-            String existingProvider = existingUser.getProvider();
-            logger.warn("[OAuth2 Decision] User with email {} already exists. Checking provider. Found provider: '{}'", email, existingProvider);
+            String existingProviderStr = existingUser.getProvider();
+            logger.warn("[OAuth2 Decision] User with email {} already exists. Database provider is: '{}'", email, existingProviderStr);
 
-            // Check if the existing user is a Google user.
-            if (AuthProvider.GOOGLE.name().equals(existingProvider)) {
-                // This is a returning Google user. This is a SUCCESS path.
-                logger.info("[OAuth2 Path] SUCCESS: Existing user is a Google user. Updating details.");
-                user = updateExistingUser(existingUser, oAuth2User);
+            // SCENARIO 1: The user is a returning Google user. This is a normal login.
+            if (AuthProvider.GOOGLE.name().equals(existingProviderStr)) {
+                logger.info("[OAuth2 Path] SUCCESS: Existing user is a returning Google user. Updating details.");
+                user = updateExistingGoogleUser(existingUser, oAuth2User);
+
+                // SCENARIO 2: The user exists but registered locally (provider is LOCAL or null). We link the account.
+            } else if (existingProviderStr == null || AuthProvider.LOCAL.name().equals(existingProviderStr)) {
+                logger.info("[OAuth2 Path] LINKING: Existing local user is signing in with Google. Linking account.");
+                user = linkLocalUserToGoogle(existingUser, oAuth2User);
+
+                // SCENARIO 3: The user exists but with a DIFFERENT OAuth provider (e.g., Facebook). This is a conflict.
             } else {
-                // This is a user who registered with email/password (or has a null provider). This is a FAILURE path.
-                logger.error("[OAuth2 Path] FAILURE: Existing user is a LOCAL or UNKNOWN provider. This is a login conflict.");
-                throw new InternalAuthenticationServiceException("This email is already associated with a different login method. Please log in with your password.");
+                logger.error("[OAuth2 Path] FAILURE: User already exists with provider '{}'. Cannot link to GOOGLE.", existingProviderStr);
+                throw new InternalAuthenticationServiceException(
+                        "This email is already linked to a " + existingProviderStr + " account. Please log in using that method."
+                );
             }
         } else {
             // --- PATH B: USER DOES NOT EXIST ---
-            // This is a new user signing up for the first time with Google. This is a SUCCESS path.
+            // This is a new user signing up for the first time with Google.
             logger.info("[OAuth2 Decision] User with email {} does not exist. Creating a new Google user.", email);
-            user = registerNewUser(oAuth2User);
+            user = registerNewGoogleUser(oAuth2User);
         }
+        // ============================= CHANGE END =============================
 
-        // 4. If we haven't thrown an exception by now, the login is successful. Generate tokens.
+
         logger.info("[OAuth2 Finish] Authentication successful for user ID {}. Generating JWTs.", user.getId());
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -81,33 +86,60 @@ public class OAuth2Service {
         return new AuthenticationResponse(jwtToken, refreshToken, user.getUuid());
     }
 
-
-    private Utilisateur registerNewUser(OAuth2User oAuth2User) {
+    // Renamed for clarity: this is specifically for NEW Google users
+    private Utilisateur registerNewGoogleUser(OAuth2User oAuth2User) {
         Client user = new Client();
-        user.setProvider(String.valueOf(AuthProvider.GOOGLE));
+        user.setProvider(AuthProvider.GOOGLE.name()); // Use the enum
         user.setRole(RoleUtilisateur.CLIENT);
         user.setEmail(oAuth2User.getAttribute("email"));
         user.setPrenom(oAuth2User.getAttribute("given_name"));
         user.setNom(oAuth2User.getAttribute("family_name"));
-        user.setVerified(true);
-        logger.info("Saving new user '{}' to the database.", user.getEmail());
+        user.setVerified(true); // Email from OAuth provider is considered verified
+        logger.info("Saving new GOOGLE user '{}' to the database.", user.getEmail());
         return utilisateurRepository.save(user);
     }
 
-    private Utilisateur updateExistingUser(Utilisateur existingUser, OAuth2User oAuth2User) {
+    // Renamed for clarity: this is for UPDATING EXISTING Google users
+    private Utilisateur updateExistingGoogleUser(Utilisateur existingUser, OAuth2User oAuth2User) {
+        // You might want to update profile picture, name, etc., on subsequent logins
         existingUser.setPrenom(oAuth2User.getAttribute("given_name"));
         existingUser.setNom(oAuth2User.getAttribute("family_name"));
-        logger.info("Updating existing user '{}' in the database.", existingUser.getEmail());
+        logger.info("Updating existing GOOGLE user '{}' in the database.", existingUser.getEmail());
         return utilisateurRepository.save(existingUser);
     }
 
+    // ============================ NEW METHOD ============================
+    // This new method handles the logic for linking a local account to Google
+    private Utilisateur linkLocalUserToGoogle(Utilisateur existingUser, OAuth2User oAuth2User) {
+        logger.info("Updating local user '{}' to link with GOOGLE.", existingUser.getEmail());
+        // Set the provider to GOOGLE
+        existingUser.setProvider(AuthProvider.GOOGLE.name());
+        // The email is verified by Google, so we can mark it as such
+        existingUser.setVerified(true);
+        // Update user's name from Google profile if they were not set during local registration
+        if (existingUser.getPrenom() == null || existingUser.getPrenom().isEmpty()) {
+            existingUser.setPrenom(oAuth2User.getAttribute("given_name"));
+        }
+        if (existingUser.getNom() == null || existingUser.getNom().isEmpty()) {
+            existingUser.setNom(oAuth2User.getAttribute("family_name"));
+        }
+        // The user now has no password, as they will use Google to log in.
+        // You may want to nullify the password field for security.
+        existingUser.setMotDePasse(null);
+
+        return utilisateurRepository.save(existingUser);
+    }
+    // ============================ END NEW METHOD ============================
+
+
     private void saveUserToken(Utilisateur user, String jwtToken) {
-        var token = new Token();
-        token.setUser(user);
-        token.setToken(jwtToken);
-        token.setTokenType(TokenType.BEARER);
-        token.setExpired(false);
-        token.setRevoked(false);
+        var token = Token.builder()
+                .user(user)
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build();
         tokenRepository.save(token);
     }
 
