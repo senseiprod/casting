@@ -427,4 +427,52 @@ public class ElevenLabsServiceImpl implements ElevenLabsService {
             if (nextPageToken == null) break;
         }
     }
+
+
+    @Override
+    public Map<String, Object> getVoiceDetails(String voiceId) {
+        // Build the URL with the voiceId as the search parameter
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                .fromUriString(ELEVEN_LABS_VOICES_LIST_URL)
+                .queryParam("search", voiceId);
+
+        String searchUrl = uriBuilder.toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("xi-api-key", apiKey);
+
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+
+        log.info("Searching for voice details from ElevenLabs API: {}", searchUrl);
+
+        try {
+            ResponseEntity<Map> responseEntity = restTemplate.exchange(
+                    searchUrl,
+                    HttpMethod.GET,
+                    requestEntity,
+                    Map.class
+            );
+
+            // The API returns a structure like { "voices": [...] }. We need to extract the first voice.
+            Map<String, Object> responseBody = responseEntity.getBody();
+            if (responseBody != null && responseBody.containsKey("voices")) {
+                List<Map<String, Object>> voices = (List<Map<String, Object>>) responseBody.get("voices");
+                if (voices != null && !voices.isEmpty()) {
+                    // Return the first voice object found in the array
+                    return voices.get(0);
+                }
+            }
+
+            // If no voices were found, return null or an empty map to indicate "not found"
+            log.warn("No voice found with ID '{}' using the shared voices search.", voiceId);
+            return null; // or new HashMap<>();
+
+        } catch (HttpClientErrorException e) {
+            log.error("Error searching for voice {}: {}", voiceId, e.getResponseBodyAsString());
+            // Re-throw the exception so the controller can handle it
+            throw e;
+        }
+    }
+
+
 }

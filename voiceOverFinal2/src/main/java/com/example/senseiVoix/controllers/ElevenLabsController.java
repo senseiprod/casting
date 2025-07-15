@@ -142,4 +142,17 @@ public class ElevenLabsController {
         elevenLabsService.fetchAndSaveVoicesFromElevenLabs();
         return ResponseEntity.ok("Voices imported successfully");
     }
+
+    @GetMapping("/voices/{voiceId}")
+    public ResponseEntity<?> getVoiceDetails(@PathVariable("voiceId") String voiceId) {
+        Map<String, Object> voiceDetails = elevenLabsService.getVoiceDetails(voiceId);
+
+        if (voiceDetails != null && !voiceDetails.isEmpty()) {
+            // Voice found, return the details with 200 OK
+            return new ResponseEntity<>(voiceDetails, HttpStatus.OK);
+        } else {
+            // Voice not found, return a 404 Not Found status
+            return new ResponseEntity<>("Voice not found with ID: " + voiceId, HttpStatus.NOT_FOUND);
+        }
+    }
 }

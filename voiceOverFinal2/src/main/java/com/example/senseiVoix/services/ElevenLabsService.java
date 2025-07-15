@@ -31,4 +31,6 @@ public interface ElevenLabsService {
     Map<String, Object> listSharedVoices(Integer pageSize, String search, String sort, String category, String gender, String age, String accent, String language,int nextPageToken );
 ByteArrayResource generateVoiceNamesExcel() throws Exception;
 
+        Map<String, Object> getVoiceDetails(String voiceId);
+
 }
