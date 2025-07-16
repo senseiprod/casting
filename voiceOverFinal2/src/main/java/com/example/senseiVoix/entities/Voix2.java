@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 @Data
 @Table(name = "voix_elevenlabs")
-public class Voix2 extends BaseModel{
+public class Voix2 extends BaseModel {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,9 +23,7 @@ public class Voix2 extends BaseModel{
     private Speaker speaker;
 
 
-
-
-    private Double nombrePoint ;
+    private Double nombrePoint;
     @Enumerated(EnumType.STRING)
     private TypeQualityVoix type;
 
@@ -38,7 +36,7 @@ public class Voix2 extends BaseModel{
     }
 
     @Enumerated(EnumType.STRING)
-    private TypeVoice typeVoice ;
+    private TypeVoice typeVoice;
 
     public TypeQualityVoix getType() {
         return type;
@@ -47,6 +45,7 @@ public class Voix2 extends BaseModel{
     public void setType(TypeQualityVoix type) {
         this.type = type;
     }
+
     public Long getId() {
         return id;
     }
@@ -70,7 +69,6 @@ public class Voix2 extends BaseModel{
     public void setNombrePoint(Double nombrePoint) {
         this.nombrePoint = nombrePoint;
     }
-
 
 
     public String getGender() {
@@ -105,11 +103,12 @@ public class Voix2 extends BaseModel{
         this.price = price;
     }
 
-    private String elevenlabs_id ;
+    private String elevenlabs_id;
     private String gender;
     private String language;
     private String name;
     private String preview;
     private Double price;
+
 
 }

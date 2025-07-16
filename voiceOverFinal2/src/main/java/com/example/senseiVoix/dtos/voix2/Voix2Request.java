@@ -20,6 +20,7 @@ public class Voix2Request implements Serializable {
     String type ;
     String typeVoice;
 
+
     public String getType() {
         return type;
     }
@@ -46,6 +47,7 @@ public class Voix2Request implements Serializable {
 
     String name;
     Double price;
+
 
     public String getSpeakerUuid() {
         return speakerUuid;

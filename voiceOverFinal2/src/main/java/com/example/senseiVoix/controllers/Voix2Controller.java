@@ -123,6 +123,16 @@ public class Voix2Controller {
     }
 
 
+    @GetMapping("/elevenlabs/{elevenlabsId}")
+    public ResponseEntity<Voix2Response> getVoiceByElevenlabsId(@PathVariable String elevenlabsId) {
+        Voix2 voix = voix2Service.findByElevenlabsId(elevenlabsId);
+        if (voix == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(convertEntityToResponse(voix));
+    }
+
+
 
 
 }

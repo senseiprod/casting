@@ -242,4 +242,16 @@ public class Utilisateur extends BaseModel implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ReservationSpeaker> reservationSpeakers;
 
+
+    private Double percentage;
+
+
+    public Double getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(Double percentage) {
+        this.percentage = percentage;
+    }
+
 }

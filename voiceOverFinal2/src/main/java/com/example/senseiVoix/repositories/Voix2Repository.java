@@ -20,4 +20,9 @@ public interface Voix2Repository extends JpaRepository<Voix2, Long> {
 
 
     List<Voix2> getVoix2ById(Long id);
+
+
+
+    @Query("SELECT c FROM Voix2 c WHERE c.elevenlabs_id =:elevenlabsId AND c.deleted =false")
+    Voix2 findByElevenlabsId(@Param("elevenlabsId") String elevenlabsId);
 }

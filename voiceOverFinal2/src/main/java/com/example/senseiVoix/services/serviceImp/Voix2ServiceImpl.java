@@ -100,10 +100,12 @@ public class Voix2ServiceImpl implements Voix2Service {
         }
         return false;
     }
+
     @Override
     public List<Voix2> findAllBySpeaker(String uuid) {
         return voix2Repository.findBySpeaker(uuid);
     }
+
     @Override
     public Voix2 findByUuid(String id) {  // Changed from getVoiceById
         return voix2Repository.findByUuid(id);
@@ -112,6 +114,12 @@ public class Voix2ServiceImpl implements Voix2Service {
     @Override
     public List<Voix2> findAll() {  // Changed from getAllVoices
         return voix2Repository.findAll();
+    }
+
+
+    @Override
+    public Voix2 findByElevenlabsId(String elevenlabsId) {
+        return voix2Repository.findByElevenlabsId(elevenlabsId);
     }
 
 }

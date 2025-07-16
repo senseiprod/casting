@@ -69,6 +69,7 @@ public class Voix2Response implements Serializable {
 
     String name;
     Double price;
+
     public String getUuid() {
         return uuid;
     }

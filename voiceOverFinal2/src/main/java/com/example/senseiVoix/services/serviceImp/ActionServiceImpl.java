@@ -9,10 +9,7 @@ import com.example.senseiVoix.enumeration.PaymentStatus;
 import com.example.senseiVoix.enumeration.StatutAction;
 import com.example.senseiVoix.enumeration.TypeAudio;
 import com.example.senseiVoix.repositories.*;
-import com.example.senseiVoix.services.ElevenLabsService;
-import com.example.senseiVoix.services.LahajatiService;
-import com.example.senseiVoix.services.NotificationService;
-import com.example.senseiVoix.services.PlayHtService;
+import com.example.senseiVoix.services.*; // Updated to import all services
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.base.rest.PayPalRESTException;
 import jakarta.transaction.Transactional;
@@ -69,15 +66,60 @@ public class ActionServiceImpl {
     @Autowired
     private NotificationService notificationService;
 
+    // ###############################################################
+    // ############# NEW DEPENDENCIES FOR EARNINGS LOGIC #############
+    // ###############################################################
+    @Autowired
+    private Voix2Service voix2Service;
+
+
     // FIXED RIB FOR BANK TRANSFERS
     private static final String COMPANY_RIB = "FR76 1234 5678 9012 3456 7890 123";
-    private static final String BANK_NAME = "Banque Exemple";
+    private static final String BANK_NAME = "CIH";
     private static final String ACCOUNT_HOLDER = "SenseiVoix SARL";
 
     @PostConstruct
     public void init() {
         loadBadWords();
     }
+
+    // ###############################################################
+    // ############# NEW HELPER METHOD FOR SPEAKER EARNINGS ##########
+    // ###############################################################
+    /**
+     * Checks if a voice is a "Managed Voice" and processes speaker earnings if it is.
+     * This method is called after payment is confirmed but before audio is generated.
+     *
+     * @param action The action being processed.
+     * @param voiceId The ElevenLabs or Lahajati voice ID used for the action.
+     */
+    private void processSpeakerEarnings(Action action, String voiceId) {
+        log.info("Checking if voice ID '{}' is a managed voice for action ID {}.", voiceId, action.getId());
+        Voix2 managedVoice = voix2Service.findByElevenlabsId(voiceId);
+
+        // If a managed voice is found, process the earnings for the associated speaker.
+        if (managedVoice != null) {
+            Speaker speaker = managedVoice.getSpeaker();
+            if (speaker != null && speaker.getPercentage() != null && speaker.getPercentage() > 0) {
+                log.info("Managed voice found. Processing earnings for speaker UUID: {}", speaker.getUuid());
+
+                double transactionPrice = calculatePrice(action.getText());
+                double speakerShare = transactionPrice * (speaker.getPercentage() / 100.0);
+
+                // Ensure earnings are not null before adding to them
+                double currentEarnings = speaker.getEarnings();
+                speaker.setEarnings(currentEarnings + speakerShare);
+
+                speakerRepository.save(speaker);
+                log.info("Successfully updated earnings for speaker {}. New balance: {}", speaker.getUuid(), speaker.getEarnings());
+            } else {
+                log.warn("Managed voice {} found, but speaker {} has no percentage set. No earnings processed.", voiceId, speaker != null ? speaker.getUuid() : "null");
+            }
+        } else {
+            log.info("Voice ID '{}' is not a managed voice. No speaker earnings to process.", voiceId);
+        }
+    }
+
 
     // EXISTING METHODS (keeping all your existing code)
     public void createAction(String text, String statutAction, String voiceUuid, String utilisateurUuid,
@@ -92,7 +134,7 @@ public class ActionServiceImpl {
         action1.setVoice(voixRepository.findByUuid(voiceUuid));
         action1.setAudioGenerated(audioFile.getBytes());
         actionRepository.save(action1);
-        
+
         // Send notification for action creation
         Utilisateur user = utilisateurRepository.findByUuid(utilisateurUuid);
         notificationService.notifyActionCreated(user, action1.getUuid());
@@ -110,7 +152,7 @@ public class ActionServiceImpl {
         action1.setVoice(voixRepository.findByUuid(voiceUuid));
         action1.setAudioGenerated(audioFile.getBytes());
         actionRepository.save(action1);
-        
+
         // Send notification for action creation
         Utilisateur user = utilisateurRepository.findByUuid(utilisateurUuid);
         notificationService.notifyActionCreated(user, action1.getUuid());
@@ -134,7 +176,7 @@ public class ActionServiceImpl {
         Speaker speaker = speakerRepository.findByUuid(speakerUuid);
         emailService.sendNotificationGeneration(utilisateur.getEmail(), utilisateur.getNom(), LocalDate.now());
         emailService.NotificationSpeaker(speaker.getEmail(), speaker.getNom(), LocalDate.now(), action.getText());
-        
+
         // Send push notifications
         notificationService.notifyActionCreated(utilisateur, actionUuid);
     }
@@ -152,7 +194,7 @@ public class ActionServiceImpl {
         audio1.setSpeaker(speakerRepository.getSpeakerByVoix(voix));
         audio1.setFormat(audioFormat);
         audioRepository.save(audio1);
-        
+
         // Notify user of successful audio generation
         notificationService.notifyAudioGenerated(action.getUtilisateur(), actionUuid);
     }
@@ -207,7 +249,7 @@ public class ActionServiceImpl {
 
         actionRepository.save(newAction);
         emailService.NotificationSpeaker(speaker.getEmail(), speaker.getNom(), LocalDate.now(), action.getText());
-        
+
         // Send notifications
         notificationService.notifyActionCreated(utilisateur, newAction.getUuid());
     }
@@ -255,12 +297,12 @@ public class ActionServiceImpl {
         }
 
         Action savedAction = actionRepository.save(action);
-        
+
         // Send notification for action creation
         if (savedAction.getUtilisateur() != null) {
             notificationService.notifyActionCreated(savedAction.getUtilisateur(), savedAction.getUuid());
         }
-        
+
         return savedAction;
     }
 
@@ -287,12 +329,12 @@ public class ActionServiceImpl {
         }
 
         Action savedAction = actionRepository.save(action);
-        
+
         // Send notification for action creation
         if (savedAction.getUtilisateur() != null) {
             notificationService.notifyActionCreated(savedAction.getUtilisateur(), savedAction.getUuid());
         }
-        
+
         return savedAction;
     }
 
@@ -303,9 +345,15 @@ public class ActionServiceImpl {
         return text.length() * 0.9;
     }
 
+    @Transactional
     public Action generateAudioAndUpdateAction(Long actionId, String voiceId) {
         Action action = actionRepository.findById(actionId)
                 .orElseThrow(() -> new RuntimeException("Action not found"));
+
+        // ###############################################################
+        // ############# NEW EARNINGS LOGIC IMPLEMENTATION ###############
+        // ###############################################################
+        processSpeakerEarnings(action, voiceId);
 
         try {
             // Prepare request body for ElevenLabs API
@@ -332,19 +380,19 @@ public class ActionServiceImpl {
             action.setStatutAction(StatutAction.GENERE);
 
             Action savedAction = actionRepository.save(action);
-            
+
             // Send notification for successful audio generation
             notificationService.notifyAudioGenerated(action.getUtilisateur(), action.getUuid());
-            
+
             return savedAction;
 
         } catch (Exception e) {
             action.setStatutAction(StatutAction.REJETE);
             actionRepository.save(action);
-            
+
             // Send notification for failed audio generation
             notificationService.notifyAudioGenerationFailed(action.getUtilisateur(), action.getUuid(), e.getMessage());
-            
+
             throw new RuntimeException("Failed to generate audio: " + e.getMessage());
         }
     }
@@ -409,7 +457,7 @@ public class ActionServiceImpl {
 
         action.setStatutAction(StatutAction.REJETE);
         actionRepository.save(action);
-        
+
         // Send notification for bank transfer rejection
         notificationService.notifyBankTransferRejected(action.getUtilisateur(), action.getUuid(), "Virement bancaire rejeté par l'administrateur");
     }
@@ -444,10 +492,16 @@ public class ActionServiceImpl {
      * @param voiceId  The Lahajati voice ID to use for generation.
      * @return The updated Action entity.
      */
+    @Transactional
     public Action generateLahajatiAudioAndUpdateAction(Long actionId, String voiceId) {
         log.info("Inside generateLahajatiAudio for actionId {}, voiceId {}", actionId, voiceId);
         Action action = actionRepository.findById(actionId)
                 .orElseThrow(() -> new RuntimeException("Action not found with ID: " + actionId));
+
+        // ###############################################################
+        // ############# NEW EARNINGS LOGIC IMPLEMENTATION ###############
+        // ###############################################################
+        processSpeakerEarnings(action, voiceId);
 
         try {
             Map<String, Object> requestBody = new HashMap<>();
@@ -464,12 +518,12 @@ public class ActionServiceImpl {
                 action.setAudioGenerated(audioData);
                 action.setStatutAction(StatutAction.GENERE);
                 log.info("Successfully updated action {} with generated audio.", actionId);
-                
+
                 Action savedAction = actionRepository.save(action);
-                
+
                 // Send notification for successful audio generation
                 notificationService.notifyAudioGenerated(action.getUtilisateur(), action.getUuid());
-                
+
                 return savedAction;
 
             } else {
@@ -480,10 +534,10 @@ public class ActionServiceImpl {
             log.error("EXCEPTION in generateLahajatiAudioAndUpdateAction for actionId {}:", actionId, e);
             action.setStatutAction(StatutAction.REJETE);
             actionRepository.save(action);
-            
+
             // Send notification for failed audio generation
             notificationService.notifyAudioGenerationFailed(action.getUtilisateur(), action.getUuid(), e.getMessage());
-            
+
             throw new RuntimeException("Failed to generate Lahajati audio: " + e.getMessage(), e);
         }
     }
@@ -495,13 +549,11 @@ public class ActionServiceImpl {
             double oldBalance = client.getBalance();
             client.setBalance(client.getBalance() - balance);
             utilisateurRepository.save(client);
-            
+
             // Send notification for balance update
             notificationService.notifyBalanceUpdated(client, client.getBalance());
         } else {
             throw new RuntimeException("Utilisateur is not a Client");
         }
     }
-
-    
 }

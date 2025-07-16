@@ -23,5 +23,6 @@ public class UtilisateurRequest {
     private byte[] photo;
     private Double balance;        // Not in original, but requested
     private Integer fidelity;      // Not in original, but requested
+    private Double percentage;
 
 }

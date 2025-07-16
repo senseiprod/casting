@@ -28,9 +28,9 @@ public class TestPageController {
      *
      * @return The path to the HTML template.
      */
-    @GetMapping("/lahajati-bank")
+    @GetMapping("/test")
     public String lahajatiBankTransferTestPage() {
         // This will resolve to src/main/resources/templates/test/lahajati-bank-test.html
-        return "test/lahajati-bank-test";
+        return "test/logic-test";
     }
 }

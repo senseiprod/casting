@@ -36,4 +36,6 @@ public interface Voix2Service {
     Voix2 updateVoice(Long id, Voix2Request voixRequest);
 
     boolean deleteVoice(Long id);
+
+    Voix2 findByElevenlabsId(String elevenlabsId);
 }

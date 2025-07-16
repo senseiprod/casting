@@ -23,6 +23,7 @@ public class UtilisateurResponse  {
     private String username;
 
     private RoleUtilisateur role;
+    private Double percentage;
 
 
 }
