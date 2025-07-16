@@ -93,9 +93,10 @@ export class GenerationComponent implements OnInit {
   isLoadingLahajatiData = false
   lahajatiDataLoaded = false
 
-  showCgvModal = false
+  // REMOVED: showCgvModal = false
+  // ADDED: Simple checkbox for CGV acceptance
   cgvAccepted = false
-  pendingPaymentAction: (() => void) | null = null
+  // REMOVED: pendingPaymentAction: (() => void) | null = null
 
   languages = [
     { code: "darija", name: "Darija", active: false },
@@ -244,6 +245,7 @@ export class GenerationComponent implements OnInit {
     this.calculatedPrice = this.price * this.actionData.text.length
     this.proceedToPaymentSelection()
   }
+  
   private proceedToPaymentSelection() {
     console.log("Current balance:", this.userBalance.balance, "Calculated price:", this.calculatedPrice)
 
@@ -257,27 +259,9 @@ export class GenerationComponent implements OnInit {
     this.balanceError = null
   }
 
-  // CGV Modal handlers
-  onCgvAccepted() {
-    this.cgvAccepted = true
-    this.showCgvModal = false
+  // REMOVED: CGV Modal handlers - onCgvAccepted() and onCgvClosed()
 
-    // Execute the pending payment action
-    if (this.pendingPaymentAction) {
-      this.pendingPaymentAction()
-      this.pendingPaymentAction = null
-    }
-  }
-
-  onCgvClosed() {
-    this.showCgvModal = false
-    this.pendingPaymentAction = null
-    // Reset any payment-related states
-    this.paymentError = null
-    this.balanceError = null
-  }
-
-  // Modified balance charge methods to also check CGV
+  // Modified balance charge methods - removed CGV check
   showBalanceChargeOptions() {
     this.proceedToBalanceCharge()
   }
@@ -296,6 +280,7 @@ export class GenerationComponent implements OnInit {
       console.log("Charge amount after modal transition:", this.chargeAmount)
     }, 200)
   }
+
   // Select balance option
   selectBalanceOption(option: "use-balance" | "charge-balance" | "pay-direct") {
     this.selectedBalanceOption = option
@@ -304,8 +289,7 @@ export class GenerationComponent implements OnInit {
     if (option === "charge-balance") {
       // Calculate minimum charge amount (current cost + some buffer)
       const minimumCharge = this.getMinimumChargeAmount()
-      this.chargeAmount = minimumCharge // Remove the Math.max(minimumCharge, 10) since getMinimumChargeAmount already handles the minimum
-      console.log("Setting initial charge amount to:", this.chargeAmount) // Debug log
+      this.chargeAmount = minimumCharge
 
       // Force update the input value after a short delay to ensure DOM is ready
       setTimeout(() => {
@@ -368,8 +352,6 @@ export class GenerationComponent implements OnInit {
     }
   }
 
-  // Show balance charge options
-
   // Select charge method
   selectChargeMethod(method: "card" | "paypal" | "verment") {
     this.selectedChargeMethod = method
@@ -380,15 +362,14 @@ export class GenerationComponent implements OnInit {
     this.showBalanceChargeModal = false
     this.selectedChargeMethod = null
     this.balanceError = null
-    this.resetChargeAmount() // Reset only when closing this modal
+    this.resetChargeAmount()
   }
 
-  // Proceed with balance charging
+  // Proceed with balance charging - REMOVED CGV check
   proceedWithBalanceCharge() {
     console.log("=== PROCEEDING WITH BALANCE CHARGE ===")
     console.log("Selected charge method:", this.selectedChargeMethod)
     console.log("Current charge amount:", this.chargeAmount)
-    console.log("Charge amount type:", typeof this.chargeAmount)
 
     if (!this.selectedChargeMethod) {
       this.balanceError = "Please select a charging method"
@@ -408,16 +389,7 @@ export class GenerationComponent implements OnInit {
       return
     }
 
-    // Check if CGV has been accepted for this session
-    if (!this.cgvAccepted) {
-      // Store the payment action to execute after CGV acceptance
-      this.pendingPaymentAction = () => {
-        this.executeBalanceCharge()
-      }
-      this.showCgvModal = true
-      return
-    }
-
+    // REMOVED: CGV acceptance check - directly execute charge
     this.executeBalanceCharge()
   }
 
@@ -442,8 +414,6 @@ export class GenerationComponent implements OnInit {
     this.showBalanceOptions = false
     this.selectedBalanceOption = null
     this.balanceError = null
-    // DON'T reset chargeAmount here - keep it for the next modal
-    // this.chargeAmount = 0  // Remove this line
   }
 
   chargeBalanceWithPayPal() {
@@ -491,7 +461,7 @@ export class GenerationComponent implements OnInit {
 
         // Store the bank transfer details
         this.bankTransferDetails = response
-        this.bankTransferReference = response.libelle // Using libelle as reference
+        this.bankTransferReference = response.libelle
 
         this.isChargingBalance = false
         this.closeBalanceChargeModal()
@@ -507,7 +477,7 @@ export class GenerationComponent implements OnInit {
     })
   }
 
-  // Reset charge amount only when completely canceling the process
+  // Reset charge amount
   resetChargeAmount() {
     this.chargeAmount = 0
     console.log("Charge amount reset to:", this.chargeAmount)
@@ -536,7 +506,7 @@ export class GenerationComponent implements OnInit {
   // Get minimum charge amount
   getMinimumChargeAmount(): number {
     const deficit = Math.max(0, this.calculatedPrice - this.userBalance.balance)
-    const minimumCharge = Math.max(deficit, 10) // At least $10 or the deficit amount
+    const minimumCharge = Math.max(deficit, 10)
     console.log(
       "Calculated minimum charge:",
       minimumCharge,
@@ -546,7 +516,7 @@ export class GenerationComponent implements OnInit {
       this.calculatedPrice,
       "Balance:",
       this.userBalance.balance,
-    ) // Debug log
+    )
     return minimumCharge
   }
 
@@ -610,16 +580,7 @@ export class GenerationComponent implements OnInit {
       return
     }
 
-    // Check if CGV has been accepted for this session
-    if (!this.cgvAccepted) {
-      // Store the payment action to execute after CGV acceptance
-      this.pendingPaymentAction = () => {
-        this.executeSelectedPayment()
-      }
-      this.showCgvModal = true
-      return
-    }
-
+    // REMOVED: CGV acceptance check - directly execute payment
     this.executeSelectedPayment()
   }
 
@@ -627,7 +588,6 @@ export class GenerationComponent implements OnInit {
     if (this.selectedPaymentMethod === "paypal") {
       this.processPayPalPayment()
     } else if (this.selectedPaymentMethod === "card") {
-      // Handle card payment - you can implement this later
       this.paymentError = "Card payment not implemented yet"
     } else if (this.selectedPaymentMethod === "verment") {
       this.processBankTransferPayment()
@@ -680,12 +640,10 @@ export class GenerationComponent implements OnInit {
           this.isProcessingPayment = false
           this.showPaymentProcessing = false
 
-          // For testing, you can use the test URL
           if (response.testUrl) {
             console.log("Test URL available:", response.testUrl)
           }
         } else if (this.approvalUrl) {
-          // Redirect to PayPal for payment approval
           this.redirectToPayPal()
         } else {
           this.paymentError = "Failed to create PayPal payment"
@@ -738,7 +696,7 @@ export class GenerationComponent implements OnInit {
         console.log("Bank transfer payment response:", response)
 
         this.actionId = response.actionId
-        this.bankTransferReference = response.libelle // Using libelle as reference
+        this.bankTransferReference = response.libelle
         this.bankTransferDetails = response
         this.calculatedPrice = response.price
 
@@ -770,7 +728,6 @@ export class GenerationComponent implements OnInit {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        // You can show a toast notification here
         console.log("Copied to clipboard:", text)
       })
       .catch((err) => {
@@ -781,12 +738,9 @@ export class GenerationComponent implements OnInit {
   // Method to confirm bank transfer payment (for manual verification)
   confirmBankTransferPayment() {
     if (this.actionId) {
-      // This could trigger a manual verification process
-      // or mark the payment as pending verification
       console.log("Bank transfer payment confirmed for action:", this.actionId)
       this.closeBankTransferModal()
 
-      // You might want to show a success message or redirect
       this.generationSuccess = true
       this.generationError = null
     }
@@ -794,11 +748,8 @@ export class GenerationComponent implements OnInit {
 
   redirectToPayPal() {
     if (this.approvalUrl) {
-      // Close modals before redirect
       this.closePaymentMethodModal()
       this.showPaymentProcessing = false
-
-      // Redirect to PayPal
       window.location.href = this.approvalUrl
     }
   }
@@ -823,8 +774,6 @@ export class GenerationComponent implements OnInit {
     this.isProcessingPayment = false
     this.showPaymentProcessing = false
     this.closePaymentMethodModal()
-
-    // Start generation process
     this.startAudioGeneration()
   }
 
@@ -833,7 +782,6 @@ export class GenerationComponent implements OnInit {
     this.generationProgress = 0
     this.isGenerating = true
 
-    // Simulate generation progress
     const progressInterval = setInterval(() => {
       this.generationProgress += 10
       if (this.generationProgress >= 100) {
@@ -847,9 +795,6 @@ export class GenerationComponent implements OnInit {
     this.showGenerationProgress = false
     this.isGenerating = false
     this.generationSuccess = true
-
-    // Here you would typically get the generated audio from the backend
-    // For now, we'll simulate it
     console.log("Audio generation completed for action:", this.actionId)
   }
 
@@ -897,8 +842,8 @@ export class GenerationComponent implements OnInit {
     const requestBody = {
       text: this.actionData.text,
       id_voice: this.selectedVoice!.id,
-      dialect_id: this.selectedDialect || "35", // Use selected dialect or default
-      performance_id: this.selectedPerformanceStyle || "1284", // Use selected performance or default
+      dialect_id: this.selectedDialect || "35",
+      performance_id: this.selectedPerformanceStyle || "1284",
       input_mode: "0",
     }
 
@@ -907,7 +852,6 @@ export class GenerationComponent implements OnInit {
         const url = URL.createObjectURL(blob)
         this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
 
-        // If a project is selected, save the audio to that project
         if (this.selectedProject) {
           this.saveAudioToProject(blob)
         } else {
@@ -929,7 +873,6 @@ export class GenerationComponent implements OnInit {
       return
     }
 
-    // Create a FormData object to send the audio file
     const formData = new FormData()
     formData.append("text", this.actionData.text)
     formData.append("statutAction", "EN_ATTENTE")
@@ -939,7 +882,6 @@ export class GenerationComponent implements OnInit {
     formData.append("projectUuid", this.selectedProject.uuid)
     formData.append("audioGenerated", audioBlob, "audio.mp3")
 
-    // Add Darija-specific parameters if applicable
     if (this.selectedVoice.language === "darija") {
       if (this.selectedDialect) {
         formData.append("dialect", this.selectedDialect)
@@ -1046,7 +988,6 @@ export class GenerationComponent implements OnInit {
       name: voice.display_name || voice.voice_name,
       gender: voice.gender || "unknown",
       avatar: "https://ui-avatars.com/api/?name=" + encodeURIComponent(voice.display_name),
-
       originalVoiceUrl: voice.sample_url || voice.preview_url,
       clonedVoiceUrl: voice.sample_url || voice.preview_url,
       price: voice.price || 0.05,

@@ -114,10 +114,8 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   isLoadingLahajatiData = false
   lahajatiDataLoaded = false
 
-  // CGV Modal
-  showCgvModal = false
+  // CGV acceptance - simplified to just a boolean
   cgvAccepted = false
-  pendingPaymentAction: (() => void) | null = null
 
   languages = [
     { code: "darija", name: "Darija", active: false }, // Added Darija
@@ -339,27 +337,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.balanceError = null
   }
 
-  // CGV Modal handlers
-  onCgvAccepted() {
-    this.cgvAccepted = true
-    this.showCgvModal = false
-
-    // Execute the pending payment action
-    if (this.pendingPaymentAction) {
-      this.pendingPaymentAction()
-      this.pendingPaymentAction = null
-    }
-  }
-
-  onCgvClosed() {
-    this.showCgvModal = false
-    this.pendingPaymentAction = null
-    // Reset any payment-related states
-    this.paymentError = null
-    this.balanceError = null
-  }
-
-  // Modified balance charge methods to also check CGV
+  // Modified balance charge methods - removed CGV checks
   showBalanceChargeOptions() {
     this.proceedToBalanceCharge()
   }
@@ -463,7 +441,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.resetChargeAmount()
   }
 
-  // Proceed with balance charging
+  // Proceed with balance charging - removed CGV checks
   proceedWithBalanceCharge() {
     console.log("=== PROCEEDING WITH BALANCE CHARGE ===")
     console.log("Selected charge method:", this.selectedChargeMethod)
@@ -484,16 +462,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
 
     if (this.chargeAmount <= 0) {
       this.balanceError = "Please enter a valid charge amount"
-      return
-    }
-
-    // Check if CGV has been accepted for this session
-    if (!this.cgvAccepted) {
-      // Store the payment action to execute after CGV acceptance
-      this.pendingPaymentAction = () => {
-        this.executeBalanceCharge()
-      }
-      this.showCgvModal = true
       return
     }
 
@@ -860,19 +828,10 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     }
   }
 
+  // Modified proceedWithPayment - removed CGV checks
   proceedWithPayment() {
     if (!this.selectedPaymentMethod) {
       this.paymentError = "Please select a payment method"
-      return
-    }
-
-    // Check if CGV has been accepted for this session
-    if (!this.cgvAccepted) {
-      // Store the payment action to execute after CGV acceptance
-      this.pendingPaymentAction = () => {
-        this.executeSelectedPayment()
-      }
-      this.showCgvModal = true
       return
     }
 

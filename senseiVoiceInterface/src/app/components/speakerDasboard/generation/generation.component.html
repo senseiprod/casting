@@ -15,11 +15,8 @@
 
   <div class="container py-4">
     <div class="content">
-      <app-cgv-modal 
-        [isVisible]="showCgvModal"
-        (accepted)="onCgvAccepted()"
-        (closed)="onCgvClosed()">
-      </app-cgv-modal>
+      <!-- REMOVED: CGV Modal -->
+      
       <!-- Voice Hero Card - Prominent Voice Showcase -->
       <div class="voice-hero-card" *ngIf="selectedVoice">
         <div class="voice-hero-content">
@@ -274,6 +271,24 @@
                 </div>
               </div>
             </div>
+            
+            <!-- ADDED: CGV Acceptance Checkbox -->
+            <div class="cgv-acceptance" style="margin-bottom: 1.5rem;">
+              <div class="checkbox-container" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <input 
+                  type="checkbox" 
+                  id="cgvCheckbox" 
+                  [(ngModel)]="cgvAccepted"
+                  style="width: 18px; height: 18px; accent-color: #f43f5e; cursor: pointer;">
+                <label for="cgvCheckbox" style="color: #000000; font-weight: 600; cursor: pointer; flex: 1;">
+                  {{ 'cgv.acceptTerms' | translate }}
+                  <a href="/condition-of-sale" target="_blank" style="color: #f43f5e; text-decoration: underline; margin-left: 0.25rem;">
+                    {{ 'cgv.termsAndConditions' | translate }}
+                  </a>
+                </label>
+              </div>
+            </div>
+            
             <div class="generation-info">
               <div class="info-badges">
                 <span class="info-badge">
@@ -285,7 +300,7 @@
             <div class="generation-actions">
               <button class="checkout-btn" 
                       (click)="generateSpeech()" 
-                      [disabled]="!selectedVoice || actionData.text.length === 0">
+                      [disabled]="!selectedVoice || actionData.text.length === 0 || !cgvAccepted">
                 <i class="bi bi-cart me-2"></i>
                 {{ 'checkout.proceedToCheckout' | translate }}
               </button>
