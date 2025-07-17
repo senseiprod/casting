@@ -1,13 +1,13 @@
-import { Component,  ElementRef,  OnInit, ViewChild } from "@angular/core"
-import  { ActivatedRoute, Router } from "@angular/router"
-import  { ElevenLabsService } from "../../../services/eleven-labs.service"
-import  { Voice } from "../../../services/eleven-labs.service"
-import  { DomSanitizer, SafeUrl } from "@angular/platform-browser"
-import  { ProjectService } from "../../../services/project.service"
-import  { Project } from "../../../services/project.service"
-import  { ActionService } from "../../../services/action.service"
-import  { TranslateService } from "@ngx-translate/core"
-import  { VoiceElenlabsService } from "../../../services/voice-elenlabs.service"
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ElevenLabsService } from "../../../services/eleven-labs.service";
+import { Voice } from "../../../services/eleven-labs.service";
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
+import { ProjectService } from "../../../services/project.service";
+import { Project } from "../../../services/project.service";
+import { ActionService } from "../../../services/action.service";
+import { TranslateService } from "@ngx-translate/core";
+import { VoiceElenlabsService } from "../../../services/voice-elenlabs.service";
 
 @Component({
   selector: "app-generate-with-voice-speaker",
@@ -15,57 +15,57 @@ import  { VoiceElenlabsService } from "../../../services/voice-elenlabs.service"
   styleUrls: ["./generate-with-voice-speaker.component.css"],
 })
 export class GenerateWithVoiceSpeakerComponent implements OnInit {
-  @ViewChild("audioElement") audioElement!: ElementRef<HTMLAudioElement>
-  @ViewChild("progressBar") progressBar!: ElementRef<HTMLDivElement>
+  @ViewChild("audioElement") audioElement!: ElementRef<HTMLAudioElement>;
+  @ViewChild("progressBar") progressBar!: ElementRef<HTMLDivElement>;
 
-  voices: Voice[] = []
-  filteredVoices: Voice[] = []
-  selectedVoice: Voice | null = null
+  voices: Voice[] = [];
+  filteredVoices: Voice[] = [];
+  selectedVoice: Voice | null = null;
 
   // Audio player properties
-  audio = new Audio()
-  audioUrl: SafeUrl | null = null
-  isPlaying = false
-  isMuted = false
-  volume = 100
-  currentTime = 0
-  duration = 0
-  progressPercentage = 0
-  waveformBars: number[] = []
-  currentPlayingVoiceId: string | null = null
+  audio = new Audio();
+  audioUrl: SafeUrl | null = null;
+  isPlaying = false;
+  isMuted = false;
+  volume = 100;
+  currentTime = 0;
+  duration = 0;
+  progressPercentage = 0;
+  waveformBars: number[] = [];
+  currentPlayingVoiceId: string | null = null;
 
   // UI state
-  showVoiceSelection = false
-  showVoice = true
-  showProjectSelection = false
+  showVoiceSelection = false; // Kept as false initially, the logic will handle showing the right view
+  showVoice = true;
+  showProjectSelection = false;
 
   // Generation state
-  isGenerating = false
-  generationSuccess = false
-  generationError: string | null = null
+  isGenerating = false;
+  generationSuccess = false;
+  generationError: string | null = null;
 
   // Voice settings
-  selectedEmotion = "neutral"
-  vitess = 1.0
-  rate = 44100
-  temperature = 1.0
+  selectedEmotion = "neutral";
+  vitess = 1.0;
+  rate = 44100;
+  temperature = 1.0;
 
   // Text and pricing
-  actionData = { text: "The sensei prod voice generator can deliver high-quality, human-like speech in 32 languages." }
-  price = 0.05
-  freeTestCharLimit = 100
+  actionData = { text: "The sensei prod voice generator can deliver high-quality, human-like speech in 32 languages." };
+  price = 0.05;
+  freeTestCharLimit = 100;
 
   // User and project data
-  userId: string | null = ""
-  projects: Project[] = []
-  selectedProject: Project | null = null
+  userId: string | null = "";
+  projects: Project[] = [];
+  selectedProject: Project | null = null;
 
   // Tab management
-  activeTab: "free" | "request" = "free"
+  activeTab: "free" | "request" = "free";
 
   // Pagination
-  currentPage = 1
-  voicesPerPage = 6
+  currentPage = 1;
+  voicesPerPage = 6;
 
   // Filters
   filters = {
@@ -74,7 +74,7 @@ export class GenerateWithVoiceSpeakerComponent implements OnInit {
     ageZone: "",
     type: "",
     language: "",
-  }
+  };
 
   constructor(
     private elevenLabsService: ElevenLabsService,
@@ -86,166 +86,185 @@ export class GenerateWithVoiceSpeakerComponent implements OnInit {
     private voix2Service: VoiceElenlabsService,
     private translate: TranslateService,
   ) {
-    this.generateWaveformBars()
+    this.generateWaveformBars();
   }
 
   ngOnInit(): void {
+    // Correctly get the parent user ID for later use (e.g., saving projects)
     this.route.parent?.paramMap.subscribe((params) => {
-      this.userId = params.get("uuid") || ""
-    })
+      this.userId = params.get("uuid") || "";
+    });
 
-    // Load speaker voices
-    this.loadSpeakerVoices()
-    this.fetchUserProjects()
+    // Correctly get the speaker voice's UUID from the CURRENT route
+    this.route.paramMap.subscribe((params) => {
+      const speakerVoiceUuid = params.get("uuid");
+
+      if (speakerVoiceUuid) {
+        // Pass the correct ID to load the voices
+        this.loadSpeakerVoices(speakerVoiceUuid);
+      } else {
+        // Fallback if no ID is found in the current route
+        console.error("Speaker voice UUID not found in route, loading fallback voices.");
+        this.loadFallbackVoices();
+      }
+    });
+
+    this.fetchUserProjects();
 
     // Set up translation
-    this.translate.setDefaultLang("en")
-    const browserLang = this.translate.getBrowserLang()
+    this.translate.setDefaultLang("en");
+    const browserLang = this.translate.getBrowserLang();
     if (browserLang) {
-      this.translate.use(browserLang.match(/en|fr|es/) ? browserLang : "en")
+      this.translate.use(browserLang.match(/en|fr|es/) ? browserLang : "en");
     }
   }
 
-  loadSpeakerVoices() {
-    if (this.userId) {
-      this.voix2Service.getVoicesBySpeaker(this.userId).subscribe({
-        next: (data) => {
-          if (data) {
-            this.voices = data.map(
-              (v): Voice => ({
-                id: v.elevenlabs_id,
-                name: v.name,
-                gender: v.gender,
-                ageZone: v.ageZone || "adult",
-                type: v.typeVoice,
-                language: v.language,
-                avatar: v.avatar || this.getVoiceProfileImage({ gender: v.gender } as Voice),
-                price: v.price,
-                originalVoiceUrl: v.originalVoiceUrl || "",
-                clonedVoiceUrl: v.elevenlabs_id,
-              }),
-            )
+  // MODIFIED: This function now accepts the correct UUID
+  loadSpeakerVoices(speakerVoiceUuid: string) {
+    this.voix2Service.getVoicesBySpeaker(speakerVoiceUuid).subscribe({
+      next: (data) => {
+        // Check if data is valid and not an empty array
+        if (data && data.length > 0) {
+          this.voices = data.map(
+            (v): Voice => ({
+              id: v.elevenlabs_id,
+              name: v.name,
+              gender: v.gender,
+              ageZone: v.ageZone || "adult",
+              type: v.typeVoice,
+              language: v.language,
+              avatar: v.avatar || this.getVoiceProfileImage({ name: v.name, gender: v.gender } as Voice),
+              price: v.price,
+              originalVoiceUrl: v.originalVoiceUrl || "",
+              clonedVoiceUrl: v.elevenlabs_id,
+            }),
+          );
 
-            this.filteredVoices = [...this.voices]
-            this.selectedVoice = this.voices[0] || null
-          }
-        },
-        error: (error) => {
-          console.error("Error loading speaker voices:", error)
-          this.loadFallbackVoices()
-        },
-      })
-    } else {
-      this.loadFallbackVoices()
-    }
+          this.filteredVoices = [...this.voices];
+          this.selectedVoice = this.voices[0]; // Select the first voice
+          this.showVoiceSelection = false; // Show the detailed view for the selected voice
+        } else {
+          // If API returns no voices for this ID, show the selection grid to avoid a blank page
+          console.warn("No voices returned for this speaker. Loading fallback list.");
+          this.loadFallbackVoices();
+        }
+      },
+      error: (error) => {
+        console.error("Error loading speaker voices:", error);
+        this.loadFallbackVoices(); // Load fallbacks on error
+      },
+    });
   }
 
   loadFallbackVoices() {
     this.elevenLabsService.listVoicesFiltter().subscribe({
       next: (voices: Voice[]) => {
-        this.voices = voices
-        this.filteredVoices = [...this.voices]
-        this.selectedVoice = this.voices[0] || null
+        this.voices = voices;
+        this.filteredVoices = [...this.voices];
+        // Don't auto-select a voice here; show the full list for the user to choose
+        this.selectedVoice = null;
+        this.showVoiceSelection = true;
       },
       error: (error) => {
-        console.error("Error retrieving fallback voices:", error)
+        console.error("Error retrieving fallback voices:", error);
+        this.showVoiceSelection = true; // Still show the grid even if empty to avoid blank screen
       },
-    })
+    });
   }
 
   // Audio player methods
   generateWaveformBars() {
-    this.waveformBars = Array.from({ length: 50 }, () => Math.random() * 100)
+    this.waveformBars = Array.from({ length: 50 }, () => Math.random() * 100);
   }
 
   togglePlayPause() {
-    if (!this.audioElement) return
+    if (!this.audioElement) return;
 
-    const audio = this.audioElement.nativeElement
+    const audio = this.audioElement.nativeElement;
     if (this.isPlaying) {
-      audio.pause()
+      audio.pause();
     } else {
-      audio.play()
+      audio.play();
     }
-    this.isPlaying = !this.isPlaying
+    this.isPlaying = !this.isPlaying;
   }
 
   onAudioLoaded() {
     if (this.audioElement) {
-      const audio = this.audioElement.nativeElement
-      this.duration = audio.duration
-      audio.volume = this.volume / 100
+      const audio = this.audioElement.nativeElement;
+      this.duration = audio.duration;
+      audio.volume = this.volume / 100;
     }
   }
 
   onTimeUpdate() {
     if (this.audioElement) {
-      const audio = this.audioElement.nativeElement
-      this.currentTime = audio.currentTime
-      this.progressPercentage = (this.currentTime / this.duration) * 100
+      const audio = this.audioElement.nativeElement;
+      this.currentTime = audio.currentTime;
+      this.progressPercentage = (this.currentTime / this.duration) * 100;
     }
   }
 
   onAudioEnded() {
-    this.isPlaying = false
-    this.currentTime = 0
-    this.progressPercentage = 0
+    this.isPlaying = false;
+    this.currentTime = 0;
+    this.progressPercentage = 0;
   }
 
   seekTo(event: MouseEvent) {
-    if (!this.audioElement || !this.progressBar) return
+    if (!this.audioElement || !this.progressBar) return;
 
-    const progressBarElement = this.progressBar.nativeElement
-    const rect = progressBarElement.getBoundingClientRect()
-    const clickX = event.clientX - rect.left
-    const percentage = (clickX / rect.width) * 100
+    const progressBarElement = this.progressBar.nativeElement;
+    const rect = progressBarElement.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const percentage = (clickX / rect.width) * 100;
 
-    const audio = this.audioElement.nativeElement
-    const newTime = (percentage / 100) * this.duration
-    audio.currentTime = newTime
-    this.progressPercentage = percentage
+    const audio = this.audioElement.nativeElement;
+    const newTime = (percentage / 100) * this.duration;
+    audio.currentTime = newTime;
+    this.progressPercentage = percentage;
   }
 
   toggleMute() {
-    if (!this.audioElement) return
+    if (!this.audioElement) return;
 
-    const audio = this.audioElement.nativeElement
-    this.isMuted = !this.isMuted
-    audio.muted = this.isMuted
+    const audio = this.audioElement.nativeElement;
+    this.isMuted = !this.isMuted;
+    audio.muted = this.isMuted;
   }
 
   setVolume(event: any) {
-    if (!this.audioElement) return
+    if (!this.audioElement) return;
 
-    this.volume = event.target.value
-    const audio = this.audioElement.nativeElement
-    audio.volume = this.volume / 100
+    this.volume = event.target.value;
+    const audio = this.audioElement.nativeElement;
+    audio.volume = this.volume / 100;
 
     if (this.volume === 0) {
-      this.isMuted = true
-      audio.muted = true
+      this.isMuted = true;
+      audio.muted = true;
     } else if (this.isMuted) {
-      this.isMuted = false
-      audio.muted = false
+      this.isMuted = false;
+      audio.muted = false;
     }
   }
 
   formatTime(seconds: number): string {
-    if (isNaN(seconds)) return "0:00"
+    if (isNaN(seconds)) return "0:00";
 
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = Math.floor(seconds % 60)
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   }
 
   // Voice management methods
   selectVoice(voice: Voice): void {
-    this.selectedVoice = voice
-    this.price = voice.price || this.price
+    this.selectedVoice = voice;
+    this.price = voice.price || this.price;
   }
 
   playVoice(voice: Voice): void {
-    const voiceId = voice.id
+    const voiceId = voice.id;
 
     if (
       this.audio &&
@@ -253,21 +272,21 @@ export class GenerateWithVoiceSpeakerComponent implements OnInit {
       this.audio.src === voice.originalVoiceUrl &&
       this.currentPlayingVoiceId === voiceId
     ) {
-      this.stopVoice()
-      this.currentPlayingVoiceId = null
+      this.stopVoice();
+      this.currentPlayingVoiceId = null;
     } else {
-      this.stopVoice()
-      this.currentPlayingVoiceId = voiceId
-      this.audio = new Audio(voice.originalVoiceUrl)
-      this.audio.play().catch((error) => console.error("Error playing voice:", error))
+      this.stopVoice();
+      this.currentPlayingVoiceId = voiceId;
+      this.audio = new Audio(voice.originalVoiceUrl);
+      this.audio.play().catch((error) => console.error("Error playing voice:", error));
     }
   }
 
   stopVoice(): void {
     if (this.audio) {
-      this.audio.pause()
-      this.audio.currentTime = 0
-      this.audio = new Audio()
+      this.audio.pause();
+      this.audio.currentTime = 0;
+      this.audio = new Audio();
     }
   }
 
@@ -280,129 +299,129 @@ export class GenerateWithVoiceSpeakerComponent implements OnInit {
         (this.filters.ageZone === "" || voice.ageZone === this.filters.ageZone) &&
         (this.filters.type === "" || voice.type === this.filters.type) &&
         (this.filters.language === "" || voice.language === this.filters.language),
-    )
+    );
   }
 
   resetFilters(): void {
-    this.filters = { search: "", gender: "", ageZone: "", type: "", language: "" }
-    this.filteredVoices = [...this.voices]
+    this.filters = { search: "", gender: "", ageZone: "", type: "", language: "" };
+    this.filteredVoices = [...this.voices];
   }
 
   // Project management
   fetchUserProjects() {
     this.projectService.getAllProjects().subscribe({
       next: (data) => {
-        this.projects = data
+        this.projects = data;
       },
       error: (error) => {
-        console.error("Error retrieving projects:", error)
+        console.error("Error retrieving projects:", error);
       },
-    })
+    });
   }
 
   selectProject(project: Project) {
-    this.selectedProject = project
-    this.showProjectSelection = false
+    this.selectedProject = project;
+    this.showProjectSelection = false;
   }
 
   toggleProjectSelection() {
-    this.showProjectSelection = !this.showProjectSelection
+    this.showProjectSelection = !this.showProjectSelection;
   }
 
   // Tab management
   setActiveTab(tab: "free" | "request") {
-    this.activeTab = tab
-    this.generationError = null
-    this.generationSuccess = false
+    this.activeTab = tab;
+    this.generationError = null;
+    this.generationSuccess = false;
   }
 
   // Text validation
   isTextOverLimit(): boolean {
     if (this.activeTab === "free") {
-      return this.actionData.text.length > this.freeTestCharLimit
+      return this.actionData.text.length > this.freeTestCharLimit;
     }
-    return false
+    return false;
   }
 
   limitText() {
     if (this.activeTab === "free" && this.actionData.text.length > this.freeTestCharLimit) {
-      this.actionData.text = this.actionData.text.substring(0, this.freeTestCharLimit)
+      this.actionData.text = this.actionData.text.substring(0, this.freeTestCharLimit);
     }
   }
 
   // Speech generation
   generateSpeech() {
     if (!this.selectedVoice) {
-      this.generationError = "Please select a voice first"
-      return
+      this.generationError = "Please select a voice first";
+      return;
     }
 
     if (this.activeTab === "free") {
       if (this.actionData.text.length > this.freeTestCharLimit) {
-        this.limitText()
+        this.limitText();
       }
-      this.processAudioGeneration()
+      this.processAudioGeneration();
     } else if (this.activeTab === "request") {
-      this.proceedToCheckout()
+      this.proceedToCheckout();
     }
   }
 
   processAudioGeneration() {
-    this.isGenerating = true
-    this.generationError = null
-    this.generationSuccess = false
+    this.isGenerating = true;
+    this.generationError = null;
+    this.generationSuccess = false;
 
     this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe({
       next: (blob) => {
-        const url = URL.createObjectURL(blob)
-        this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
+        const url = URL.createObjectURL(blob);
+        this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url);
 
         if (this.selectedProject) {
-          this.saveAudioToProject(blob)
+          this.saveAudioToProject(blob);
         } else {
-          this.isGenerating = false
-          this.generationSuccess = true
+          this.isGenerating = false;
+          this.generationSuccess = true;
         }
       },
       error: (error) => {
-        console.error("Error generating speech:", error)
-        this.isGenerating = false
-        this.generationError = "Failed to generate speech. Please try again."
+        console.error("Error generating speech:", error);
+        this.isGenerating = false;
+        this.generationError = "Failed to generate speech. Please try again.";
       },
-    })
+    });
   }
 
   saveAudioToProject(audioBlob: Blob) {
     if (!this.selectedProject || !this.selectedVoice) {
-      this.isGenerating = false
-      return
+      this.isGenerating = false;
+      return;
     }
 
-    const formData = new FormData()
-    formData.append("text", this.actionData.text)
-    formData.append("statutAction", "EN_ATTENTE")
-    formData.append("voiceUuid", this.selectedVoice.id)
-    formData.append("utilisateurUuid", this.userId || "")
-    formData.append("language", this.selectedVoice.language)
-    formData.append("projectUuid", this.selectedProject.uuid)
-    formData.append("audioGenerated", audioBlob, "audio.mp3")
+    const formData = new FormData();
+    formData.append("text", this.actionData.text);
+    formData.append("statutAction", "EN_ATTENTE");
+    formData.append("voiceUuid", this.selectedVoice.id);
+    formData.append("utilisateurUuid", this.userId || "");
+    formData.append("language", this.selectedVoice.language);
+    formData.append("projectUuid", this.selectedProject.uuid);
+    formData.append("audioGenerated", audioBlob, "audio.mp3");
 
     this.actionService.createAction(formData).subscribe({
       next: (response) => {
-        console.log("Audio saved to project:", response)
-        this.isGenerating = false
-        this.generationSuccess = true
+        console.log("Audio saved to project:", response);
+        this.isGenerating = false;
+        this.generationSuccess = true;
       },
       error: (error) => {
-        console.error("Error saving audio to project:", error)
-        this.isGenerating = false
-        this.generationError = "Failed to save audio to project. Please try again."
+        console.error("Error saving audio to project:", error);
+        this.isGenerating = false;
+        this.generationError = "Failed to save audio to project. Please try again.";
       },
-    })
+    });
   }
 
   proceedToCheckout() {
-    if (!this.selectedVoice) return
+    if (!this.selectedVoice) return;
 
     const checkoutData = {
       textLength: this.actionData.text.length,
@@ -410,7 +429,7 @@ export class GenerateWithVoiceSpeakerComponent implements OnInit {
       totalPrice: (this.selectedVoice.price || this.price) * this.actionData.text.length,
       voiceId: this.selectedVoice.id,
       voiceName: this.selectedVoice.name,
-    }
+    };
 
     this.router.navigate(["/checkout"], {
       state: {
@@ -423,33 +442,33 @@ export class GenerateWithVoiceSpeakerComponent implements OnInit {
           temperature: this.temperature,
         },
       },
-    })
+    });
   }
 
   // UI methods
   toggleVoiceSelection() {
-    this.showVoiceSelection = !this.showVoiceSelection
+    this.showVoiceSelection = !this.showVoiceSelection;
   }
 
   closeModal() {
-    this.showVoiceSelection = false
-    this.showVoice = true
+    this.showVoiceSelection = false;
+    this.showVoice = true;
   }
 
   getVoiceProfileImage(voice: Voice): string {
     if (voice.gender === "Male" || voice.gender === "male") {
-      return "assets/img/male-voice-profile.jpg"
+      return "assets/img/male-voice-profile.jpg";
     } else if (voice.gender === "Female" || voice.gender === "female") {
-      return "assets/img/female-voice-profile.jpg"
+      return "assets/img/female-voice-profile.jpg";
     } else {
-      return `https://api.dicebear.com/7.x/initials/svg?seed=${voice.name}`
+      return `https://api.dicebear.com/7.x/initials/svg?seed=${voice.name}`;
     }
   }
 
   get volumeIcon(): string {
-    if (this.isMuted || this.volume === 0) return "bi-volume-mute-fill"
-    if (this.volume < 30) return "bi-volume-down-fill"
-    if (this.volume < 70) return "bi-volume-up-fill"
-    return "bi-volume-up-fill"
+    if (this.isMuted || this.volume === 0) return "bi-volume-mute-fill";
+    if (this.volume < 30) return "bi-volume-down-fill";
+    if (this.volume < 70) return "bi-volume-up-fill";
+    return "bi-volume-up-fill";
   }
 }

@@ -19,14 +19,14 @@ body {
 }
 
 .content {
-  margin-left: 260px;
+  /* margin-left: 260px;  <-- REMOVED */
   padding-top: 100px;
   min-height: 100vh;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding-left: 2rem;
   padding-right: 2rem;
   padding-bottom: 2rem;
-  width: calc(100vw - 280px);
+  width: 100%; /* CHANGED: Use 100% to fill the available space */
   max-width: none;
   box-sizing: border-box;
   position: relative;
@@ -1779,7 +1779,7 @@ body {
 
 .waveform-bars {
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   justify-content: center;
   gap: 2px;
   height: 60px;
