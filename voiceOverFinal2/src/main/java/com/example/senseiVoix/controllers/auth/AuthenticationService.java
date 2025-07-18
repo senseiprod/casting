@@ -162,7 +162,7 @@ public class AuthenticationService {
     user.setPhone(request.getPhone());
     user.setMotDePasse(passwordEncoder.encode(request.getPassword()));
     user.setRole(role);
-    user.setVerified(false); // User is not verified upon registration
+    user.setVerified(true); // User is not verified upon registration
       user.setProvider(AuthProvider.LOCAL.name());
 
     var savedUser = repository.save(user);

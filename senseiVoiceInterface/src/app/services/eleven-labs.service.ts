@@ -65,7 +65,7 @@ export class ElevenLabsService {
     gender: string | null = null,
     age: string | null = null,
     language: string | null = null,
-    nextPageToken: number = 0,
+    nextPageToken: number = 1,
   ): Observable<Voice[]> {
     let params = new HttpParams()
     .set('page_size', pageSize.toString());

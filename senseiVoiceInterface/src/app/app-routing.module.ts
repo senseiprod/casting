@@ -66,11 +66,11 @@ const routes: Routes = [
     canActivate: [GuestGuard]
   },
   
-  {
-    path: 'signup',
-    component: RegisterComponent,
-    canActivate: [GuestGuard]
-  },
+  //{
+    // path: 'signup',
+   //  component: RegisterComponent,
+   //  canActivate: [GuestGuard]
+  // },
   { path: 'signup2', component: Register2Component },
 
   { path: 'signup3', component: Register3Component },
