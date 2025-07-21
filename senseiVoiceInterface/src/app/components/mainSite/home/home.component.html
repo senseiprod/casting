@@ -69,6 +69,7 @@
 
 
     <!-- Hero Section -->
+    <!-- Hero Section -->
     <div class="hero-section">
       <div class="card main-card">
         <div class="card-body">
@@ -78,77 +79,112 @@
 
           <!-- Voice Profiles -->
           <div class="row">
-            <!-- Profile Card 1 -->
+            <!-- Profile Card 1 - Youness Rafia -->
             <div class="col-md-6 col-lg-3">
               <div class="profile-card">
                 <div class="card-img-container">
                   <img src="assets/img/younes.png" class="profile-img" alt="Profile">
                   <div class="red-overlay"></div>
                   <div class="card-info">
-                    <div class="play-button">
-                      <div class="play-icon"></div>
+                    <div class="play-button" (click)="toggleAudio('youness-audio')">
+                      <i class="fas fa-play" *ngIf="currentPlayingId !== 'youness-audio'"></i>
+                      <i class="fas fa-pause" *ngIf="currentPlayingId === 'youness-audio'"></i>
                     </div>
                     <div class="card-name">YOUNESS RAFIA</div>
                     <div class="card-subtitle">{{ 'Speaker' | translate }}</div>
                   </div>
                 </div>
+                <!-- Static audio element -->
+                <audio 
+                  id="youness-audio"
+                  preload="metadata"
+                  (ended)="onAudioEnded('youness-audio')">
+                  <source src="assets/audio/younnes.wav" type="audio/wav">
+                  Your browser does not support the audio element.
+                </audio>
               </div>
             </div>
 
-            <!-- Profile Card 2 -->
+            <!-- Profile Card 2 - Houda Boukhalef -->
             <div class="col-md-6 col-lg-3">
               <div class="profile-card">
                 <div class="card-img-container">
                   <img src="assets/img/houda.png" class="profile-img" alt="Profile">
                   <div class="red-overlay"></div>
                   <div class="card-info">
-                    <div class="play-button">
-                      <div class="play-icon"></div>
+                    <div class="play-button" (click)="toggleAudio('houda-audio')">
+                      <i class="fas fa-play" *ngIf="currentPlayingId !== 'houda-audio'"></i>
+                      <i class="fas fa-pause" *ngIf="currentPlayingId === 'houda-audio'"></i>
                     </div>
                     <div class="card-name">HOUDA BOUKHALEF</div>
                     <div class="card-subtitle">{{ 'Speaker' | translate }}</div>
                   </div>
                 </div>
+                <!-- Static audio element -->
+                <audio 
+                  id="houda-audio"
+                  preload="metadata"
+                  (ended)="onAudioEnded('houda-audio')">
+                  <source src="assets/audio/houda.wav" type="audio/wav">
+                  Your browser does not support the audio element.
+                </audio>
               </div>
             </div>
 
-            <!-- Profile Card 3 -->
+            <!-- Profile Card 3 - Sara El Rhani -->
             <div class="col-md-6 col-lg-3">
               <div class="profile-card">
                 <div class="card-img-container">
                   <img src="assets/img/sarah.png" class="profile-img" alt="Profile">
                   <div class="red-overlay"></div>
                   <div class="card-info">
-                    <div class="play-button">
-                      <div class="play-icon"></div>
+                    <div class="play-button" (click)="toggleAudio('sara-audio')">
+                      <i class="fas fa-play" *ngIf="currentPlayingId !== 'sara-audio'"></i>
+                      <i class="fas fa-pause" *ngIf="currentPlayingId === 'sara-audio'"></i>
                     </div>
                     <div class="card-name">SARA EL RHANI</div>
                     <div class="card-subtitle">{{ 'Speaker' | translate }} <span class="text-danger">{{ 'landingPage.profiles.textAnalysis' | translate }}</span></div>
                   </div>
                 </div>
+                <!-- Static audio element -->
+                <audio 
+                  id="sara-audio"
+                  preload="metadata"
+                  (ended)="onAudioEnded('sara-audio')">
+                  <source src="assets/audio/sara.wav" type="audio/wav">
+                  Your browser does not support the audio element.
+                </audio>
               </div>
             </div>
 
-            <!-- Profile Card 4 -->
+            <!-- Profile Card 4 - Saad Essabil -->
             <div class="col-md-6 col-lg-3">
               <div class="profile-card">
                 <div class="card-img-container">
                   <img src="assets/img/saad.png" class="profile-img" alt="Profile">
                   <div class="red-overlay"></div>
                   <div class="card-info">
-                    <div class="play-button">
-                      <div class="play-icon"></div>
+                    <div class="play-button" (click)="toggleAudio('saad-audio')">
+                      <i class="fas fa-play" *ngIf="currentPlayingId !== 'saad-audio'"></i>
+                      <i class="fas fa-pause" *ngIf="currentPlayingId === 'saad-audio'"></i>
                     </div>
                     <div class="card-name">SAAD ESSABIL</div>
                     <div class="card-subtitle">{{ 'Speaker' | translate }} <span class="text-danger">{{ 'landingPage.profiles.textAnalysis' | translate }}</span></div>
                   </div>
                 </div>
+                <!-- Static audio element -->
+                <audio 
+                  id="saad-audio"
+                  preload="metadata"
+                  (ended)="onAudioEnded('saad-audio')">
+                  <source src="assets/audio/saad.wav" type="audio/wav">
+                  Your browser does not support the audio element.
+                </audio>
               </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
