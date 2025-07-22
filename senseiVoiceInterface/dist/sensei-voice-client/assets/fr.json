@@ -250,7 +250,9 @@
     "title": "Conditions Générales de Vente",
     "acceptanceText": "J'ai lu et j'accepte les Conditions Générales de Vente",
     "decline": "Refuser",
-    "acceptAndContinue": "Accepter et Continuer"
+    "acceptAndContinue": "Accepter et Continuer",
+    "termsAndConditions": "Conditions générales de vente",
+    "acceptTerms": "J'accepte les conditions générales de vente"
   },
   "payment": {
     "bankTransferInstructions": "Veuillez suivre les instructions ci-dessous pour effectuer votre virement bancaire.",

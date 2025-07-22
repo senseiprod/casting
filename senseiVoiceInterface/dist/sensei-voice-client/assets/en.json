@@ -870,7 +870,10 @@
       "title": "Terms and Conditions of Sale",
       "acceptanceText": "I have read and accept the Terms and Conditions of Sale",
       "decline": "Decline",
-      "acceptAndContinue": "Accept and Continue"
+      "acceptAndContinue": "Accept and Continue",
+        "termsAndConditions": "Terms and Conditions",
+        "acceptTerms": "I accept the Terms and Conditions"
+     
     },
     "payment": {
       "bankTransferInstructions": "Please follow the instructions below to complete your bank transfer.",
