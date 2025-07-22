@@ -53,10 +53,10 @@ export class MenuComponent implements OnInit, OnDestroy {
   paymentError: string | null = null
   showPaymentProcessing = false
 
-  // CGV Modal properties
-  showCgvModal = false
-  cgvAccepted = false
-  pendingPaymentAction: (() => void) | null = null
+  // Removed CGV Modal properties
+  // showCgvModal = false
+  // cgvAccepted = false
+  // pendingPaymentAction: (() => void) | null = null
 
   isLoadingPhoto = false
   isUpdatingProfile = false
@@ -378,28 +378,12 @@ export class MenuComponent implements OnInit, OnDestroy {
     return "balance-good"
   }
 
-  // CGV Modal handlers
-  onCgvAccepted() {
-    this.cgvAccepted = true
-    this.showCgvModal = false
-
-    if (this.pendingPaymentAction) {
-      this.pendingPaymentAction()
-      this.pendingPaymentAction = null
-    }
-  }
-
-  onCgvClosed() {
-    this.showCgvModal = false
-    this.pendingPaymentAction = null
-
-    this.showBalanceChargeModal = true
-
-    this.chargeError = null
-    this.paymentError = null
-  }
+  // Removed CGV Modal handlers
+  // onCgvAccepted() { ... }
+  // onCgvClosed() { ... }
 
   showAddFundsModal(): void {
+    // Direct call to show modal without CGV check
     this.proceedToShowAddFundsModal()
   }
 
@@ -459,16 +443,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       return
     }
 
-    if (!this.cgvAccepted) {
-      this.showBalanceChargeModal = false
-
-      this.pendingPaymentAction = () => {
-        this.executeBalanceCharge()
-      }
-      this.showCgvModal = true
-      return
-    }
-
+    // Direct execution without CGV check
     this.executeBalanceCharge()
   }
 

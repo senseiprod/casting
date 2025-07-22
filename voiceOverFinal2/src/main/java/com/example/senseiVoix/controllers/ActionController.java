@@ -11,8 +11,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -565,6 +567,47 @@ public class ActionController {
             return ResponseEntity.ok("Balance updated successfully.");
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/generate-elevenlabs-audio-with-balance")
+    public ResponseEntity<String> generateElevenLabsAudio(
+            @RequestParam String text,
+            @RequestParam String statutAction,
+            @RequestParam String voiceUuid,
+            @RequestParam String utilisateurUuid,
+            @RequestParam String language,
+            @RequestParam String projectUuid,
+            @RequestParam MultipartFile audioFile
+    ) {
+        try {
+            actionService.generateElevenLabsAudioWithBalance(
+                    text, statutAction, voiceUuid, utilisateurUuid, language, projectUuid, audioFile
+            );
+            return ResponseEntity.ok("Audio generated and action saved successfully (ElevenLabs).");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error generating ElevenLabs audio: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/lahajati-generate-audio-with-balance")
+    public ResponseEntity<String> generateLahajatiAudio(
+            @RequestParam String text,
+            @RequestParam String statutAction,
+            @RequestParam String voiceUuid,
+            @RequestParam String utilisateurUuid,
+            @RequestParam String language,
+            @RequestParam String projectUuid
+    ) {
+        try {
+            actionService.generateLahajatiAudioWithBalance(
+                    text, statutAction, voiceUuid, utilisateurUuid, language, projectUuid
+            );
+            return ResponseEntity.ok("Audio generated and action saved successfully (Lahajati).");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error generating Lahajati audio: " + e.getMessage());
         }
     }
 }

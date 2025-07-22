@@ -5,13 +5,11 @@ import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
 import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.entities.*;
-import com.example.senseiVoix.enumeration.PaymentStatus;
 import com.example.senseiVoix.enumeration.StatutAction;
 import com.example.senseiVoix.enumeration.TypeAudio;
 import com.example.senseiVoix.repositories.*;
 import com.example.senseiVoix.services.*; // Updated to import all services
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.paypal.base.rest.PayPalRESTException;
 import jakarta.transaction.Transactional;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -556,4 +554,84 @@ public class ActionServiceImpl {
             throw new RuntimeException("Utilisateur is not a Client");
         }
     }
+
+
+// ###############################################################
+// ############# BALANCE-BASED ACTION GENERATION METHODS ########
+// ###############################################################
+
+
+ @Transactional
+ public void generateElevenLabsAudioWithBalance(String text, String statutAction, String voiceUuid, String utilisateurUuid,
+ String language, String projectUuid, org.springframework.web.multipart.MultipartFile audioFile) throws IOException {
+        Action action1 = new Action();
+        action1.setProject(projectRepository.findByUuidAndDeletedFalse(projectUuid));
+        action1.setUtilisateur(utilisateurRepository.findByUuid(utilisateurUuid));
+        action1.setStatutAction(StatutAction.EN_ATTENTE);
+        action1.setText(text);
+        action1.setLanguage(language);
+        action1.setVoice(voixRepository.findByUuid(voiceUuid));
+        action1.setAudioGenerated(audioFile.getBytes());
+        actionRepository.save(action1);
+
+        // Send notification for action creation
+        Client user = (Client) utilisateurRepository.findByUuid(utilisateurUuid);
+        user.setBalance(user.getBalance() - calculatePrice(text));
+        notificationService.notifyActionCreated(user, action1.getUuid());
+}
+
+
+@Transactional
+public void generateLahajatiAudioWithBalance(String text, String statutAction, String voiceUuid, String utilisateurUuid,
+String language, String projectUuid) {
+       Action action1 = new Action();
+       action1.setProject(projectRepository.findByUuidAndDeletedFalse(projectUuid));
+       action1.setUtilisateur(utilisateurRepository.findByUuid(utilisateurUuid));
+       action1.setStatutAction(StatutAction.EN_ATTENTE);
+       action1.setText(text);
+       action1.setLanguage(language);
+       action1.setVoice(voixRepository.findByUuid(voiceUuid));
+       Action action =  actionRepository.save(action1);
+       generateLahajatiAudioAndUpdateAction(action.getId(), voiceUuid);
+       // Send notification for action creation
+       Client user = (Client) utilisateurRepository.findByUuid(utilisateurUuid);
+       user.setBalance(user.getBalance() - calculatePrice(text));
+       notificationService.notifyActionCreated(user, action1.getUuid()); 
+}
+
+/**
+ * Helper method to check if a user has sufficient balance for a given text.
+ * 
+ * @param utilisateurUuid The UUID of the user
+ * @param text The text to be converted to speech
+ * @return true if user has sufficient balance, false otherwise
+ */
+public boolean checkSufficientBalance(String utilisateurUuid, String text) {
+    Utilisateur utilisateur = utilisateurRepository.findByUuid(utilisateurUuid);
+    if (!(utilisateur instanceof Client)) {
+        return false;
+    }
+    
+    Client client = (Client) utilisateur;
+    double requiredAmount = calculatePrice(text);
+    
+    return client.getBalance() >= requiredAmount;
+}
+
+/**
+ * Gets the current balance of a client.
+ * 
+ * @param utilisateurUuid The UUID of the user
+ * @return The current balance
+ * @throws RuntimeException if user is not found or not a client
+ */
+public double getClientBalance(String utilisateurUuid) {
+    Utilisateur utilisateur = utilisateurRepository.findByUuid(utilisateurUuid);
+    if (!(utilisateur instanceof Client)) {
+        throw new RuntimeException("User is not a Client");
+    }
+    
+    Client client = (Client) utilisateur;
+    return client.getBalance();
+}
 }

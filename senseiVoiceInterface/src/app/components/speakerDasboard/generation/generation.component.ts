@@ -337,10 +337,9 @@ export class GenerationComponent implements OnInit {
           this.balanceError = "Insufficient balance. Please charge your account or pay directly."
           return
         }
-        // Deduct from balance and proceed with generation
-        this.userBalance.balance -= this.calculatedPrice
+        // Use balance and generate audio with appropriate service method
         this.closeBalanceOptions()
-        this.processAudioGeneration()
+        this.processAudioGenerationWithBalance()
         break
       case "charge-balance":
         this.showBalanceChargeOptions()
@@ -798,13 +797,6 @@ export class GenerationComponent implements OnInit {
     console.log("Audio generation completed for action:", this.actionId)
   }
 
-  retryPayment() {
-    this.paymentError = null
-    this.isProcessingPayment = false
-    this.showPaymentProcessing = false
-    this.showPaymentMethodModal = true
-  }
-
   processAudioGeneration() {
     this.isGenerating = true
     this.generationError = null
@@ -835,6 +827,104 @@ export class GenerationComponent implements OnInit {
         },
       )
     }
+  }
+
+  processAudioGenerationWithBalance() {
+    this.isGenerating = true
+    this.generationError = null
+    this.generationSuccess = false
+
+    if (!this.selectedVoice || !this.userId) {
+      this.generationError = "Missing required information"
+      this.isGenerating = false
+      return
+    }
+
+    // Check if it's a Darija voice and use appropriate service method
+    if (this.selectedVoice.language === "darija") {
+      this.generateLahajatiAudioWithBalance()
+    } else {
+      this.generateElevenLabsAudioWithBalance()
+    }
+  }
+
+  generateLahajatiAudioWithBalance() {
+    this.actionService.generateLahajatiAudioWithBalance(
+      this.actionData.text,
+      "TERMINEE", // statutAction
+      this.selectedVoice!.id,
+      this.userId!,
+      this.selectedVoice!.language,
+      this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3"
+    ).subscribe({
+      next: (response) => {
+        console.log("Lahajati audio generated with balance:", response)
+        
+        // Update user balance
+        this.userBalance.balance -= this.calculatedPrice
+        
+        // Handle the audio response - assuming it returns audio data or URL
+        if (response.audioUrl || response.audioData) {
+          const audioUrl = response.audioUrl || URL.createObjectURL(response.audioData)
+          this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(audioUrl)
+        }
+        
+        this.isGenerating = false
+        this.generationSuccess = true
+        this.generationError = null
+      },
+      error: (error) => {
+        console.error("Error generating Lahajati audio with balance:", error)
+        this.isGenerating = false
+        this.generationError = error.error?.message || "Failed to generate Darija speech with balance. Please try again."
+      }
+    })
+  }
+
+  generateElevenLabsAudioWithBalance() {
+    // First generate the audio using ElevenLabs service
+    this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe({
+      next: (audioBlob) => {
+        // Convert blob to file for the service method
+        const audioFile = new File([audioBlob], "audio.mp3", { type: "audio/mpeg" })
+        
+        // Call the service method with balance
+        this.actionService.generateElevenLabsAudioWithBalance(
+          this.actionData.text,
+          "TERMINEE", // statutAction
+          this.selectedVoice!.id,
+          this.userId!,
+          this.selectedVoice!.language,
+          this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+          audioFile
+        ).subscribe({
+          next: (response) => {
+            console.log("ElevenLabs audio generated with balance:", response)
+            
+            // Update user balance
+            this.userBalance.balance -= this.calculatedPrice
+            
+            // Set the audio URL for playback
+            const url = URL.createObjectURL(audioBlob)
+            this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
+            
+            this.isGenerating = false
+            this.generationSuccess = true
+            this.generationError = null
+          },
+          error: (error) => {
+            console.error("Error generating ElevenLabs audio with balance:", error)
+            this.isGenerating = false
+            this.generationError = error.error?.message || "Failed to generate speech with balance. Please try again."
+          }
+        })
+      },
+      error: (error) => {
+        console.error("Error generating ElevenLabs audio:", error)
+        this.isGenerating = false
+        this.generationError = "Failed to generate speech. Please try again."
+      }
+    })
   }
 
   // New method for Darija audio generation
@@ -1262,7 +1352,12 @@ export class GenerationComponent implements OnInit {
       this.audio.play().catch((error) => console.error("Error playing cloned voice:", error))
     }
   }
-
+  retryPayment() {
+    this.paymentError = null
+    this.isProcessingPayment = false
+    this.showPaymentProcessing = false
+    this.showPaymentMethodModal = true
+  }
   stopVoice(): void {
     if (this.audio) {
       this.audio.pause()

@@ -413,10 +413,10 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
           this.balanceError = "Insufficient balance. Please charge your account or pay directly."
           return
         }
-        // Deduct from balance and proceed with generation
+        // Deduct from balance and proceed with generation using balance
         this.userBalance.balance -= this.calculatedPrice
         this.closeBalanceOptions()
-        this.processAudioGeneration()
+        this.processAudioGenerationWithBalance()
         break
       case "charge-balance":
         this.showBalanceChargeOptions()
@@ -426,6 +426,136 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
         this.showPaymentMethodModal = true
         break
     }
+  }
+
+  // NEW: Process audio generation using balance
+  processAudioGenerationWithBalance() {
+    this.isGenerating = true
+    this.generationError = null
+    this.generationSuccess = false
+
+    // Check if it's a Darija voice and use appropriate balance method
+    if (this.selectedVoice!.language === "darija") {
+      this.generateLahajatiAudioWithBalance()
+    } else {
+      this.generateElevenLabsAudioWithBalance()
+    }
+  }
+
+  // NEW: Generate Lahajati audio using balance
+  generateLahajatiAudioWithBalance() {
+    if (!this.selectedVoice || !this.uuid) {
+      this.generationError = "Missing required information"
+      this.isGenerating = false
+      return
+    }
+
+    const projectUuid = this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3"
+
+    this.actionService
+      .generateLahajatiAudioWithBalance(
+        this.actionData.text,
+        "EN_ATTENTE",
+        this.selectedVoice.id,
+        this.uuid,
+        this.selectedVoice.language,
+        projectUuid,
+      )
+      .subscribe({
+        next: (response) => {
+          console.log("Lahajati audio generated with balance:", response)
+
+          // Handle the response - it might contain audio URL or blob
+          if (response.audioUrl) {
+            this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(response.audioUrl)
+          } else if (response.audioBlob) {
+            const url = URL.createObjectURL(response.audioBlob)
+            this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
+          }
+
+          this.isGenerating = false
+          this.generationSuccess = true
+
+          // Update user balance if provided in response
+          if (response.newBalance !== undefined) {
+            this.userBalance.balance = response.newBalance
+          }
+        },
+        error: (error) => {
+          console.error("Error generating Lahajati audio with balance:", error)
+          this.isGenerating = false
+          this.generationError =
+            error.error?.message || "Failed to generate Lahajati audio with balance. Please try again."
+
+          // Restore balance on error
+          this.userBalance.balance += this.calculatedPrice
+        },
+      })
+  }
+
+  // NEW: Generate ElevenLabs audio using balance
+  generateElevenLabsAudioWithBalance() {
+    if (!this.selectedVoice || !this.uuid) {
+      this.generationError = "Missing required information"
+      this.isGenerating = false
+      return
+    }
+
+    // First generate the audio using ElevenLabs service
+    this.elevenLabsService.textToSpeech(this.selectedVoice.id, this.actionData.text).subscribe({
+      next: (audioBlob) => {
+        // Create audio file from blob
+        const audioFile = new File([audioBlob], "generated-audio.mp3", { type: "audio/mpeg" })
+        const projectUuid =
+          this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3"
+
+        // Now call the balance method with the generated audio
+        this.actionService
+          .generateElevenLabsAudioWithBalance(
+            this.actionData.text,
+            "EN_ATTENTE",
+            this.selectedVoice!.id,
+            this.uuid!,
+            this.selectedVoice!.language,
+            projectUuid,
+            audioFile,
+          )
+          .subscribe({
+            next: (response) => {
+              console.log("ElevenLabs audio generated with balance:", response)
+
+              // Set up audio for playback
+              const url = URL.createObjectURL(audioBlob)
+              this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
+
+              this.isGenerating = false
+              this.generationSuccess = true
+
+              // Update user balance if provided in response
+              if (response.newBalance !== undefined) {
+                this.userBalance.balance = response.newBalance
+              }
+            },
+            error: (error) => {
+              console.error("Error saving ElevenLabs audio with balance:", error)
+              this.isGenerating = false
+              this.generationError =
+                error.error?.message || "Failed to save ElevenLabs audio with balance. Please try again."
+
+              // Restore balance on error
+              this.userBalance.balance += this.calculatedPrice
+            },
+          })
+      },
+      error: (error) => {
+        console.error("Error generating ElevenLabs audio:", error)
+        this.isGenerating = false
+        this.generationError = "Failed to generate ElevenLabs audio. Please try again."
+
+        // Restore balance on error
+        this.userBalance.balance += this.calculatedPrice
+      },
+    })
   }
 
   // Select charge method
@@ -686,12 +816,14 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     )
   }
 
-  fetchVoices(pageSize: number = 100,
+  fetchVoices(
+    pageSize = 100,
     gender: string | null = null,
     age: string | null = null,
     language: string | null = null,
-    nextPageToken: number = 1,) {
-    this.elevenLabsService.listVoicesFiltter(pageSize,gender,age,language,nextPageToken).subscribe(
+    nextPageToken = 1,
+  ) {
+    this.elevenLabsService.listVoicesFiltter(pageSize, gender, age, language, nextPageToken).subscribe(
       (voices: Voice[]) => {
         console.log("Voices retrieved:", voices)
         this.voices = voices
@@ -1184,13 +1316,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       voicesToFilter = this.lahajatiVoices
     } else {
       // Use ElevenLabs voices for other languages
-      this.fetchVoices(
-        100,
-        this.filters.gender,
-        this.filters.ageZone,
-        this.filters.language,
-        1 
-      )
+      this.fetchVoices(100, this.filters.gender, this.filters.ageZone, this.filters.language, 1)
     }
 
     this.filteredVoices = voicesToFilter.filter(

@@ -161,4 +161,46 @@ export class ActionService {
 
     return this.http.post(`${this.apiUrl}/set-balance`, null, { params });
   }
+  generateElevenLabsAudioWithBalance(
+    text: string,
+    statutAction: string,
+    voiceUuid: string,
+    utilisateurUuid: string,
+    language: string,
+    projectUuid: string,
+    audioFile: File
+  ): Observable<any> {
+    const formData = new FormData();
+    formData.append('text', text);
+    formData.append('statutAction', statutAction);
+    formData.append('voiceUuid', voiceUuid);
+    formData.append('utilisateurUuid', utilisateurUuid);
+    formData.append('language', language);
+    formData.append('projectUuid', projectUuid);
+    formData.append('audioFile', audioFile);
+
+    return this.http.post(`${this.apiUrl}/generate-elevenlabs-audio-with-balance`, formData);
+  }
+
+  generateLahajatiAudioWithBalance(
+    text: string,
+    statutAction: string,
+    voiceUuid: string,
+    utilisateurUuid: string,
+    language: string,
+    projectUuid: string
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('text', text)
+      .set('statutAction', statutAction)
+      .set('voiceUuid', voiceUuid)
+      .set('utilisateurUuid', utilisateurUuid)
+      .set('language', language)
+      .set('projectUuid', projectUuid);
+
+    return this.http.post(`${this.apiUrl}/lahajati-generate-audio-with-balance`, params);
+  }
+
+
+
 }

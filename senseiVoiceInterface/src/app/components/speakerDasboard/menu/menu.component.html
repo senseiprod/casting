@@ -1,10 +1,6 @@
 <!-- Header -->
 <header class="topbar">
-  <app-cgv-modal 
-  [isVisible]="showCgvModal"
-  (accepted)="onCgvAccepted()"
-  (closed)="onCgvClosed()">
-</app-cgv-modal>
+  <!-- Removed CGV Modal -->
   <div class="header-container">
     <!-- Left Section: Toggle & Title -->
     <div class="header-left">
@@ -382,7 +378,7 @@
 
               <!-- Notifications List -->
               <div *ngIf="!isLoadingNotifications && !notificationError && notifications.length > 0">
-                <a href="#" 
+                <a routerLink="requests" 
                    class="notification-item" 
                    *ngFor="let notification of notifications; trackBy: trackNotificationById"
                    [class.unread]="!notification.readAt"
@@ -457,24 +453,10 @@
 
             <div class="dropdown-body">
               <a class="dropdown-item" 
-                 routerLink="profile"
-                 (click)="navigateToProfile()">
-                <i class="bi bi-person"></i>
-                <span>{{ 'header.profile.menu.myProfile' | translate }}</span>
-              </a>
-              <a class="dropdown-item" 
                  routerLink="setting"
                  (click)="navigateToSettings()">
                 <i class="bi bi-gear"></i>
                 <span>{{ 'header.profile.menu.accountSettings' | translate }}</span>
-              </a>
-              <a class="dropdown-item" href="#">
-                <i class="bi bi-shield-check"></i>
-                <span>{{ 'header.profile.menu.privacySecurity' | translate }}</span>
-              </a>
-              <a class="dropdown-item" href="#">
-                <i class="bi bi-question-circle"></i>
-                <span>{{ 'header.profile.menu.helpSupport' | translate }}</span>
               </a>
             </div>
 

@@ -2,6 +2,8 @@ package com.example.senseiVoix.controllers;
 
 import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.services.serviceImp.PaiementService;
+import com.example.senseiVoix.services.serviceImp.PaypalService;
+import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,14 +23,20 @@ public class ClientBalanceController {
 
     @Autowired
     private PaiementService paiementService;
+    @Autowired
+    private PaypalService paypalService;
 
     // Set balance manually (e.g., by admin)
     @GetMapping("/balance/success/{uuid}/{balance}")
     public void setBalance(
             @PathVariable String uuid,
             @PathVariable double balance,
+            @RequestParam("paymentId") String paymentId,
+            @RequestParam("PayerID") String payerId,
             HttpServletResponse response) throws IOException {
         try {
+
+            Payment payment = paypalService.executePayment2(paymentId, payerId);
             paiementService.setBalanceClient(uuid, balance);
             response.sendRedirect("https://castingvoixoff.ma/speakerDasboard/"+uuid+"/charge-success/"+balance+"/"+balance);
         } catch (Exception e) {
