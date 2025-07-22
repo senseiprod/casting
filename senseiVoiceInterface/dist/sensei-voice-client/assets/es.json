@@ -234,7 +234,9 @@
     "title": "Condiciones Generales de Venta",
     "acceptanceText": "He leído y acepto las Condiciones Generales de Venta",
     "decline": "Rechazar",
-    "acceptAndContinue": "Aceptar y Continuar"
+    "acceptAndContinue": "Aceptar y Continuar",
+    "termsAndConditions": "Términos y condiciones",
+    "acceptTerms": "Acepto los términos y condiciones"
   },  
   "payment": {
     "bankTransferInstructions": "Siga las instrucciones a continuación para completar su transferencia bancaria.",
