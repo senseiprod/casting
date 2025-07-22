@@ -56,6 +56,7 @@ import { CgvModalComponent } from './components/speakerDasboard/cgv-modal/cgv-mo
 import { Register2Component } from './components/register2/register2.component';
 import { Register3Component } from './components/register3/register3.component';
 import { NotificationComponent } from './components/speakerDasboard/notification/notification.component';
+import { SupportHelpComponent } from './components/speakerDasboard/support-help/support-help.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/', '.json');
 }
@@ -104,7 +105,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CgvModalComponent,
     Register2Component,
     Register3Component,
-    NotificationComponent
+    NotificationComponent,
+    SupportHelpComponent
   ],
     imports: [
         BrowserModule,

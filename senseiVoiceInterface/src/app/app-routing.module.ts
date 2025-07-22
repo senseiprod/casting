@@ -36,6 +36,7 @@ import { ConditionsGeneralesVenteComponentComponent } from './components/mainSit
 import { Register2Component} from './components/register2/register2.component';
 import { Register3Component} from './components/register3/register3.component';
 import { NotificationComponent } from './components/speakerDasboard/notification/notification.component';
+import { SupportHelpComponent } from './components/speakerDasboard/support-help/support-help.component';
 
 
 
@@ -98,6 +99,7 @@ const routes: Routes = [
       { path: 'payment-failed', component: PaymentFailedComponent },
       { path: 'charge-success/:amount/:newBalance', component: SuccessBalanceChargeComponent },
       { path: 'notification', component: NotificationComponent },
+      { path: 'help', component: SupportHelpComponent },
 
       
     ]
