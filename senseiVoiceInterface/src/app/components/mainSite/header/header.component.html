@@ -122,6 +122,14 @@
                 🇪🇸 {{ 'header.uiLanguage.options.spanish' | translate }}
               </a>
             </li>
+             <li>
+              <a class="dropdown-item" 
+                 href="#" 
+                 (click)="changeUILanguage('ar'); $event.preventDefault()"
+                 >
+                AR {{ 'header.uiLanguage.options.arabic' | translate }}
+              </a>
+            </li>
           </ul>
         </li>
 

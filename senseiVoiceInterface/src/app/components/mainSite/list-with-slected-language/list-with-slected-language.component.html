@@ -28,15 +28,16 @@
           <!-- Language Filter -->
           <div class="col-md-2">
             <label for="languageFilter" class="form-label">{{ 'voiceCasting.filters.language' | translate }}</label>
-            <select
-              id="languageFilter"
-              class="form-select"
-              [value]="selectedLanguage"
-              (change)="filterByLanguage($event)">
-              <option *ngFor="let language of languages" [value]="language.code" [selected]="language.active">
-                {{ language.name }}
-              </option>
-            </select>
+              <select
+                id="languageFilter"
+                class="form-select"
+                [(ngModel)]="selectedLanguage"
+                (ngModelChange)="filterByLanguage($event)">
+                <option *ngFor="let language of languages" [value]="language.code">
+                  {{ language.name }}
+                </option>
+              </select>
+
           </div>
 
           <!-- Category Filter -->

@@ -148,17 +148,19 @@ export class HeaderComponent implements OnInit {
     return this.translationService.getCurrentLanguage()
   }
 
-  getUILanguageDisplayName(): string {
-    const currentLang = this.getCurrentUILanguage()
+    getUILanguageDisplayName(): string {
+    const currentLang = this.getCurrentUILanguage();
     switch (currentLang) {
-      case "en":
-        return "EN"
-      case "fr":
-        return "FR"
-      case "es":
-        return "ES"
+      case 'en':
+        return 'EN';
+      case 'fr':
+        return 'FR';
+      case 'es':
+        return 'ES';
+      case 'ar':
+        return 'ع'; 
       default:
-        return "EN"
+        return 'EN';
     }
   }
 

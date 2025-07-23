@@ -1,0 +1,937 @@
+{
+  "darija": {
+    "options": "خيارات الدارجة",
+    "dialect": "اللهجة",
+    "selectDialect": "اختر اللهجة",
+    "performanceStyle": "أسلوب الأداء",
+    "selectPerformance": "اختر أسلوب الأداء"
+  },
+  "footer": {
+    "about": "تقدم لكم منصتنا مجموعة مختارة من المعلقين الصوتيين المحترفين، المستعدين لإضفاء الحيوية على مشاريعكم الإعلانية، ومقاطع الفيديو، والبودكاست، والتعليم الإلكتروني، والمزيد.",
+    "quickLinks": "روابط سريعة",
+    "services": "الخدمات",
+    "contact": "اتصل بنا",
+    "stayInformed": "ابق على اطلاع",
+    "placeholders": {
+      "email": "بريدك الإلكتروني"
+    },
+    "links": {
+      "home": "الرئيسية",
+      "speakers": "المعلقون الصوتيون",
+      "celebrities": "المشاهير",
+      "advertisers": "المعلنون",
+      "creators": "صناع المحتوى"
+    },
+    "service": {
+      "humanVoices": "أصوات بشرية",
+      "aiVoices": "أصوات الذكاء الاصطناعي",
+      "textAnalysis": "تحليل النص",
+      "reservations": "الحجوزات",
+      "audioGeneration": "توليد الصوت"
+    },
+    "copyright": "جميع الحقوق محفوظة.",
+    "terms": "شروط البيع العامة وسياسة الخصوصية",
+    "privacy": "سياسة الخصوصية",
+    "legal": "إشعارات قانونية"
+  },
+  "header": {
+    "balance": {
+      "chargeAmount": "المبلغ المراد شحنه",
+      "minimumCharge": "الحد الأدنى للشحن",
+      "selectChargeMethod": "اختر طريقة الشحن",
+      "chargeWithPaypal": "اشحن رصيدك باستخدام PayPal",
+      "chargeWithCard": "اشحن رصيدك ببطاقة بنكية",
+      "chargeWithBank": "اشحن رصيدك عبر تحويل بنكي",
+      "creditCard": "بطاقة بنكية",
+      "bankTransfer": "تحويل بنكي",
+      "cancel": "إلغاء",
+      "chargeNow": "اشحن الآن",
+      "processing": "جاري المعالجة...",
+      "bankTransferDetails": "تفاصيل التحويل البنكي",
+      "bankTransferInstructions": "يرجى تحويل المبلغ المحدد إلى الحساب البنكي التالي:",
+      "transferDetails": "تفاصيل التحويل",
+      "bankName": "اسم البنك",
+      "accountHolder": "صاحب الحساب",
+      "rib": "رقم الحساب المصرفي (RIB)",
+      "amount": "المبلغ",
+      "includeReference": "يرجى تضمين الرقم المرجعي في وصف التحويل",
+      "close": "إغلاق",
+      "confirmTransfer": "لقد قمت بالتحويل",
+      "preparingPayment": "جاري تحضير الدفع",
+      "redirectingToPaypal": "سيتم توجيهك إلى PayPal لإتمام عملية الدفع",
+      "actionId": "معرّف الإجراء",
+      "retry": "إعادة المحاولة",
+      "button": "رصيد الحساب",
+      "label": "الرصيد",
+      "title": "رصيد الحساب",
+      "current": "الرصيد الحالي",
+      "loading": "جاري التحميل...",
+      "error": "خطأ",
+      "refresh": "تحديث الرصيد",
+      "addFunds": "إضافة أموال",
+      "history": "سجل المعاملات",
+      "manageWallet": "إدارة المحفظة",
+      "status": {
+        "good": "رصيد كافٍ",
+        "medium": "رصيد متوسط",
+        "low": "رصيد منخفض",
+        "empty": "لا يوجد رصيد"
+      },
+      "warning": {
+        "title": "تحذير: رصيد منخفض",
+        "message": "رصيدك منخفض. يرجى التفكير في إضافة أموال لمواصلة استخدام خدماتنا."
+      }
+    },
+    "title": "نظرة عامة على لوحة التحكم",
+    "breadcrumb": {
+      "home": "الرئيسية",
+      "dashboard": "لوحة التحكم"
+    },
+    "search": {
+      "placeholder": "ابحث..."
+    },
+    "language": {
+      "selector": "محدد اللغة",
+      "options": {
+        "english": "الإنجليزية",
+        "french": "الفرنسية",
+        "spanish": "الإسبانية"
+      }
+    },
+    "notifications": {
+      "button": "الإشعارات",
+      "title": "الإشعارات",
+      "markAllRead": "تحديد الكل كمقروء",
+      "viewAll": "عرض كل الإشعارات",
+      "noNotifications": "لا توجد إشعارات جديدة",
+      "items": {
+        "voiceCompleted": "اكتمل توليد صوتي جديد",
+        "newComment": "تعليق جديد على مشروعك",
+        "requestApproved": "تمت الموافقة على طلبك",
+        "paymentReceived": "تم استلام الدفعة بنجاح",
+        "projectShared": "تمت مشاركة مشروع معك",
+        "systemUpdate": "صيانة مجدولة للنظام"
+      },
+      "times": {
+        "justNow": "الآن",
+        "oneMinAgo": "منذ دقيقة",
+        "twoMinAgo": "منذ دقيقتين",
+        "fiveMinAgo": "منذ 5 دقائق",
+        "tenMinAgo": "منذ 10 دقائق",
+        "thirtyMinAgo": "منذ 30 دقيقة",
+        "oneHourAgo": "منذ ساعة",
+        "twoHoursAgo": "منذ ساعتين",
+        "yesterday": "أمس",
+        "twoDaysAgo": "منذ يومين"
+      }
+    },
+    "profile": {
+      "menuTitle": "قائمة المستخدم",
+      "avatar": "الصورة الرمزية للملف الشخصي",
+      "status": {
+        "online": "متصل",
+        "offline": "غير متصل",
+        "away": "بالخارج",
+        "busy": "مشغول"
+      },
+      "menu": {
+        "myProfile": "ملفي الشخصي",
+        "accountSettings": "إعدادات الحساب",
+        "privacySecurity": "الخصوصية والأمان",
+        "helpSupport": "المساعدة والدعم",
+        "logout": "تسجيل الخروج"
+      }
+    },
+    "logo": {
+      "alt": "شعار كاستينغ فويس أوف"
+    },
+    "navigation": {
+      "toggleMenu": "تبديل قائمة التنقل",
+      "languages": "اللغات",
+      "voiceLanguages": "لغات الأصوات",
+      "speakers": "المعلقون",
+      "aiVoice": "أصوات الذكاء الاصطناعي",
+      "humanVoice": "صوت بشري",
+      "studio": "الاستوديو",
+      "contact": "اتصل بنا"
+    },
+    "voiceLanguages": {
+      "darija": "الدارجة",
+      "arabic": "العربية",
+      "french": "الفرنسية",
+      "english": "الإنجليزية",
+      "german": "الألمانية",
+      "italian": "الإيطالية",
+      "spanish": "الإسبانية",
+      "portuguese": "البرتغالية",
+      "hindi": "الهندية",
+      "bengali": "البنغالية",
+      "russian": "الروسية",
+      "japanese": "اليابانية",
+      "korean": "الكورية",
+      "chinese": "الصينية",
+      "turkish": "التركية",
+      "vietnamese": "الفيتنامية",
+      "polish": "البولندية",
+      "ukrainian": "الأوكرانية",
+      "romanian": "الرومانية",
+      "dutch": "الهولندية",
+      "swedish": "السويدية",
+      "finnish": "الفنلندية",
+      "norwegian": "النرويجية",
+      "danish": "الدانمركية",
+      "hungarian": "المجرية",
+      "czech": "التشيكية",
+      "greek": "اليونانية",
+      "thai": "التايلاندية",
+      "indonesian": "الإندونيسية",
+      "malay": "الماليزية",
+      "hebrew": "العبرية",
+      "persian": "الفارسية"
+    },
+       "uiLanguage": {
+      "selector": "لغة الواجهة",
+      "options": {
+        "english": "الإنجليزية",
+        "french": "الفرنسية",
+        "spanish": "الإسبانية",
+        "arabic": "العربية"
+      }
+    },
+    "auth": {
+      "login": "تسجيل الدخول",
+      "signup": "التسجيل"
+    },
+    "userMenu": {
+      "toggle": "قائمة المستخدم",
+      "avatar": "الصورة الرمزية للمستخدم",
+      "profile": "الملف الشخصي",
+      "dashboard": "لوحة التحكم",
+      "settings": "الإعدادات",
+      "logout": "تسجيل الخروج"
+    }
+  },
+  "sidebar": {
+    "toggleSidebar": "تبديل الشريط الجانبي",
+    "companyLogo": "شعار الشركة",
+    "profileImage": "صورة الملف الشخصي",
+    "clientPortal": "بوابة العميل",
+    "companyName": "شركة أكمي",
+    "sections": {
+      "main": "الرئيسي",
+      "account": "الحساب"
+    },
+    "navigation": {
+      "dashboard": "لوحة التحكم",
+      "myProjects": "مشاريعي",
+      "myRequests": "طلباتي",
+      "audioLibrary": "مكتبة الصوتيات",
+      "settings": "الإعدادات",
+      "helpSupport": "المساعدة والدعم"
+    },
+    "logout": "تسجيل الخروج"
+  },
+  "admin_login": "تسجيل دخول العميل",
+  "tagline": "بوابة إدارة آمنة لإدارة منصة التعليق الصوتي الخاصة بك",
+  "enter_credentials": "أدخل بيانات الاعتماد الخاصة بك للوصول إلى حسابك",
+  "email_address": "عنوان البريد الإلكتروني",
+  "email_placeholder": "أدخل بريدك الإلكتروني",
+  "password": "كلمة المرور",
+  "password_placeholder": "أدخل كلمة المرور الخاصة بك",
+  "sign_in": "تسجيل الدخول",
+  "signing_in": "جاري تسجيل الدخول...",
+  "invalid_credentials": "بيانات الاعتماد غير صالحة. يرجى المحاولة مرة أخرى.",
+  "copyright": "© CastingVoixOff جميع الحقوق محفوظة.",
+  "language": "اللغة",
+  "english": "الإنجليزية",
+  "french": "الفرنسية",
+  "spanish": "الإسبانية",
+  "cgv": {
+    "title": "الشروط العامة للبيع",
+    "acceptanceText": "لقد قرأت وأوافق على الشروط العامة للبيع",
+    "decline": "رفض",
+    "acceptAndContinue": "قبول ومتابعة",
+    "termsAndConditions": "الشروط العامة للبيع",
+    "acceptTerms": "أوافق على الشروط العامة للبيع"
+  },
+  "payment": {
+    "bankTransferInstructions": "يرجى اتباع التعليمات أدناه لإجراء التحويل البنكي.",
+    "transferDetails": "تفاصيل التحويل البنكي",
+    "bankName": "اسم البنك",
+    "accountHolder": "صاحب الحساب",
+    "rib": "رقم الحساب المصرفي الدولي/المحلي (IBAN/RIB)",
+    "includeReference": "يرجى تضمين الرقم المرجعي عند التحويل.",
+    "selectMethod": "اختر طريقة الدفع",
+    "orderSummary": "ملخص الطلب",
+    "textLength": "طول النص",
+    "pricePerChar": "السعر لكل حرف",
+    "totalAmount": "المبلغ الإجمالي",
+    "chooseMethod": "اختر طريقة الدفع",
+    "paypalDesc": "ادفع بأمان باستخدام حساب PayPal الخاص بك.",
+    "creditCard": "بطاقة ائتمان",
+    "cardDesc": "ادفع باستخدام Visa أو MasterCard أو بطاقات أخرى.",
+    "verment": "تحويل بنكي",
+    "vermentDesc": "الدفع عن طريق التحويل البنكي المباشر.",
+    "cancel": "إلغاء",
+    "proceed": "متابعة",
+    "processing": "جاري المعالجة...",
+    "preparingPayment": "جاري تحضير دفعتك...",
+    "redirectingToPaypal": "جاري التوجيه إلى PayPal...",
+    "amount": "المبلغ",
+    "actionId": "معرّف الإجراء",
+    "retry": "إعادة محاولة الدفع",
+    "balanceOptions": "خيارات الرصيد",
+    "currentBalance": "الرصيد الحالي",
+    "audioGeneration": "توليد الصوت",
+    "choosePaymentOption": "اختر خيار الدفع",
+    "useBalance": "استخدام الرصيد الحالي",
+    "useBalanceDesc": "استخدم رصيدك الحالي للدفع.",
+    "insufficientBalance": "رصيد غير كافٍ.",
+    "chargeBalance": "شحن الرصيد",
+    "chargeBalanceDesc": "أضف أموالاً إلى حسابك.",
+    "chargeAmount": "المبلغ المراد شحنه",
+    "minimumCharge": "الحد الأدنى للشحن",
+    "payDirect": "الدفع مباشرة",
+    "payDirectDesc": "ادفع مباشرة دون استخدام رصيدك.",
+    "useBalanceNow": "استخدم الرصيد الآن",
+    "chargeNow": "اشحن الآن",
+    "charging": "جاري الشحن...",
+    "continueToPayment": "متابعة إلى الدفع"
+  },
+  "info": {
+    "price": "السعر:",
+    "characters": "الأحرف:",
+    "total": "الإجمالي:",
+    "free": "مجاني",
+    "charactersUnit": "حرف"
+  },
+  "tabs": {
+    "freeTest": "اختبار مجاني",
+    "audioRequest": "طلب صوتي",
+    "listVoice": "قائمة الأصوات"
+  },
+  "charLimit": {
+    "title": "تم تجاوز حد الأحرف",
+    "message": "لقد تجاوزت الحد المجاني البالغ 100 حرف لتوليد الصوت.",
+    "paidNotice": "سيتم احتساب تكلفة الأحرف الإضافية وفقًا لأسعارنا.",
+    "freeChars": "أحرف مجانية",
+    "yourChars": "نصك",
+    "paidChars": "أحرف مدفوعة",
+    "estimatedCost": "التكلفة التقديرية",
+    "cancel": "إلغاء وتقليص",
+    "continue": "متابعة والدفع"
+  },
+  "voiceSelection": {
+    "title": "اختيار الصوت",
+    "searchPlaceholder": "ابحث باسم الصوت",
+    "filters": {
+      "allTypes": "كل الأنواع",
+      "ai": "ذكاء اصطناعي",
+      "cloned": "مستنسخ",
+      "premade": "معد مسبقاً",
+      "professional": "احترافي",
+      "allLanguages": "كل اللغات",
+      "english": "الإنجليزية",
+      "french": "الفرنسية",
+      "arabic": "العربية",
+      "allGenders": "كل الأجناس",
+      "male": "ذكر",
+      "female": "أنثى",
+      "allAges": "كل الأعمار",
+      "young": "شاب",
+      "adult": "بالغ",
+      "senior": "كبير السن",
+      "resetAll": "إعادة تعيين الكل",
+      "specifications": "المواصفات",
+      "language": "اللغة",
+      "gender": "الجنس",
+      "ageGroup": "الفئة العمرية",
+      "type": "النوع"
+    },
+    "buttons": {
+      "original": "أصلي",
+      "cloned": "مستنسخ",
+      "useVoice": "استخدام الصوت"
+    },
+    "attributes": "السمات",
+    "language": "اللغة (3 مدعومة)",
+    "applyToProject": "تطبيق على المشروع"
+  },
+  "projectSelection": {
+    "title": "اختيار المشروع",
+    "selectProject": "اختر مشروعًا لإضافة هذا الصوت إليه:",
+    "noProjects": "ليس لديك مشاريع بعد. قم بإنشاء مشروع أولاً لحفظ الصوت الذي تم إنشاؤه.",
+    "selectedProject": "المشروع المختار:",
+    "remove": "إزالة",
+    "changeProject": "تغيير المشروع",
+    "selectProjectBtn": "اختيار مشروع",
+    "cancel": "إلغاء",
+    "createNew": "إنشاء مشروع جديد"
+  },
+  "voiceControls": {
+    "format": "الصيغة",
+    "emotion": "العاطفة",
+    "speed": "السرعة:",
+    "sampleRate": "معدل العينة:",
+    "temperature": "درجة الإبداع:"
+  },
+  "characterLimit": {
+    "warning": "الاختبار المجاني محدود بـ 100 حرف. سيتم اقتطاع نصك."
+  },
+  "generation": {
+    "success": "تم إنشاء الكلام بنجاح",
+    "andSavedTo": "وحفظه في المشروع",
+    "freeTestTitle": "اختبار مجاني",
+    "audioRequestTitle": "طلب صوتي",
+    "generate": "توليد"
+  },
+  "voiceShowcase": {
+    "voicePreview": "معاينة الصوت",
+    "description": "استمع إلى العينة الصوتية قبل إنشاء المحتوى الخاص بك.",
+    "changeVoice": "تغيير الصوت"
+  },
+  "checkout": {
+    "proceedToCheckout": "الانتقال إلى الدفع",
+    "pricingInformation": "معلومات التسعير",
+    "pricePerCharacter": "السعر لكل حرف:",
+    "totalCharacters": "إجمالي الأحرف:",
+    "totalPrice": "السعر الإجمالي:"
+  },
+  "emotions": {
+    "neutral": "محايد",
+    "happy": "سعيد",
+    "sad": "حزين",
+    "angry": "غاضب"
+  },
+  "requestManagement": {
+    "pageTitle": "إدارة الطلبات",
+    "newRequest": "طلب جديد",
+    "modal": {
+      "createTitle": "إنشاء طلب جديد",
+      "formFields": {
+        "title": {
+          "label": "عنوان الطلب*",
+          "placeholder": "أدخل عنوان الطلب",
+          "error": "عنوان الطلب مطلوب"
+        },
+        "type": {
+          "label": "نوع الطلب*",
+          "placeholder": "اختر نوع الطلب",
+          "error": "نوع الطلب مطلوب",
+          "options": {
+            "studio": "تسجيل في الاستوديو",
+            "podcast": "ظهور في بودكاست",
+            "speaker": "طلب متحدث"
+          }
+        },
+        "description": {
+          "label": "وصف الطلب*",
+          "placeholder": "صف طلبك بالتفصيل",
+          "error": "وصف الطلب مطلوب"
+        },
+        "preferredDate": {
+          "label": "التاريخ المفضل*",
+          "error": "التاريخ المفضل مطلوب"
+        },
+        "duration": {
+          "label": "المدة التقديرية*",
+          "placeholder": "مثال: ساعة، يومان",
+          "error": "المدة مطلوبة"
+        },
+        "location": {
+          "label": "الموقع",
+          "placeholder": "مثال: استوديو أ، عن بعد، مركز مؤتمرات"
+        },
+        "notes": {
+          "label": "ملاحظات إضافية",
+          "placeholder": "أي معلومات أو متطلبات إضافية"
+        }
+      },
+      "buttons": {
+        "cancel": "إلغاء",
+        "submit": "إرسال الطلب"
+      }
+    },
+    "requestTypes": {
+      "studio": {
+        "title": "تسجيل في الاستوديو",
+        "description": "اطلب وقتاً في الاستوديو للتسجيلات الصوتية، الكتب الصوتية، الإعلانات، والمزيد.",
+        "button": "طلب استوديو جديد"
+      },
+      "podcast": {
+        "title": "ظهور في بودكاست",
+        "description": "اطلب الظهور كضيف في برامج البودكاست الخاصة بنا أو اقترح تعاونًا في بودكاست.",
+        "button": "طلب بودكاست جديد"
+      },
+      "speaker": {
+        "title": "طلب متحدث",
+        "description": "اطلب متحدثًا محترفًا لحدثك أو مؤتمرك أو تدريب شركتك.",
+        "button": "طلب متحدث جديد"
+      }
+    },
+    "filters": {
+      "search": "ابحث عن طلبات...",
+      "types": {
+        "all": "كل الأنواع",
+        "studio": "تسجيل في الاستوديو",
+        "podcast": "بودكاست",
+        "speaker": "متحدث"
+      },
+      "status": {
+        "all": "كل الحالات",
+        "pending": "قيد الانتظار",
+        "approved": "موافق عليه",
+        "inProgress": "قيد التنفيذ",
+        "completed": "مكتمل",
+        "rejected": "مرفوض"
+      },
+      "sort": {
+        "newest": "الأحدث أولاً",
+        "oldest": "الأقدم أولاً"
+      }
+    },
+    "requestsList": {
+      "title": "طلباتك",
+      "total": "الإجمالي",
+      "table": {
+        "id": "معرف الطلب",
+        "title": "العنوان",
+        "type": "النوع",
+        "createdDate": "تاريخ الإنشاء",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "noRequests": {
+        "message": "لم يتم العثور على طلبات تطابق عوامل التصفية الخاصة بك.",
+        "button": "إنشاء طلب جديد"
+      },
+      "pagination": {
+        "previous": "السابق",
+        "next": "التالي"
+      }
+    },
+    "detailsModal": {
+      "title": "تفاصيل الطلب",
+      "requestInfo": {
+        "title": "معلومات الطلب",
+        "id": "معرف الطلب:",
+        "type": "النوع:",
+        "createdDate": "تاريخ الإنشاء:",
+        "status": "الحالة:",
+        "scheduledDate": "التاريخ المجدول:",
+        "duration": "المدة:",
+        "location": "الموقع:"
+      },
+      "description": {
+        "title": "الوصف"
+      },
+      "notes": {
+        "title": "ملاحظات إضافية"
+      },
+      "scheduleInfo": {
+        "title": "معلومات الجدول الزمني",
+        "approved": "تمت الموافقة على طلبك وجدولته في",
+        "inProgress": "جلستك قيد التنفيذ حاليًا. بدأت في",
+        "completed": "اكتملت جلستك في"
+      },
+      "rejectionInfo": {
+        "title": "معلومات الرفض",
+        "message": "نأسف، ولكن لم نتمكن من تلبية طلبك في الوقت الحالي. يرجى الاتصال بالدعم لمزيد من المعلومات."
+      },
+      "buttons": {
+        "close": "إغلاق",
+        "edit": "تعديل الطلب",
+        "download": "تنزيل الملفات",
+        "contact": "الاتصال بالدعم"
+      }
+    },
+    "stats": {
+      "totalRequests": "إجمالي الطلبات",
+      "completed": "مكتملة",
+      "inProgress": "قيد التنفيذ",
+      "pending": "قيد الانتظار"
+    }
+  },
+  "projectManagement": {
+    "filters": {
+      "search": "ابحث عن مشاريع أو ملفات صوتية...",
+      "projectTypes": {
+        "all": "كل أنواع المشاريع",
+        "commercial": "تجاري",
+        "explainer": "فيديو توضيحي",
+        "podcast": "بودكاست",
+        "eLearning": "تعليم إلكتروني",
+        "ivr": "نظام الاستجابة الصوتية التفاعلية",
+        "audiobook": "كتاب صوتي",
+        "other": "آخر"
+      },
+      "status": {
+        "all": "كل الحالات",
+        "completed": "مكتمل",
+        "inProgress": "قيد التنفيذ",
+        "pending": "قيد الانتظار",
+        "rejected": "مرفوض"
+      },
+      "sort": {
+        "dateDesc": "التاريخ (الأحدث)",
+        "dateAsc": "التاريخ (الأقدم)",
+        "nameAsc": "الاسم (أ-ي)",
+        "nameDesc": "الاسم (ي-أ)"
+      },
+      "newProject": "مشروع جديد"
+    },
+    "loading": {
+      "projects": "جاري تحميل مشاريعك...",
+      "projectDetails": "جاري تحميل تفاصيل المشروع..."
+    },
+    "error": {
+      "retry": "إعادة المحاولة"
+    },
+    "projects": {
+      "title": "مشاريعك",
+      "total": "الإجمالي",
+      "noProjects": {
+        "title": "لم يتم العثور على مشاريع",
+        "message": "حاول تعديل عوامل التصفية أو قم بإنشاء مشروع جديد",
+        "button": "إنشاء مشروع جديد"
+      },
+      "details": {
+        "title": "تفاصيل المشروع",
+        "id": "معرف المشروع:",
+        "code": "الرمز:",
+        "created": "تم إنشاؤه في:",
+        "description": "الوصف:",
+        "noDescription": "لم يتم تقديم وصف",
+        "buttons": {
+          "edit": "تعديل المشروع",
+          "share": "مشاركة"
+        }
+      },
+      "audioFiles": {
+        "title": "الملفات الصوتية",
+        "noFiles": "لا توجد ملفات صوتية متاحة لهذا المشروع حاليًا.",
+        "unknownVoice": "صوت غير مسمى",
+        "buttons": {
+          "download": "تنزيل",
+          "more": "المزيد",
+          "generateNew": "توليد صوت جديد"
+        },
+        "processing": "الصوت قيد المعالجة",
+        "unknownLanguage": "لغة غير معروفة",
+        "created": "تم إنشاؤه في:",
+        "showMore": "عرض المزيد",
+        "showLess": "عرض أقل"
+      },
+      "pagination": {
+        "previous": "السابق",
+        "next": "التالي"
+      }
+    },
+    "recentAudio": {
+      "title": "الصوت الذي تم إنشاؤه مؤخرًا",
+      "viewAll": "عرض الكل",
+      "table": {
+        "text": "النص",
+        "voice": "الصوت",
+        "project": "المشروع",
+        "language": "اللغة",
+        "createdDate": "تاريخ الإنشاء",
+        "actions": "الإجراءات"
+      },
+      "unknown": "غير معروف",
+      "buttons": {
+        "play": "تشغيل",
+        "download": "تنزيل",
+        "share": "مشاركة"
+      }
+    },
+    "newProjectModal": {
+      "title": "إنشاء مشروع جديد",
+      "form": {
+        "name": {
+          "label": "اسم المشروع*",
+          "placeholder": "أدخل اسم المشروع",
+          "error": "اسم المشروع مطلوب"
+        },
+        "type": {
+          "label": "نوع المشروع*",
+          "placeholder": "اختر نوع المشروع",
+          "error": "نوع المشروع مطلوب"
+        },
+        "description": {
+          "label": "وصف المشروع*",
+          "placeholder": "صف مشروعك",
+          "error": "وصف المشروع مطلوب"
+        },
+        "dueDate": {
+          "label": "تاريخ الاستحقاق"
+        }
+      },
+      "buttons": {
+        "cancel": "إلغاء",
+        "create": "إنشاء المشروع",
+        "creating": "جاري الإنشاء..."
+      }
+    },
+    "audioPlayerModal": {
+      "title": "مشغل الصوت",
+      "unknownProject": "مشروع غير معروف",
+      "buttons": {
+        "download": "تنزيل",
+        "close": "إغلاق"
+      }
+    }
+  },
+  "contactPage": {
+    "header": {
+      "title": "تواصل معنا",
+      "description": "هل أنت مستعد لإضفاء الحيوية على مشروعك بالصوت المثالي؟ نحن هنا لمساعدتك في إنشاء تجارب صوتية مؤثرة تلقى صدى لدى جمهورك."
+    },
+    "form": {
+      "title": "أرسل لنا رسالة",
+      "name": {
+        "label": "اسمك",
+        "placeholder": "اسمك"
+      },
+      "email": {
+        "label": "عنوان البريد الإلكتروني",
+        "placeholder": "عنوان البريد الإلكتروني"
+      },
+      "subject": {
+        "label": "الموضوع",
+        "placeholder": "الموضوع"
+      },
+      "message": {
+        "label": "رسالتك",
+        "placeholder": "رسالتك"
+      },
+      "button": "أرسل رسالة"
+    },
+    "contactInfo": {
+      "title": "معلومات الاتصال",
+      "address": {
+        "line1": "9 شارع أبو موسى الجزولي،",
+        "line2": "الطابق الأول رقم 1، المعاريف،",
+        "line3": "الدار البيضاء، المغرب"
+      },
+      "phone": {
+        "label": "الهاتف",
+        "number1": "+2125 20 09 39 90",
+        "number2": "+2126 64 51 75 17"
+      },
+      "email": {
+        "label": "البريد الإلكتروني",
+        "address1": "contact@senseiprod.ma",
+        "address2": "sensei.senseiprod@gmail.com"
+      },
+      "social": {
+        "title": "تابعنا",
+        "facebook": "فيسبوك",
+        "twitter": "تويتر",
+        "instagram": "انستغرام",
+        "linkedin": "لينكدإن",
+        "youtube": "يوتيوب"
+      }
+    },
+    "map": {
+      "title": "اعثر علينا على الخريطة"
+    }
+  },
+  "landingPage": {
+    "references": {
+      "title": "مراجعنا",
+      "subtitle": "يثقون بنا في مشاريعهم الصوتية والاتصالية",
+      "stats": {
+        "clients": "عملاء",
+        "projects": "مشاريع",
+        "industries": "قطاعات"
+      }
+    },
+    "hero": {
+      "expertise": "10 سنوات من الخبرة لإعطاء صوت لمشاريعك",
+      "mainHeading": "صوتك، في لحظة.",
+      "subheading": "استثمر موهبتك أو اعثر على الصوت المثالي بنقرة واحدة."
+    },
+    "profiles": {
+      "artist": "فنان",
+      "textAnalysis": "تفعيل تحليل النص"
+    },
+    "navigation": {
+      "speakers": "المعلقون الصوتيون",
+      "celebrities": "المشاهير",
+      "advertisers": "المعلنون",
+      "creators": "صناع المحتوى"
+    },
+    "aiSection": {
+      "title": "الذكاء الاصطناعي في خدمة الإنسان",
+      "contentTitle": "التميز الصوتي، فوري ومخصص.",
+      "description1": "تضع منصتنا تحت تصرفك أصواتًا بشرية حقيقية، مسجلة من قبل محترفين وجاهزة للتوليد عند الطلب بفضل تقنية استنساخ صوتي عالية الدقة.",
+      "features": {
+        "feature1": {
+          "title": "سريع وفعال:",
+          "description": "أنشئ الصوت المثالي في ثوانٍ."
+        },
+        "feature2": {
+          "title": "جودة بشرية 100%:",
+          "description": "عاطفة وطبيعية صوت حقيقي، دون تنازلات."
+        },
+        "feature3": {
+          "title": "تخصيص متقدم:",
+          "description": "اضبط النبرة والسرعة والعاطفة حسب احتياجاتك."
+        },
+        "feature4": {
+          "title": "تكلفة محسنة:",
+          "description": "ميزانية محكومة لإنتاج أسرع وأكثر ربحية."
+        }
+      },
+      "description2": "سواء كنت صانع محتوى، أو معلنًا، أو منتجًا، احصل على أصوات احترافية، حقيقية وقابلة للتعديل بالكامل، جاهزة لإضفاء الحيوية على مشاريعك.",
+      "signUp": "سجل الآن"
+    },
+    "voiceTypes": {
+      "title": "الصوت الذي يمنح الحياة لمشروعك",
+      "subtitle": "أصوات بشرية حقيقية أو أصوات ذكاء اصطناعي فائقة الواقعية.",
+      "human": {
+        "title": "صوت بشري",
+        "description": "أصوات حقيقية، مسجلة بواسطة مواهب حقيقية ومتاحة على الفور بفضل تقنية الاستنساخ المتقدمة لدينا"
+      },
+      "ai": {
+        "title": "صوت الذكاء الاصطناعي",
+        "description": "ذكاء اصطناعي متطور لتوليد أصوات طبيعية ومعبرة، مناسبة لجميع مشاريعنا"
+      },
+      "whyUse": "لماذا تستخدم"
+    },
+    "benefits": {
+      "benefit1": {
+        "title": "مجموعة واسعة من الأصوات الاحترافية:",
+        "description": "احصل على بنك من الأصوات البشرية المستنسخة وأصوات الذكاء الاصطناعي فائقة الواقعية لجميع مشاريعك."
+      },
+      "benefit2": {
+        "title": "السرعة والكفاءة:",
+        "description": "أنشئ وخصص صوتًا في ثوانٍ، دون الحاجة إلى تنظيم تسجيل في الاستوديو."
+      },
+      "benefit3": {
+        "title": "جودة صوت لا تشوبها شائبة:",
+        "description": "يتم تسجيل أصواتنا من قبل محترفين في استوديوهات SENSEI PROD الاحترافية وتحسينها بفضل التكنولوجيا المتقدمة."
+      },
+      "benefit4": {
+        "title": "تخصيص متقدم:",
+        "description": "اضبط النبرة والسرعة والعاطفة للحصول على نتيجة تتناسب تمامًا مع مشروعك."
+      },
+      "benefit5": {
+        "title": "تحسين الميزانية:",
+        "description": "استفد من الأسعار التنافسية مع ضمان جودة ممتازة."
+      }
+    },
+    "banner": {
+      "text": "CastingVoixOff.ma هو الحل المثالي لصوت مؤثر واحترافي، على الفور. سواء كنت معلنًا، أو صانع محتوى، أو استوديو إنتاج"
+    }
+  },
+  "loginPage": {
+    "welcome": {
+      "title": "أهلاً بعودتك",
+      "message": "شكرًا لعودتك، يرجى تسجيل الدخول إلى حسابك عن طريق ملء هذا النموذج:"
+    },
+    "form": {
+      "email": {
+        "label": "عنوان البريد الإلكتروني",
+        "placeholder": "name@example.com",
+        "errors": {
+          "required": "البريد الإلكتروني مطلوب",
+          "invalid": "الرجاء إدخال بريد إلكتروني صالح"
+        }
+      },
+      "password": {
+        "label": "كلمة المرور",
+        "placeholder": "••••••••••••••",
+        "errors": {
+          "required": "كلمة المرور مطلوبة"
+        },
+        "show": "إظهار كلمة المرور",
+        "hide": "إخفاء كلمة المرور"
+      },
+      "rememberMe": "تذكرني",
+      "forgotPassword": "هل نسيت كلمة المرور؟",
+      "buttons": {
+        "login": "تسجيل الدخول",
+        "signup": "التسجيل"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صالحة",
+      "serverError": "خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقًا."
+    }
+  },
+  "signupPage": {
+    "title": "أنشئ حسابك",
+    "subtitle": "انضم إلى منصتنا واحصل على خدمات صوتية احترافية",
+    "firstName": "الاسم الأول*",
+    "lastName": "اسم العائلة*",
+    "companyName": "اسم الشركة/المؤسسة*",
+    "email": "عنوان البريد الإلكتروني*",
+    "phone": "رقم الهاتف (اختياري)",
+    "password": "كلمة المرور*",
+    "confirmPassword": "تأكيد كلمة المرور*",
+    "passwordStrength": "قوة كلمة المرور",
+    "passwordRequirements": {
+      "title": "يجب أن تحتوي كلمة المرور على:",
+      "chars": "8 أحرف على الأقل",
+      "letters": "أحرف كبيرة وصغيرة",
+      "number": "رقم واحد على الأقل",
+      "special": "حرف خاص واحد على الأقل"
+    },
+    "agreeTerms": "أوافق على",
+    "termsOfService": "شروط الاستخدام",
+    "and": "و",
+    "privacyPolicy": "سياسة الخصوصية",
+    "createAccount": "إنشاء حساب",
+    "creatingAccount": "جاري إنشاء الحساب...",
+    "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+    "logIn": "تسجيل الدخول",
+    "enterYourFirst": "أدخل اسمك الأول",
+    "enterYourLast": "أدخل اسم عائلتك",
+    "enterYourCompany": "أدخل اسم شركتك أو مؤسستك",
+    "enterYourEmail": "أدخل عنوان بريدك الإلكتروني",
+    "enterYourPhone": "أدخل رقم هاتفك",
+    "createStrongPassword": "أنشئ كلمة مرور قوية",
+    "confirmYourPassword": "أكّد كلمة المرور الخاصة بك",
+    "accountCreated": "تم إنشاء الحساب بنجاح! جاري التوجيه إلى صفحة تسجيل الدخول..."
+  },
+  "voiceCasting": {
+    "title": "اعثر على الصوت المثالي باللغة المناسبة لجمهورك",
+    "description": "تقدم منصتنا مجموعة واسعة من الأصوات بلغات متعددة، جاهزة للاستخدام في مشاريعك الإعلانية، ومقاطع الفيديو، والبودكاست، والتعليم الإلكتروني، والمزيد.",
+    "filters": {
+      "activeFilters": "الفلاتر النشطة",
+      "accent": "اللهجة",
+      "age": "العمر",
+      "gender": "الجنس",
+      "category": "الفئة",
+      "voicesPerPage": "صوت لكل صفحة",
+      "reset": "إعادة تعيين",
+      "language": "اللغة"
+    },
+    "noVoicesFound": "لم يتم العثور على أصوات تتطابق مع الفلاتر المحددة. يرجى تجربة معايير أخرى.",
+    "loading": "جاري تحميل الأصوات...",
+    "voicesFound": "أصوات تم العثور عليها",
+    "page": "صفحة",
+    "generate": "توليد"
+  },
+  "success": {
+    "processing": "جاري المعالجة...",
+    "verifyingPayment": "جاري التحقق من دفعتك، يرجى الانتظار.",
+    "chargeComplete": "اكتمل الشحن!",
+    "balanceUpdated": "تم تحديث رصيدك بنجاح.",
+    "transactionDetails": "تفاصيل المعاملة",
+    "amountCharged": "المبلغ المشحون",
+    "transactionId": "معرف المعاملة",
+    "timestamp": "الطابع الزمني",
+    "previousBalance": "الرصيد السابق",
+    "newBalance": "الرصيد الجديد",
+    "continueGeneration": "متابعة التوليد",
+    "downloadReceipt": "تنزيل الإيصال",
+    "viewHistory": "عرض سجل المعاملات",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "whatNext": "ماذا بعد؟",
+    "balanceInfo": "يمكنك الآن استخدام رصيدك المحدث للمشتريات المستقبلية أو متابعة توليد الصوت.",
+    "share": "مشاركة"
+  }
+}

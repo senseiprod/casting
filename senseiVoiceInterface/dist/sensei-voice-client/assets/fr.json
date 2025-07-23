@@ -1,10 +1,11 @@
 {
   "darija": {
-    "options": "Opciones de Darija",
-    "dialect": "Dialecto",
-    "selectDialect": "Seleccionar dialecto",
-    "performanceStyle": "Estilo de interpretación",
-    "selectPerformance": "Seleccionar estilo de interpretación"
+    
+    "options": "Options Darija",
+    "dialect": "Dialecte",
+    "selectDialect": "Sélectionner le dialecte",
+    "performanceStyle": "Style de performance",
+    "selectPerformance": "Sélectionner le style de performance"
   },
   "footer": {
     "about": "Notre plateforme vous propose une sélection de speakers professionnels, prêts à donner vie à vos projets publicitaires, vidéos, podcasts, e-learning et plus encore.",
