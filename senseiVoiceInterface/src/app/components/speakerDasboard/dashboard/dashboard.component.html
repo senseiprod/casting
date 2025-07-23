@@ -2,71 +2,7 @@
 
   <div class="dashboard-container">
     <div class="container">
-      <!-- Dashboard Header -->
-      <div class="dashboard-header">
-        <h1 class="dashboard-title">Tableau de Bord</h1>
-        <p class="dashboard-subtitle">Bienvenue sur votre espace personnel</p>
-      </div>
 
-      <!-- Stats Overview Cards -->
-      <div class="row stats-overview">
-        <div class="col-md-3 col-sm-6">
-          <div class="stat-card">
-            <div class="stat-icon">
-              <i class="bi bi-folder"></i>
-            </div>
-            <div class="stat-content">
-              <h3 class="stat-value">{{ projectStats.total }}</h3>
-              <p class="stat-label">Projets</p>
-            </div>
-            <div class="stat-progress">
-              <div class="progress-bar" [style.width.%]="projectStats.completionRate"></div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="stat-card">
-            <div class="stat-icon">
-              <i class="bi bi-play-circle"></i>
-            </div>
-            <div class="stat-content">
-              <h3 class="stat-value">{{ actionStats.total }}</h3>
-              <p class="stat-label">Actions</p>
-            </div>
-            <div class="stat-progress">
-              <div class="progress-bar" [style.width.%]="actionStats.completionRate"></div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="stat-card">
-            <div class="stat-icon">
-              <i class="bi bi-file-earmark-text"></i>
-            </div>
-            <div class="stat-content">
-              <h3 class="stat-value">{{ demandeStats.total }}</h3>
-              <p class="stat-label">Demandes</p>
-            </div>
-            <div class="stat-progress">
-              <div class="progress-bar" [style.width.%]="demandeStats.completionRate"></div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="stat-card">
-            <div class="stat-icon">
-              <i class="bi bi-calendar-check"></i>
-            </div>
-            <div class="stat-content">
-              <h3 class="stat-value">{{ reservationStats.total }}</h3>
-              <p class="stat-label">Réservations</p>
-            </div>
-            <div class="stat-progress">
-              <div class="progress-bar" [style.width.%]="reservationStats.completionRate"></div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Projects Section -->
       <div class="dashboard-section">
