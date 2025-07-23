@@ -197,7 +197,7 @@ export class HeaderComponent implements OnInit {
 
   // Navigation methods
   navigateToActors(): void {
-    this.router.navigate(["/actors"])
+    this.router.navigate(["/about"])
   }
 
   navigateToVoiceAI(): void {
