@@ -1,0 +1,985 @@
+{
+  "darija": {
+    
+    "options": "Options Darija",
+    "dialect": "Dialecte",
+    "selectDialect": "Sélectionner le dialecte",
+    "performanceStyle": "Style de performance",
+    "selectPerformance": "Sélectionner le style de performance"
+  },
+  "footer": {
+    "about": "Notre plateforme vous propose une sélection de speakers professionnels, prêts à donner vie à vos projets publicitaires, vidéos, podcasts, e-learning et plus encore.",
+    "quickLinks": "Liens Rapides",
+    "services": "Services",
+    "contact": "Contact",
+    "stayInformed": "Restez informé",
+    "placeholders": {
+      "email": "Votre email"
+    },
+    "links": {
+      "home": "Accueil",
+      "speakers": "Speakers",
+      "celebrities": "Célébrités",
+      "advertisers": "Annonceurs",
+      "creators": "Créateurs"
+    },
+    "service": {
+      "humanVoices": "Voix Humaines",
+      "aiVoices": "Voix IA",
+      "textAnalysis": "Analyse de Texte",
+      "reservations": "Réservations",
+      "audioGeneration": "Génération Audio"
+    },
+    "copyright": "Tous droits réservés.",
+    "terms": "CGV et politique de confidentialité",
+    "privacy": "Politique de confidentialité",
+    "legal": "Mentions légales"
+  },
+  "header": {
+    "balance": {
+      "chargeAmount": "Montant à charger",
+      "minimumCharge": "Montant minimum",
+      "selectChargeMethod": "Sélectionner la méthode de recharge",
+      "chargeWithPaypal": "Recharger votre solde avec PayPal",
+      "chargeWithCard": "Recharger votre solde avec une carte bancaire",
+      "chargeWithBank": "Recharger votre solde par virement bancaire",
+      "creditCard": "Carte bancaire",
+      "bankTransfer": "Virement bancaire",
+      "cancel": "Annuler",
+      "chargeNow": "Recharger maintenant",
+      "processing": "Traitement en cours...",
+      "bankTransferDetails": "Détails du virement bancaire",
+      "bankTransferInstructions": "Veuillez transférer le montant exact vers le compte bancaire suivant :",
+      "transferDetails": "Détails du virement",
+      "bankName": "Nom de la banque",
+      "accountHolder": "Titulaire du compte",
+      "rib": "RIB",
+      "amount": "Montant",
+      "includeReference": "Veuillez inclure le numéro de référence dans la description du virement",
+      "close": "Fermer",
+      "confirmTransfer": "J’ai effectué le virement",
+      "preparingPayment": "Préparation du paiement",
+      "redirectingToPaypal": "Vous allez être redirigé vers PayPal pour finaliser le paiement",
+      "actionId": "ID de l'action",
+      "retry": "Réessayer",
+      "button": "Solde du compte",
+      "label": "Solde",
+      "title": "Solde du compte",
+      "current": "Solde actuel",
+      "loading": "Chargement...",
+      "error": "Erreur",
+      "refresh": "Actualiser le solde",
+      "addFunds": "Ajouter des fonds",
+      "history": "Historique des transactions",
+      "manageWallet": "Gérer le portefeuille",
+      "status": {
+        "good": "Solde suffisant",
+        "medium": "Solde moyen",
+        "low": "Solde faible",
+        "empty": "Aucun solde"
+      },
+      "warning": {
+        "title": "Avertissement : solde faible",
+        "message": "Votre solde est faible. Pensez à ajouter des fonds pour continuer à utiliser nos services."
+      }
+    },    
+    "title": "Aperçu du Tableau de Bord",
+    "breadcrumb": {
+      "home": "Accueil",
+      "dashboard": "Tableau de Bord"
+    },
+    
+    "search": {
+      "placeholder": "Rechercher..."
+    },
+    "language": {
+      "selector": "Sélecteur de Langue",
+      "options": {
+        "english": "Anglais",
+        "french": "Français",
+        "spanish": "Espagnol"
+      }
+    },
+    "notifications": {
+      "button": "Notifications",
+      "title": "Notifications",
+      "markAllRead": "Marquer toutes comme lues",
+      "viewAll": "Voir toutes les notifications",
+      "noNotifications": "Aucune nouvelle notification",
+      "items": {
+        "voiceCompleted": "Nouvelle génération vocale terminée",
+        "newComment": "Nouveau commentaire sur votre projet",
+        "requestApproved": "Votre demande a été approuvée",
+        "paymentReceived": "Paiement reçu avec succès",
+        "projectShared": "Projet partagé avec vous",
+        "systemUpdate": "Maintenance système programmée"
+      },
+      "times": {
+        "justNow": "À l'instant",
+        "oneMinAgo": "Il y a 1 min",
+        "twoMinAgo": "Il y a 2 min",
+        "fiveMinAgo": "Il y a 5 min",
+        "tenMinAgo": "Il y a 10 min",
+        "thirtyMinAgo": "Il y a 30 min",
+        "oneHourAgo": "Il y a 1 heure",
+        "twoHoursAgo": "Il y a 2 heures",
+        "yesterday": "Hier",
+        "twoDaysAgo": "Il y a 2 jours"
+      }
+    },
+    "profile": {
+      "menu": "Menu Utilisateur",
+      "avatar": "Avatar de Profil",
+      "status": {
+        "online": "En ligne",
+        "offline": "Hors ligne",
+        "away": "Absent",
+        "busy": "Occupé"
+      },
+      "menu": {
+        "myProfile": "Mon Profil",
+        "accountSettings": "Paramètres du Compte",
+        "privacySecurity": "Confidentialité et Sécurité",
+        "helpSupport": "Aide et Support",
+        "logout": "Déconnexion"
+      }
+    },
+    "logo": {
+      "alt": "Logo Casting Voice Off"
+    },
+    "navigation": {
+      "toggleMenu": "Basculer le menu de navigation",
+      "languages": "LANGUES",
+      "voiceLanguages": "Langues Vocales",
+      "speakers": "INTERVENANTS",
+      "aiVoice": "VOIX IA",
+      "humanVoice": "VOIX HUMAINE",
+      "studio": "STUDIO",
+      "contact": "NOUS CONTACTER"
+    },
+    "voiceLanguages": {
+      "darija": "Darija",
+      "arabic": "Arabe",
+      "french": "Français",
+      "english": "Anglais",
+      "german": "Allemand",
+      "italian": "Italien",
+      "spanish": "Espagnol",
+      "portuguese": "Portugais",
+      "hindi": "Hindi",
+      "bengali": "Bengali",
+      "russian": "Russe",
+      "japanese": "Japonais",
+      "korean": "Coréen",
+      "chinese": "Chinois",
+      "turkish": "Turc",
+      "vietnamese": "Vietnamien",
+      "polish": "Polonais",
+      "ukrainian": "Ukrainien",
+      "romanian": "Roumain",
+      "dutch": "Néerlandais",
+      "swedish": "Suédois",
+      "finnish": "Finnois",
+      "norwegian": "Norvégien",
+      "danish": "Danois",
+      "hungarian": "Hongrois",
+      "czech": "Tchèque",
+      "greek": "Grec",
+      "thai": "Thaï",
+      "indonesian": "Indonésien",
+      "malay": "Malais",
+      "hebrew": "Hébreu",
+      "persian": "Persan"
+    },
+    "uiLanguage": {
+      "selector": "Langue d'Interface",
+      "options": {
+        "english": "Anglais",
+        "french": "Français",
+        "spanish": "Espagnol"
+      }
+    },
+    "auth": {
+      "login": "CONNEXION",
+      "signup": "S'INSCRIRE"
+    },
+    "userMenu": {
+      "toggle": "Menu utilisateur",
+      "avatar": "Avatar utilisateur",
+      "profile": "Profil",
+      "dashboard": "Tableau de Bord",
+      "settings": "Paramètres",
+      "logout": "Déconnexion"
+    }
+  },
+  "sidebar": {
+    "toggleSidebar": "Basculer la barre latérale",
+    "companyLogo": "Logo de l'entreprise",
+    "profileImage": "Image de profil",
+    "clientPortal": "Portail Client",
+    "companyName": "Acme Corporation",
+    "sections": {
+      "main": "Principal",
+      "account": "Compte"
+    },
+    "navigation": {
+      "dashboard": "Tableau de bord",
+      "myProjects": "Mes Projets",
+      "myRequests": "Mes Demandes",
+      "audioLibrary": "Bibliothèque Audio",
+      "settings": "Paramètres",
+      "helpSupport": "Aide et Support"
+    },
+    "logout": "Déconnexion"
+  },
+  "admin_login": "Connexion client",
+  "tagline": "Portail d'administration sécurisé pour gérer votre plateforme de casting vocal",
+  "enter_credentials": "Entrez vos identifiants pour accéder à votre compte",
+  "email_address": "Adresse Email",
+  "email_placeholder": "Entrez votre email",
+  "password": "Mot de passe",
+  "password_placeholder": "Entrez votre mot de passe",
+  "sign_in": "Se connecter",
+  "signing_in": "Connexion en cours...",
+  "invalid_credentials": "Identifiants invalides. Veuillez réessayer.",
+  "copyright": "© CastingVoixOff Tous droits réservés.",
+  "language": "Langue",
+  "english": "English",
+  "french": "Français",
+  "spanish": "Español",
+  "cgv": {
+    "title": "Conditions Générales de Vente",
+    "acceptanceText": "J'ai lu et j'accepte les Conditions Générales de Vente",
+    "decline": "Refuser",
+    "acceptAndContinue": "Accepter et Continuer",
+    "termsAndConditions": "Conditions générales de vente",
+    "acceptTerms": "J'accepte les conditions générales de vente"
+  },
+  "payment": {
+    "bankTransferInstructions": "Veuillez suivre les instructions ci-dessous pour effectuer votre virement bancaire.",
+    "transferDetails": "Détails du virement bancaire",
+    "bankName": "Nom de la banque",
+    "accountHolder": "Titulaire du compte",
+    "rib": "IBAN/RIB",
+    "includeReference": "Veuillez inclure la référence lors du virement.",
+    "selectMethod": "Sélectionner un mode de paiement",
+    "orderSummary": "Résumé de la commande",
+    "textLength": "Longueur du texte",
+    "pricePerChar": "Prix par caractère",
+    "totalAmount": "Montant total",
+    "chooseMethod": "Choisissez un mode de paiement",
+    "paypalDesc": "Payez en toute sécurité avec votre compte PayPal.",
+    "creditCard": "Carte de crédit",
+    "cardDesc": "Payer avec Visa, MasterCard ou d'autres cartes.",
+    "verment": "Virement bancaire",
+    "vermentDesc": "Payer par virement bancaire direct.",
+    "cancel": "Annuler",
+    "proceed": "Continuer",
+    "processing": "Traitement en cours...",
+    "preparingPayment": "Préparation de votre paiement...",
+    "redirectingToPaypal": "Redirection vers PayPal...",
+    "amount": "Montant",
+    "actionId": "ID de l'action",
+    "retry": "Réessayer le paiement",
+    "balanceOptions": "Options de solde",
+    "currentBalance": "Solde actuel",
+    "orderSummary": "Résumé de la commande",
+    "audioGeneration": "Génération audio",
+    "totalAmount": "Montant total",
+    "choosePaymentOption": "Choisissez une option de paiement",
+    "useBalance": "Utiliser le solde existant",
+    "useBalanceDesc": "Utilisez votre solde actuel pour payer.",
+    "insufficientBalance": "Solde insuffisant.",
+    "chargeBalance": "Recharger le solde",
+    "chargeBalanceDesc": "Ajoutez des fonds à votre compte.",
+    "chargeAmount": "Montant à recharger",
+    "minimumCharge": "Recharge minimale",
+    "payDirect": "Payer directement",
+    "payDirectDesc": "Payer directement sans utiliser votre solde.",
+    "cancel": "Annuler",
+    "useBalanceNow": "Utiliser le solde maintenant",
+    "chargeNow": "Recharger maintenant",
+    "charging": "Rechargement...",
+    "continueToPayment": "Continuer vers le paiement",
+    "proceed": "Continuer"
+  },
+  "info": {
+    "characters": "caractères"
+  },
+  "tabs": {
+    "freeTest": "TEST GRATUIT",
+    "audioRequest": "DEMANDE AUDIO",
+    "listVoice": "LISTE DES VOIX"
+  },
+  "charLimit": {
+    "title": "Limite de caractères dépassée",
+    "message": "Vous avez dépassé la limite gratuite de 100 caractères pour la génération vocale.",
+    "paidNotice": "Les caractères supplémentaires seront facturés selon notre tarification.",
+    "freeChars": "Caractères gratuits",
+    "yourChars": "Votre texte",
+    "paidChars": "Caractères payants",
+    "estimatedCost": "Coût estimé",
+    "cancel": "Annuler et réduire",
+    "continue": "Continuer et payer"
+  },
+  "voiceSelection": {
+    "title": "Sélection de Voix",
+    "searchPlaceholder": "Rechercher par nom de voix",
+    "filters": {
+      "allTypes": "Tous les Types",
+      "ai": "IA",
+      "cloned": "Clonée",
+      "premade": "Prédéfinie",
+      "professional": "Professionnelle",
+      "allLanguages": "Toutes les Langues",
+      "english": "Anglais",
+      "french": "Français",
+      "arabic": "Arabe",
+      "allGenders": "Tous les Genres",
+      "male": "Homme",
+      "female": "Femme",
+      "allAges": "Tous les Âges",
+      "young": "Jeune",
+      "adult": "Adulte",
+      "senior": "Sénior",
+      "resetAll": "Réinitialiser Tout",
+      "specifications": "Spécifications",
+      "language": "Langue",
+      "gender": "Genre",
+      "ageGroup": "Tranche d'âge",
+      "type": "Type"
+    },
+    "buttons": {
+      "original": "Original",
+      "cloned": "Clonée",
+      "useVoice": "Utiliser la Voix"
+    },
+    "attributes": "Attributs",
+    "language": "Langue (3 supportées)",
+    "applyToProject": "Appliquer au projet"
+  },
+  "projectSelection": {
+    "title": "Sélection de Projet",
+    "selectProject": "Sélectionnez un projet pour y ajouter cet audio :",
+    "noProjects": "Vous n'avez pas encore de projets. Créez d'abord un projet pour sauvegarder votre audio généré.",
+    "selectedProject": "Projet Sélectionné :",
+    "remove": "Supprimer",
+    "changeProject": "Changer de Projet",
+    "selectProjectBtn": "Sélectionner un Projet",
+    "cancel": "Annuler",
+    "createNew": "Créer un Nouveau Projet"
+    
+  },
+  "voiceControls": {
+    "format": "Format",
+    "emotion": "Émotion",
+    "speed": "Vitesse :",
+    "sampleRate": "Taux d'échantillonnage :",
+    "temperature": "Température :"
+  },
+
+  "characterLimit": {
+    "warning": "Le test gratuit est limité à 100 caractères. Votre texte sera tronqué."
+  },
+  "info": {
+    "price": "Prix :",
+    "characters": "Caractères :",
+    "total": "Total :",
+    "free": "Gratuit"
+
+  },
+  "generation": {
+    "success": "Discours généré avec succès",
+    "andSavedTo": "et enregistré dans le projet",
+    "freeTestTitle": "Test gratuit",
+    "audioRequestTitle": "Demande audio",
+    "generate": "Générer"
+
+  },
+  "voiceShowcase": {
+    "voicePreview": "Aperçu de la voix",
+    "description": "Écoutez l'échantillon vocal avant de générer votre contenu.",
+    "changeVoice": "Changer de voix"
+  },
+
+  "checkout": {
+    "proceedToCheckout": "Procéder au Paiement",
+    "pricingInformation": "Informations sur les Prix",
+    "pricePerCharacter": "Prix par caractère :",
+    "totalCharacters": "Total des caractères :",
+    "totalPrice": "Prix total :"
+  },
+  "emotions": {
+    "neutral": "Neutre",
+    "happy": "Heureux",
+    "sad": "Triste",
+    "angry": "En colère"
+  },
+  "requestManagement": {
+    "pageTitle": "Gestion des Demandes",
+    "newRequest": "Nouvelle Demande",
+    "modal": {
+      "createTitle": "Créer une Nouvelle Demande",
+      "formFields": {
+        "title": {
+          "label": "Titre de la Demande*",
+          "placeholder": "Entrez le titre de la demande",
+          "error": "Le titre de la demande est requis"
+        },
+        "type": {
+          "label": "Type de Demande*",
+          "placeholder": "Sélectionnez le type de demande",
+          "error": "Le type de demande est requis",
+          "options": {
+            "studio": "Enregistrement en Studio",
+            "podcast": "Apparition en Podcast",
+            "speaker": "Demande d'Intervenant"
+          }
+        },
+        "description": {
+          "label": "Description de la Demande*",
+          "placeholder": "Décrivez votre demande en détail",
+          "error": "La description de la demande est requise"
+        },
+        "preferredDate": {
+          "label": "Date Préférée*",
+          "error": "La date préférée est requise"
+        },
+        "duration": {
+          "label": "Durée Estimée*",
+          "placeholder": "ex., 1 heure, 2 jours",
+          "error": "La durée est requise"
+        },
+        "location": {
+          "label": "Lieu",
+          "placeholder": "ex., Studio A, À distance, Centre de conférence"
+        },
+        "notes": {
+          "label": "Notes Supplémentaires",
+          "placeholder": "Toute information ou exigence supplémentaire"
+        }
+      },
+      "buttons": {
+        "cancel": "Annuler",
+        "submit": "Soumettre la Demande"
+      }
+    },
+    "requestTypes": {
+      "studio": {
+        "title": "Enregistrement en Studio",
+        "description": "Demandez du temps en studio pour des enregistrements vocaux, des livres audio, des publicités, et plus encore.",
+        "button": "Nouvelle Demande de Studio"
+      },
+      "podcast": {
+        "title": "Apparition en Podcast",
+        "description": "Demandez à apparaître comme invité sur nos podcasts ou proposez une collaboration de podcast.",
+        "button": "Nouvelle Demande de Podcast"
+      },
+      "speaker": {
+        "title": "Demande d'Intervenant",
+        "description": "Demandez un intervenant professionnel pour votre événement, conférence ou formation d'entreprise.",
+        "button": "Nouvelle Demande d'Intervenant"
+      }
+    },
+    "filters": {
+      "search": "Rechercher des demandes...",
+      "types": {
+        "all": "Tous les Types",
+        "studio": "Enregistrement en Studio",
+        "podcast": "Podcast",
+        "speaker": "Intervenant"
+      },
+      "status": {
+        "all": "Tous les Statuts",
+        "pending": "En Attente",
+        "approved": "Approuvé",
+        "inProgress": "En Cours",
+        "completed": "Terminé",
+        "rejected": "Rejeté"
+      },
+      "sort": {
+        "newest": "Plus Récent d'Abord",
+        "oldest": "Plus Ancien d'Abord"
+      }
+    },
+    "requestsList": {
+      "title": "Vos Demandes",
+      "total": "Total",
+      "table": {
+        "id": "ID de Demande",
+        "title": "Titre",
+        "type": "Type",
+        "createdDate": "Date de Création",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "noRequests": {
+        "message": "Aucune demande trouvée correspondant à vos filtres.",
+        "button": "Créer une Nouvelle Demande"
+      },
+      "pagination": {
+        "previous": "Précédent",
+        "next": "Suivant"
+      }
+    },
+    "detailsModal": {
+      "title": "Détails de la Demande",
+      "requestInfo": {
+        "title": "Informations sur la Demande",
+        "id": "ID de Demande:",
+        "title": "Titre:",
+        "type": "Type:",
+        "createdDate": "Date de Création:",
+        "status": "Statut:",
+        "scheduledDate": "Date Programmée:",
+        "duration": "Durée:",
+        "location": "Lieu:"
+      },
+      "description": {
+        "title": "Description"
+      },
+      "notes": {
+        "title": "Notes Supplémentaires"
+      },
+      "scheduleInfo": {
+        "title": "Informations sur le Programme",
+        "approved": "Votre demande a été approuvée et programmée pour le",
+        "inProgress": "Votre session est actuellement en cours. Commencée le",
+        "completed": "Votre session a été terminée le"
+      },
+      "rejectionInfo": {
+        "title": "Informations sur le Rejet",
+        "message": "Nous sommes désolés, mais votre demande n'a pas pu être satisfaite pour le moment. Veuillez contacter le support pour plus d'informations."
+      },
+      "buttons": {
+        "close": "Fermer",
+        "edit": "Modifier la Demande",
+        "download": "Télécharger les Fichiers",
+        "contact": "Contacter le Support"
+      }
+    },
+    "stats": {
+      "totalRequests": "Total des Demandes",
+      "completed": "Terminées",
+      "inProgress": "En Cours",
+      "pending": "En Attente"
+    }
+  },
+  "projectManagement": {
+    "filters": {
+      "search": "Rechercher des projets ou des fichiers audio...",
+      "projectTypes": {
+        "all": "Tous les Types de Projets",
+        "commercial": "Commercial",
+        "explainer": "Vidéo Explicative",
+        "podcast": "Podcast",
+        "eLearning": "E-Learning",
+        "ivr": "Système IVR",
+        "audiobook": "Livre Audio",
+        "other": "Autre"
+      },
+      "status": {
+        "all": "Tous les Statuts",
+        "completed": "Terminé",
+        "inProgress": "En Cours",
+        "pending": "En Attente",
+        "rejected": "Rejeté"
+      },
+      "sort": {
+        "dateDesc": "Date (Plus Récent)",
+        "dateAsc": "Date (Plus Ancien)",
+        "nameAsc": "Nom (A-Z)",
+        "nameDesc": "Nom (Z-A)"
+      },
+      "newProject": "Nouveau Projet"
+    },
+    "loading": {
+      "projects": "Chargement de vos projets...",
+      "projectDetails": "Chargement des détails du projet..."
+    },
+    "error": {
+      "retry": "Réessayer"
+    },
+    "projects": {
+      "title": "Vos Projets",
+      "total": "Total",
+      "noProjects": {
+        "title": "Aucun projet trouvé",
+        "message": "Essayez d'ajuster vos filtres ou créez un nouveau projet",
+        "button": "Créer un Nouveau Projet"
+      },
+      "details": {
+        "title": "Détails du Projet",
+        "id": "ID du Projet:",
+        "code": "Code:",
+        "created": "Créé le:",
+        "description": "Description:",
+        "noDescription": "Aucune description fournie",
+        "buttons": {
+          "edit": "Modifier le Projet",
+          "share": "Partager"
+        }
+      },
+      "audioFiles": {
+        "title": "Fichiers Audio",
+        "noFiles": "Aucun fichier audio disponible pour ce projet pour le moment.",
+        "unknownVoice": "Voix Sans Nom",
+        "buttons": {
+          "download": "Télécharger",
+          "more": "Plus",
+          "generateNew": "Générer un Nouvel Audio"
+        },
+        "processing": "L'audio est en cours de traitement",
+        "unknownLanguage": "Langue inconnue",
+        "created": "Créé le:",
+        "showMore": "Afficher plus",
+        "showLess": "Afficher moins"
+      },
+      "pagination": {
+        "previous": "Précédent",
+        "next": "Suivant"
+      }
+    },
+    "recentAudio": {
+      "title": "Audio Récemment Généré",
+      "viewAll": "Voir Tout",
+      "table": {
+        "text": "Texte",
+        "voice": "Voix",
+        "project": "Projet",
+        "language": "Langue",
+        "createdDate": "Date de Création",
+        "actions": "Actions"
+      },
+      "unknown": "Inconnu",
+      "buttons": {
+        "play": "Lire",
+        "download": "Télécharger",
+        "share": "Partager"
+      }
+    },
+    "newProjectModal": {
+      "title": "Créer un Nouveau Projet",
+      "form": {
+        "name": {
+          "label": "Nom du Projet*",
+          "placeholder": "Entrez le nom du projet",
+          "error": "Le nom du projet est requis"
+        },
+        "type": {
+          "label": "Type de Projet*",
+          "placeholder": "Sélectionnez le type de projet",
+          "error": "Le type de projet est requis"
+        },
+        "description": {
+          "label": "Description du Projet*",
+          "placeholder": "Décrivez votre projet",
+          "error": "La description du projet est requise"
+        },
+        "dueDate": {
+          "label": "Date d'Échéance"
+        }
+      },
+      "buttons": {
+        "cancel": "Annuler",
+        "create": "Créer le Projet",
+        "creating": "Création en cours..."
+      }
+    },
+    "audioPlayerModal": {
+      "title": "Lecteur Audio",
+      "unknownProject": "Projet Inconnu",
+      "buttons": {
+        "download": "Télécharger",
+        "close": "Fermer"
+      }
+    }
+  },
+  "contactPage": {
+    "header": {
+      "title": "Entrer en contact",
+      "description": "Prêt à donner vie à votre projet avec la voix parfaite ? Nous sommes là pour vous aider à créer des expériences audio percutantes qui trouveront un écho auprès de votre public."
+    },
+    "form": {
+      "title": "Envoyez-nous un message",
+      "name": {
+        "label": "Votre nom",
+        "placeholder": "Votre nom"
+      },
+      "email": {
+        "label": "Adresse email",
+        "placeholder": "Adresse email"
+      },
+      "subject": {
+        "label": "Sujet",
+        "placeholder": "Sujet"
+      },
+      "message": {
+        "label": "Votre message",
+        "placeholder": "Votre message"
+      },
+      "button": "Envoyer un message"
+    },
+    "contactInfo": {
+      "title": "Coordonnées",
+      "address": {
+        "line1": "9 Rue abou Moussa El Jazouli,",
+        "line2": "1er étage N° 1, Maarif,",
+        "line3": "Casablanca, Maroc"
+      },
+      "phone": {
+        "label": "Téléphone",
+        "number1": "+2125 20 09 39 90",
+        "number2": "+2126 64 51 75 17"
+      },
+      "email": {
+        "label": "Email",
+        "address1": "contact@senseiprod.ma",
+        "address2": "sensei.senseiprod@gmail.com"
+      },
+      "social": {
+        "title": "Suivez-nous",
+        "facebook": "Facebook",
+        "twitter": "Twitter",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube"
+      }
+    },
+    "map": {
+      "title": "Trouvez-nous sur la carte"
+    }
+  },
+  "landingPage": {
+    "references": {
+      "title": "Nos Références",
+      "subtitle": "Ils nous font confiance pour leurs projets de voix-off et de communication",
+      "stats": {
+        "clients": "Clients",
+        "projects": "Projets",
+        "industries": "Secteurs"
+      }
+    },
+    "hero": {
+      "expertise": "10 ans d'expertise pour donner de la voix à vos projets",
+      "mainHeading": "VOTRE VOIX, À LA SECONDE.",
+      "subheading": "Monétisez votre talent ou trouvez la voix parfaite en un clic."
+    },
+    "profiles": {
+      "artist": "Artist",
+      "textAnalysis": "active l'analyse du text"
+    },
+    "navigation": {
+      "speakers": "Speakers",
+      "celebrities": "Célébrités",
+      "advertisers": "Annonceurs",
+      "creators": "Créateurs"
+    },
+    "aiSection": {
+      "title": "L'IA AU SERVICE DE L'HUMAIN",
+      "contentTitle": "L'excellence vocale, instantanément et sur-mesure.",
+      "description1": "Notre plateforme met à votre disposition des voix humaines authentiques, enregistrées par des professionnels et prêtes à être générées à la demande grâce à une technologie de clonage vocal de haute précision.",
+      "features": {
+        "feature1": {
+          "title": "Rapide et efficace :",
+          "description": "Générez la voix parfaite en quelques secondes."
+        },
+        "feature2": {
+          "title": "Qualité 100% humaine :",
+          "description": "L'émotion et le naturel d'une vraie voix, sans compromis."
+        },
+        "feature3": {
+          "title": "Personnalisation avancée :",
+          "description": "Ajustez le ton, le débit et l'émotion selon vos besoins."
+        },
+        "feature4": {
+          "title": "Coût optimisé :",
+          "description": "Un budget maîtrisé pour une production plus rapide et plus rentable."
+        }
+      },
+      "description2": "Que vous soyez créateur, annonceur ou producteur, accédez à des voix professionnelles, authentiques et entièrement modulables, prêtes à donner vie à vos projets.",
+      "signUp": "SIGN UP"
+    },
+    "voiceTypes": {
+      "title": "La voix qui donne vie à votre project",
+      "subtitle": "Authentique et humaine ou IA ultra-réaliste.",
+      "human": {
+        "title": "Voix Humaine",
+        "description": "Des voix authentiques, enregistrées par de vrais talents et disponibles instantanément grâce à notre technologie de clonage avancée"
+      },
+      "ai": {
+        "title": "Voix IA",
+        "description": "Une intelligence artificielle de pointe pour générer des voix naturelles et expressives, adaptées à tous notre projets"
+      },
+      "whyUse": "Pourquoi utiliser"
+    },
+    "benefits": {
+      "benefit1": {
+        "title": "Un large choix de voix professionnelles :",
+        "description": "Accédez à une banque de voix humaines clonées et de voix IA ultra-réalistes pour tous vos projets."
+      },
+      "benefit2": {
+        "title": "Rapidité et efficacité :",
+        "description": "Générez et personnalisez une voix en quelques secondes, sans avoir à organiser un enregistrement en studio."
+      },
+      "benefit3": {
+        "title": "Qualité sonore irréprochable :",
+        "description": "Nos voix sont enregistrées par des professionnels dans les studios professionnels de SENSEI PROD et optimisées grâce à une technologie de pointe."
+      },
+      "benefit4": {
+        "title": "Personnalisation avancée :",
+        "description": "Ajustez le ton, le débit et l'émotion pour un rendu parfaitement adapté à votre projet."
+      },
+      "benefit5": {
+        "title": "Optimisation du budget :",
+        "description": "Profitez de tarifs avantageux tout en garantissant une qualité premium."
+      }
+    },
+    "banner": {
+      "text": "CastingVoixOff.ma est la solution idéale pour une voix percutante et professionnelle, instantanément. Que vous soyez annonceur, créateur de contenu ou studio de production"
+    }
+  },
+  "loginPage": {
+    "welcome": {
+      "title": "Bon retour",
+      "message": "Merci d'être revenu, veuillez vous connecter à votre compte en remplissant ce formulaire :"
+    },
+    "form": {
+      "email": {
+        "label": "Adresse Email",
+        "placeholder": "nom@exemple.com",
+        "errors": {
+          "required": "L'email est requis",
+          "invalid": "Veuillez entrer un email valide"
+        }
+      },
+      "password": {
+        "label": "Mot de passe",
+        "placeholder": "••••••••••••••",
+        "errors": {
+          "required": "Le mot de passe est requis"
+        },
+        "show": "Afficher le mot de passe",
+        "hide": "Masquer le mot de passe"
+      },
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié",
+      "buttons": {
+        "login": "CONNEXION",
+        "signup": "S'INSCRIRE"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "Email ou mot de passe invalide",
+      "serverError": "Erreur serveur. Veuillez réessayer plus tard."
+    }
+  },
+  "loginPage": {
+    "welcome": {
+      "title": "Bienvenido de nuevo",
+      "message": "Gracias por volver, inicie sesión en su cuenta completando este formulario:"
+    },
+    "form": {
+      "email": {
+        "label": "Correo Electrónico",
+        "placeholder": "nombre@ejemplo.com",
+        "errors": {
+          "required": "El correo electrónico es obligatorio",
+          "invalid": "Por favor, introduzca un correo electrónico válido"
+        }
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "••••••••••••••",
+        "errors": {
+          "required": "La contraseña es obligatoria"
+        },
+        "show": "Mostrar contraseña",
+        "hide": "Ocultar contraseña"
+      },
+      "rememberMe": "Recordarme",
+      "forgotPassword": "¿Olvidó su contraseña?",
+      "buttons": {
+        "login": "INICIAR SESIÓN",
+        "signup": "REGISTRARSE"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "Correo electrónico o contraseña inválidos",
+      "serverError": "Error del servidor. Por favor, inténtelo de nuevo más tarde."
+    }
+  },
+  "signupPage": {
+    "title": "Créer Votre Compte",
+    "subtitle": "Rejoignez notre plateforme et accédez à des services vocaux professionnels",
+    "firstName": "Prénom*",
+    "lastName": "Nom*",
+    "companyName": "Nom de l'Entreprise/Organisation*",
+    "email": "Adresse Email*",
+    "phone": "Numéro de Téléphone (Optionnel)",
+    "password": "Mot de Passe*",
+    "confirmPassword": "Confirmer le Mot de Passe*",
+    "passwordStrength": "Force du mot de passe",
+    "passwordRequirements": {
+      "title": "Le mot de passe doit contenir:",
+      "chars": "Au moins 8 caractères",
+      "letters": "Des lettres majuscules et minuscules",
+      "number": "Au moins un chiffre",
+      "special": "Au moins un caractère spécial"
+    },
+    "agreeTerms": "J'accepte les",
+    "termsOfService": "Conditions d'Utilisation",
+    "and": "et",
+    "privacyPolicy": "Politique de Confidentialité",
+    "createAccount": "Créer un Compte",
+    "creatingAccount": "Création du Compte...",
+    "alreadyHaveAccount": "Vous avez déjà un compte?",
+    "logIn": "Connexion",
+    "enterYourFirst": "Entrez votre prénom",
+    "enterYourLast": "Entrez votre nom",
+    "enterYourCompany": "Entrez le nom de votre entreprise ou organisation",
+    "enterYourEmail": "Entrez votre adresse email",
+    "enterYourPhone": "Entrez votre numéro de téléphone",
+    "createStrongPassword": "Créez un mot de passe fort",
+    "confirmYourPassword": "Confirmez votre mot de passe",
+    "accountCreated": "Compte créé avec succès! Redirection vers la page de connexion..."
+  },
+  "voiceCasting": {
+    "title": "TROUVEZ LA VOIX PARFAITE DANS LA LANGUE ADAPTÉE À VOTRE AUDIENCE",
+    "description": "Notre plateforme vous propose une large sélection de voix dans plusieurs langues, prêtes à être utilisées pour vos projets publicitaires, vidéos, podcasts, e-learning et plus encore.",
+    "filters": {
+      "activeFilters": "Filtres actifs",
+      "accent": "Accent",
+      "age": "Âge",
+      "gender": "Genre",
+      "category": "Catégorie",
+      "voicesPerPage": "Voix par page",
+      "reset": "Réinitialiser",
+      "language":"language"
+    },
+    "noVoicesFound": "Aucune voix trouvée avec les filtres sélectionnés. Veuillez essayer d'autres critères.",
+    "loading": "Chargement des voix...",
+    "voicesFound": "voix trouvées",
+    "page": "Page",
+    "generate": "Générer"
+  },
+  "success": {
+    "processing": "Traitement en cours...",
+    "verifyingPayment": "Vérification de votre paiement, veuillez patienter.",
+    "chargeComplete": "Recharge terminée !",
+    "balanceUpdated": "Votre solde a été mis à jour avec succès.",
+    "transactionDetails": "Détails de la transaction",
+    "amountCharged": "Montant rechargé",
+    "transactionId": "ID de la transaction",
+    "timestamp": "Horodatage",
+    "previousBalance": "Solde précédent",
+    "newBalance": "Nouveau solde",
+    "continueGeneration": "Continuer la génération",
+    "downloadReceipt": "Télécharger le reçu",
+    "viewHistory": "Voir l’historique des transactions",
+    "backToDashboard": "Retour au tableau de bord",
+    "whatNext": "Et ensuite ?",
+    "balanceInfo": "Vous pouvez maintenant utiliser votre solde mis à jour pour de futurs achats ou continuer à générer de l’audio.",
+    "share": "Partager"
+  }
+}
