@@ -197,7 +197,8 @@
       "options": {
         "english": "Inglés",
         "french": "Francés",
-        "spanish": "Español"
+        "spanish": "Español",
+        "arabic": "العربية"
       }
     },
     "auth": {

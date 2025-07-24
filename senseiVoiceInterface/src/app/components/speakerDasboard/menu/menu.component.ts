@@ -592,16 +592,30 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
 
+  // ========== THIS IS THE MODIFIED METHOD ==========
   navigateToNotifications(): void {
-    this.router.navigate(["/notifications"])
+    if (this.userId) {
+      // Navigate to the user-specific notifications page
+      this.router.navigate([`speakerDasboard/${this.userId}/notification`]);
+    } else {
+      // Fallback in case the userId is not available
+      console.error("Cannot navigate to notifications page, User ID is missing.");
+    }
   }
+  // ===============================================
 
   navigateToProfile(): void {
     this.router.navigate(["/profile"])
   }
 
   navigateToSettings(): void {
-    this.router.navigate(["/settings"])
+    if (this.userId) {
+      // Navigate to the user-specific notifications page
+      this.router.navigate([`speakerDasboard/${this.userId}/profile`]);
+    } else {
+      // Fallback in case the userId is not available
+      console.error("Cannot navigate to notifications page, User ID is missing.");
+    }
   }
 
   loadUserPhoto(): void {

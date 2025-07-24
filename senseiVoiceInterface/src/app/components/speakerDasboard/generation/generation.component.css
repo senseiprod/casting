@@ -75,7 +75,7 @@ body {
 }
 
 /* Fix hover text visibility - keep text BLACK on white background */
-.voice-hero-card:hover .voice-hero-name,
+
 .voice-hero-card:hover .hero-badge,
 .voice-hero-card:hover .hero-play-btn,
 .voice-hero-card:hover .btn-change-voice {
@@ -103,10 +103,11 @@ body {
 }
 
 .voice-hero-card:hover .voice-hero-name {
-  background: linear-gradient(135deg, #f43f5e 0%, rgba(0, 0, 0, 0.8) 100%);
+  background: none;
   background-clip: text;
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: unset;
+  color: white;
   text-shadow: none;
 }
 
@@ -129,7 +130,7 @@ body {
 
 /* Voice Hero Card - Glassmorphism */
 .voice-hero-card {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be185d 100%);
+   background: linear-gradient(135deg, #cb1025 0%, #680812 65%, #000000 95%);
   backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1.5rem;
@@ -142,11 +143,19 @@ body {
   transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+.btn-primary:disabled {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  color: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+  transform: none;
+}
+
 .voice-hero-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 35px 70px rgba(190, 24, 93, 0.6);
   border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.12);
+  background: #cb1025;
 }
 
 .voice-hero-card::before {
@@ -448,23 +457,65 @@ body {
 /* Generation Info */
 .generation-info {
   margin-bottom: 1.5rem;
+   margin-bottom: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .info-badges {
   display: flex;
   flex-wrap: wrap;
+   justify-content: flex-end;
   gap: 0.75rem;
 }
 
 .info-badge {
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: #000000; /* Changed from rgba(255, 255, 255, 0.8) to black */
-  border-radius: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 600;
+   
+   
+   
+   
+ 
+   
+
+
+  
+  background: linear-gradient(135deg, #cb1025 0%, #8c0b17 100%);
+  
+   
+  color: #ffffff;
+  
+   
+  font-size: 1rem;        
+  font-weight: 700;       
+  letter-spacing: 0.02em;  
+  
+  
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  
+ 
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 5px 20px rgba(203, 16, 37, 0.4);
+  
+   
+  transition: all 0.3s ease-in-out;
+
+   
   display: flex;
   align-items: center;
+}
+
+
+/* 7. Add a subtle hover effect to make it feel interactive */
+.info-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(203, 16, 37, 0.5);
+}
+
+/* 8. Make the icon slightly bigger and give it more space */
+.info-badge .bi {
+  font-size: 1.2rem;
+  margin-right: 0.75rem; /* Increased from me-1 */
 }
 
 /* Generation Actions */

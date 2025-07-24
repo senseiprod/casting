@@ -413,6 +413,7 @@ export class GenerationComponent implements OnInit {
     this.showBalanceOptions = false
     this.selectedBalanceOption = null
     this.balanceError = null
+    this.cgvAccepted = false; 
   }
 
   chargeBalanceWithPayPal() {

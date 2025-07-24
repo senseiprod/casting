@@ -15,8 +15,6 @@
 
   <div class="container py-4">
     <div class="content">
-      <!-- REMOVED: CGV Modal -->
-      
       <!-- Voice Hero Card - Prominent Voice Showcase -->
       <div class="voice-hero-card" *ngIf="selectedVoice">
         <div class="voice-hero-content">
@@ -245,8 +243,8 @@
               <h5>{{ 'darija.options' | translate }}</h5>
               <div class="darija-selectors">
                 <div class="selector-group">
-                  <label for="dialectSelect">{{ 'darija.dialect' | translate }}:</label>
-                  <select id="dialectSelect" 
+                  <label for="dialectSelectReq">{{ 'darija.dialect' | translate }}:</label>
+                  <select id="dialectSelectReq" 
                           class="filter-select" 
                           [(ngModel)]="selectedDialect" 
                           (change)="onDialectChange($event.target)">
@@ -258,8 +256,8 @@
                 </div>
                 
                 <div class="selector-group">
-                  <label for="performanceSelect">{{ 'darija.performanceStyle' | translate }}:</label>
-                  <select id="performanceSelect" 
+                  <label for="performanceSelectReq">{{ 'darija.performanceStyle' | translate }}:</label>
+                  <select id="performanceSelectReq" 
                           class="filter-select" 
                           [(ngModel)]="selectedPerformanceStyle" 
                           (change)="onPerformanceStyleChange($event)">
@@ -272,23 +270,6 @@
               </div>
             </div>
             
-            <!-- ADDED: CGV Acceptance Checkbox -->
-            <div class="cgv-acceptance" style="margin-bottom: 1.5rem;">
-              <div class="checkbox-container" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.1);">
-                <input 
-                  type="checkbox" 
-                  id="cgvCheckbox" 
-                  [(ngModel)]="cgvAccepted"
-                  style="width: 18px; height: 18px; accent-color: #f43f5e; cursor: pointer;">
-                <label for="cgvCheckbox" style="color: #000000; font-weight: 600; cursor: pointer; flex: 1;">
-                  {{ 'cgv.acceptTerms' | translate }}
-                  <a href="/condition-of-sale" target="_blank" style="color: #f43f5e; text-decoration: underline; margin-left: 0.25rem;">
-                    {{ 'cgv.termsAndConditions' | translate }}
-                  </a>
-                </label>
-              </div>
-            </div>
-            
             <div class="generation-info">
               <div class="info-badges">
                 <span class="info-badge">
@@ -297,14 +278,7 @@
                 </span>
               </div>
             </div>
-            <div class="generation-actions">
-              <button class="checkout-btn" 
-                      (click)="generateSpeech()" 
-                      [disabled]="!selectedVoice || actionData.text.length === 0 || !cgvAccepted">
-                <i class="bi bi-cart me-2"></i>
-                {{ 'checkout.proceedToCheckout' | translate }}
-              </button>
-            </div>
+           
             <div class="pricing-info">
               <h5>{{ 'checkout.pricingInformation' | translate }}</h5>
               <div class="pricing-details">
@@ -314,13 +288,21 @@
                 </div>
               </div>
             </div>
+            
+            <div class="generation-actions">
+              <button class="checkout-btn" 
+                      (click)="generateSpeech()" 
+                      [disabled]="!selectedVoice || actionData.text.length === 0">
+                <i class="bi bi-cart me-2"></i>
+                {{ 'checkout.proceedToCheckout' | translate }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Voice Selection Section -->
       <div class="voice-selection-section" *ngIf="!selectedVoice" [class.collapsed]="selectedVoice">
-        <!-- Search and Filters -->
         <!-- Filters -->
         <div class="filters-section">
           <div class="filters-grid" [class.darija-active]="isDarijaSelected()">
@@ -581,9 +563,6 @@
                     <small class="charge-hint">
                       {{ 'payment.minimumCharge' | translate }}: ${{ getMinimumChargeAmount().toFixed(2) }}
                     </small>
-                    <div class="debug-info" style="font-size: 12px; color: #666; margin-top: 5px;">
-                      Debug: Current charge amount = {{ chargeAmount }}
-                    </div>
                   </div>
                 </div>
                 <div class="payment-method-check" *ngIf="selectedBalanceOption === 'charge-balance'">
@@ -606,6 +585,24 @@
                 </div>
               </div>
             </div>
+
+            <!-- CGV Acceptance Checkbox (in correct location) -->
+            <div class="cgv-acceptance" style="margin-top: 1.5rem; margin-bottom: 0.5rem;">
+              <div class="checkbox-container" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(0, 0, 0, 0.03); border-radius: 0.75rem; border: 1px solid rgba(0, 0, 0, 0.1);">
+                <input 
+                  type="checkbox" 
+                  id="cgvCheckboxModal" 
+                  [(ngModel)]="cgvAccepted"
+                  style="width: 18px; height: 18px; accent-color: #f43f5e; cursor: pointer; flex-shrink: 0;">
+                <label for="cgvCheckboxModal" style="color: #4a5568; font-weight: 500; cursor: pointer; flex: 1; font-size: 0.9rem;">
+                  {{ 'cgv.acceptTerms' | translate }}
+                  <a href="/condition-of-sale" target="_blank" style="color: #f43f5e; text-decoration: underline; margin-left: 0.25rem; font-weight: 600;">
+                    {{ 'cgv.termsAndConditions' | translate }}
+                  </a>
+                </label>
+              </div>
+            </div>
+
             <!-- Error Display -->
             <div class="balance-error" *ngIf="balanceError">
               <div class="alert alert-danger">
@@ -620,7 +617,7 @@
             </button>
             <button class="btn-primary" 
                     (click)="proceedWithBalanceOption()" 
-                    [disabled]="!selectedBalanceOption || isChargingBalance || (selectedBalanceOption === 'charge-balance' && chargeAmount <= 0)">
+                    [disabled]="!cgvAccepted || !selectedBalanceOption || isChargingBalance || (selectedBalanceOption === 'charge-balance' && chargeAmount <= 0)">
               <i class="bi" [ngClass]="isChargingBalance ? 'bi-hourglass-split' : 'bi-arrow-right'"></i>
               <span *ngIf="selectedBalanceOption === 'use-balance'">{{ 'payment.useBalanceNow' | translate }}</span>
               <span *ngIf="selectedBalanceOption === 'charge-balance'">
