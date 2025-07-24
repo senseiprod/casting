@@ -17,7 +17,7 @@ export class TranslationService {
     { code: 'es', name: 'Español' }
   ];
 
-  constructor(private translate: TranslateService) {
+  constructor(public translate: TranslateService) {
     // Initialize with saved language or browser language
     const savedLang = localStorage.getItem('preferredLanguage') as Language;
     const browserLang = this.getBrowserLanguage();
