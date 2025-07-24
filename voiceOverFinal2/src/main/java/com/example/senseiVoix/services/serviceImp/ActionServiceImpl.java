@@ -5,6 +5,7 @@ import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
 import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.entities.*;
+import com.example.senseiVoix.enumeration.ActionAccessType;
 import com.example.senseiVoix.enumeration.StatutAction;
 import com.example.senseiVoix.enumeration.TypeAudio;
 import com.example.senseiVoix.repositories.*;
@@ -131,6 +132,7 @@ public class ActionServiceImpl {
         action1.setLanguage(language);
         action1.setVoice(voixRepository.findByUuid(voiceUuid));
         action1.setAudioGenerated(audioFile.getBytes());
+        action1.setActionAccessType(ActionAccessType.FREE);
         actionRepository.save(action1);
 
         // Send notification for action creation
@@ -277,6 +279,7 @@ public class ActionServiceImpl {
         action.setText(actionRequest.getText());
         action.setLanguage(actionRequest.getLanguage());
         action.setStatutAction(StatutAction.EN_ATTENTE);
+        action.setActionAccessType(ActionAccessType.PAYED);
         action.setDateCreation(new Date());
 
         // DON'T STORE VOICE ID IN DATABASE - it goes to tempVoiceStorage
@@ -309,6 +312,7 @@ public class ActionServiceImpl {
         action.setText(actionRequest.getText());
         action.setLanguage(actionRequest.getLanguage());
         action.setStatutAction(StatutAction.EN_ATTENTE);
+        action.setActionAccessType(ActionAccessType.PAYED);
         action.setDateCreation(new Date());
 
         // DON'T STORE VOICE ID IN DATABASE - it goes to tempVoiceStorage
@@ -568,6 +572,7 @@ public class ActionServiceImpl {
         action1.setProject(projectRepository.findByUuidAndDeletedFalse(projectUuid));
         action1.setUtilisateur(utilisateurRepository.findByUuid(utilisateurUuid));
         action1.setStatutAction(StatutAction.EN_ATTENTE);
+        action1.setActionAccessType(ActionAccessType.PAYED);
         action1.setText(text);
         action1.setLanguage(language);
         action1.setVoice(voixRepository.findByUuid(voiceUuid));
@@ -588,6 +593,7 @@ String language, String projectUuid) {
        action1.setProject(projectRepository.findByUuidAndDeletedFalse(projectUuid));
        action1.setUtilisateur(utilisateurRepository.findByUuid(utilisateurUuid));
        action1.setStatutAction(StatutAction.EN_ATTENTE);
+       action1.setActionAccessType(ActionAccessType.PAYED);
        action1.setText(text);
        action1.setLanguage(language);
        action1.setVoice(voixRepository.findByUuid(voiceUuid));

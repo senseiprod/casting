@@ -68,6 +68,7 @@ export class GenerationRequestComponent implements OnInit {
     this.loadProjects();
   }
 
+  // MODIFIED METHOD: Now filters projects and actions for 'PAYED' access type.
   loadProjects(): void {
     this.loading = true;
     this.error = null;
@@ -84,9 +85,25 @@ export class GenerationRequestComponent implements OnInit {
         })
       )
       .subscribe(projects => {
-        this.projects = projects;
+        // Filter projects to only include those with 'PAYED' actions,
+        // and within those projects, only keep the 'PAYED' actions.
+        const filteredProjects = projects
+          .map(project => {
+            // Create a new project object with only the 'PAYED' actions
+            return {
+              ...project,
+              actions: project.actions
+                ? project.actions.filter(action => action.actionAccessType === 'PAYED')
+                : []
+            };
+          })
+          // Keep only the projects that still have actions after filtering
+          .filter(project => project.actions && project.actions.length > 0);
+
+        this.projects = filteredProjects;
         this.applyFilters();
-        this.loadRecentActions();
+        this.loadRecentActions(); // This will now operate on the filtered projects
+        console.log("Filtered projects with 'PAYED' actions:", this.projects);
       });
   }
 
@@ -371,6 +388,4 @@ export class GenerationRequestComponent implements OnInit {
   viewAllAudio(): void {
     this.router.navigate(['/audio-library']);
   }
-
-
 }

@@ -1,5 +1,6 @@
 package com.example.senseiVoix.dtos.action;
 
+import com.example.senseiVoix.enumeration.ActionAccessType;
 import com.example.senseiVoix.enumeration.StatutAction;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -85,10 +86,21 @@ public class ActionResponse {
         this.utilisateurUuid = utilisateurUuid;
     }
 
+
+    public ActionAccessType getActionAccessType() {
+        return actionAccessType;
+    }
+
+    public void setActionAccessType(ActionAccessType actionAccessType) {
+        this.actionAccessType = actionAccessType;
+    }
+
     String text;
     StatutAction statutAction;
     String language;
     String voiceUuid;
     Date dateCreation;
     String utilisateurUuid;
+    ActionAccessType actionAccessType;
+
 }

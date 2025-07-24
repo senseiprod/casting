@@ -32,6 +32,7 @@ export interface Action {
   utilisateur: any;
   project?: Project;
   deleted: boolean;
+  actionAccessType: string;
 }
 
 @Injectable({

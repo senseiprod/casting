@@ -1,5 +1,6 @@
 package com.example.senseiVoix.entities;
 
+import com.example.senseiVoix.enumeration.ActionAccessType;
 import com.example.senseiVoix.enumeration.StatutAction;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,10 @@ public class Action extends BaseModel{
 
     @Enumerated(EnumType.STRING)
     private StatutAction statutAction;
+
+    @Enumerated(EnumType.STRING)
+    private ActionAccessType actionAccessType;
+
     @ManyToOne
     @JsonIgnore
     private Project project;
