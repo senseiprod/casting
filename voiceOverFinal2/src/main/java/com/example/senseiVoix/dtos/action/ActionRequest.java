@@ -1,5 +1,6 @@
 package com.example.senseiVoix.dtos.action;
 
+import com.example.senseiVoix.enumeration.ActionAccessType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,6 +54,15 @@ public class ActionRequest implements Serializable {
     String language;
     private String projectUuid;
     private byte[] audioGenerated;
+    ActionAccessType actionAccessType;
+
+    public ActionAccessType getActionAccessType() {
+        return actionAccessType;
+    }
+
+    public void setActionAccessType(ActionAccessType actionAccessType) {
+        this.actionAccessType = actionAccessType;
+    }
 
 
     public String getProjectUuid() {

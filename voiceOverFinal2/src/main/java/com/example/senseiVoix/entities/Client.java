@@ -11,6 +11,7 @@ import lombok.*;
 public class Client extends Utilisateur {
     private double balance = 0.0;
     private double fidilite = 0.0;
+    private int free_test = 100;
     private String provider;
 
     public String getProvider() {
