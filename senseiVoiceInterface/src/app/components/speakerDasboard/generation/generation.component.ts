@@ -413,7 +413,7 @@ export class GenerationComponent implements OnInit {
     if (this.selectedVoice!.language === 'darija') {
         this.generateDarijaAudio(successCallback, (err) => errorCallback(err, 'Darija'));
     } else {
-        this.elevenLabsService.textToSpeech("nsFsExJHz4xV1sOX6Kdn", this.actionData.text).subscribe({
+        this.elevenLabsService.textToSpeech(this.selectedVoice.id, this.actionData.text).subscribe({
             next: successCallback,
             error: (err) => errorCallback(err, 'speech')
         });
