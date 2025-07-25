@@ -93,7 +93,7 @@ const routes: Routes = [
       { path: 'requests', component: BanckComponent },
       { path: 'profile', component: ProfilComponent },
       { path: 'generate', component: GenerationComponent },
-      { path: 'generate-with-selected-voice/:voice_id/:voice_name/:voice_photo/:voice_gender/:voice_age/:voice_category/:voice_language/:voice_preview_url', component: GenerateWithSlectedVoiceComponent },
+      { path: 'generate-with-selected-voice/:voice_id/:voice_name/:voice_photo/:voice_gender/:voice_age/:voice_category/:voice_language/:voice_preview_url', component: GenerationComponent },
       { path: 'generate-with-speaker-voice/:uuid', component: GenerateWithVoiceSpeakerComponent },
       { path: 'payment-success/:uuid', component: PaymentSuccessComponent },
       { path: 'payment-failed', component: PaymentFailedComponent },

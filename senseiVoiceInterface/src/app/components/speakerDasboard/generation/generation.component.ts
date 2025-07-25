@@ -204,7 +204,7 @@ export class GenerationComponent implements OnInit {
   // --- ADDED for Server-Side Pagination ---
   apiPage = 1;
   isLoadingMore = false;
-
+  voice : Voice
 
   constructor(
     private elevenLabsService: ElevenLabsService,
@@ -220,19 +220,53 @@ export class GenerationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // --- ADDED: Load user data from JWT for free test logic ---
-    this.loadUserDataFromJwt();
-
-    // Existing ngOnInit logic is maintained
     this.route.parent?.paramMap.subscribe((params) => {
-      this.userId = params.get("uuid") || "";
+      this.userId = params.get("uuid") || ""
       if (this.userId) {
-        this.loadUserBalance();
+        this.loadUserBalance()
       }
-    });
-    this.fetchVoices();
-    this.fetchUserProjects();
-    this.waveformBars = Array.from({ length: 20 }, () => Math.random() * 80 + 20);
+    })
+    this.route.params.subscribe((params) => {
+      const voice_id = params["voice_id"]
+      const voice_name = params["voice_name"]
+      const voice_photo = params["voice_photo"]
+      const voice_gender = params["voice_gender"]
+      const voice_age = params["voice_age"]
+      const voice_category = params["voice_category"]
+      const voice_language = params["voice_language"]
+      const voice_preview_url = params["voice_preview_url"]
+      // Create voice object from URL parameters
+      this.voice = {
+        id: voice_id,
+        name: voice_name || "Unknown",
+        gender: voice_gender || "Not specified",
+        ageZone: voice_age || "Not specified",
+        type: voice_category || "Unclassified",
+        language: voice_language || "Not specified",
+        avatar: voice_photo,
+        price: 0,
+        originalVoiceUrl: voice_preview_url || "",
+        clonedVoiceUrl: "",
+      }
+      this.selectedVoice = this.voice
+
+      // Load user balance if UUID is available
+      if (this.userId) {
+        this.loadUserBalance()
+      }
+
+      // If it's a Darija voice, load Lahajati data
+      if (voice_language === "darija") {
+        this.fetchLahajatiData()
+      }
+
+      // Start with voice showcase (not selection)
+      this.showVoiceSelection = false
+    })
+
+    // Fetch voices and projects
+    this.fetchVoices()
+    this.fetchUserProjects()
   }
 
   // --- START: ADDED METHODS for Free Test Logic ---
@@ -379,7 +413,7 @@ export class GenerationComponent implements OnInit {
     if (this.selectedVoice!.language === 'darija') {
         this.generateDarijaAudio(successCallback, (err) => errorCallback(err, 'Darija'));
     } else {
-        this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe({
+        this.elevenLabsService.textToSpeech("nsFsExJHz4xV1sOX6Kdn", this.actionData.text).subscribe({
             next: successCallback,
             error: (err) => errorCallback(err, 'speech')
         });
