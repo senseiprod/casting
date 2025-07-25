@@ -45,6 +45,7 @@ export class ProjectService {
   constructor(private http: HttpClient) { }
 
   getProjectsBySpeaker(uuid: string): Observable<Project[]> {
+   
     return this.http.get<Project[]>(`${this.baseUrl}/speaker/${uuid}`);
   }
 
