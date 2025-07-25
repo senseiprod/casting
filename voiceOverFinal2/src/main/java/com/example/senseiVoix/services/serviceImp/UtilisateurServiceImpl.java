@@ -112,6 +112,11 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                 setProperty(existingUtilisateur, "fidelity", dto.getFidelity());
             }
 
+            if (existingUtilisateur instanceof Client && dto.getFree_test() != null) {
+                Client client = (Client) existingUtilisateur;
+                client.setFree_test(dto.getFree_test());
+            }
+
             return utilisateurRepository.save(existingUtilisateur);
         } else {
             return null;

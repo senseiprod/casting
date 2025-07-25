@@ -24,5 +24,6 @@ public class UtilisateurRequest {
     private Double balance;        // Not in original, but requested
     private Integer fidelity;      // Not in original, but requested
     private Double percentage;
+    private Integer free_test;
 
 }

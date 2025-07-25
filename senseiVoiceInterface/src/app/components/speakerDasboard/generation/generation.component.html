@@ -76,6 +76,7 @@
           <div class="generation-card">
             <div class="generation-header">
               <h3>{{ 'tabs.freeTest' | translate }}</h3>
+              <!-- MODIFIED: Character counter now uses dynamic limit from API -->
               <div class="character-counter" [class.text-danger]="isTextOverLimit()">
                 {{ actionData.text.length }}/{{ freeTestCharLimit }}
               </div>
@@ -136,6 +137,16 @@
                 </span>
               </div>
             </div>
+
+            <!-- ****** ADDED: Specific Error Message for Free Test Limit ****** -->
+            <div class="generation-status" *ngIf="freeTestError" style="margin-top: 1rem; margin-bottom: 1rem;">
+                <div class="alert alert-danger" style="color: #dc3545; background-color: rgba(220, 53, 69, 0.1); border-color: #dc3545; padding: 0.75rem 1.25rem; border-radius: 0.5rem; display: flex; align-items: center;">
+                    <i class="bi bi-exclamation-octagon-fill me-2" style="font-size: 1.2rem;"></i>
+                    <strong>{{ freeTestError }}</strong>
+                </div>
+            </div>
+            <!-- ***************************************************************** -->
+
             <div class="generation-actions">
               <div class="project-selection" *ngIf="!showProjectSelection">
                 <button class="project-btn" (click)="toggleProjectSelection()">

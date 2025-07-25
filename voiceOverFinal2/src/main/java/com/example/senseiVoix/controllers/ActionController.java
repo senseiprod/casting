@@ -47,18 +47,45 @@ public class ActionController {
     private NotificationService notificationService;
 
     // EXISTING ENDPOINTS (keeping all your existing code)
+    // In file: ActionController.java
+
     @PostMapping("/create")
-    public ResponseEntity<?> createAction(
+    public ResponseEntity<ActionResponse> createAction(
             @RequestParam String text,
-            @RequestParam String statutAction,
+            @RequestParam String statutAction, // This parameter is unused by the service but kept for API consistency
             @RequestParam String voiceUuid,
             @RequestParam String utilisateurUuid,
             @RequestParam String language,
             @RequestParam String projectUuid,
             @RequestParam("audioGenerated") org.springframework.web.multipart.MultipartFile audioFile
     ) throws java.io.IOException {
-        actionService.createAction(text, statutAction, voiceUuid, utilisateurUuid, language, projectUuid, audioFile);
-        return ResponseEntity.ok("Action created");
+
+        // 1. Call the updated service method to create the action and get the persisted entity
+        Action createdAction = actionService.createAction(text, statutAction, voiceUuid, utilisateurUuid, language, projectUuid, audioFile);
+
+        // 2. Create an ActionResponse DTO to send back to the client
+        ActionResponse response = new ActionResponse();
+
+        // 3. Map the data from the Action entity to the ActionResponse DTO
+        response.setUuid(createdAction.getUuid());
+        response.setCode(createdAction.getCode());
+        response.setText(createdAction.getText());
+        response.setStatutAction(createdAction.getStatutAction());
+        response.setLanguage(createdAction.getLanguage());
+        response.setActionAccessType(createdAction.getActionAccessType());
+        response.setDateCreation(createdAction.getDateCreation());
+        response.setAudioGenerated(createdAction.getAudioGenerated());
+
+        // Safely get UUIDs from related objects to avoid NullPointerExceptions
+        if (createdAction.getVoice() != null) {
+            response.setVoiceUuid(createdAction.getVoice().getUuid());
+        }
+        if (createdAction.getUtilisateur() != null) {
+            response.setUtilisateurUuid(createdAction.getUtilisateur().getUuid());
+        }
+
+        // 4. Return the ActionResponse object with a 200 OK status
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete/{uuid}")

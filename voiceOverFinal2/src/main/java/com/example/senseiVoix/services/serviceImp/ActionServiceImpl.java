@@ -121,23 +121,30 @@ public class ActionServiceImpl {
 
 
     // EXISTING METHODS (keeping all your existing code)
-    public void createAction(String text, String statutAction, String voiceUuid, String utilisateurUuid,
-                             String language, String projectUuid, org.springframework.web.multipart.MultipartFile audioFile)
+    // In file: ActionServiceImpl.java
+
+    public Action createAction(String text, String statutAction, String voiceUuid, String utilisateurUuid,
+                               String language, String projectUuid, org.springframework.web.multipart.MultipartFile audioFile)
             throws IOException {
         Action action1 = new Action();
         action1.setProject(projectRepository.findByUuidAndDeletedFalse(projectUuid));
         action1.setUtilisateur(utilisateurRepository.findByUuid(utilisateurUuid));
-        action1.setStatutAction(StatutAction.EN_ATTENTE);
+        action1.setStatutAction(StatutAction.EN_ATTENTE); // The service correctly sets the initial status
         action1.setText(text);
         action1.setLanguage(language);
         action1.setVoice(voixRepository.findByUuid(voiceUuid));
         action1.setAudioGenerated(audioFile.getBytes());
         action1.setActionAccessType(ActionAccessType.FREE);
-        actionRepository.save(action1);
+
+        // Save the entity and store the result (which includes the generated ID, UUID, etc.)
+        Action savedAction = actionRepository.save(action1);
 
         // Send notification for action creation
         Utilisateur user = utilisateurRepository.findByUuid(utilisateurUuid);
-        notificationService.notifyActionCreated(user, action1.getUuid());
+        notificationService.notifyActionCreated(user, savedAction.getUuid());
+
+        // Return the newly created and saved action
+        return savedAction;
     }
 
     public void createActionPyee(String text, String statutAction, String voiceUuid, String utilisateurUuid,

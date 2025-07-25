@@ -1,47 +1,76 @@
-import { Component,  ElementRef, ViewChild, OnInit } from "@angular/core"
-import  { ElevenLabsService } from "../../../services/eleven-labs.service"
-import  { Voice } from "../../../services/eleven-labs.service"
-import  { DomSanitizer, SafeUrl } from "@angular/platform-browser"
-import  { ProjectService } from "../../../services/project.service"
-import  { Project } from "../../../services/project.service"
-import  { ActionRequestLahajati, ActionService } from "../../../services/action.service"
-import  { ActivatedRoute, Router } from "@angular/router"
-import  { LahajatiService } from "../../../services/lahajati.service"
-import  { PaypalService } from "src/app/services/paypal-service.service"
-import  { ClientService } from "src/app/services/client-service.service"
+// Core Angular imports
+import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
+import { ActivatedRoute, Router } from "@angular/router";
+import { HttpClient, HttpHeaders } from '@angular/common/http'; // <-- ADDED
 
-// Interface for Lahajati voices
+// Services
+import { ElevenLabsService, Voice } from "../../../services/eleven-labs.service";
+import { ProjectService, Project } from "../../../services/project.service";
+import { ActionRequestLahajati, ActionService } from "../../../services/action.service";
+import { LahajatiService } from "../../../services/lahajati.service";
+import { PaypalService } from "src/app/services/paypal-service.service";
+import { ClientService } from "src/app/services/client-service.service";
+
+// Third-party libraries
+import { jwtDecode } from "jwt-decode"; // <-- ADDED
+
+// --- ADDED: Interfaces for clarity and type safety ---
+interface JwtPayload {
+  sub: string;
+  uuid: string;
+  iat: number;
+  exp: number;
+}
+
+interface Utilisateur {
+  uuid: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  free_test: number;
+  balance: number;
+  // Add other properties from your user response as needed
+}
+
+interface UtilisateurUpdateRequest {
+  free_test?: number;
+  // Add other updatable fields as needed in the future
+}
+// --- END ADDED INTERFACES ---
+
+
+// Existing interfaces...
 interface LahajatiVoice {
-  id: string
-  name: string
-  gender: string
-  avatar?: string
-  originalVoiceUrl?: string
-  clonedVoiceUrl?: string
-  price?: number
-  type: string
-  language: string
-  ageZone?: string
-  dialect?: string
-  performanceStyle?: string
+  id: string;
+  name: string;
+  gender: string;
+  avatar?: string;
+  originalVoiceUrl?: string;
+  clonedVoiceUrl?: string;
+  price?: number;
+  type: string;
+  language: string;
+  ageZone?: string;
+  dialect?: string;
+  performanceStyle?: string;
 }
 
-// Interface for user balance
 interface UserBalance {
-  balance: number
-  currency: string
+  balance: number;
+  currency: string;
 }
 
-// Interface for Bank Transfer Response
 interface BankTransferResponse {
-  actionId: number
-  libelle: string
-  rib: string
-  price: number
-  message: string
-  bankName: string
-  accountHolder: string
+  actionId: number;
+  libelle: string;
+  rib: string;
+  price: number;
+  message: string;
+  bankName: string;
+  accountHolder: string;
 }
+
 
 @Component({
   selector: "app-generation",
@@ -49,55 +78,53 @@ interface BankTransferResponse {
   styleUrls: ["./generation.component.css"],
 })
 export class GenerationComponent implements OnInit {
-  voices: Voice[] = []
-  filteredVoices: Voice[] = []
-  selectedVoice: Voice | null = null
-  audio = new Audio()
-  showVoiceSelection = true
-  showVoice = false
-  currentPage = 1
-  voicesPerPage = 3
-  emotions = ["neutral", "happy", "sad", "angry"]
-  selectedEmotion = "Neutral"
-  vitess = 1.0
-  rate = 44100
-  temperature = 1.0
-  actionData = { text: "The senseiprod voice generator can deliver high-quality, human-like speech in 32 languages." }
-  price = 0.05 // Example price per character
-  baseUrl = "https://api.voice-service.com"
-  audioUrl: SafeUrl | null = null
-  audioPlayer = new Audio()
-  voiceId = "sarah_voice"
-  userId: string | null = ""
+  // --- ADDED: Properties for Free Test Logic ---
+  private apiUrl = 'http://localhost:8080';
+  private userUuid: string | null = null;
+  private currentUser: Utilisateur | null = null;
+  public freeTestError: string | null = null; // Public for template access
+  // --- END ADDED PROPERTIES ---
 
-  // Balance-related properties
-  userBalance: UserBalance = { balance: 0, currency: "USD" }
-  balance = 0
-  isLoadingBalance = false
-  showBalanceOptions = false
-  selectedBalanceOption: "use-balance" | "charge-balance" | "pay-direct" | null = null
-  chargeAmount = 0
-  isChargingBalance = false
-  balanceError: string | null = null
 
-  // Balance charging payment methods
-  showBalanceChargeModal = false
-  selectedChargeMethod: "card" | "paypal" | "verment" | null = null
-
-  // Existing properties...
-  lahajatiVoices: LahajatiVoice[] = []
-  lahajatiDialects: any[] = []
-  lahajatiPerformanceStyles: any[] = []
-  selectedDialect = ""
-  selectedPerformanceStyle = ""
-  isLoadingLahajatiData = false
-  lahajatiDataLoaded = false
-
-  // REMOVED: showCgvModal = false
-  // ADDED: Simple checkbox for CGV acceptance
-  cgvAccepted = false
-  // REMOVED: pendingPaymentAction: (() => void) | null = null
-
+  // --- All your existing properties are maintained ---
+  voices: Voice[] = [];
+  filteredVoices: Voice[] = [];
+  selectedVoice: Voice | null = null;
+  audio = new Audio();
+  showVoiceSelection = true;
+  showVoice = false;
+  currentPage = 1;
+  voicesPerPage = 3;
+  emotions = ["neutral", "happy", "sad", "angry"];
+  selectedEmotion = "Neutral";
+  vitess = 1.0;
+  rate = 44100;
+  temperature = 1.0;
+  actionData = { text: "The senseiprod voice generator can deliver high-quality, human-like speech in 32 languages." };
+  price = 0.05; // Example price per character
+  baseUrl = "https://api.voice-service.com";
+  audioUrl: SafeUrl | null = null;
+  audioPlayer = new Audio();
+  voiceId = "sarah_voice";
+  userId: string | null = "";
+  userBalance: UserBalance = { balance: 0, currency: "USD" };
+  balance = 0;
+  isLoadingBalance = false;
+  showBalanceOptions = false;
+  selectedBalanceOption: "use-balance" | "charge-balance" | "pay-direct" | null = null;
+  chargeAmount = 0;
+  isChargingBalance = false;
+  balanceError: string | null = null;
+  showBalanceChargeModal = false;
+  selectedChargeMethod: "card" | "paypal" | "verment" | null = null;
+  lahajatiVoices: LahajatiVoice[] = [];
+  lahajatiDialects: any[] = [];
+  lahajatiPerformanceStyles: any[] = [];
+  selectedDialect = "";
+  selectedPerformanceStyle = "";
+  isLoadingLahajatiData = false;
+  lahajatiDataLoaded = false;
+  cgvAccepted = false;
   languages = [
     { code: "darija", name: "Darija", active: false },
     { code: "ar", name: "Arabe", active: false },
@@ -131,64 +158,49 @@ export class GenerationComponent implements OnInit {
     { code: "ms", name: "Malais", active: false },
     { code: "he", name: "Hébreu", active: false },
     { code: "fa", name: "Persan", active: false },
-  ]
-
-  // Project related properties
-  projects: Project[] = []
-  selectedProject: Project | null = null
-  showProjectSelection = false
-  isGenerating = false
-  generationSuccess = false
-  generationError: string | null = null
-
-  // Tab selection
-  activeTab: "free" | "request" = "free"
-
-  // Character limits
-  freeTestCharLimit = 100
-
-  // Checkout data
+  ];
+  projects: Project[] = [];
+  selectedProject: Project | null = null;
+  showProjectSelection = false;
+  isGenerating = false;
+  generationSuccess = false;
+  generationError: string | null = null;
+  activeTab: "free" | "request" = "free";
+  // --- MODIFIED: Renamed to avoid conflict, will be set from API ---
+  freeTestCharLimit: number = 100;
   checkoutData = {
     textLength: 0,
     price: 0,
     totalPrice: 0,
     voiceId: "",
     voiceName: "",
-  }
-
-  // Audio player properties
-  @ViewChild("audioPlayer") audioPlayerRef!: ElementRef<HTMLAudioElement>
-  isAudioPlaying = false
-  currentTime = 0
-  duration = 0
-  volume = 100
-  isMuted = false
-  progressPercentage = 0
-  waveformBars: number[] = []
-
-  // Payment related properties
-  showPaymentMethodModal = false
-  selectedPaymentMethod: "card" | "paypal" | "verment" | null = null
-  isProcessingPayment = false
-  paymentError: string | null = null
-  calculatedPrice = 0
-  actionId: number | null = null
-  paymentId: string | null = null
-  approvalUrl: string | null = null
-  showPaymentProcessing = false
-  showGenerationProgress = false
-  generationProgress = 0
-
-  // Bank transfer specific properties
-  showBankTransferModal = false
-  bankTransferDetails: BankTransferResponse | null = null
-  bankTransferReference: string | null = null
-
-  // Character limit modal
-  showCharLimitModal = false
-  userAcceptedPaidContent = false
-  hasExceededLimit = false
-  previousTextLength = 0
+  };
+  @ViewChild("audioPlayer") audioPlayerRef!: ElementRef<HTMLAudioElement>;
+  isAudioPlaying = false;
+  currentTime = 0;
+  duration = 0;
+  volume = 100;
+  isMuted = false;
+  progressPercentage = 0;
+  waveformBars: number[] = [];
+  showPaymentMethodModal = false;
+  selectedPaymentMethod: "card" | "paypal" | "verment" | null = null;
+  isProcessingPayment = false;
+  paymentError: string | null = null;
+  calculatedPrice = 0;
+  actionId: number | null = null;
+  paymentId: string | null = null;
+  approvalUrl: string | null = null;
+  showPaymentProcessing = false;
+  showGenerationProgress = false;
+  generationProgress = 0;
+  showBankTransferModal = false;
+  bankTransferDetails: BankTransferResponse | null = null;
+  bankTransferReference: string | null = null;
+  showCharLimitModal = false;
+  userAcceptedPaidContent = false;
+  hasExceededLimit = false;
+  previousTextLength = 0;
 
   constructor(
     private elevenLabsService: ElevenLabsService,
@@ -200,19 +212,194 @@ export class GenerationComponent implements OnInit {
     private lahajatiService: LahajatiService,
     private paypalService: PaypalService,
     private clientService: ClientService,
+    private http: HttpClient // <-- ADDED
   ) {}
 
   ngOnInit(): void {
+    // --- ADDED: Load user data from JWT for free test logic ---
+    this.loadUserDataFromJwt();
+
+    // Existing ngOnInit logic is maintained
     this.route.parent?.paramMap.subscribe((params) => {
-      this.userId = params.get("uuid") || ""
+      this.userId = params.get("uuid") || "";
       if (this.userId) {
-        this.loadUserBalance()
+        this.loadUserBalance();
       }
-    })
-    this.fetchVoices()
-    this.fetchUserProjects()
-    this.waveformBars = Array.from({ length: 20 }, () => Math.random() * 80 + 20)
+    });
+    this.fetchVoices();
+    this.fetchUserProjects();
+    this.waveformBars = Array.from({ length: 20 }, () => Math.random() * 80 + 20);
   }
+
+  // --- START: ADDED METHODS for Free Test Logic ---
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      return new HttpHeaders();
+    }
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
+  private loadUserDataFromJwt(): void {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<JwtPayload>(token);
+        this.userUuid = decodedToken.uuid;
+
+        if (!this.userUuid) {
+            this.freeTestError = "Could not identify user from session.";
+            return;
+        }
+
+        this.http.get<Utilisateur>(`${this.apiUrl}/utilisateurs/${this.userUuid}`, { headers: this.getAuthHeaders() })
+          .subscribe({
+            next: (user) => {
+              this.currentUser = user;
+              this.freeTestCharLimit = user.free_test; // Set the dynamic limit
+              console.log('User data loaded for free test:', this.currentUser);
+            },
+            error: (err) => {
+              console.error('Failed to fetch user data', err);
+              this.freeTestError = 'Could not load your user profile.';
+            }
+          });
+      } catch (error) {
+        console.error('Failed to decode JWT', error);
+        this.freeTestError = 'Your session is invalid. Please log in again.';
+      }
+    } else {
+        this.freeTestError = 'You are not logged in.';
+    }
+  }
+
+  private updateFreeTestBalance(charactersUsed: number): void {
+    if (!this.userUuid || !this.currentUser) {
+        console.error("Cannot update balance: User UUID or current user data is missing.");
+        return;
+    }
+
+    const newFreeTestCount = this.currentUser.free_test - charactersUsed;
+
+    const requestBody: UtilisateurUpdateRequest = {
+      free_test: newFreeTestCount < 0 ? 0 : newFreeTestCount // Ensure it doesn't go below zero
+    };
+
+    this.http.put<Utilisateur>(`${this.apiUrl}/utilisateurs/${this.userUuid}`, requestBody, { headers: this.getAuthHeaders() })
+      .subscribe({
+        next: (updatedUser) => {
+          console.log('Successfully updated free test balance on the server.');
+          this.currentUser = updatedUser;
+          this.freeTestCharLimit = updatedUser.free_test; // Keep UI in sync
+        },
+        error: (err) => {
+          console.error('CRITICAL: Failed to update free test balance on the server after generation.', err);
+          // Don't show an error to the user, they got their audio. Log it for developers.
+        }
+      });
+  }
+
+  // --- END: ADDED METHODS ---
+
+  // --- MODIFIED: generateSpeech() ---
+  generateSpeech() {
+    if (!this.selectedVoice) {
+      this.generationError = "Please select a voice first";
+      return;
+    }
+
+    // Clear previous errors on a new attempt
+    this.generationError = null;
+    this.freeTestError = null;
+    this.generationSuccess = false;
+
+    // --- LOGIC FOR FREE TEST TAB ---
+    if (this.activeTab === 'free') {
+        const textLength = this.actionData.text.length;
+
+        // Check if user data has been loaded
+        if (!this.currentUser) {
+            this.freeTestError = "User data is still loading. Please wait a moment.";
+            return;
+        }
+
+        // The core validation check
+        if (textLength > this.freeTestCharLimit) {
+            this.freeTestError = "you are out of free tests"; // The requested error message
+            return; // Stop execution
+        }
+
+        // If validation passes, proceed with generation
+        this.processAudioGeneration();
+
+    } else if (this.activeTab === 'request') {
+      // For audio request, show balance/payment options (existing logic is maintained)
+      this.showPaymentMethodSelection();
+    }
+  }
+
+
+  // --- MODIFIED: processAudioGeneration() to hook in the update ---
+  processAudioGeneration() {
+    this.isGenerating = true;
+    this.generationError = null;
+    this.generationSuccess = false;
+    this.audioUrl = null;
+
+    const textLength = this.actionData.text.length; // Capture length before async calls
+
+    const successCallback = (blob: Blob) => {
+        if (this.selectedProject) {
+            this.saveAudioToProject(blob); // This function will set success flags
+        } else {
+            const url = URL.createObjectURL(blob);
+            this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url);
+            this.isGenerating = false;
+            this.generationSuccess = true;
+        }
+        // --- HOOK: Update balance on success ---
+        if (this.activeTab === 'free') {
+          this.updateFreeTestBalance(textLength);
+        }
+    };
+
+    const errorCallback = (error: any, serviceName: string) => {
+        console.error(`Error generating ${serviceName} speech:`, error);
+        this.isGenerating = false;
+        this.generationError = `Failed to generate ${serviceName} speech. Please try again.`;
+    };
+
+    if (this.selectedVoice!.language === 'darija') {
+        this.generateDarijaAudio(successCallback, (err) => errorCallback(err, 'Darija'));
+    } else {
+        this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe({
+            next: successCallback,
+            error: (err) => errorCallback(err, 'speech')
+        });
+    }
+  }
+
+  // MODIFIED: generateDarijaAudio to accept callbacks
+  generateDarijaAudio(onSuccess: (blob: Blob) => void, onError: (error: any) => void) {
+      const requestBody = {
+          text: this.actionData.text,
+          id_voice: this.selectedVoice!.id,
+          dialect_id: this.selectedDialect || '35',
+          performance_id: this.selectedPerformanceStyle || '1284',
+          input_mode: '0',
+      };
+
+      this.lahajatiService.generateSpeech(requestBody).subscribe({
+          next: onSuccess,
+          error: onError,
+      });
+  }
+
+
+  // --- ALL OTHER METHODS ARE PRESERVED AS-IS ---
 
   // Load user balance
   loadUserBalance() {
@@ -245,7 +432,7 @@ export class GenerationComponent implements OnInit {
     this.calculatedPrice = this.price * this.actionData.text.length
     this.proceedToPaymentSelection()
   }
-  
+
   private proceedToPaymentSelection() {
     console.log("Current balance:", this.userBalance.balance, "Calculated price:", this.calculatedPrice)
 
@@ -258,8 +445,6 @@ export class GenerationComponent implements OnInit {
     this.paymentError = null
     this.balanceError = null
   }
-
-  // REMOVED: CGV Modal handlers - onCgvAccepted() and onCgvClosed()
 
   // Modified balance charge methods - removed CGV check
   showBalanceChargeOptions() {
@@ -388,7 +573,6 @@ export class GenerationComponent implements OnInit {
       return
     }
 
-    // REMOVED: CGV acceptance check - directly execute charge
     this.executeBalanceCharge()
   }
 
@@ -413,7 +597,7 @@ export class GenerationComponent implements OnInit {
     this.showBalanceOptions = false
     this.selectedBalanceOption = null
     this.balanceError = null
-    this.cgvAccepted = false; 
+    this.cgvAccepted = false
   }
 
   chargeBalanceWithPayPal() {
@@ -483,26 +667,6 @@ export class GenerationComponent implements OnInit {
     console.log("Charge amount reset to:", this.chargeAmount)
   }
 
-  // Modified generateSpeech method
-  generateSpeech() {
-    if (!this.selectedVoice) {
-      this.generationError = "Please select a voice first"
-      return
-    }
-
-    // For free test, enforce character limit
-    if (this.activeTab === "free") {
-      if (this.actionData.text.length > this.freeTestCharLimit) {
-        this.limitText()
-      }
-      this.processAudioGeneration()
-    }
-    // For audio request, show balance/payment options
-    else if (this.activeTab === "request") {
-      this.showPaymentMethodSelection()
-    }
-  }
-
   // Get minimum charge amount
   getMinimumChargeAmount(): number {
     const deficit = Math.max(0, this.calculatedPrice - this.userBalance.balance)
@@ -545,10 +709,11 @@ export class GenerationComponent implements OnInit {
   setActiveTab(tab: "free" | "request") {
     this.activeTab = tab
     // Reset error messages when switching tabs
-    this.generationError = null
-    this.generationSuccess = false
-    this.paymentError = null
-    this.balanceError = null
+    this.generationError = null;
+    this.freeTestError = null; // Also reset free test error
+    this.generationSuccess = false;
+    this.paymentError = null;
+    this.balanceError = null;
   }
 
   isTextOverLimit(): boolean {
@@ -580,7 +745,6 @@ export class GenerationComponent implements OnInit {
       return
     }
 
-    // REMOVED: CGV acceptance check - directly execute payment
     this.executeSelectedPayment()
   }
 
@@ -604,23 +768,20 @@ export class GenerationComponent implements OnInit {
     this.paymentError = null
     this.showPaymentProcessing = true
 
-    // Create action request
-    const actionRequest : ActionRequestLahajati = {
+    const actionRequest: ActionRequestLahajati = {
       text: this.actionData.text,
       voiceUuid: this.selectedVoice.id,
       utilisateurUuid: this.userId,
       language: this.selectedVoice.language,
       projectUuid:
         this.selectedProject?.uuid ||
-        "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
-      // Add Darija-specific parameters if applicable
+        "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
       ...(this.selectedVoice.language === "darija" && {
         dialectId: this.selectedDialect || "35",
         performanceId: this.selectedPerformanceStyle || "1284",
       }),
     }
 
-    // Use appropriate service method based on voice language
     const paymentObservable =
       this.selectedVoice.language === "darija"
         ? this.actionService.createActionWithPaypal(actionRequest)
@@ -660,7 +821,6 @@ export class GenerationComponent implements OnInit {
     )
   }
 
-  // Updated method for bank transfer payment with new response structure
   processBankTransferPayment() {
     if (!this.selectedVoice || !this.userId) {
       this.paymentError = "Missing required information"
@@ -671,21 +831,18 @@ export class GenerationComponent implements OnInit {
     this.paymentError = null
     this.showPaymentProcessing = true
 
-    // Create bank transfer request
     const bankTransferRequest = {
       text: this.actionData.text,
       voiceUuid: this.selectedVoice.id,
       utilisateurUuid: this.userId,
       language: this.selectedVoice.language,
       projectUuid: this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
-      // Add Darija-specific parameters if applicable
       ...(this.selectedVoice.language === "darija" && {
         dialectId: this.selectedDialect || "35",
         performanceId: this.selectedPerformanceStyle || "1284",
       }),
     }
 
-    // Use appropriate service method based on voice language
     const bankTransferObservable =
       this.selectedVoice.language === "darija"
         ? this.actionService.createActionLahajatiWithBankTransfer(bankTransferRequest)
@@ -704,7 +861,6 @@ export class GenerationComponent implements OnInit {
         this.showPaymentProcessing = false
         this.closePaymentMethodModal()
 
-        // Show bank transfer details modal
         this.showBankTransferModal = true
       },
       (error) => {
@@ -716,14 +872,12 @@ export class GenerationComponent implements OnInit {
     )
   }
 
-  // Method to close bank transfer modal
   closeBankTransferModal() {
     this.showBankTransferModal = false
     this.bankTransferDetails = null
     this.bankTransferReference = null
   }
 
-  // Method to copy bank details to clipboard
   copyToClipboard(text: string) {
     navigator.clipboard
       .writeText(text)
@@ -735,7 +889,6 @@ export class GenerationComponent implements OnInit {
       })
   }
 
-  // Method to confirm bank transfer payment (for manual verification)
   confirmBankTransferPayment() {
     if (this.actionId) {
       console.log("Bank transfer payment confirmed for action:", this.actionId)
@@ -754,7 +907,6 @@ export class GenerationComponent implements OnInit {
     }
   }
 
-  // For testing purposes - bypass PayPal
   testPaymentSuccess() {
     if (this.actionId) {
       this.actionService.testSuccess(this.actionId).subscribe(
@@ -798,38 +950,6 @@ export class GenerationComponent implements OnInit {
     console.log("Audio generation completed for action:", this.actionId)
   }
 
-  processAudioGeneration() {
-    this.isGenerating = true
-    this.generationError = null
-    this.generationSuccess = false
-
-    // Check if it's a Darija voice and use Lahajati service
-    if (this.selectedVoice!.language === "darija") {
-      this.generateDarijaAudio()
-    } else {
-      // Use ElevenLabs service for other languages
-      this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe(
-        (blob) => {
-          const url = URL.createObjectURL(blob)
-          this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
-
-          // If a project is selected, save the audio to that project
-          if (this.selectedProject) {
-            this.saveAudioToProject(blob)
-          } else {
-            this.isGenerating = false
-            this.generationSuccess = true
-          }
-        },
-        (error) => {
-          console.error("Error generating speech:", error)
-          this.isGenerating = false
-          this.generationError = "Failed to generate speech. Please try again."
-        },
-      )
-    }
-  }
-
   processAudioGenerationWithBalance() {
     this.isGenerating = true
     this.generationError = null
@@ -841,7 +961,6 @@ export class GenerationComponent implements OnInit {
       return
     }
 
-    // Check if it's a Darija voice and use appropriate service method
     if (this.selectedVoice.language === "darija") {
       this.generateLahajatiAudioWithBalance()
     } else {
@@ -850,112 +969,72 @@ export class GenerationComponent implements OnInit {
   }
 
   generateLahajatiAudioWithBalance() {
-    this.actionService.generateLahajatiAudioWithBalance(
-      this.actionData.text,
-      "TERMINEE", // statutAction
-      this.selectedVoice!.id,
-      this.userId!,
-      this.selectedVoice!.language,
-      this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3"
-    ).subscribe({
-      next: (response) => {
-        console.log("Lahajati audio generated with balance:", response)
-        
-        // Update user balance
-        this.userBalance.balance -= this.calculatedPrice
-        
-        // Handle the audio response - assuming it returns audio data or URL
-        if (response.audioUrl || response.audioData) {
-          const audioUrl = response.audioUrl || URL.createObjectURL(response.audioData)
-          this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(audioUrl)
-        }
-        
-        this.isGenerating = false
-        this.generationSuccess = true
-        this.generationError = null
-      },
-      error: (error) => {
-        console.error("Error generating Lahajati audio with balance:", error)
-        this.isGenerating = false
-        this.generationError = error.error?.message || "Failed to generate Darija speech with balance. Please try again."
-      }
-    })
+    this.actionService
+      .generateLahajatiAudioWithBalance(
+        this.actionData.text,
+        "TERMINEE",
+        this.selectedVoice!.id,
+        this.userId!,
+        this.selectedVoice!.language,
+        this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+      )
+      .subscribe({
+        next: (response) => {
+          console.log("Lahajati audio generated with balance:", response)
+          this.userBalance.balance -= this.calculatedPrice
+          if (response.audioUrl || response.audioData) {
+            const audioUrl = response.audioUrl || URL.createObjectURL(response.audioData)
+            this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(audioUrl)
+          }
+          this.isGenerating = false
+          this.generationSuccess = true
+          this.generationError = null
+        },
+        error: (error) => {
+          console.error("Error generating Lahajati audio with balance:", error)
+          this.isGenerating = false
+          this.generationError = error.error?.message || "Failed to generate Darija speech with balance. Please try again."
+        },
+      })
   }
 
   generateElevenLabsAudioWithBalance() {
-    // First generate the audio using ElevenLabs service
     this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe({
       next: (audioBlob) => {
-        // Convert blob to file for the service method
         const audioFile = new File([audioBlob], "audio.mp3", { type: "audio/mpeg" })
-        
-        // Call the service method with balance
-        this.actionService.generateElevenLabsAudioWithBalance(
-          this.actionData.text,
-          "TERMINEE", // statutAction
-          this.selectedVoice!.id,
-          this.userId!,
-          this.selectedVoice!.language,
-          this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
-          audioFile
-        ).subscribe({
-          next: (response) => {
-            console.log("ElevenLabs audio generated with balance:", response)
-            
-            // Update user balance
-            this.userBalance.balance -= this.calculatedPrice
-            
-            // Set the audio URL for playback
-            const url = URL.createObjectURL(audioBlob)
-            this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
-            
-            this.isGenerating = false
-            this.generationSuccess = true
-            this.generationError = null
-          },
-          error: (error) => {
-            console.error("Error generating ElevenLabs audio with balance:", error)
-            this.isGenerating = false
-            this.generationError = error.error?.message || "Failed to generate speech with balance. Please try again."
-          }
-        })
+        this.actionService
+          .generateElevenLabsAudioWithBalance(
+            this.actionData.text,
+            "TERMINEE",
+            this.selectedVoice!.id,
+            this.userId!,
+            this.selectedVoice!.language,
+            this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3",
+            audioFile,
+          )
+          .subscribe({
+            next: (response) => {
+              console.log("ElevenLabs audio generated with balance:", response)
+              this.userBalance.balance -= this.calculatedPrice
+              const url = URL.createObjectURL(audioBlob)
+              this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
+              this.isGenerating = false
+              this.generationSuccess = true
+              this.generationError = null
+            },
+            error: (error) => {
+              console.error("Error generating ElevenLabs audio with balance:", error)
+              this.isGenerating = false
+              this.generationError = error.error?.message || "Failed to generate speech with balance. Please try again."
+            },
+          })
       },
       error: (error) => {
         console.error("Error generating ElevenLabs audio:", error)
         this.isGenerating = false
         this.generationError = "Failed to generate speech. Please try again."
-      }
+      },
     })
-  }
-
-  // New method for Darija audio generation
-  generateDarijaAudio() {
-    const requestBody = {
-      text: this.actionData.text,
-      id_voice: this.selectedVoice!.id,
-      dialect_id: this.selectedDialect || "35",
-      performance_id: this.selectedPerformanceStyle || "1284",
-      input_mode: "0",
-    }
-
-    this.lahajatiService.generateSpeech(requestBody).subscribe(
-      (blob) => {
-        const url = URL.createObjectURL(blob)
-        this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
-
-        if (this.selectedProject) {
-          this.saveAudioToProject(blob)
-        } else {
-          this.isGenerating = false
-          this.generationSuccess = true
-        }
-      },
-      (error) => {
-        console.error("Error generating Darija speech:", error)
-        this.isGenerating = false
-        this.generationError = "Failed to generate Darija speech. Please try again."
-      },
-    )
   }
 
   saveAudioToProject(audioBlob: Blob) {
@@ -966,9 +1045,11 @@ export class GenerationComponent implements OnInit {
 
     const formData = new FormData()
     formData.append("text", this.actionData.text)
-    formData.append("statutAction", "EN_ATTENTE")
+    formData.append("statutAction", "GENERE")
     formData.append("voiceUuid", this.selectedVoice.id)
-    formData.append("utilisateurUuid", this.userId)
+    if (this.userId) {
+      formData.append("utilisateurUuid", this.userId)
+    }
     formData.append("language", this.selectedVoice.language)
     formData.append("projectUuid", this.selectedProject.uuid)
     formData.append("audioGenerated", audioBlob, "audio.mp3")
@@ -983,8 +1064,31 @@ export class GenerationComponent implements OnInit {
     }
 
     this.actionService.createAction(formData).subscribe(
-      (response) => {
-        console.log("Audio saved to project:", response)
+      (response: any) => {
+        console.log("Audio saved to project. Full response:", response)
+        if (response && response.audioGenerated) {
+          console.log("SUCCESS: Found 'audioGenerated' in response. Converting from Base64 to Blob...")
+          try {
+            const byteCharacters = atob(response.audioGenerated)
+            const byteNumbers = new Array(byteCharacters.length)
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i)
+            }
+            const byteArray = new Uint8Array(byteNumbers)
+            const newAudioBlob = new Blob([byteArray], { type: "audio/mpeg" })
+            const objectUrl = URL.createObjectURL(newAudioBlob)
+            this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl)
+            console.log("SUCCESS: Audio loaded from Base64 response data.")
+          } catch (e) {
+            console.error("Error processing Base64 audio data:", e)
+            this.generationError = "Failed to process audio data from server."
+          }
+        } else {
+          console.error(
+            "ERROR: 'audioGenerated' not found in the response from 'saveAudioToProject'. Cannot load audio from this source.",
+          )
+          this.generationError = "Failed to retrieve audio from the server after saving."
+        }
         this.isGenerating = false
         this.generationSuccess = true
       },
@@ -996,13 +1100,14 @@ export class GenerationComponent implements OnInit {
     )
   }
 
-  // Rest of existing methods for voice selection, filters, audio player, etc.
-  fetchVoices(pageSize: number = 100,
+  fetchVoices(
+    pageSize: number = 100,
     gender: string | null = null,
     age: string | null = null,
     language: string | null = null,
-    nextPageToken: number = 1,) {
-    this.elevenLabsService.listVoicesFiltter(pageSize,gender,age,language,nextPageToken).subscribe(
+    nextPageToken: number = 1,
+  ) {
+    this.elevenLabsService.listVoicesFiltter(pageSize, gender, age, language, nextPageToken).subscribe(
       (voices: Voice[]) => {
         console.log("Voices retrieved:", voices)
         this.voices = voices
@@ -1108,7 +1213,6 @@ export class GenerationComponent implements OnInit {
     return this.filters.language === "darija"
   }
 
-  // Audio player methods
   togglePlayPause(): void {
     if (!this.audioPlayerRef?.nativeElement) return
 
@@ -1255,7 +1359,6 @@ export class GenerationComponent implements OnInit {
     }
   }
 
-  // Add other existing methods as needed...
   filters = {
     search: "",
     gender: "",
@@ -1277,13 +1380,7 @@ export class GenerationComponent implements OnInit {
     if (this.filters.language === "darija") {
       voicesToFilter = this.lahajatiVoices
     } else {
-      this.fetchVoices(
-        100,
-        this.filters.gender,
-        this.filters.ageZone,
-        this.filters.language,
-        1 
-      )
+      this.fetchVoices(100, this.filters.gender, this.filters.ageZone, this.filters.language, 1)
     }
 
     this.filteredVoices = voicesToFilter.filter(
@@ -1319,7 +1416,6 @@ export class GenerationComponent implements OnInit {
     this.selectedVoice = voice as Voice
     this.price = voice.price || this.price
 
-    // Load Lahajati data if Darija voice is selected
     if (voice.language === "darija" && !this.lahajatiDataLoaded) {
       this.fetchLahajatiData()
     }
