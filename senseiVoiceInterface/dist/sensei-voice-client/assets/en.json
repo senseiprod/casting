@@ -938,6 +938,200 @@
       "whatNext": "What’s Next?",
       "balanceInfo": "You can now use your updated balance for future purchases or continue generating audio.",
       "share": "Share"
-    }
+    },
+    "support": {
+      "title": "Support & Help Center",
+      "subtitle": "Get the help you need, when you need it",
+      "searchPlaceholder": "Search for help articles...",
+      "faqsAvailable": "FAQs Available",
+      "availability": "Support Available",
+      "responseTime": "Response Time",
+      "contactUs": "Contact Us",
+      "liveChat": "Live Chat",
+      "browseByCategory": "Browse by Category",
+      "categoryDescription": "Find answers organized by topic",
+      "articles": "articles",
+      "frequentlyAsked": "Frequently Asked Questions",
+      "exportFAQs": "Export FAQs",
+      "noResults": "No Results Found",
+      "noResultsDescription": "Try adjusting your search terms or browse categories",
+      "clearFilters": "Clear Filters",
+      "stillNeedHelp": "Still Need Help?",
+      "contactDescription": "Choose how you'd like to get in touch",
+      "unavailable": "Unavailable",
+      "quickActions": "Quick Actions",
+      "documentation": "Documentation",
+      "tutorials": "Tutorials",
+      "reportBug": "Report Bug",
+      "featureRequest": "Feature Request",
+      "helpful": "Helpful",
+      "notHelpful": "Not Helpful",
+      "contactForm": {
+        "title": "Contact Support",
+        "name": "Full Name",
+        "email": "Email Address",
+        "category": "Category",
+        "priority": "Priority",
+        "subject": "Subject",
+        "message": "Message",
+        "selectCategory": "Select a category",
+        "lowPriority": "Low",
+        "mediumPriority": "Medium",
+        "highPriority": "High",
+        "urgentPriority": "Urgent",
+        "cancel": "Cancel",
+        "send": "Send Message",
+        "sending": "Sending...",
+        "successTitle": "Message Sent Successfully",
+        "successMessage": "We'll get back to you within 24 hours",
+        "close": "Close"
+      }
+    },
+    "categories": [
+      {
+        "id": "getting-started",
+        "name": "Getting Started",
+        "description": "Learn the basics of voice generation",
+        "icon": "bi-rocket-takeoff"
+      },
+      {
+        "id": "voice-generation",
+        "name": "Voice Generation",
+        "description": "Questions about creating audio",
+        "icon": "bi-mic"
+      },
+      {
+        "id": "billing-payments",
+        "name": "Billing & Payments",
+        "description": "Payment and subscription help",
+        "icon": "bi-credit-card"
+      },
+      {
+        "id": "account-settings",
+        "name": "Account Settings",
+        "description": "Manage your account preferences",
+        "icon": "bi-person-gear"
+      },
+      {
+        "id": "technical-issues",
+        "name": "Technical Issues",
+        "description": "Troubleshooting and bug reports",
+        "icon": "bi-tools"
+      },
+      {
+        "id": "api-integration",
+        "name": "API Integration",
+        "description": "Developer resources and API help",
+        "icon": "bi-code-slash"
+      }
+    ],
+    "contactMethods": [
+      {
+        "id": "live-chat",
+        "name": "Live Chat",
+        "description": "Get instant help from our support team",
+        "action": "Start Chat",
+        "icon": "bi-chat-dots",
+        "available": true
+      },
+      {
+        "id": "email",
+        "name": "Email Support",
+        "description": "Send us a detailed message",
+        "action": "Send Email",
+        "icon": "bi-envelope",
+        "available": true
+      },
+      {
+        "id": "phone",
+        "name": "Phone Support",
+        "description": "Speak directly with our team",
+        "action": "Call Now",
+        "icon": "bi-telephone",
+        "available": false
+      },
+      {
+        "id": "community",
+        "name": "Community Forum",
+        "description": "Connect with other users",
+        "action": "Visit Forum",
+        "icon": "bi-people",
+        "available": true
+      }
+    ],
+    "faqs": [
+      {
+        "id": "1",
+        "question": "How do I generate my first voice audio?",
+        "answer": "To generate your first voice audio: 1) Select a voice from our library, 2) Enter your text (up to 100 characters for free), 3) Click 'Generate Speech', 4) Listen to your generated audio. For longer texts, you'll need to use our paid service.",
+        "category": "getting-started"
+      },
+      {
+        "id": "2",
+        "question": "What languages are supported?",
+        "answer": "We support over 32 languages including English, French, Spanish, Arabic, Darija (Moroccan Arabic), German, Italian, Portuguese, Hindi, Chinese, Japanese, Korean, and many more. Each language has multiple voice options available.",
+        "category": "voice-generation"
+      },
+      {
+        "id": "3",
+        "question": "How does the pricing work?",
+        "answer": "We offer a free tier with 100 characters per generation. For longer texts, we charge per character. You can either pay per use or add funds to your account balance for convenient usage. Check our pricing page for current rates.",
+        "category": "billing-payments"
+      },
+      {
+        "id": "4",
+        "question": "Can I use my own voice?",
+        "answer": "Yes! We offer voice cloning services where you can upload samples of your voice and create a custom voice model. This feature requires a premium subscription and voice samples of at least 10 minutes.",
+        "category": "voice-generation"
+      },
+      {
+        "id": "5",
+        "question": "What payment methods do you accept?",
+        "answer": "We accept PayPal, major credit cards (Visa, MasterCard, American Express), and bank transfers. All payments are processed securely through our payment partners.",
+        "category": "billing-payments"
+      },
+      {
+        "id": "6",
+        "question": "How do I change my account settings?",
+        "answer": "Go to your account dashboard, click on 'Settings' in the sidebar. From there you can update your profile information, change your password, manage notification preferences, and update billing information.",
+        "category": "account-settings"
+      },
+      {
+        "id": "7",
+        "question": "Why is my audio generation failing?",
+        "answer": "Audio generation might fail due to: 1) Network connectivity issues, 2) Text containing unsupported characters, 3) Server overload during peak times, 4) Insufficient account balance. Try again or contact support if the issue persists.",
+        "category": "technical-issues"
+      },
+      {
+        "id": "8",
+        "question": "Is there an API available?",
+        "answer": "Yes, we provide a comprehensive REST API for developers. You can integrate voice generation into your applications. API documentation, authentication details, and code examples are available in our developer portal.",
+        "category": "api-integration"
+      },
+      {
+        "id": "9",
+        "question": "How do I reset my password?",
+        "answer": "To reset your password: 1) Go to the login page, 2) Click 'Forgot Password', 3) Enter your email address, 4) Check your email for reset instructions, 5) Follow the link to create a new password. If you don't receive the email, check your spam folder.",
+        "category": "account-settings"
+      },
+      {
+        "id": "10",
+        "question": "What audio formats are supported?",
+        "answer": "We support multiple audio formats including MP3, WAV, and OGG. MP3 is the default format for most generations. You can specify your preferred format in the API or through your account settings.",
+        "category": "voice-generation"
+      },
+      {
+        "id": "11",
+        "question": "How can I improve audio quality?",
+        "answer": "To improve audio quality: 1) Use clear, well-punctuated text, 2) Avoid special characters and abbreviations, 3) Choose appropriate voice settings, 4) Use our premium voices for better quality, 5) Ensure your text is in the correct language for the selected voice.",
+        "category": "voice-generation"
+      },
+      {
+        "id": "12",
+        "question": "Can I cancel my subscription?",
+        "answer": "Yes, you can cancel your subscription at any time from your account settings. Go to 'Billing' > 'Subscription' > 'Cancel Subscription'. Your access will continue until the end of your current billing period.",
+        "category": "billing-payments"
+      }
+    ]
    
 }
