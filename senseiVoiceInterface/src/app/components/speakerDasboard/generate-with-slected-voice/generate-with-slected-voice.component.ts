@@ -821,7 +821,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     gender: string | null = null,
     age: string | null = null,
     language: string | null = null,
-    nextPageToken = 1,
+    nextPageToken = this.currentPage
   ) {
     this.elevenLabsService.listVoicesFiltter(pageSize, gender, age, language, nextPageToken).subscribe(
       (voices: Voice[]) => {
@@ -1318,18 +1318,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       // Use ElevenLabs voices for other languages
       this.fetchVoices(100, this.filters.gender, this.filters.ageZone, this.filters.language, 1)
     }
-
-    this.filteredVoices = voicesToFilter.filter(
-      (voice) =>
-        (this.filters.search === "" || voice.name.toLowerCase().includes(this.filters.search.toLowerCase())) &&
-        (this.filters.gender === "" || voice.gender === this.filters.gender) &&
-        (this.filters.ageZone === "" || voice.ageZone === this.filters.ageZone) &&
-        (this.filters.type === "" || voice.type === this.filters.type) &&
-        (this.filters.language === "" || voice.language === this.filters.language) &&
-        // Darija-specific filters
-        (this.filters.dialect === "" || voice.dialect === this.filters.dialect) &&
-        (this.filters.performanceStyle === "" || voice.performanceStyle === this.filters.performanceStyle),
-    )
   }
 
   resetFilters(): void {

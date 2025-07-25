@@ -15,7 +15,7 @@
 
   <div class="container py-4">
     <div class="content">
-      <!-- Support Hero Section -->
+      <!-- Enhanced Support Hero Section -->
       <div class="support-hero-card">
         <div class="support-hero-content">
           <div class="support-hero-left">
@@ -23,36 +23,48 @@
               <i class="bi bi-headset"></i>
             </div>
             <div class="support-hero-info">
-              <h1 class="support-hero-title">{{ 'support.title' | translate }}</h1>
-              <p class="support-hero-subtitle">{{ 'support.subtitle' | translate }}</p>
+              <h1 class="support-hero-title">{{ 'support.hero.title' | translate }}</h1>
+              <p class="support-hero-subtitle">{{ 'support.hero.subtitle' | translate }}</p>
               <div class="support-hero-stats">
                 <div class="stat-item">
                   <span class="stat-number">{{ filteredFAQs.length }}</span>
-                  <span class="stat-label">{{ 'support.faqsAvailable' | translate }}</span>
+                  <span class="stat-label">{{ 'support.hero.stats.articles' | translate }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number">32+</span>
+                  <span class="stat-label">{{ 'support.hero.stats.languages' | translate }}</span>
                 </div>
                 <div class="stat-item">
                   <span class="stat-number">24/7</span>
-                  <span class="stat-label">{{ 'support.availability' | translate }}</span>
+                  <span class="stat-label">{{ 'support.hero.stats.support' | translate }}</span>
                 </div>
                 <div class="stat-item">
                   <span class="stat-number">&lt;2h</span>
-                  <span class="stat-label">{{ 'support.responseTime' | translate }}</span>
+                  <span class="stat-label">{{ 'support.hero.stats.responseTime' | translate }}</span>
                 </div>
               </div>
             </div>
           </div>
           <div class="support-hero-right">
             <div class="support-hero-actions">
-              <button class="hero-action-btn primary" (click)="showContactForm = true">
+              <button class="hero-action-btn primary" (click)="startGettingStartedGuide()">
+                <i class="bi bi-rocket-takeoff me-2"></i>
+                {{ 'support.hero.actions.gettingStarted' | translate }}
+              </button>
+              <button class="hero-action-btn secondary" (click)="openVideoTutorials()">
+                <i class="bi bi-play-circle me-2"></i>
+                {{ 'support.hero.actions.videoTutorials' | translate }}
+              </button>
+              <button class="hero-action-btn secondary" (click)="showContactForm = true">
                 <i class="bi bi-envelope me-2"></i>
-                {{ 'support.contactUs' | translate }}
+                {{ 'support.hero.actions.contactSupport' | translate }}
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Search and Filters -->
+      <!-- Enhanced Search and Filters -->
       <div class="search-filters-section">
         <div class="search-container">
           <div class="search-input-group">
@@ -62,37 +74,71 @@
               class="search-input"
               [(ngModel)]="searchQuery"
               (input)="onSearchChange()"
-              [placeholder]="'support.searchPlaceholder' | translate">
+              [placeholder]="'support.search.placeholder' | translate">
             <button class="search-clear-btn" *ngIf="searchQuery" (click)="searchQuery = ''; onSearchChange()">
               <i class="bi bi-x"></i>
             </button>
           </div>
-          <button class="filter-reset-btn" (click)="clearFilters()" *ngIf="searchQuery || selectedCategory">
-            <i class="bi bi-arrow-clockwise me-2"></i>
-            {{ 'support.clearFilters' | translate }}
-          </button>
+          <div class="filter-controls">
+            <select class="filter-select" [(ngModel)]="selectedDifficulty" (change)="applyFilters()">
+              <option value="">{{ 'support.filters.allLevels' | translate }}</option>
+              <option value="beginner">{{ 'support.filters.beginner' | translate }}</option>
+              <option value="intermediate">{{ 'support.filters.intermediate' | translate }}</option>
+              <option value="advanced">{{ 'support.filters.advanced' | translate }}</option>
+            </select>
+            <button class="filter-reset-btn" (click)="clearFilters()" *ngIf="searchQuery || selectedCategory || selectedDifficulty">
+              <i class="bi bi-arrow-clockwise me-2"></i>
+              {{ 'support.filters.clearFilters' | translate }}
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Support Categories -->
+      <!-- Quick Start Actions -->
+      <div class="quick-start-section">
+        <div class="quick-start-card">
+          <h3>{{ 'support.quickStart.title' | translate }}</h3>
+          <div class="quick-start-grid">
+            <button class="quick-start-btn" (click)="startGettingStartedGuide()">
+              <i class="bi bi-rocket-takeoff"></i>
+              <span>{{ 'support.quickStart.setupGuide' | translate }}</span>
+            </button>
+            <button class="quick-start-btn" (click)="openFeatureShowcase()">
+              <i class="bi bi-stars"></i>
+              <span>{{ 'support.quickStart.featureTour' | translate }}</span>
+            </button>
+            <button class="quick-start-btn" (click)="openVideoTutorials()">
+              <i class="bi bi-play-circle"></i>
+              <span>{{ 'support.quickStart.videoTutorials' | translate }}</span>
+            </button>
+            <button class="quick-start-btn" (click)="openDocumentation()">
+              <i class="bi bi-book"></i>
+              <span>{{ 'support.quickStart.documentation' | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Support Categories -->
       <div class="categories-section">
         <div class="section-header">
-          <h2>{{ 'support.browseByCategory' | translate }}</h2>
-          <p>{{ 'support.categoryDescription' | translate }}</p>
+          <h2>{{ 'support.categories.title' | translate }}</h2>
+          <p>{{ 'support.categories.subtitle' | translate }}</p>
         </div>
         <div class="categories-grid">
           <div class="category-card" 
-               *ngFor="let category of getLocalizedCategories()"
+               *ngFor="let category of supportCategories"
                [class.selected]="selectedCategory === category.id"
-               (click)="selectCategory(category.id)">
-            <div class="category-icon">
+               (click)="selectCategory(category.id)"
+               [style.--category-color]="category.color">
+            <div class="category-icon" [style.background]="'linear-gradient(135deg, ' + category.color + ' 0%, ' + category.color + '80 100%)'">
               <i class="bi" [ngClass]="category.icon"></i>
             </div>
             <div class="category-content">
-              <h3 class="category-name">{{ category.name }}</h3>
-              <p class="category-description">{{ category.description }}</p>
+              <h3 class="category-name">{{ category.name | translate }}</h3>
+              <p class="category-description">{{ category.description | translate }}</p>
               <div class="category-count">
-                <span>{{ category.count }} {{ 'support.articles' | translate }}</span>
+                <span>{{ category.count }} {{ 'support.categories.articles' | translate }}</span>
               </div>
             </div>
             <div class="category-arrow">
@@ -102,29 +148,35 @@
         </div>
       </div>
 
-      <!-- FAQ Section -->
-      <div class="faq-section">
+      <!-- Enhanced FAQ Section -->
+      <div class="faq-section" id="fqa">
         <div class="section-header">
-          <h2>{{ 'support.frequentlyAsked' | translate }}</h2>
+          <h2>{{ 'support.faq.title' | translate }}</h2>
           <div class="section-actions">
             <button class="export-btn" (click)="exportFAQs()" *ngIf="filteredFAQs.length > 0">
               <i class="bi bi-download me-2"></i>
-              {{ 'support.exportFAQs' | translate }}
+              {{ 'support.faq.exportFAQs' | translate }}
             </button>
           </div>
         </div>
         
         <div class="faq-container" *ngIf="filteredFAQs.length > 0">
           <div class="faq-item" 
-               *ngFor="let faq of getLocalizedFAQs()"
+               *ngFor="let faq of filteredFAQs"
                [class.expanded]="faq.isExpanded">
             <div class="faq-header" (click)="toggleFAQ(faq)">
               <div class="faq-question-section">
-                <div class="faq-category-badge">
+                <div class="faq-category-badge" [style.background-color]="getCategoryColor(faq.category) + '20'" [style.color]="getCategoryColor(faq.category)">
                   <i class="bi" [ngClass]="getCategoryIcon(faq.category)"></i>
-                  <span>{{ getCategoryName(faq.category) }}</span>
+                  <span>{{ getCategoryName(faq.category) | translate }}</span>
                 </div>
-                <h3 class="faq-question">{{ faq.question }}</h3>
+                <div class="faq-meta">
+                  <span class="difficulty-badge" [class]="'difficulty-' + faq.difficulty">{{ ('support.difficulty.' + faq.difficulty) | translate }}</span>
+                  <div class="faq-tags" *ngIf="faq.tags && faq.tags.length > 0">
+                    <span class="tag" *ngFor="let tag of faq.tags.slice(0, 3)">{{ tag }}</span>
+                  </div>
+                </div>
+                <h3 class="faq-question">{{ faq.question | translate }}</h3>
               </div>
               <div class="faq-toggle">
                 <i class="bi" [ngClass]="faq.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
@@ -132,15 +184,15 @@
             </div>
             <div class="faq-answer" [class.show]="faq.isExpanded">
               <div class="faq-answer-content">
-                <p>{{ faq.answer }}</p>
+                <p [innerHTML]="faq.answer | translate"></p>
                 <div class="faq-actions">
                   <button class="faq-action-btn helpful" (click)="markHelpful(faq.id)">
                     <i class="bi bi-hand-thumbs-up me-1"></i>
-                    {{ 'support.helpful' | translate }}
+                    {{ 'support.faq.helpful' | translate }}
                   </button>
                   <button class="faq-action-btn not-helpful" (click)="markNotHelpful(faq.id)">
                     <i class="bi bi-hand-thumbs-down me-1"></i>
-                    {{ 'support.notHelpful' | translate }}
+                    {{ 'support.faq.notHelpful' | translate }}
                   </button>
                 </div>
               </div>
@@ -152,74 +204,143 @@
           <div class="no-results-icon">
             <i class="bi bi-search"></i>
           </div>
-          <h3>{{ 'support.noResults' | translate }}</h3>
-          <p>{{ 'support.noResultsDescription' | translate }}</p>
+          <h3>{{ 'support.noResults.title' | translate }}</h3>
+          <p>{{ 'support.noResults.message' | translate }}</p>
           <button class="btn-primary" (click)="clearFilters()">
             <i class="bi bi-arrow-clockwise me-2"></i>
-            {{ 'support.clearFilters' | translate }}
+            {{ 'support.noResults.clearFilters' | translate }}
           </button>
         </div>
       </div>
 
-      <!-- Contact Methods -->
-      <div class="contact-methods-section">
+      <!-- Video Tutorials Section -->
+      <div class="tutorials-section" *ngIf="showVideoTutorials" id="video">
         <div class="section-header">
-          <h2>{{ 'support.stillNeedHelp' | translate }}</h2>
-          <p>{{ 'support.contactDescription' | translate }}</p>
+          <h2>{{ 'support.tutorials.title' | translate }}</h2>
+          <p>{{ 'support.tutorials.subtitle' | translate }}</p>
+          <button class="close-section-btn" (click)="showVideoTutorials = false">
+            <i class="bi bi-x"></i>
+          </button>
         </div>
-        <div class="contact-methods-grid">
-          <div class="contact-method-card" 
-               *ngFor="let method of getLocalizedContactMethods()"
-               [class.unavailable]="!method.available"
-               (click)="method.available && handleContactMethod(method)">
-            <div class="contact-method-icon">
-              <i class="bi" [ngClass]="method.icon"></i>
+        <div class="tutorial-filters">
+          <select class="filter-select" [(ngModel)]="selectedVideoCategory" (change)="applyFilters()">
+            <option value="">{{ 'support.tutorials.allCategories' | translate }}</option>
+            <option *ngFor="let category of supportCategories" [value]="category.id">
+              {{ category.name | translate }}
+            </option>
+          </select>
+        </div>
+        <div class="tutorials-grid">
+          <div class="tutorial-card" *ngFor="let tutorial of filteredTutorials" (click)="playTutorialVideo(tutorial)">
+            <div class="tutorial-thumbnail">
+              <img [src]="tutorial.thumbnail" [alt]="tutorial.title | translate" />
+              <div class="play-overlay">
+                <i class="bi bi-play-circle"></i>
+              </div>
+              <div class="tutorial-duration">{{ tutorial.duration }}</div>
             </div>
-            <div class="contact-method-content">
-              <h3 class="contact-method-name">{{ method.name }}</h3>
-              <p class="contact-method-description">{{ method.description }}</p>
-              <div class="contact-method-status" *ngIf="!method.available">
-                <span class="status-badge unavailable">{{ 'support.unavailable' | translate }}</span>
+            <div class="tutorial-content">
+              <h4 class="tutorial-title">{{ tutorial.title | translate }}</h4>
+              <p class="tutorial-description">{{ tutorial.description | translate }}</p>
+              <div class="tutorial-meta">
+                <span class="difficulty-badge" [class]="'difficulty-' + tutorial.difficulty">{{ ('support.difficulty.' + tutorial.difficulty) | translate }}</span>
+                <span class="category-badge">{{ getCategoryName(tutorial.category) | translate }}</span>
               </div>
             </div>
-            <div class="contact-method-action" *ngIf="method.available">
-              <span class="action-text">{{ method.action }}</span>
-              <i class="bi bi-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Getting Started Guide Modal -->
+      <div class="guide-modal" *ngIf="showGettingStartedGuide" (click)="showGettingStartedGuide = false">
+        <div class="guide-content" (click)="$event.stopPropagation()">
+          <div class="guide-header">
+            <h3>{{ 'support.guide.title' | translate }}</h3>
+            <div class="guide-progress">
+              <span>{{ 'support.guide.step' | translate }} {{ currentGuideStep + 1 }} {{ 'support.guide.of' | translate }} {{ gettingStartedSteps.length }}</span>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="((currentGuideStep + 1) / gettingStartedSteps.length) * 100"></div>
+              </div>
+            </div>
+            <button class="modal-close-btn" (click)="showGettingStartedGuide = false">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          
+          <div class="guide-body">
+            <div class="guide-step" *ngIf="gettingStartedSteps[currentGuideStep]">
+              <div class="step-icon">
+                <i class="bi" [ngClass]="gettingStartedSteps[currentGuideStep].icon"></i>
+              </div>
+              <h4>{{ gettingStartedSteps[currentGuideStep].title | translate }}</h4>
+              <p>{{ gettingStartedSteps[currentGuideStep].description | translate }}</p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="quick-actions-section">
-        <div class="quick-actions-card">
-          <h3>{{ 'support.quickActions' | translate }}</h3>
-          <div class="quick-actions-grid">
-            <button class="quick-action-btn" (click)="openDocumentation()">
-              <i class="bi bi-book"></i>
-              <span>{{ 'support.documentation' | translate }}</span>
+          
+          <div class="guide-footer">
+            <button class="btn-secondary" (click)="previousGuideStep()" [disabled]="currentGuideStep === 0">
+              <i class="bi bi-arrow-left me-2"></i>
+              {{ 'support.guide.previous' | translate }}
             </button>
-            <button class="quick-action-btn" (click)="openTutorials()">
-              <i class="bi bi-play-circle"></i>
-              <span>{{ 'support.tutorials' | translate }}</span>
+            <button class="btn-primary" (click)="nextGuideStep()" *ngIf="currentGuideStep < gettingStartedSteps.length - 1">
+              {{ 'support.guide.next' | translate }}
+              <i class="bi bi-arrow-right ms-2"></i>
             </button>
-            <button class="quick-action-btn" (click)="reportBug()">
-              <i class="bi bi-bug"></i>
-              <span>{{ 'support.reportBug' | translate }}</span>
-            </button>
-            <button class="quick-action-btn" (click)="requestFeature()">
-              <i class="bi bi-lightbulb"></i>
-              <span>{{ 'support.featureRequest' | translate }}</span>
+            <button class="btn-primary" (click)="completeGuide()" *ngIf="currentGuideStep === gettingStartedSteps.length - 1">
+              {{ 'support.guide.complete' | translate }}
+              <i class="bi bi-check-circle ms-2"></i>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Contact Form Modal -->
+      <!-- Feature Showcase Modal -->
+      <div class="showcase-modal" *ngIf="showFeatureShowcase" (click)="showFeatureShowcase = false">
+        <div class="showcase-content" (click)="$event.stopPropagation()">
+          <div class="showcase-header">
+            <h3>{{ 'support.features.title' | translate }}</h3>
+            <button class="modal-close-btn" (click)="showFeatureShowcase = false">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          
+          <div class="showcase-body">
+            <div class="feature-showcase" *ngIf="featureShowcaseItems[currentFeature]">
+              <div class="feature-image">
+                <img [src]="featureShowcaseItems[currentFeature].image" [alt]="featureShowcaseItems[currentFeature].title | translate" />
+              </div>
+              <div class="feature-info">
+                <div class="feature-icon">
+                  <i class="bi" [ngClass]="featureShowcaseItems[currentFeature].icon"></i>
+                </div>
+                <h4>{{ featureShowcaseItems[currentFeature].title | translate }}</h4>
+                <p>{{ featureShowcaseItems[currentFeature].description | translate }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="showcase-footer">
+            <button class="btn-secondary" (click)="previousFeature()">
+              <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="feature-indicators">
+              <span class="indicator" 
+                    *ngFor="let item of featureShowcaseItems; let i = index"
+                    [class.active]="i === currentFeature"
+                    (click)="currentFeature = i"></span>
+            </div>
+            <button class="btn-secondary" (click)="nextFeature()">
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Contact Form Modal -->
       <div class="contact-form-modal" *ngIf="showContactForm" (click)="closeContactForm()">
         <div class="contact-form-content" (click)="$event.stopPropagation()">
           <div class="contact-form-header">
-            <h3>{{ 'support.contactForm.title' | translate }}</h3>
+            <h3>{{ 'support.contact.title' | translate }}</h3>
             <button class="modal-close-btn" (click)="closeContactForm()">
               <i class="bi bi-x"></i>
             </button>
@@ -229,7 +350,7 @@
             <form (ngSubmit)="submitContactForm()" #contactFormRef="ngForm">
               <div class="form-row">
                 <div class="form-group">
-                  <label for="contactName">{{ 'support.contactForm.name' | translate }} *</label>
+                  <label for="contactName">{{ 'support.contact.form.name' | translate }} *</label>
                   <input 
                     type="text" 
                     id="contactName"
@@ -239,7 +360,7 @@
                     required>
                 </div>
                 <div class="form-group">
-                  <label for="contactEmail">{{ 'support.contactForm.email' | translate }} *</label>
+                  <label for="contactEmail">{{ 'support.contact.form.email' | translate }} *</label>
                   <input 
                     type="email" 
                     id="contactEmail"
@@ -252,35 +373,35 @@
               
               <div class="form-row">
                 <div class="form-group">
-                  <label for="contactCategory">{{ 'support.contactForm.category' | translate }}</label>
+                  <label for="contactCategory">{{ 'support.contact.form.category' | translate }}</label>
                   <select 
                     id="contactCategory"
                     class="form-select"
                     [(ngModel)]="contactForm.category"
                     name="category">
-                    <option value="">{{ 'support.contactForm.selectCategory' | translate }}</option>
-                    <option *ngFor="let category of getLocalizedCategories()" [value]="category.id">
-                      {{ category.name }}
+                    <option value="">{{ 'support.contact.form.selectCategory' | translate }}</option>
+                    <option *ngFor="let category of supportCategories" [value]="category.id">
+                      {{ category.name | translate }}
                     </option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="contactPriority">{{ 'support.contactForm.priority' | translate }}</label>
+                  <label for="contactPriority">{{ 'support.contact.form.priority' | translate }}</label>
                   <select 
                     id="contactPriority"
                     class="form-select"
                     [(ngModel)]="contactForm.priority"
                     name="priority">
-                    <option value="low">{{ 'support.contactForm.lowPriority' | translate }}</option>
-                    <option value="medium">{{ 'support.contactForm.mediumPriority' | translate }}</option>
-                    <option value="high">{{ 'support.contactForm.highPriority' | translate }}</option>
-                    <option value="urgent">{{ 'support.contactForm.urgentPriority' | translate }}</option>
+                    <option value="low">{{ 'support.contact.form.lowPriority' | translate }}</option>
+                    <option value="medium">{{ 'support.contact.form.mediumPriority' | translate }}</option>
+                    <option value="high">{{ 'support.contact.form.highPriority' | translate }}</option>
+                    <option value="urgent">{{ 'support.contact.form.urgent' | translate }}</option>
                   </select>
                 </div>
               </div>
               
               <div class="form-group">
-                <label for="contactSubject">{{ 'support.contactForm.subject' | translate }} *</label>
+                <label for="contactSubject">{{ 'support.contact.form.subject' | translate }} *</label>
                 <input 
                   type="text" 
                   id="contactSubject"
@@ -291,7 +412,7 @@
               </div>
               
               <div class="form-group">
-                <label for="contactMessage">{{ 'support.contactForm.message' | translate }} *</label>
+                <label for="contactMessage">{{ 'support.contact.form.message' | translate }} *</label>
                 <textarea 
                   id="contactMessage"
                   class="form-textarea"
@@ -299,6 +420,26 @@
                   name="message"
                   rows="5"
                   required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="attachments">{{ 'support.contact.form.attachments' | translate }}</label>
+                <input 
+                  type="file" 
+                  id="attachments"
+                  class="form-input"
+                  multiple
+                  (change)="onFileSelect($event)"
+                  accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                <div class="attachment-list" *ngIf="contactForm.attachments.length > 0">
+                  <div class="attachment-item" *ngFor="let file of contactForm.attachments; let i = index">
+                    <i class="bi bi-paperclip"></i>
+                    <span>{{ file.name }}</span>
+                    <button type="button" class="remove-attachment" (click)="removeAttachment(i)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
               
               <div class="contact-error" *ngIf="contactError">
@@ -310,13 +451,13 @@
               
               <div class="contact-form-footer">
                 <button type="button" class="btn-secondary" (click)="closeContactForm()">
-                  {{ 'support.contactForm.cancel' | translate }}
+                  {{ 'support.contact.form.cancel' | translate }}
                 </button>
                 <button type="submit" 
                         class="btn-primary" 
                         [disabled]="isSubmittingContact || !contactFormRef.form.valid">
                   <i class="bi" [ngClass]="isSubmittingContact ? 'bi-hourglass-split' : 'bi-send'"></i>
-                  {{ isSubmittingContact ? ('support.contactForm.sending' | translate) : ('support.contactForm.send' | translate) }}
+                  {{ isSubmittingContact ? ('support.contact.form.sending' | translate) : ('support.contact.form.sendMessage' | translate) }}
                 </button>
               </div>
             </form>
@@ -326,10 +467,10 @@
             <div class="success-icon">
               <i class="bi bi-check-circle"></i>
             </div>
-            <h4>{{ 'support.contactForm.successTitle' | translate }}</h4>
-            <p>{{ 'support.contactForm.successMessage' | translate }}</p>
+            <h4>{{ 'support.contact.success.title' | translate }}</h4>
+            <p>{{ 'support.contact.success.message' | translate }}</p>
             <button class="btn-primary" (click)="closeContactForm()">
-              {{ 'support.contactForm.close' | translate }}
+              {{ 'support.contact.success.close' | translate }}
             </button>
           </div>
         </div>
