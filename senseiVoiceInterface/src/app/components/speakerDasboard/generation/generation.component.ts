@@ -201,6 +201,10 @@ export class GenerationComponent implements OnInit {
   userAcceptedPaidContent = false;
   hasExceededLimit = false;
   previousTextLength = 0;
+  // --- ADDED for Server-Side Pagination ---
+  apiPage = 1;
+  isLoadingMore = false;
+
 
   constructor(
     private elevenLabsService: ElevenLabsService,
@@ -1317,8 +1321,46 @@ export class GenerationComponent implements OnInit {
   }
 
   nextPage() {
+    // If we can paginate on the client-side with already fetched data, just do that.
     if (this.currentPage < Math.ceil(this.filteredVoices.length / this.voicesPerPage)) {
-      this.currentPage++
+      this.currentPage++;
+    }
+    // Else, if we've reached the end of the loaded data, fetch the next page from the API.
+    // This logic is for server-side pagination when local results are exhausted.
+    // We check that we're not already fetching and that the selected language uses this pagination method.
+    else if (!this.isLoadingMore && this.filters.language !== 'darija') {
+      this.isLoadingMore = true;
+      this.apiPage++; // Prepare to fetch the next page
+
+      // Call the service directly to fetch the next page of voices, using the current filters.
+      this.elevenLabsService.listVoicesFiltter(
+        100, // Page size
+        this.filters.gender || null,
+        this.filters.ageZone || null,
+        this.filters.language || null,
+        this.apiPage
+      ).subscribe({
+        next: (newVoices: Voice[]) => {
+          // If the API returns new voices, append them to our lists.
+          if (newVoices && newVoices.length > 0) {
+            this.voices.push(...newVoices);
+            this.filteredVoices.push(...newVoices);
+
+            // After appending data, we can now move to the next display page.
+            this.currentPage++;
+          } else {
+            // No more voices were returned, so we've reached the end on the server.
+            console.log("No more voices to load from the server.");
+            this.apiPage--; // Revert page number as this page was empty.
+          }
+          this.isLoadingMore = false;
+        },
+        error: (error) => {
+          console.error("Error retrieving next page of voices:", error);
+          this.apiPage--; // Revert page number on failure.
+          this.isLoadingMore = false;
+        },
+      });
     }
   }
 
@@ -1370,16 +1412,15 @@ export class GenerationComponent implements OnInit {
   }
 
   applyFilters(): void {
-    if (this.filters.language === "darija" && !this.lahajatiDataLoaded) {
-      this.fetchLahajatiData()
-      return
-    }
+    
 
     let voicesToFilter: any[] = []
 
     if (this.filters.language === "darija") {
+      this.fetchLahajatiData()
       voicesToFilter = this.lahajatiVoices
     } else {
+      this.apiPage = 1; // Reset the API page counter for a new filter query
       this.fetchVoices(100, this.filters.gender, this.filters.ageZone, this.filters.language, 1)
     }
 
