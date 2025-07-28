@@ -64,9 +64,9 @@ interface BankTransferResponse {
   styleUrls: ["./generate-with-slected-voice.component.css"],
 })
 export class GenerateWithSlectedVoiceComponent implements OnInit {
-  @ViewChild("audioElement") audioElement!: ElementRef<HTMLAudioElement>
+  // *** FIX: Unify the ViewChild to match the #audioPlayer in the template
   @ViewChild("progressBar") progressBar!: ElementRef<HTMLDivElement>
-  @ViewChild("audioPlayer") audioPlayerRef!: ElementRef<HTMLAudioElement>
+  @ViewChild("audioPlayer") audioElement!: ElementRef<HTMLAudioElement>
 
   voices: Voice[] = []
   filteredVoices: Voice[] = []
@@ -86,7 +86,6 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   price = 0.05 // Example price per character
   baseUrl = "https://api.voice-service.com"
   audioUrl: SafeUrl | null = null
-  audioPlayer = new Audio()
   voiceId: string | null = null
   uuid: string | null = null
   currentPlayingVoiceId: string | null = null
@@ -430,27 +429,41 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
 
   // NEW: Process audio generation using balance
   processAudioGenerationWithBalance() {
+    console.log("[LOG] Starting audio generation using balance.");
     this.isGenerating = true
     this.generationError = null
     this.generationSuccess = false
 
     // Check if it's a Darija voice and use appropriate balance method
     if (this.selectedVoice!.language === "darija") {
+      console.log("[LOG] Voice is Darija, calling generateLahajatiAudioWithBalance.");
       this.generateLahajatiAudioWithBalance()
     } else {
+      console.log("[LOG] Voice is not Darija, calling generateElevenLabsAudioWithBalance.");
       this.generateElevenLabsAudioWithBalance()
     }
   }
 
   // NEW: Generate Lahajati audio using balance
   generateLahajatiAudioWithBalance() {
+    console.log("[LOG] Entered generateLahajatiAudioWithBalance function.");
     if (!this.selectedVoice || !this.uuid) {
       this.generationError = "Missing required information"
       this.isGenerating = false
+      console.error("[LOG] Generation failed: Missing selected voice or user UUID.", { voice: this.selectedVoice, uuid: this.uuid });
       return
     }
 
     const projectUuid = this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3"
+    const payload = {
+      text: this.actionData.text,
+      status: "EN_ATTENTE",
+      voiceId: this.selectedVoice.id,
+      userUuid: this.uuid,
+      language: this.selectedVoice.language,
+      projectUuid: projectUuid,
+    };
+    console.log("[LOG] Calling actionService.generateLahajatiAudioWithBalance with payload:", payload);
 
     this.actionService
       .generateLahajatiAudioWithBalance(
@@ -463,7 +476,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          console.log("Lahajati audio generated with balance:", response)
+          console.log("[LOG] Lahajati audio generated successfully with balance:", response)
 
           // Handle the response - it might contain audio URL or blob
           if (response.audioUrl) {
@@ -482,33 +495,39 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
           }
         },
         error: (error) => {
-          console.error("Error generating Lahajati audio with balance:", error)
+          console.error("[LOG] Error generating Lahajati audio with balance:", error)
           this.isGenerating = false
           this.generationError =
             error.error?.message || "Failed to generate Lahajati audio with balance. Please try again."
 
           // Restore balance on error
+          console.log("[LOG] Restoring balance on error. Old balance:", this.userBalance.balance);
           this.userBalance.balance += this.calculatedPrice
+          console.log("[LOG] New balance after restoration:", this.userBalance.balance);
         },
       })
   }
 
   // NEW: Generate ElevenLabs audio using balance
   generateElevenLabsAudioWithBalance() {
+    console.log("[LOG] Entered generateElevenLabsAudioWithBalance function.");
     if (!this.selectedVoice || !this.uuid) {
       this.generationError = "Missing required information"
       this.isGenerating = false
+      console.error("[LOG] Generation failed: Missing selected voice or user UUID.", { voice: this.selectedVoice, uuid: this.uuid });
       return
     }
-
+    console.log("[LOG] Step 1: Generating audio from ElevenLabs service.");
     // First generate the audio using ElevenLabs service
     this.elevenLabsService.textToSpeech(this.selectedVoice.id, this.actionData.text).subscribe({
       next: (audioBlob) => {
+        console.log("[LOG] Step 1 SUCCESS: Received audio blob from ElevenLabs.");
         // Create audio file from blob
         const audioFile = new File([audioBlob], "generated-audio.mp3", { type: "audio/mpeg" })
         const projectUuid =
           this.selectedProject?.uuid || "331db4d304bb5949345f1bd8d0325b19a85b5536e0dc6d6f6a9d3c154813d8d3"
-
+        
+        console.log("[LOG] Step 2: Calling our backend to save action and deduct balance.");
         // Now call the balance method with the generated audio
         this.actionService
           .generateElevenLabsAudioWithBalance(
@@ -522,7 +541,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
           )
           .subscribe({
             next: (response) => {
-              console.log("ElevenLabs audio generated with balance:", response)
+              console.log("[LOG] Step 2 SUCCESS: ElevenLabs audio action saved and balance deducted:", response)
 
               // Set up audio for playback
               const url = URL.createObjectURL(audioBlob)
@@ -537,23 +556,27 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
               }
             },
             error: (error) => {
-              console.error("Error saving ElevenLabs audio with balance:", error)
+              console.error("[LOG] Step 2 FAILED: Error saving ElevenLabs audio action:", error)
               this.isGenerating = false
               this.generationError =
                 error.error?.message || "Failed to save ElevenLabs audio with balance. Please try again."
 
               // Restore balance on error
+              console.log("[LOG] Restoring balance on error. Old balance:", this.userBalance.balance);
               this.userBalance.balance += this.calculatedPrice
+              console.log("[LOG] New balance after restoration:", this.userBalance.balance);
             },
           })
       },
       error: (error) => {
-        console.error("Error generating ElevenLabs audio:", error)
+        console.error("[LOG] Step 1 FAILED: Error generating ElevenLabs audio:", error)
         this.isGenerating = false
         this.generationError = "Failed to generate ElevenLabs audio. Please try again."
 
         // Restore balance on error
+        console.log("[LOG] Restoring balance on error. Old balance:", this.userBalance.balance);
         this.userBalance.balance += this.calculatedPrice
+        console.log("[LOG] New balance after restoration:", this.userBalance.balance);
       },
     })
   }
@@ -711,6 +734,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.waveformBars = Array.from({ length: 50 }, () => Math.random() * 100)
   }
 
+  // *** FIX: Use the correct ViewChild variable 'this.audioElement'
   togglePlayPause() {
     if (!this.audioElement) return
 
@@ -723,6 +747,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.isPlaying = !this.isPlaying
   }
 
+  // *** FIX: Use the correct ViewChild variable 'this.audioElement'
   onAudioLoaded() {
     if (this.audioElement) {
       const audio = this.audioElement.nativeElement
@@ -731,6 +756,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     }
   }
 
+  // *** FIX: Use the correct ViewChild variable 'this.audioElement'
   onTimeUpdate() {
     if (this.audioElement) {
       const audio = this.audioElement.nativeElement
@@ -751,6 +777,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.generationError = "Error playing audio. Please try again."
   }
 
+  // *** FIX: Use the correct ViewChild variable 'this.audioElement'
   seekTo(event: MouseEvent) {
     if (!this.audioElement || !this.progressBar) return
 
@@ -765,6 +792,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     this.progressPercentage = percentage
   }
 
+  // *** FIX: Use the correct ViewChild variable 'this.audioElement'
   toggleMute() {
     if (!this.audioElement) return
 
@@ -773,6 +801,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     audio.muted = this.isMuted
   }
 
+  // *** FIX: Use the correct ViewChild variable 'this.audioElement'
   setVolume(event: any) {
     if (!this.audioElement) return
 
@@ -942,13 +971,16 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   }
 
   generateSpeech() {
+    console.log(`[LOG] generateSpeech called. Active tab: ${this.activeTab}`);
     if (!this.selectedVoice) {
       this.generationError = "Please select a voice first"
+      console.error("[LOG] Generation aborted: No voice selected.");
       return
     }
 
     // For free test, enforce character limit
     if (this.activeTab === "free") {
+      console.log("[LOG] Processing as FREE generation.");
       if (this.actionData.text.length > this.freeTestCharLimit) {
         this.limitText()
       }
@@ -956,14 +988,17 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     }
     // For audio request, show balance/payment options
     else if (this.activeTab === "request") {
+      console.log("[LOG] Processing as REQUEST (paid) generation.");
       this.showPaymentMethodSelection()
     }
   }
 
   // Modified proceedWithPayment - removed CGV checks
   proceedWithPayment() {
+    console.log("[LOG] proceedWithPayment called.");
     if (!this.selectedPaymentMethod) {
       this.paymentError = "Please select a payment method"
+      console.error("[LOG] Payment aborted: No payment method selected.");
       return
     }
 
@@ -971,6 +1006,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   }
 
   private executeSelectedPayment() {
+    console.log(`[LOG] Executing payment for method: ${this.selectedPaymentMethod}`);
     if (this.selectedPaymentMethod === "paypal") {
       this.processPayPalPayment()
     } else if (this.selectedPaymentMethod === "card") {
@@ -991,8 +1027,10 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   }
 
   processPayPalPayment() {
+    console.log("[LOG] Starting PayPal payment process...");
     if (!this.selectedVoice || !this.uuid) {
       this.paymentError = "Missing required information"
+      console.error("[LOG] PayPal process aborted: Missing selected voice or user UUID.", { voice: this.selectedVoice, uuid: this.uuid });
       return
     }
 
@@ -1013,16 +1051,20 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
         performanceId: this.selectedPerformanceStyle || "1284",
       }),
     }
+    console.log("[LOG] PayPal Action Request Payload:", actionRequest);
+
 
     // Use appropriate service method based on voice language
     const paymentObservable =
       this.selectedVoice.language === "darija"
         ? this.actionService.createActionWithPaypal(actionRequest)
         : this.actionService.createActionPayed(actionRequest)
+    
+    console.log(`[LOG] Calling actionService method: ${this.selectedVoice.language === "darija" ? 'createActionWithPaypal' : 'createActionPayed'}`);
 
     paymentObservable.subscribe(
       (response) => {
-        console.log("PayPal payment response:", response)
+        console.log("[LOG] PayPal payment response received:", response)
 
         this.actionId = response.actionId
         this.paymentId = response.paymentId
@@ -1030,6 +1072,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
         this.calculatedPrice = response.price
 
         if (response.paypalError) {
+          console.error("[LOG] PayPal process failed with a business logic error:", response.paypalError);
           this.paymentError = response.paypalError
           this.isProcessingPayment = false
           this.showPaymentProcessing = false
@@ -1038,15 +1081,17 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
             console.log("Test URL available:", response.testUrl)
           }
         } else if (this.approvalUrl) {
+          console.log("[LOG] Approval URL received. Redirecting to PayPal.");
           this.redirectToPayPal()
         } else {
+          console.error("[LOG] PayPal process failed: No approval URL received.");
           this.paymentError = "Failed to create PayPal payment"
           this.isProcessingPayment = false
           this.showPaymentProcessing = false
         }
       },
       (error) => {
-        console.error("Error creating PayPal payment:", error)
+        console.error("[LOG] HTTP Error creating PayPal payment/action:", error)
         this.paymentError = error.error?.error || "Failed to process payment"
         this.isProcessingPayment = false
         this.showPaymentProcessing = false
@@ -1056,8 +1101,10 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
 
   // Updated method for bank transfer payment with new response structure
   processBankTransferPayment() {
+    console.log("[LOG] Starting Bank Transfer payment process...");
     if (!this.selectedVoice || !this.uuid) {
       this.paymentError = "Missing required information"
+      console.error("[LOG] Bank Transfer process aborted: Missing selected voice or user UUID.", { voice: this.selectedVoice, uuid: this.uuid });
       return
     }
 
@@ -1078,16 +1125,19 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
         performanceId: this.selectedPerformanceStyle || "1284",
       }),
     }
+    console.log("[LOG] Bank Transfer Action Request Payload:", bankTransferRequest);
 
     // Use appropriate service method based on voice language
     const bankTransferObservable =
       this.selectedVoice.language === "darija"
         ? this.actionService.createActionLahajatiWithBankTransfer(bankTransferRequest)
         : this.actionService.createActionWithBankTransfer(bankTransferRequest)
+    
+    console.log(`[LOG] Calling actionService method: ${this.selectedVoice.language === "darija" ? 'createActionLahajatiWithBankTransfer' : 'createActionWithBankTransfer'}`);
 
     bankTransferObservable.subscribe(
       (response: BankTransferResponse) => {
-        console.log("Bank transfer payment response:", response)
+        console.log("[LOG] Bank transfer payment response received:", response)
 
         this.actionId = response.actionId
         this.bankTransferReference = response.libelle
@@ -1102,7 +1152,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
         this.showBankTransferModal = true
       },
       (error) => {
-        console.error("Error creating bank transfer payment:", error)
+        console.error("[LOG] HTTP Error creating bank transfer payment/action:", error)
         this.paymentError = error.error?.error || "Failed to process bank transfer payment"
         this.isProcessingPayment = false
         this.showPaymentProcessing = false
@@ -1200,71 +1250,87 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
   }
 
   processAudioGeneration() {
-    this.isGenerating = true
-    this.generationError = null
-    this.generationSuccess = false
+    console.log("[LOG] Starting FREE audio generation process...");
+    this.isGenerating = true;
+    this.generationError = null;
+    this.generationSuccess = false;
+    this.audioUrl = null; // Clear previous audio
 
     // Check if it's a Darija voice and use Lahajati service
     if (this.selectedVoice!.language === "darija") {
-      this.generateDarijaAudio()
+        console.log("[LOG] Voice is Darija, calling generateDarijaAudio.");
+        this.generateDarijaAudio();
     } else {
-      // Use ElevenLabs service for other languages
-      this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe(
-        (blob) => {
-          const url = URL.createObjectURL(blob)
-          this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
+        // Use ElevenLabs service for other languages
+        console.log(`[LOG] Voice is not Darija. Calling ElevenLabs TTS for voiceId: ${this.selectedVoice!.id}`);
+        this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe(
+            (blob) => {
+                console.log("[LOG] Successfully received audio blob from ElevenLabs.");
+                const url = URL.createObjectURL(blob);
+                this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url);
 
-          // If a project is selected, save the audio to that project
-          if (this.selectedProject) {
-            this.saveAudioToProject(blob)
-          } else {
-            this.isGenerating = false
-            this.generationSuccess = true
-          }
-        },
-        (error) => {
-          console.error("Error generating speech:", error)
-          this.isGenerating = false
-          this.generationError = "Failed to generate speech. Please try again."
-        },
-      )
+                // The generation is now complete from the user's perspective.
+                // Update the state to show the audio player.
+                this.isGenerating = false;
+                this.generationSuccess = true;
+                console.log("[LOG] Generation complete. Audio is ready for playback.");
+
+                // If a project is selected, save the audio in the background.
+                if (this.selectedProject) {
+                    this.saveAudioToProject(blob);
+                }
+            },
+            (error) => {
+                console.error("[LOG] Error generating speech with ElevenLabs:", error);
+                this.isGenerating = false;
+                this.generationError = "Failed to generate speech. Please try again.";
+            }
+        );
     }
   }
 
   // New method for Darija audio generation
   generateDarijaAudio() {
+    console.log("[LOG] Entered generateDarijaAudio function.");
     const requestBody = {
-      text: this.actionData.text,
-      id_voice: this.selectedVoice!.id,
-      dialect_id: this.selectedDialect || "35", // Use selected dialect or default
-      performance_id: this.selectedPerformanceStyle || "1284", // Use selected performance or default
-      input_mode: "0",
-    }
+        text: this.actionData.text,
+        id_voice: this.selectedVoice!.id,
+        dialect_id: this.selectedDialect || "35", // Use selected dialect or default
+        performance_id: this.selectedPerformanceStyle || "1284", // Use selected performance or default
+        input_mode: "0",
+    };
+    console.log("[LOG] Lahajati TTS Request Payload:", requestBody);
 
     this.lahajatiService.generateSpeech(requestBody).subscribe(
-      (blob) => {
-        const url = URL.createObjectURL(blob)
-        this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url)
+        (blob) => {
+            console.log("[LOG] Successfully received audio blob from Lahajati service.");
+            const url = URL.createObjectURL(blob);
+            this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(url);
 
-        // If a project is selected, save the audio to that project
-        if (this.selectedProject) {
-          this.saveAudioToProject(blob)
-        } else {
-          this.isGenerating = false
-          this.generationSuccess = true
+            // The generation is now complete from the user's perspective.
+            // Update the state to show the audio player.
+            this.isGenerating = false;
+            this.generationSuccess = true;
+            console.log("[LOG] Darija generation complete. Audio is ready for playback.");
+            
+            // If a project is selected, save the audio in the background.
+            if (this.selectedProject) {
+                this.saveAudioToProject(blob);
+            }
+        },
+        (error) => {
+            console.error("[LOG] Error generating Darija speech:", error);
+            this.isGenerating = false;
+            this.generationError = "Failed to generate Darija speech. Please try again.";
         }
-      },
-      (error) => {
-        console.error("Error generating Darija speech:", error)
-        this.isGenerating = false
-        this.generationError = "Failed to generate Darija speech. Please try again."
-      },
-    )
+    );
   }
 
   saveAudioToProject(audioBlob: Blob) {
+    console.log("[LOG] Entered saveAudioToProject function.");
     if (!this.selectedProject || !this.selectedVoice) {
-      this.isGenerating = false
+      console.error("[LOG] Cannot save to project: Missing project or voice selection.");
+      // Do not set isGenerating to false here, as it's already handled by the caller
       return
     }
 
@@ -1277,6 +1343,15 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     formData.append("language", this.selectedVoice.language)
     formData.append("projectUuid", this.selectedProject.uuid)
     formData.append("audioGenerated", audioBlob, "audio.mp3")
+    
+    console.log("[LOG] Creating free action with FormData. Fields (excluding blob):", {
+        text: this.actionData.text,
+        statutAction: "EN_ATTENTE",
+        voiceUuid: this.selectedVoice.id,
+        utilisateurUuid: this.uuid || "",
+        language: this.selectedVoice.language,
+        projectUuid: this.selectedProject.uuid
+    });
 
     // Add Darija-specific parameters if applicable
     if (this.selectedVoice.language === "darija") {
@@ -1290,14 +1365,14 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
 
     this.actionService.createAction(formData).subscribe(
       (response) => {
-        console.log("Audio saved to project:", response)
-        this.isGenerating = false
-        this.generationSuccess = true
+        console.log("[LOG] Audio saved to project successfully (Action created):", response)
+        // No need to update UI state here, it's already done
       },
       (error) => {
-        console.error("Error saving audio to project:", error)
-        this.isGenerating = false
-        this.generationError = "Failed to save audio to project. Please try again."
+        console.error("[LOG] Error saving audio to project (Action creation failed):", error)
+        // Optionally, you could display a non-blocking toast message here
+        // e.g., "Could not save audio to project."
+        // Don't set `this.generationError` as it would overwrite the success message.
       },
     )
   }
