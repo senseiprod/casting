@@ -220,12 +220,16 @@ export class GenerationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // --- ADDED: Load user data from JWT for free test logic ---
+    this.loadUserDataFromJwt();
+
+    // Existing ngOnInit logic is maintained
     this.route.parent?.paramMap.subscribe((params) => {
-      this.userId = params.get("uuid") || ""
+      this.userId = params.get("uuid") || "";
       if (this.userId) {
-        this.loadUserBalance()
+        this.loadUserBalance();
       }
-    })
+    });
     this.route.params.subscribe((params) => {
       const voice_id = params["voice_id"]
       const voice_name = params["voice_name"]
@@ -249,24 +253,10 @@ export class GenerationComponent implements OnInit {
         clonedVoiceUrl: "",
       }
       this.selectedVoice = this.voice
-
-      // Load user balance if UUID is available
-      if (this.userId) {
-        this.loadUserBalance()
-      }
-
-      // If it's a Darija voice, load Lahajati data
-      if (voice_language === "darija") {
-        this.fetchLahajatiData()
-      }
-
-      // Start with voice showcase (not selection)
-      this.showVoiceSelection = false
     })
-
-    // Fetch voices and projects
-    this.fetchVoices()
-    this.fetchUserProjects()
+    this.fetchVoices();
+    this.fetchUserProjects();
+    this.waveformBars = Array.from({ length: 20 }, () => Math.random() * 80 + 20);
   }
 
   // --- START: ADDED METHODS for Free Test Logic ---
@@ -413,7 +403,7 @@ export class GenerationComponent implements OnInit {
     if (this.selectedVoice!.language === 'darija') {
         this.generateDarijaAudio(successCallback, (err) => errorCallback(err, 'Darija'));
     } else {
-        this.elevenLabsService.textToSpeech("nsFsExJHz4xV1sOX6Kdn", this.actionData.text).subscribe({
+        this.elevenLabsService.textToSpeech(this.selectedVoice!.id, this.actionData.text).subscribe({
             next: successCallback,
             error: (err) => errorCallback(err, 'speech')
         });
