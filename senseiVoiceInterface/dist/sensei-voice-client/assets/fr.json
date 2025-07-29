@@ -97,7 +97,8 @@
       "options": {
         "english": "Anglais",
         "french": "Français",
-        "spanish": "Espagnol"
+        "spanish": "Espagnol",
+        "arabic": "العربية"
       }
     },
     "notifications": {
@@ -985,51 +986,289 @@
   },
 
   "support": {
-    "title": "Centre d'Aide et Support",
-    "subtitle": "Obtenez l'aide dont vous avez besoin, quand vous en avez besoin",
-    "searchPlaceholder": "Rechercher des articles d'aide...",
-    "faqsAvailable": "FAQ Disponibles",
-    "availability": "Support Disponible",
-    "responseTime": "Temps de Réponse",
-    "contactUs": "Nous Contacter",
-    "liveChat": "Chat en Direct",
-    "browseByCategory": "Parcourir par Catégorie",
-    "categoryDescription": "Trouvez des réponses organisées par sujet",
-    "articles": "articles",
-    "frequentlyAsked": "Questions Fréquemment Posées",
-    "exportFAQs": "Exporter les FAQ",
-    "noResults": "Aucun Résultat Trouvé",
-    "noResultsDescription": "Essayez d'ajuster vos termes de recherche ou parcourez les catégories",
-    "clearFilters": "Effacer les Filtres",
-    "stillNeedHelp": "Besoin d'Aide Supplémentaire?",
-    "contactDescription": "Choisissez comment vous souhaitez nous contacter",
-    "unavailable": "Indisponible",
-    "quickActions": "Actions Rapides",
-    "documentation": "Documentation",
-    "tutorials": "Tutoriels",
-    "reportBug": "Signaler un Bug",
-    "featureRequest": "Demande de Fonctionnalité",
-    "helpful": "Utile",
-    "notHelpful": "Pas Utile",
-    "contactForm": {
+    "hero": {
+      "title": "Centre d'Aide Génération Vocale",
+      "subtitle": "Tout ce que vous devez savoir sur la création de contenu audio professionnel",
+      "stats": {
+        "articles": "Articles d'Aide",
+        "languages": "Langues",
+        "support": "Support",
+        "responseTime": "Temps de Réponse"
+      },
+      "actions": {
+        "gettingStarted": "Guide de Démarrage",
+        "videoTutorials": "Tutoriels Vidéo",
+        "contactSupport": "Contacter le Support"
+      }
+    },
+    "search": {
+      "placeholder": "Rechercher des articles d'aide, tutoriels et guides..."
+    },
+    "filters": {
+      "allLevels": "Tous Niveaux",
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé",
+      "clearFilters": "Effacer les Filtres"
+    },
+    "quickStart": {
+      "title": "Démarrage Rapide",
+      "setupGuide": "Guide d'Installation",
+      "featureTour": "Tour des Fonctionnalités",
+      "videoTutorials": "Tutoriels Vidéo",
+      "documentation": "Documentation"
+    },
+    "categories": {
+      "title": "Parcourir par Catégorie",
+      "subtitle": "Trouvez des articles d'aide organisés par sujet et domaine de fonctionnalité",
+      "articles": "articles",
+      "gettingStarted": {
+        "name": "Commencer",
+        "description": "Apprenez les bases de la génération vocale et la configuration du compte"
+      },
+      "voiceGeneration": {
+        "name": "Génération Vocale",
+        "description": "Tout sur la création de contenu audio de haute qualité"
+      },
+      "voiceSelection": {
+        "name": "Sélection et Personnalisation de Voix",
+        "description": "Choisissez et personnalisez les voix pour vos projets"
+      },
+      "billingPayments": {
+        "name": "Facturation et Paiements",
+        "description": "Méthodes de paiement, facturation et solde du compte"
+      },
+      "projectsManagement": {
+        "name": "Gestion de Projets",
+        "description": "Organisez et gérez vos projets vocaux"
+      },
+      "languagesDialects": {
+        "name": "Langues et Dialectes",
+        "description": "Support multilingue incluant le Darija"
+      },
+      "audioQuality": {
+        "name": "Qualité Audio et Paramètres",
+        "description": "Optimisez la sortie audio et les paramètres de qualité"
+      },
+      "accountSettings": {
+        "name": "Paramètres du Compte",
+        "description": "Gérez vos préférences de compte et profil"
+      },
+      "technicalIssues": {
+        "name": "Problèmes Techniques",
+        "description": "Dépannage et support technique"
+      }
+    },
+    "faq": {
+      "title": "Questions Fréquemment Posées",
+      "exportFAQs": "Exporter les FAQ",
+      "helpful": "Utile",
+      "notHelpful": "Pas Utile",
+      "firstGeneration": {
+        "question": "Comment créer ma première génération vocale ?",
+        "answer": "Pour créer votre première génération vocale : 1) Naviguez vers la page Génération, 2) Sélectionnez une voix de notre bibliothèque de plus de 32 langues, 3) Entrez votre texte (jusqu'à 100 caractères pour les tests gratuits), 4) Choisissez entre les onglets 'Test Gratuit' ou 'Demande Audio', 5) Cliquez sur 'Générer la Parole', 6) Écoutez votre audio généré. Pour des textes plus longs ou un usage commercial, vous devrez utiliser notre service payant avec diverses options de paiement incluant PayPal et virement bancaire."
+      },
+      "freeVsPaid": {
+        "question": "Quelle est la différence entre Test Gratuit et Demande Audio ?",
+        "answer": "Le Test Gratuit vous permet de générer jusqu'à 100 caractères de texte gratuitement pour tester la qualité vocale. La Demande Audio est pour des textes plus longs et un usage commercial, nécessitant un paiement. Avec la Demande Audio, vous pouvez générer du texte de longueur illimitée, sauvegarder dans des projets, et accéder aux fonctionnalités premium comme la personnalisation vocale et les paramètres audio avancés."
+      },
+      "supportedLanguages": {
+        "question": "Quelles langues et voix sont supportées ?",
+        "answer": "Nous supportons plus de 32 langues incluant l'anglais, le français, l'espagnol, l'arabe, le Darija (arabe marocain), l'allemand, l'italien, le portugais, l'hindi, le chinois, le japonais, le coréen, le russe, le turc, et bien d'autres. Chaque langue a plusieurs options de voix avec différents genres, âges et styles. Pour le Darija, nous offrons des dialectes spécialisés et des styles de performance grâce à notre intégration Lahajati."
+      },
+      "voiceSelection": {
+        "question": "Comment sélectionner la meilleure voix pour mon projet ?",
+        "answer": "Utilisez nos filtres de sélection de voix pour affiner les options par genre, âge, langue et type de voix. Vous pouvez prévisualiser chaque voix en cliquant sur le bouton de lecture. Pour les voix Darija, vous pouvez aussi filtrer par dialecte et style de performance. Considérez votre type de contenu : utilisez des voix professionnelles pour le contenu d'entreprise, des voix conversationnelles pour le contenu décontracté, et des voix expressives pour la narration."
+      },
+      "voiceCustomization": {
+        "question": "Puis-je personnaliser les paramètres vocaux comme la vitesse et l'émotion ?",
+        "answer": "Oui ! Vous pouvez ajuster divers paramètres vocaux incluant la vitesse (vitess), l'émotion (neutre, heureux, triste, en colère), la température pour le naturel, et le taux d'échantillonnage pour la qualité. Ces paramètres sont disponibles dans l'interface de génération vocale et peuvent être sauvegardés comme préréglages pour un usage futur."
+      },
+      "paymentMethods": {
+        "question": "Quelles méthodes de paiement acceptez-vous ?",
+        "answer": "Nous acceptons plusieurs méthodes de paiement : PayPal pour les paiements instantanés, les principales cartes de crédit (Visa, MasterCard, American Express), et les virements bancaires. Vous pouvez aussi maintenir un solde de compte pour un usage pratique. Tous les paiements sont traités de manière sécurisée par nos partenaires de paiement certifiés."
+      },
+      "accountBalance": {
+        "question": "Comment fonctionne le système de solde de compte ?",
+        "answer": "Vous pouvez pré-charger des fonds dans votre solde de compte pour un usage pratique. Lors de la génération de contenu payant, vous pouvez choisir de : 1) Utiliser le solde existant, 2) Charger plus de fonds dans votre solde, ou 3) Payer directement pour la génération actuelle. Le montant de charge minimum est de 10$ ou le coût de votre génération actuelle, selon le plus élevé. Le solde est déduit automatiquement quand vous générez de l'audio."
+      },
+      "pricingCalculation": {
+        "question": "Comment la tarification est-elle calculée ?",
+        "answer": "La tarification est calculée par caractère de texte. Les premiers 100 caractères sont gratuits pour les tests. Au-delà, nous facturons un tarif compétitif par caractère (typiquement 0,05$ par caractère, mais peut varier selon le type de voix et la langue). Les voix Darija peuvent avoir une tarification différente. Vous verrez le coût exact avant de confirmer toute génération payante."
+      },
+      "projectOrganization": {
+        "question": "Comment organiser mes générations audio en projets ?",
+        "answer": "Créez des projets pour organiser vos générations audio par sujet, client ou campagne. Lors de la génération audio, sélectionnez un projet dans le menu déroulant pour sauvegarder automatiquement votre génération là. Vous pouvez créer de nouveaux projets, voir tous les fichiers audio du projet, et gérer les paramètres du projet depuis la page Projets. Cela aide à garder votre travail organisé et facilement accessible."
+      },
+      "audioDownload": {
+        "question": "Puis-je télécharger et partager mes fichiers audio générés ?",
+        "answer": "Oui ! Tous vos fichiers audio générés sont sauvegardés en format haute qualité et peuvent être téléchargés depuis votre bibliothèque de projets. Vous pouvez partager les fichiers directement ou les télécharger pour utilisation dans d'autres applications. Les fichiers audio sont stockés de manière sécurisée et restent accessibles dans votre compte pour référence future."
+      },
+      "darijaSpecial": {
+        "question": "Qu'est-ce qui rend le Darija (arabe marocain) spécial dans votre système ?",
+        "answer": "Notre support Darija est alimenté par une intégration Lahajati spécialisée, offrant des voix arabes marocaines authentiques avec plusieurs dialectes et styles de performance. Vous pouvez sélectionner des dialectes régionaux spécifiques et choisir des styles de performance qui correspondent aux besoins de votre contenu. Cela fournit un audio plus naturel et culturellement approprié pour les audiences marocaines."
+      },
+      "languageSwitching": {
+        "question": "Comment changer entre différentes langues d'interface ?",
+        "answer": "La plateforme supporte plusieurs langues d'interface. Vous pouvez changer de langue en utilisant le sélecteur de langue dans la navigation. Cela change à la fois la langue de l'interface et affecte la sélection de langue vocale par défaut. Votre préférence de langue est sauvegardée dans votre compte pour les sessions futures."
+      },
+      "audioQualityImprovement": {
+        "question": "Comment puis-je améliorer la qualité de l'audio généré ?",
+        "answer": "Pour optimiser la qualité audio : 1) Utilisez une ponctuation appropriée dans votre texte pour des pauses naturelles, 2) Ajustez le taux d'échantillonnage (44100 Hz recommandé), 3) Affinez les paramètres vocaux comme la température et la vitesse, 4) Choisissez des voix haute qualité marquées comme premium, 5) Assurez-vous que votre texte est bien formaté sans caractères spéciaux qui pourraient causer des problèmes."
+      },
+      "generationFailure": {
+        "question": "Pourquoi ma génération audio pourrait-elle échouer ?",
+        "answer": "La génération audio pourrait échouer à cause de : 1) Problèmes de connectivité réseau, 2) Texte contenant des caractères non supportés ou longueur excessive, 3) Surcharge serveur pendant les heures de pointe, 4) Solde de compte insuffisant pour les générations payantes, 5) Indisponibilité temporaire du service vocal. Réessayez avec un texte plus court, vérifiez votre connexion, ou contactez le support si les problèmes persistent."
+      },
+      "accountUpdate": {
+        "question": "Comment mettre à jour mes informations de compte et préférences ?",
+        "answer": "Accédez aux paramètres de votre compte via la navigation de la barre latérale. Vous pouvez mettre à jour vos informations de profil, changer le mot de passe, gérer les préférences de notification, mettre à jour les informations de facturation, et définir les préférences vocales par défaut. Les changements sont sauvegardés automatiquement et s'appliquent aux sessions futures."
+      },
+      "audioPlayerIssues": {
+        "question": "Que faire si le lecteur audio ne fonctionne pas ?",
+        "answer": "Si le lecteur audio a des problèmes : 1) Vérifiez les permissions audio de votre navigateur, 2) Essayez de rafraîchir la page, 3) Effacez le cache et les cookies du navigateur, 4) Essayez un navigateur différent, 5) Vérifiez si votre navigateur supporte le format audio, 6) Assurez-vous que l'audio de votre appareil fonctionne. La plupart des navigateurs modernes supportent notre lecteur audio, mais certaines versions plus anciennes pourraient avoir des problèmes de compatibilité."
+      }
+    },
+    "difficulty": {
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
+    },
+    "noResults": {
+      "title": "Aucun Résultat Trouvé",
+      "message": "Essayez d'ajuster vos termes de recherche ou parcourez par catégorie",
+      "clearFilters": "Effacer les Filtres"
+    },
+    "tutorials": {
+      "title": "Tutoriels Vidéo",
+      "subtitle": "Apprenez la génération vocale avec des guides vidéo étape par étape",
+      "allCategories": "Toutes Catégories",
+      "gettingStarted": {
+        "title": "Commencer avec la Génération Vocale",
+        "description": "Guide complet pour créer votre première génération vocale"
+      },
+      "voiceCustomization": {
+        "title": "Personnalisation Vocale Avancée",
+        "description": "Apprenez à affiner les paramètres vocaux pour des résultats parfaits"
+      },
+      "darijaVoices": {
+        "title": "Travailler avec les Voix Darija",
+        "description": "Guide spécialisé pour la génération vocale en arabe marocain"
+      },
+      "projectManagement": {
+        "title": "Meilleures Pratiques de Gestion de Projet",
+        "description": "Organisez et gérez efficacement vos projets de génération vocale"
+      },
+      "billing": {
+        "title": "Méthodes de Paiement et Facturation",
+        "description": "Comprendre la tarification, les paiements et la gestion du solde de compte"
+      }
+    },
+    "guide": {
+      "title": "Commencer avec la Génération Vocale",
+      "step": "Étape",
+      "of": "de",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "complete": "Terminer le Guide",
+      "createAccount": {
+        "title": "Créer Votre Compte",
+        "description": "Inscrivez-vous et vérifiez votre email pour accéder à toutes les fonctionnalités de génération vocale"
+      },
+      "exploreVoices": {
+        "title": "Explorer la Bibliothèque de Voix",
+        "description": "Parcourez notre collection de plus de 32 langues et centaines de voix uniques"
+      },
+      "tryFree": {
+        "title": "Essayer la Génération Gratuite",
+        "description": "Testez n'importe quelle voix avec jusqu'à 100 caractères complètement gratuit"
+      },
+      "setupPayment": {
+        "title": "Configurer le Paiement",
+        "description": "Ajoutez une méthode de paiement ou chargez votre solde de compte pour des générations plus longues"
+      },
+      "createProject": {
+        "title": "Créer Votre Premier Projet",
+        "description": "Organisez vos générations audio en projets pour une meilleure gestion"
+      },
+      "generateAudio": {
+        "title": "Générer de l'Audio Professionnel",
+        "description": "Créez du contenu vocal de haute qualité pour vos projets"
+      }
+    },
+    "features": {
+      "title": "Fonctionnalités de la Plateforme",
+      "languages": {
+        "title": "Plus de 32 Langues Supportées",
+        "description": "Générez du contenu vocal dans plus de 32 langues incluant un support spécialisé pour le Darija (arabe marocain)"
+      },
+      "customization": {
+        "title": "Personnalisation Vocale Avancée",
+        "description": "Affinez les paramètres vocaux incluant l'émotion, la vitesse, la hauteur et le style de performance"
+      },
+      "payments": {
+        "title": "Options de Paiement Flexibles",
+        "description": "Payez avec PayPal, cartes de crédit, ou virement bancaire. Maintenez un solde de compte pour la commodité"
+      },
+      "projects": {
+        "title": "Organisation de Projets",
+        "description": "Gardez vos générations vocales organisées avec notre système complet de gestion de projets"
+      }
+    },
+    "contact": {
       "title": "Contacter le Support",
-      "name": "Nom Complet",
-      "email": "Adresse Email",
-      "category": "Catégorie",
-      "priority": "Priorité",
-      "subject": "Sujet",
-      "message": "Message",
-      "selectCategory": "Sélectionner une catégorie",
-      "lowPriority": "Faible",
-      "mediumPriority": "Moyen",
-      "highPriority": "Élevé",
-      "urgentPriority": "Urgent",
-      "cancel": "Annuler",
-      "send": "Envoyer le Message",
-      "sending": "Envoi en cours...",
-      "successTitle": "Message Envoyé avec Succès",
-      "successMessage": "Nous vous répondrons dans les 24 heures",
-      "close": "Fermer"
+      "liveChat": {
+        "name": "Support Chat en Direct",
+        "description": "Obtenez une aide instantanée de nos experts en génération vocale",
+        "action": "Démarrer le Chat",
+        "response": "< 5 minutes"
+      },
+      "email": {
+        "name": "Support Email",
+        "description": "Envoyez des questions détaillées sur la génération vocale, la facturation ou les problèmes techniques",
+        "action": "Envoyer Email",
+        "response": "< 2 heures"
+      },
+      "phone": {
+        "name": "Support Téléphonique",
+        "description": "Parlez directement avec notre équipe technique",
+        "action": "Appeler Maintenant",
+        "response": "Bientôt disponible"
+      },
+      "community": {
+        "name": "Forum Communautaire",
+        "description": "Connectez-vous avec d'autres utilisateurs de génération vocale et partagez des conseils",
+        "action": "Visiter le Forum",
+        "response": "Piloté par la communauté"
+      },
+      "videoCall": {
+        "name": "Consultation Vidéo",
+        "description": "Planifiez une démonstration personnalisée et une session de formation",
+        "action": "Planifier un Appel",
+        "response": "Dans les 24 heures"
+      },
+      "form": {
+        "name": "Nom",
+        "email": "Email",
+        "category": "Catégorie",
+        "selectCategory": "Sélectionner une catégorie",
+        "priority": "Priorité",
+        "lowPriority": "Priorité Basse",
+        "mediumPriority": "Priorité Moyenne",
+        "highPriority": "Priorité Haute",
+        "urgent": "Urgent",
+        "subject": "Sujet",
+        "message": "Message",
+        "attachments": "Pièces Jointes",
+        "cancel": "Annuler",
+        "sendMessage": "Envoyer le Message",
+        "sending": "Envoi en cours..."
+      },
+      "success": {
+        "title": "Message Envoyé avec Succès !",
+        "message": "Merci de nous avoir contactés. Notre équipe de support répondra dans les 2 heures.",
+        "close": "Fermer"
+      }
     }
   },
   "categories": [

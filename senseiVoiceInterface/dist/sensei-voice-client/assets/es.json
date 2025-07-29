@@ -98,7 +98,8 @@
       "options": {
         "english": "Inglés",
         "french": "Francés",
-        "spanish": "Español"
+        "spanish": "Español",
+        "arabic": "العربية"
       }
     },
     "notifications": {
@@ -948,51 +949,289 @@
     "share": "Compartir"
   },
   "support": {
-    "title": "Centro de Ayuda y Soporte",
-    "subtitle": "Obtén la ayuda que necesitas, cuando la necesitas",
-    "searchPlaceholder": "Buscar artículos de ayuda...",
-    "faqsAvailable": "Preguntas Disponibles",
-    "availability": "Soporte Disponible",
-    "responseTime": "Tiempo de Respuesta",
-    "contactUs": "Contáctanos",
-    "liveChat": "Chat en Vivo",
-    "browseByCategory": "Explorar por Categoría",
-    "categoryDescription": "Encuentra respuestas organizadas por tema",
-    "articles": "artículos",
-    "frequentlyAsked": "Preguntas Frecuentes",
-    "exportFAQs": "Exportar FAQ",
-    "noResults": "No se Encontraron Resultados",
-    "noResultsDescription": "Intenta ajustar tus términos de búsqueda o explora las categorías",
-    "clearFilters": "Limpiar Filtros",
-    "stillNeedHelp": "¿Aún Necesitas Ayuda?",
-    "contactDescription": "Elige cómo te gustaría ponerte en contacto",
-    "unavailable": "No Disponible",
-    "quickActions": "Acciones Rápidas",
-    "documentation": "Documentación",
-    "tutorials": "Tutoriales",
-    "reportBug": "Reportar Error",
-    "featureRequest": "Solicitud de Función",
-    "helpful": "Útil",
-    "notHelpful": "No Útil",
-    "contactForm": {
+    "hero": {
+      "title": "Centro de Ayuda de Generación de Voz",
+      "subtitle": "Todo lo que necesitas saber sobre la creación de contenido de audio profesional",
+      "stats": {
+        "articles": "Artículos de Ayuda",
+        "languages": "Idiomas",
+        "support": "Soporte",
+        "responseTime": "Tiempo de Respuesta"
+      },
+      "actions": {
+        "gettingStarted": "Guía de Inicio",
+        "videoTutorials": "Tutoriales en Video",
+        "contactSupport": "Contactar Soporte"
+      }
+    },
+    "search": {
+      "placeholder": "Buscar artículos de ayuda, tutoriales y guías..."
+    },
+    "filters": {
+      "allLevels": "Todos los Niveles",
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado",
+      "clearFilters": "Limpiar Filtros"
+    },
+    "quickStart": {
+      "title": "Inicio Rápido",
+      "setupGuide": "Guía de Configuración",
+      "featureTour": "Tour de Características",
+      "videoTutorials": "Tutoriales en Video",
+      "documentation": "Documentación"
+    },
+    "categories": {
+      "title": "Explorar por Categoría",
+      "subtitle": "Encuentra artículos de ayuda organizados por tema y área de funcionalidad",
+      "articles": "artículos",
+      "gettingStarted": {
+        "name": "Comenzando",
+        "description": "Aprende los conceptos básicos de la generación de voz y configuración de cuenta"
+      },
+      "voiceGeneration": {
+        "name": "Generación de Voz",
+        "description": "Todo sobre la creación de contenido de audio de alta calidad"
+      },
+      "voiceSelection": {
+        "name": "Selección y Personalización de Voz",
+        "description": "Elige y personaliza voces para tus proyectos"
+      },
+      "billingPayments": {
+        "name": "Facturación y Pagos",
+        "description": "Métodos de pago, facturación y saldo de cuenta"
+      },
+      "projectsManagement": {
+        "name": "Gestión de Proyectos",
+        "description": "Organiza y gestiona tus proyectos de voz"
+      },
+      "languagesDialects": {
+        "name": "Idiomas y Dialectos",
+        "description": "Soporte multiidioma incluyendo Darija"
+      },
+      "audioQuality": {
+        "name": "Calidad de Audio y Configuraciones",
+        "description": "Optimiza la salida de audio y configuraciones de calidad"
+      },
+      "accountSettings": {
+        "name": "Configuraciones de Cuenta",
+        "description": "Gestiona las preferencias de tu cuenta y perfil"
+      },
+      "technicalIssues": {
+        "name": "Problemas Técnicos",
+        "description": "Solución de problemas y soporte técnico"
+      }
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "exportFAQs": "Exportar FAQs",
+      "helpful": "Útil",
+      "notHelpful": "No Útil",
+      "firstGeneration": {
+        "question": "¿Cómo creo mi primera generación de voz?",
+        "answer": "Para crear tu primera generación de voz: 1) Navega a la página de Generación, 2) Selecciona una voz de nuestra biblioteca de más de 32 idiomas, 3) Ingresa tu texto (hasta 100 caracteres para pruebas gratuitas), 4) Elige entre las pestañas 'Prueba Gratuita' o 'Solicitud de Audio', 5) Haz clic en 'Generar Voz', 6) Escucha tu audio generado. Para textos más largos o uso comercial, necesitarás usar nuestro servicio de pago con varias opciones de pago incluyendo PayPal y transferencia bancaria."
+      },
+      "freeVsPaid": {
+        "question": "¿Cuál es la diferencia entre Prueba Gratuita y Solicitud de Audio?",
+        "answer": "La Prueba Gratuita te permite generar hasta 100 caracteres de texto gratis para probar la calidad de voz. La Solicitud de Audio es para textos más largos y uso comercial, requiriendo pago. Con Solicitud de Audio, puedes generar texto de longitud ilimitada, guardar en proyectos, y acceder a características premium como personalización de voz y configuraciones de audio avanzadas."
+      },
+      "supportedLanguages": {
+        "question": "¿Qué idiomas y voces están soportados?",
+        "answer": "Soportamos más de 32 idiomas incluyendo inglés, francés, español, árabe, Darija (árabe marroquí), alemán, italiano, portugués, hindi, chino, japonés, coreano, ruso, turco, y muchos más. Cada idioma tiene múltiples opciones de voz con diferentes géneros, edades y estilos. Para Darija, ofrecemos dialectos especializados y estilos de rendimiento a través de nuestra integración Lahajati."
+      },
+      "voiceSelection": {
+        "question": "¿Cómo selecciono la mejor voz para mi proyecto?",
+        "answer": "Usa nuestros filtros de selección de voz para reducir las opciones por género, edad, idioma y tipo de voz. Puedes previsualizar cada voz haciendo clic en el botón de reproducción. Para voces Darija, también puedes filtrar por dialecto y estilo de rendimiento. Considera tu tipo de contenido: usa voces profesionales para contenido empresarial, voces conversacionales para contenido casual, y voces expresivas para narración."
+      },
+      "voiceCustomization": {
+        "question": "¿Puedo personalizar configuraciones de voz como velocidad y emoción?",
+        "answer": "¡Sí! Puedes ajustar varios parámetros de voz incluyendo velocidad (vitess), emoción (neutral, feliz, triste, enojado), temperatura para naturalidad, y tasa de muestreo para calidad. Estas configuraciones están disponibles en la interfaz de generación de voz y pueden guardarse como preajustes para uso futuro."
+      },
+      "paymentMethods": {
+        "question": "¿Qué métodos de pago aceptan?",
+        "answer": "Aceptamos múltiples métodos de pago: PayPal para pagos instantáneos, principales tarjetas de crédito (Visa, MasterCard, American Express), y transferencias bancarias (virement bancaire). También puedes mantener un saldo de cuenta para uso conveniente. Todos los pagos se procesan de forma segura a través de nuestros socios de pago certificados."
+      },
+      "accountBalance": {
+        "question": "¿Cómo funciona el sistema de saldo de cuenta?",
+        "answer": "Puedes precargar fondos en tu saldo de cuenta para uso conveniente. Al generar contenido de pago, puedes elegir: 1) Usar saldo existente, 2) Cargar más fondos a tu saldo, o 3) Pagar directamente por la generación actual. El monto mínimo de carga es $10 o el costo de tu generación actual, lo que sea mayor. El saldo se deduce automáticamente cuando generas audio."
+      },
+      "pricingCalculation": {
+        "question": "¿Cómo se calcula el precio?",
+        "answer": "El precio se calcula por carácter de texto. Los primeros 100 caracteres son gratuitos para pruebas. Más allá de eso, cobramos una tarifa competitiva por carácter (típicamente $0.05 por carácter, pero puede variar según el tipo de voz e idioma). Las voces Darija pueden tener precios diferentes. Verás el costo exacto antes de confirmar cualquier generación de pago."
+      },
+      "projectOrganization": {
+        "question": "¿Cómo organizo mis generaciones de audio en proyectos?",
+        "answer": "Crea proyectos para organizar tus generaciones de audio por tema, cliente o campaña. Al generar audio, selecciona un proyecto del menú desplegable para guardar automáticamente tu generación allí. Puedes crear nuevos proyectos, ver todos los archivos de audio del proyecto, y gestionar configuraciones del proyecto desde la página de Proyectos. Esto ayuda a mantener tu trabajo organizado y fácilmente accesible."
+      },
+      "audioDownload": {
+        "question": "¿Puedo descargar y compartir mis archivos de audio generados?",
+        "answer": "¡Sí! Todos tus archivos de audio generados se guardan en formato de alta calidad y pueden descargarse desde tu biblioteca de proyectos. Puedes compartir archivos directamente o descargarlos para usar en otras aplicaciones. Los archivos de audio se almacenan de forma segura y permanecen accesibles en tu cuenta para referencia futura."
+      },
+      "darijaSpecial": {
+        "question": "¿Qué hace especial al Darija (árabe marroquí) en tu sistema?",
+        "answer": "Nuestro soporte de Darija está impulsado por integración especializada Lahajati, ofreciendo voces auténticas de árabe marroquí con múltiples dialectos y estilos de rendimiento. Puedes seleccionar dialectos regionales específicos y elegir estilos de rendimiento que coincidan con las necesidades de tu contenido. Esto proporciona audio más natural y culturalmente apropiado para audiencias marroquíes."
+      },
+      "languageSwitching": {
+        "question": "¿Cómo cambio entre diferentes idiomas de interfaz?",
+        "answer": "La plataforma soporta múltiples idiomas de interfaz. Puedes cambiar idiomas usando el selector de idioma en la navegación. Esto cambia tanto el idioma de la interfaz como afecta la selección de idioma de voz predeterminado. Tu preferencia de idioma se guarda en tu cuenta para sesiones futuras."
+      },
+      "audioQualityImprovement": {
+        "question": "¿Cómo puedo mejorar la calidad del audio generado?",
+        "answer": "Para optimizar la calidad de audio: 1) Usa puntuación adecuada en tu texto para pausas naturales, 2) Ajusta la tasa de muestreo (44100 Hz recomendado), 3) Ajusta finamente parámetros de voz como temperatura y velocidad, 4) Elige voces de alta calidad marcadas como premium, 5) Asegúrate de que tu texto esté bien formateado sin caracteres especiales que puedan causar problemas."
+      },
+      "generationFailure": {
+        "question": "¿Por qué podría fallar mi generación de audio?",
+        "answer": "La generación de audio podría fallar debido a: 1) Problemas de conectividad de red, 2) Texto que contiene caracteres no soportados o longitud excesiva, 3) Sobrecarga del servidor durante horas pico, 4) Saldo de cuenta insuficiente para generaciones de pago, 5) Indisponibilidad temporal del servicio de voz. Intenta de nuevo con texto más corto, verifica tu conexión, o contacta soporte si los problemas persisten."
+      },
+      "accountUpdate": {
+        "question": "¿Cómo actualizo mi información de cuenta y preferencias?",
+        "answer": "Accede a las configuraciones de tu cuenta a través de la navegación de la barra lateral. Puedes actualizar tu información de perfil, cambiar contraseña, gestionar preferencias de notificación, actualizar información de facturación, y establecer preferencias de voz predeterminadas. Los cambios se guardan automáticamente y se aplican a sesiones futuras."
+      },
+      "audioPlayerIssues": {
+        "question": "¿Qué debo hacer si el reproductor de audio no funciona?",
+        "answer": "Si el reproductor de audio tiene problemas: 1) Verifica los permisos de audio de tu navegador, 2) Intenta refrescar la página, 3) Limpia caché y cookies del navegador, 4) Prueba un navegador diferente, 5) Verifica si tu navegador soporta el formato de audio, 6) Asegúrate de que el audio de tu dispositivo esté funcionando. La mayoría de navegadores modernos soportan nuestro reproductor de audio, pero algunas versiones más antiguas podrían tener problemas de compatibilidad."
+      }
+    },
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    },
+    "noResults": {
+      "title": "No se Encontraron Resultados",
+      "message": "Intenta ajustar tus términos de búsqueda o explora por categoría",
+      "clearFilters": "Limpiar Filtros"
+    },
+    "tutorials": {
+      "title": "Tutoriales en Video",
+      "subtitle": "Aprende generación de voz con guías de video paso a paso",
+      "allCategories": "Todas las Categorías",
+      "gettingStarted": {
+        "title": "Comenzando con Generación de Voz",
+        "description": "Guía completa para crear tu primera generación de voz"
+      },
+      "voiceCustomization": {
+        "title": "Personalización Avanzada de Voz",
+        "description": "Aprende a ajustar finamente parámetros de voz para resultados perfectos"
+      },
+      "darijaVoices": {
+        "title": "Trabajando con Voces Darija",
+        "description": "Guía especializada para generación de voz en árabe marroquí"
+      },
+      "projectManagement": {
+        "title": "Mejores Prácticas de Gestión de Proyectos",
+        "description": "Organiza y gestiona eficientemente tus proyectos de generación de voz"
+      },
+      "billing": {
+        "title": "Métodos de Pago y Facturación",
+        "description": "Entendiendo precios, pagos y gestión de saldo de cuenta"
+      }
+    },
+    "guide": {
+      "title": "Comenzando con Generación de Voz",
+      "step": "Paso",
+      "of": "de",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "complete": "Completar Guía",
+      "createAccount": {
+        "title": "Crea Tu Cuenta",
+        "description": "Regístrate y verifica tu email para acceder a todas las características de generación de voz"
+      },
+      "exploreVoices": {
+        "title": "Explora la Biblioteca de Voces",
+        "description": "Navega nuestra colección de más de 32 idiomas y cientos de voces únicas"
+      },
+      "tryFree": {
+        "title": "Prueba Generación Gratuita",
+        "description": "Prueba cualquier voz con hasta 100 caracteres completamente gratis"
+      },
+      "setupPayment": {
+        "title": "Configura Pago",
+        "description": "Agrega un método de pago o carga tu saldo de cuenta para generaciones más largas"
+      },
+      "createProject": {
+        "title": "Crea Tu Primer Proyecto",
+        "description": "Organiza tus generaciones de audio en proyectos para mejor gestión"
+      },
+      "generateAudio": {
+        "title": "Genera Audio Profesional",
+        "description": "Crea contenido de voz de alta calidad para tus proyectos"
+      }
+    },
+    "features": {
+      "title": "Características de la Plataforma",
+      "languages": {
+        "title": "Más de 32 Idiomas Soportados",
+        "description": "Genera contenido de voz en más de 32 idiomas incluyendo soporte especializado para Darija (árabe marroquí)"
+      },
+      "customization": {
+        "title": "Personalización Avanzada de Voz",
+        "description": "Ajusta finamente parámetros de voz incluyendo emoción, velocidad, tono y estilo de rendimiento"
+      },
+      "payments": {
+        "title": "Opciones de Pago Flexibles",
+        "description": "Paga con PayPal, tarjetas de crédito, o transferencia bancaria. Mantén saldo de cuenta para conveniencia"
+      },
+      "projects": {
+        "title": "Organización de Proyectos",
+        "description": "Mantén tus generaciones de voz organizadas con nuestro sistema integral de gestión de proyectos"
+      }
+    },
+    "contact": {
       "title": "Contactar Soporte",
-      "name": "Nombre Completo",
-      "email": "Dirección de Email",
-      "category": "Categoría",
-      "priority": "Prioridad",
-      "subject": "Asunto",
-      "message": "Mensaje",
-      "selectCategory": "Seleccionar una categoría",
-      "lowPriority": "Baja",
-      "mediumPriority": "Media",
-      "highPriority": "Alta",
-      "urgentPriority": "Urgente",
-      "cancel": "Cancelar",
-      "send": "Enviar Mensaje",
-      "sending": "Enviando...",
-      "successTitle": "Mensaje Enviado Exitosamente",
-      "successMessage": "Te responderemos dentro de 24 horas",
-      "close": "Cerrar"
+      "liveChat": {
+        "name": "Soporte de Chat en Vivo",
+        "description": "Obtén ayuda instantánea de nuestros expertos en generación de voz",
+        "action": "Iniciar Chat",
+        "response": "< 5 minutos"
+      },
+      "email": {
+        "name": "Soporte por Email",
+        "description": "Envía preguntas detalladas sobre generación de voz, facturación o problemas técnicos",
+        "action": "Enviar Email",
+        "response": "< 2 horas"
+      },
+      "phone": {
+        "name": "Soporte Telefónico",
+        "description": "Habla directamente con nuestro equipo técnico",
+        "action": "Llamar Ahora",
+        "response": "Próximamente"
+      },
+      "community": {
+        "name": "Foro de Comunidad",
+        "description": "Conéctate con otros usuarios de generación de voz y comparte consejos",
+        "action": "Visitar Foro",
+        "response": "Impulsado por la comunidad"
+      },
+      "videoCall": {
+        "name": "Consulta por Video",
+        "description": "Programa una demostración personalizada y sesión de entrenamiento",
+        "action": "Programar Llamada",
+        "response": "Dentro de 24 horas"
+      },
+      "form": {
+        "name": "Nombre",
+        "email": "Email",
+        "category": "Categoría",
+        "selectCategory": "Seleccionar una categoría",
+        "priority": "Prioridad",
+        "lowPriority": "Prioridad Baja",
+        "mediumPriority": "Prioridad Media",
+        "highPriority": "Prioridad Alta",
+        "urgent": "Urgente",
+        "subject": "Asunto",
+        "message": "Mensaje",
+        "attachments": "Archivos Adjuntos",
+        "cancel": "Cancelar",
+        "sendMessage": "Enviar Mensaje",
+        "sending": "Enviando..."
+      },
+      "success": {
+        "title": "¡Mensaje Enviado Exitosamente!",
+        "message": "Gracias por contactarnos. Nuestro equipo de soporte responderá dentro de 2 horas.",
+        "close": "Cerrar"
+      }
     }
   },
   "categories": [
