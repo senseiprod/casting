@@ -95,7 +95,8 @@
       "options": {
         "english": "الإنجليزية",
         "french": "الفرنسية",
-        "spanish": "الإسبانية"
+        "spanish": "الإسبانية",
+        "arabic": "العربية"
       }
     },
     "notifications": {

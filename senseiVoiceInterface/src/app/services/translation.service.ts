@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-export type Language = 'en' | 'fr' | 'es';
+export type Language = 'en' | 'fr' | 'es' | 'ar';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,8 @@ export class TranslationService {
   public availableLanguages = [
     { code: 'en', name: 'English' },
     { code: 'fr', name: 'Français' },
-    { code: 'es', name: 'Español' }
+    { code: 'es', name: 'Español' },
+    {code:'ar', name:'Arabic'}
   ];
 
   constructor(public translate: TranslateService) {

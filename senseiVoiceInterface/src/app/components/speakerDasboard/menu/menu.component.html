@@ -309,6 +309,17 @@
                 {{ 'header.language.options.spanish' | translate }}
               </a>
             </li>
+
+            <!-- Corrected Code -->
+<li>
+  <a class="dropdown-item" 
+     href="#" 
+     (click)="changeLanguage('ar'); $event.preventDefault()"
+     [class.active]="getCurrentLanguage() === 'ar'">
+    <span class="language-flag">🇸🇦</span> <!-- Optional: Changed to a flag for consistency -->
+    {{ 'header.language.options.arabic' | translate }}
+  </a>
+</li>
           </ul>
         </div>
       </div>

@@ -561,6 +561,8 @@ export class MenuComponent implements OnInit, OnDestroy {
         return "FR"
       case "es":
         return "ES"
+      case 'ar':
+        return 'ع';
       default:
         return "EN"
     }
