@@ -4,10 +4,24 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 export interface UtilisateurRequest {
+  code: string;
+  deleted: boolean;
+  id: number;
   nom: string;
+  role: string;
   prenom: string;
   email: string;
+  motDePasse: string;
   phone: string;
+  verified: boolean;
+  balance: number;
+  fidelity: number;
+}
+
+export interface ChangePasswordRequest {
+  email: string;
+  oldPassword: string;
+  newPassword: string;
 }
 
 @Injectable({
@@ -18,7 +32,7 @@ export class UtilisateurService {
 
   constructor(private http: HttpClient) {}
 
-  uploadPhoto(userId: string | null, file: File): Observable<any> {
+    uploadPhoto(userId: string | null, file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post(`${this.apiUrl}/${userId}/uploadPhoto`, formData);
@@ -27,7 +41,11 @@ export class UtilisateurService {
   getPhoto(userId: string | null): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${userId}/photo`, { responseType: 'blob' });
   }
-  updateUser(id: string, utilisateur: UtilisateurRequest): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, utilisateur);
+
+  updateUtilisateur(id: string, utilisateur: UtilisateurRequest): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, utilisateur);
   }
+
+
+
 }

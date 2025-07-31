@@ -9,7 +9,6 @@ import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { HeaderComponent } from './components/header/header.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { EarningComponent } from './components/earning/earning.component';
-import { ProfileComponent } from './components/profile/profile.component';
 import { InovoiceComponent } from './components/inovoice/inovoice.component';
 import { SettingComponent } from './components/setting/setting.component';
 import { ActivityLogsComponent } from './components/activity-logs/activity-logs.component';
@@ -22,6 +21,8 @@ import { ActionComponent } from './components/action/action.component';
 import { MainRouterComponent } from './components/main-router/main-router.component';
 import { DeleteAccountFormComponent } from './components/delete-account-form/delete-account-form.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor'; 
+import { ProfilComponent } from './components/profil/profil.component';
+import { SupportHelpComponent } from './components/support-help/support-help.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -35,7 +36,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     SideBarComponent,
     HeaderComponent,
     EarningComponent,
-    ProfileComponent,
+    ProfilComponent,
     InovoiceComponent,
     SettingComponent,
     ActivityLogsComponent,
@@ -45,6 +46,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ActionComponent,
     MainRouterComponent,
     DeleteAccountFormComponent,
+    SupportHelpComponent
   ],
   imports: [
     BrowserModule,

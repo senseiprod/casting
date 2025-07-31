@@ -15,12 +15,18 @@
     </button>
   </div>
 
-  <div class="py-3 px-3 mt-2">
-    <div class="d-flex align-items-center">
-      <img [src]="profilePhotoUrl || 'assets/img/images.png'" alt="Profile Photo">
+  <!-- Updated Profile Section -->
+  <div class="profile-section">
+    <div class="profile-container">
+      <div class="profile-avatar">
+        <img [src]="profilePhotoUrl || 'assets/img/images.png'" 
+             alt="Profile Photo" 
+             class="profile-pic">
+        <div class="profile-status"></div>
+      </div>
       <div class="profile-info">
-        <div class="text-white fw-bold">{{speaker.nom}}</div>
-        <div class="text-white-50 small">{{speaker.prenom}}</div>
+        <div class="profile-name">{{speaker.nom}}</div>
+        <div class="profile-role">{{speaker.prenom}}</div>
       </div>
     </div>
   </div>
@@ -72,7 +78,7 @@
     </div>
 
     <div class="nav-item">
-      <a routerLink="support" class="nav-link">
+      <a routerLink="help" class="nav-link">
         <i class="bi bi-question-circle"></i>
         <span class="nav-text">Help & Support</span>
       </a>

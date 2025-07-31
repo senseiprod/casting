@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {Observable, tap} from 'rxjs';
+import {Observable, catchError, tap, throwError} from 'rxjs';
 import {jwtDecode} from "jwt-decode";
 import {SpeakerService} from "./speaker.service";
 import {SpeakerResponse} from "./speaker.service";
 import { environment } from 'src/environments/environment';
+import { ChangePasswordRequest } from './utilisateur.service';
 
 interface RegisterRequest {
   firstname: string;
@@ -22,6 +23,30 @@ interface AuthenticationRequest {
 interface AuthenticationResponse {
   access_token: string;
   refresh_token: string;
+}
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+}
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+export interface ResetPasswordRequest {
+  token: string
+  newPassword: string
+}
+
+interface RegisterRequest {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  role: string;
+  companyName: string;
+  phone: string;
 }
 interface User {
   id: string;
@@ -101,4 +126,40 @@ export class AuthService {
   logout() {
     localStorage.clear()
   }
+
+  
+
+    forgotPassword(email: string): Observable<string> {
+      const request: ForgotPasswordRequest = { email }
+      return this.http
+        .post(`${this.apiUrl}/forgot-password`, request, {
+          responseType: "text",
+        })
+        .pipe(
+          catchError((error) => {
+            console.error("Forgot password error:", error)
+            return throwError(() => error)
+          }),
+        )
+    }
+  
+    resetPassword(token: string, newPassword: string): Observable<string> {
+      const request: ResetPasswordRequest = { token, newPassword }
+      return this.http
+        .post(`${this.apiUrl}/reset-password`, request, {
+          responseType: "text",
+        })
+        .pipe(
+          catchError((error) => {
+            console.error("Reset password error:", error)
+            return throwError(() => error)
+          }),
+        )
+    }
+  
+
+  
+    changePassword(request: ChangePasswordRequest) {
+      return this.http.put(`${this.apiUrl}/change-password`, request);
+    }
 }
