@@ -48,9 +48,7 @@
             <label for="requestType" class="form-label">{{ 'requestManagement.table.type' | translate }}*</label>
             <select class="form-select" id="requestType" formControlName="type">
               <option value="support">Support Request</option>
-              <option value="commercial">Commercial</option>
-              <option value="audiobook">Audiobook</option>
-              <option value="videogame">Video Game</option>
+              <option value="commercial">reserve studio</option>
             </select>
           </div>
           <div class="col-12">
@@ -186,9 +184,6 @@
               <select id="typeFilter" class="form-select rounded-pill">
                 <option value="" selected>{{ 'requestManagement.filterOptions.allTypes' | translate }}</option>
                 <option value="support">{{ 'requestManagement.filterOptions.support' | translate }}</option>
-                <option value="commercial">{{ 'requestManagement.filterOptions.commercial' | translate }}</option>
-                <option value="audiobook">{{ 'requestManagement.filterOptions.audiobook' | translate }}</option>
-                <option value="videogame">{{ 'requestManagement.filterOptions.videogame' | translate }}</option>
               </select>
             </div>
             <div class="col-md-4">

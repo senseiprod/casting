@@ -329,7 +329,10 @@
     "status": "Status",
     "submit": "Submit",
     "type": "Type",
-    "view": "View"
+    "view": "View",
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout"
   },
   "DASHBOARD": {
     "TITLE": "Dashboard Overview",

@@ -301,6 +301,9 @@
   "french": "Français",
   "spanish": "Español",
   "common": {
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
     "actions": "Actions",
     "add": "Ajouter",
     "apply": "Appliquer",
