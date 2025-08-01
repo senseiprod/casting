@@ -590,10 +590,7 @@ body {
   gap: 50px;
   margin-bottom: 80px;
 }
-.card-container :hover {
-  background: linear-gradient(to right, #8b0000, #1a0000);
-  color: white;
-}
+
 
 .voice-card {
   width: 320px;
@@ -615,7 +612,12 @@ body {
 
 .ai-card {
   background-color: var(--light-gray);
-  color: var(--dark-gray) !important;
+  /* color: var(--dark-gray) !important; */
+}
+
+a:hover .voice-card {
+  background: linear-gradient(to right, #8b0000, #1a0000);
+  color: white; /* This makes the title and description text white */
 }
 
 .card-icon {
@@ -654,9 +656,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 1px;
 }
-.card-title :hover {
-  color: white;
-}
+
 .card-text {
   font-size: 16px;
   line-height: 1.5;
