@@ -219,6 +219,8 @@ export class GenerationComponent implements OnInit {
     private http: HttpClient // <-- ADDED
   ) {}
 
+  // generation.component.ts
+
   ngOnInit(): void {
     // --- ADDED: Load user data from JWT for free test logic ---
     this.loadUserDataFromJwt();
@@ -230,30 +232,45 @@ export class GenerationComponent implements OnInit {
         this.loadUserBalance();
       }
     });
+
+    // --- MODIFIED: Added a condition to check for a voice_id ---
     this.route.params.subscribe((params) => {
-      const voice_id = params["voice_id"]
-      const voice_name = params["voice_name"]
-      const voice_photo = params["voice_photo"]
-      const voice_gender = params["voice_gender"]
-      const voice_age = params["voice_age"]
-      const voice_category = params["voice_category"]
-      const voice_language = params["voice_language"]
-      const voice_preview_url = params["voice_preview_url"]
-      // Create voice object from URL parameters
-      this.voice = {
-        id: voice_id,
-        name: voice_name || "Unknown",
-        gender: voice_gender || "Not specified",
-        ageZone: voice_age || "Not specified",
-        type: voice_category || "Unclassified",
-        language: voice_language || "Not specified",
-        avatar: voice_photo,
-        price: 0,
-        originalVoiceUrl: voice_preview_url || "",
-        clonedVoiceUrl: "",
+      const voice_id = params["voice_id"];
+
+      // Only proceed to create a selected voice if a voice_id actually exists in the URL.
+      // This prevents an empty object from being created when no ID is present.
+      if (voice_id) {
+        const voice_name = params["voice_name"];
+        const voice_photo = params["voice_photo"];
+        const voice_gender = params["voice_gender"];
+        const voice_age = params["voice_age"];
+        const voice_category = params["voice_category"];
+        const voice_language = params["voice_language"];
+        const voice_preview_url = params["voice_preview_url"];
+        
+        // Create voice object from the URL parameters
+        this.voice = {
+          id: voice_id,
+          name: voice_name || "Unknown",
+          gender: voice_gender || "Not specified",
+          ageZone: voice_age || "Not specified",
+          type: voice_category || "Unclassified",
+          language: voice_language || "Not specified",
+          avatar: voice_photo,
+          price: 0,
+          originalVoiceUrl: voice_preview_url || "",
+          clonedVoiceUrl: "",
+        };
+        
+        // Assign the created voice object to 'selectedVoice'
+        this.selectedVoice = this.voice;
       }
-      this.selectedVoice = this.voice
-    })
+      // If no 'voice_id' is found, this block is skipped, and 'this.selectedVoice'
+      // remains its default value of 'null', causing the voice list to be shown.
+    });
+    // --- END OF MODIFICATION ---
+
+    // These will run regardless of whether a voice was selected from the URL
     this.fetchVoices();
     this.fetchUserProjects();
     this.waveformBars = Array.from({ length: 20 }, () => Math.random() * 80 + 20);
