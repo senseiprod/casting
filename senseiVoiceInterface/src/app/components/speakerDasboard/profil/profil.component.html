@@ -16,7 +16,7 @@
   <div class="photo-crop-modal" *ngIf="showPhotoCropModal" (click)="closeCropModal()">
     <div class="crop-modal-content" (click)="$event.stopPropagation()">
       <div class="crop-modal-header">
-        <h5 class="modal-title">Crop Your Photo</h5>
+        <h5 class="modal-title">Crop Your Photo (Optional)</h5>
         <button type="button" class="btn-close" (click)="closeCropModal()">
           <i class="bi bi-x"></i>
         </button>
@@ -139,7 +139,11 @@
       </div>
       
       <div class="crop-modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeCropModal()">
+        <button type="button" class="btn btn-secondary" (click)="useOriginalImage()">
+          <i class="bi bi-image me-1"></i>
+          Use Original
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeCropModal()">
           Cancel
         </button>
         <button type="button" class="btn btn-primary" (click)="applyCrop()">
@@ -240,7 +244,7 @@
                       type="button" 
                       class="btn btn-primary"
                       (click)="uploadPhoto()"
-                      [disabled]="!croppedPhotoBlob || isUploadingPhoto">
+                      [disabled]="!selectedPhotoFile || isUploadingPhoto">
                       <span *ngIf="isUploadingPhoto" class="spinner-border spinner-border-sm me-1"></span>
                       <i *ngIf="!isUploadingPhoto" class="bi bi-check-lg me-1"></i>
                       {{ isUploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
@@ -261,6 +265,7 @@
                       <i class="bi bi-info-circle me-1"></i>
                       Recommended: Square image, at least 200x200px. Max file size: 5MB.
                       <br>Supported formats: JPG, PNG, GIF
+                      <br><strong>Note:</strong> You can crop your image after selecting it, or use it as-is.
                     </small>
                   </div>
                 </div>

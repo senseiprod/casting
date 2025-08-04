@@ -420,7 +420,26 @@ export class ProfilComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       this.selectedPhotoFile = file
+
+      // Show preview of selected image
+      const objectURL = URL.createObjectURL(file)
+      this.userPhotoUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL)
+
+      // Ask user if they want to crop
+      this.showCropOption(file)
+    }
+  }
+
+  // Show crop option to user
+  showCropOption(file: File): void {
+    const shouldCrop = confirm("Would you like to crop your image? Click OK to crop, or Cancel to use the image as-is.")
+
+    if (shouldCrop) {
       this.loadImageForCropping(file)
+    } else {
+      // Use original image without cropping
+      this.croppedPhotoBlob = null
+      console.log("Using original image without cropping")
     }
   }
 
@@ -868,6 +887,17 @@ export class ProfilComponent implements OnInit, AfterViewInit, OnDestroy {
     )
   }
 
+  // Use original image without cropping
+  useOriginalImage(): void {
+    if (this.selectedPhotoFile) {
+      // Convert the original file to blob for consistency
+      this.croppedPhotoBlob = this.selectedPhotoFile
+      const objectURL = URL.createObjectURL(this.selectedPhotoFile)
+      this.userPhotoUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL)
+      this.closeCropModal()
+    }
+  }
+
   // Close crop modal
   closeCropModal(): void {
     this.showPhotoCropModal = false
@@ -879,28 +909,35 @@ export class ProfilComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Upload photo
   uploadPhoto(): void {
+    let fileToUpload: File
+
     if (this.croppedPhotoBlob) {
-      const userId = this.getCurrentUserId()
-      if (this.userId) {
-        this.isUploadingPhoto = true
+      // Use cropped image
+      fileToUpload = new File([this.croppedPhotoBlob], "profile-photo.jpg", { type: "image/jpeg" })
+    } else if (this.selectedPhotoFile) {
+      // Use original image
+      fileToUpload = this.selectedPhotoFile
+    } else {
+      alert("Please select a photo first")
+      return
+    }
 
-        // Convert blob to file
-        const file = new File([this.croppedPhotoBlob], "profile-photo.jpg", { type: "image/jpeg" })
+    if (this.userId) {
+      this.isUploadingPhoto = true
 
-        this.utilisateurService.uploadPhoto(this.userId, file).subscribe({
-          next: (response) => {
-            console.log("Photo uploaded successfully:", response)
-            this.isUploadingPhoto = false
-            this.selectedPhotoFile = null
-            this.croppedPhotoBlob = null
-            this.loadUserPhoto()
-          },
-          error: (error) => {
-            console.error("Error uploading photo:", error)
-            this.isUploadingPhoto = false
-          },
-        })
-      }
+      this.utilisateurService.uploadPhoto(this.userId, fileToUpload).subscribe({
+        next: (response) => {
+          console.log("Photo uploaded successfully:", response)
+          this.isUploadingPhoto = false
+          this.selectedPhotoFile = null
+          this.croppedPhotoBlob = null
+          this.loadUserPhoto()
+        },
+        error: (error) => {
+          console.error("Error uploading photo:", error)
+          this.isUploadingPhoto = false
+        },
+      })
     }
   }
 
