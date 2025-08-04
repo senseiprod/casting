@@ -625,15 +625,28 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.isLoadingPhoto = true
       this.utilisateurService.getPhoto(this.userId).subscribe({
         next: (photoBlob: Blob) => {
+          // Create object URL and sanitize it
           const objectURL = URL.createObjectURL(photoBlob)
           this.userPhotoUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL)
           this.isLoadingPhoto = false
+          console.log("User photo loaded successfully")
         },
         error: (error) => {
           console.error("Error loading photo:", error)
+          this.userPhotoUrl = null // This will trigger the fallback image
           this.isLoadingPhoto = false
         },
       })
     }
+  }
+
+  onImageError(event: any): void {
+    console.log("Image failed to load, using fallback")
+    event.target.src = "assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png"
+  }
+
+  onImageLoad(event: any): void {
+    console.log("Image loaded successfully")
+    // Optional: Add any additional logic when image loads
   }
 }

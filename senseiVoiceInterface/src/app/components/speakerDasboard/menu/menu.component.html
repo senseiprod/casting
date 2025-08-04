@@ -1,6 +1,5 @@
 <!-- Header -->
 <header class="topbar">
-  <!-- Removed CGV Modal -->
   <div class="header-container">
     <!-- Left Section: Toggle & Title -->
     <div class="header-left">
@@ -272,7 +271,7 @@
       <div class="language-selector">
         <div class="dropdown">
           <button 
-            class="language-button" 
+            class="language-button modern-language-btn" 
             type="button" 
             id="languageDropdown" 
             data-bs-toggle="dropdown" 
@@ -281,9 +280,9 @@
             <i class="bi bi-globe"></i>
             <span>{{ getLanguageDisplayName() }}</span>
           </button>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+          <ul class="dropdown-menu dropdown-menu-end modern-dropdown" aria-labelledby="languageDropdown">
             <li>
-              <a class="dropdown-item" 
+              <a class="dropdown-item modern-dropdown-item" 
                  href="#" 
                  (click)="changeLanguage('en'); $event.preventDefault()"
                  [class.active]="getCurrentLanguage() === 'en'">
@@ -292,7 +291,7 @@
               </a>
             </li>
             <li>
-              <a class="dropdown-item" 
+              <a class="dropdown-item modern-dropdown-item" 
                  href="#" 
                  (click)="changeLanguage('fr'); $event.preventDefault()"
                  [class.active]="getCurrentLanguage() === 'fr'">
@@ -301,7 +300,7 @@
               </a>
             </li>
             <li>
-              <a class="dropdown-item" 
+              <a class="dropdown-item modern-dropdown-item" 
                  href="#" 
                  (click)="changeLanguage('es'); $event.preventDefault()"
                  [class.active]="getCurrentLanguage() === 'es'">
@@ -309,49 +308,47 @@
                 {{ 'header.language.options.spanish' | translate }}
               </a>
             </li>
-
-            <!-- Corrected Code -->
-<li>
-  <a class="dropdown-item" 
-     href="#" 
-     (click)="changeLanguage('ar'); $event.preventDefault()"
-     [class.active]="getCurrentLanguage() === 'ar'">
-    <span class="language-flag">🇸🇦</span> <!-- Optional: Changed to a flag for consistency -->
-    {{ 'header.language.options.arabic' | translate }}
-  </a>
-</li>
+            <li>
+              <a class="dropdown-item modern-dropdown-item" 
+                 href="#" 
+                 (click)="changeLanguage('ar'); $event.preventDefault()"
+                 [class.active]="getCurrentLanguage() === 'ar'">
+                <span class="language-flag">🇸🇦</span>
+                {{ 'header.language.options.arabic' | translate }}
+              </a>
+            </li>
           </ul>
         </div>
       </div>
 
-      <!-- Notifications - Updated to use real data -->
+      <!-- Enhanced Notifications -->
       <div class="notification-container">
         <div class="dropdown">
           <button 
-            class="notification-button" 
+            class="notification-button modern-notification-btn" 
             id="notificationsDropdown" 
             data-bs-toggle="dropdown" 
             aria-expanded="false"
             [attr.aria-label]="'header.notifications.button' | translate">
             <i class="bi bi-bell" [class.text-muted]="isLoadingNotifications"></i>
-            <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+            <span class="notification-badge modern-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
             <!-- Loading indicator -->
             <span class="notification-loading" *ngIf="isLoadingNotifications">
               <i class="bi bi-hourglass-split"></i>
             </span>
           </button>
-          <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationsDropdown">
-            <div class="notification-header">
+          <div class="dropdown-menu dropdown-menu-end notification-dropdown modern-dropdown" aria-labelledby="notificationsDropdown">
+            <div class="notification-header modern-dropdown-header">
               <h6>{{ 'header.notifications.title' | translate }}</h6>
               <div class="notification-actions">
-                <button class="refresh-notifications-btn" 
+                <button class="refresh-notifications-btn modern-action-btn" 
                         (click)="refreshNotifications()" 
                         [disabled]="isLoadingNotifications"
                         [attr.title]="'Refresh notifications'">
                   <i class="bi" [ngClass]="isLoadingNotifications ? 'bi-hourglass-split' : 'bi-arrow-clockwise'"></i>
                 </button>
                 <a href="#" 
-                   class="mark-all" 
+                   class="mark-all modern-link" 
                    (click)="markAllNotificationsAsRead(); $event.preventDefault()"
                    *ngIf="notificationCount > 0">
                   {{ 'header.notifications.markAllRead' | translate }}
@@ -373,7 +370,7 @@
                   <i class="bi bi-exclamation-triangle"></i>
                 </div>
                 <p>{{ notificationError }}</p>
-                <button class="btn-retry" (click)="refreshNotifications()">
+                <button class="btn-retry modern-btn" (click)="refreshNotifications()">
                   <i class="bi bi-arrow-clockwise me-1"></i>
                   {{ 'Retry' | translate }}
                 </button>
@@ -390,17 +387,17 @@
               <!-- Notifications List -->
               <div *ngIf="!isLoadingNotifications && !notificationError && notifications.length > 0">
                 <a routerLink="requests" 
-                   class="notification-item" 
+                   class="notification-item modern-notification-item" 
                    *ngFor="let notification of notifications; trackBy: trackNotificationById"
                    [class.unread]="!notification.readAt"
                    (click)="handleNotificationAction(notification); $event.preventDefault()">
-                  <div class="notification-icon">
+                  <div class="notification-icon modern-notification-icon">
                     <i [class]="getNotificationIcon(notification.type)"></i>
                   </div>
                   <div class="notification-content">
                     <div class="notification-header-item">
                       <p class="notification-title">{{ notification.title }}</p>
-                      <button class="notification-delete-btn" 
+                      <button class="notification-delete-btn modern-delete-btn" 
                               (click)="deleteNotification(notification.id); $event.stopPropagation()"
                               [attr.title]="'Delete notification'">
                         <i class="bi bi-x"></i>
@@ -412,20 +409,20 @@
                       <span class="notification-sender" *ngIf="notification.senderName">
                         {{ 'from' | translate }} {{ notification.senderName }}
                       </span>
-                      <span class="notification-type-badge" [class]="'type-' + notification.type.toLowerCase()">
+                      <span class="notification-type-badge modern-type-badge" [class]="'type-' + notification.type.toLowerCase()">
                         {{ notification.type | titlecase }}
                       </span>
                     </div>
                   </div>
                   <div class="notification-status" *ngIf="!notification.readAt">
-                    <span class="unread-indicator"></span>
+                    <span class="unread-indicator modern-unread-indicator"></span>
                   </div>
                 </a>
               </div>
             </div>
-            <div class="notification-footer" *ngIf="notifications.length > 0">
+            <div class="notification-footer modern-dropdown-footer" *ngIf="notifications.length > 0">
               <a href="#" 
-                 class="view-all" 
+                 class="view-all modern-view-all-link" 
                  (click)="navigateToNotifications(); $event.preventDefault()">
                 {{ 'header.notifications.viewAll' | translate }}
               </a>
@@ -434,36 +431,51 @@
         </div>
       </div>
 
-      <!-- User Profile -->
+      <!-- Enhanced User Profile -->
       <div class="profile-container">
         <div class="dropdown">
           <button 
-            class="profile-button" 
+            class="profile-button modern-profile-btn" 
             id="userDropdown" 
             data-bs-toggle="dropdown" 
             aria-expanded="false"
             [attr.aria-label]="'header.profile.menu' | translate">
-            <div class="profile-avatar">
+            <div class="profile-avatar modern-avatar">
               <img 
                 [src]="userPhotoUrl || 'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" 
-                [alt]="'header.profile.avatar' | translate">
-              <span class="status-indicator" [attr.title]="'header.profile.status.online' | translate"></span>
+                [alt]="'header.profile.avatar' | translate"
+                class="profile-pic modern-profile-pic"
+                (error)="onImageError($event)"
+                (load)="onImageLoad($event)"
+                loading="lazy">
+              <span class="status-indicator modern-status-indicator" [attr.title]="'header.profile.status.online' | translate"></span>
             </div>
-            <div class="profile-info d-none d-md-block">
-              <h6 class="profile-name">{{ speaker?.prenom }} {{ speaker?.nom }}</h6>
-              <p class="profile-role">{{ speaker?.code }}</p>
+            <div class="profile-info modern-profile-info d-none d-md-block">
+              <h6 class="profile-name modern-profile-name">{{ speaker?.prenom }} {{ speaker?.nom }}</h6>
+              <p class="profile-role modern-profile-role">{{ speaker?.code }}</p>
             </div>
-            <i class="bi bi-chevron-down profile-arrow"></i>
+            <i class="bi bi-chevron-down profile-arrow modern-dropdown-arrow"></i>
           </button>
 
-          <div class="dropdown-menu dropdown-menu-end profile-dropdown" aria-labelledby="userDropdown">
-            <div class="dropdown-header">
-              <h6>{{ speaker?.prenom }} {{ speaker?.nom }}</h6>
-              <p>{{ speaker?.code }}</p>
+          <div class="dropdown-menu dropdown-menu-end profile-dropdown modern-dropdown" aria-labelledby="userDropdown">
+            <div class="dropdown-header modern-profile-dropdown-header">
+              <div class="profile-header-content">
+                <img 
+                  [src]="userPhotoUrl || 'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'" 
+                  [alt]="'header.profile.avatar' | translate"
+                  class="dropdown-profile-pic"
+                  (error)="onImageError($event)"
+                  (load)="onImageLoad($event)"
+                  loading="lazy">
+                <div class="profile-header-info">
+                  <h6 class="profile-header-name">{{ speaker?.prenom }} {{ speaker?.nom }}</h6>
+                  <p class="profile-header-role">{{ speaker?.code }}</p>
+                </div>
+              </div>
             </div>
 
             <div class="dropdown-body">
-              <a class="dropdown-item" 
+              <a class="dropdown-item modern-dropdown-item" 
                  routerLink="setting"
                  (click)="navigateToSettings()">
                 <i class="bi bi-gear"></i>
@@ -471,8 +483,8 @@
               </a>
             </div>
 
-            <div class="dropdown-footer">
-              <a class="dropdown-item logout-item" 
+            <div class="dropdown-footer modern-dropdown-footer">
+              <a class="dropdown-item modern-dropdown-item logout-item" 
                  href="#" 
                  (click)="logout(); $event.preventDefault()">
                 <i class="bi bi-box-arrow-right"></i>

@@ -52,6 +52,7 @@
     padding: 60px 0.5rem 1rem;
   }
 }
+
 /* Animation */
 .fade-in {
   animation: fadeIn 0.5s ease-in-out;
@@ -88,6 +89,387 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* Enhanced Photo Upload Section */
+.photo-upload-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 2px dashed #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.photo-upload-section:hover {
+  border-color: #cb1025;
+  background: linear-gradient(135deg, rgba(203, 16, 37, 0.02) 0%, #ffffff 100%);
+}
+
+.current-photo-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.photo-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #fff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.photo-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+.current-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: all 0.3s ease;
+}
+
+.photo-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+}
+
+.photo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(203, 16, 37, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.photo-wrapper:hover .photo-overlay {
+  opacity: 1;
+}
+
+.photo-overlay i {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.photo-controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.photo-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.photo-requirements {
+  padding: 1rem;
+  background: rgba(108, 117, 125, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid #6c757d;
+}
+
+/* Photo Crop Modal */
+.photo-crop-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.crop-modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.crop-modal-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e9e6f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #cb1025 0%, #a50d20 100%);
+  color: white;
+}
+
+.crop-modal-header .modal-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.crop-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.crop-container {
+  position: relative;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+/* Prevent text selection and improve crop interaction */
+.crop-container,
+.crop-canvas,
+.crop-overlay,
+.crop-selection {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Ensure canvas has proper dimensions */
+.crop-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  background: #f8f9fa;
+}
+
+.crop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+/* Improve crop selection visibility */
+.crop-selection {
+  position: absolute;
+  border: 2px solid #cb1025;
+  background: rgba(203, 16, 37, 0.15);
+  cursor: move;
+  pointer-events: all;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.crop-selection::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  border: 1px dashed rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+}
+
+/* Improve handle visibility and interaction */
+.crop-handle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #cb1025;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 15;
+  transition: all 0.2s ease;
+}
+
+.crop-handle:hover {
+  background: #a50d20;
+  transform: scale(1.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Ensure proper cursor styles */
+.crop-handle-nw {
+  cursor: nw-resize !important;
+}
+.crop-handle-ne {
+  cursor: ne-resize !important;
+}
+.crop-handle-sw {
+  cursor: sw-resize !important;
+}
+.crop-handle-se {
+  cursor: se-resize !important;
+}
+.crop-handle-n {
+  cursor: n-resize !important;
+}
+.crop-handle-s {
+  cursor: s-resize !important;
+}
+.crop-handle-w {
+  cursor: w-resize !important;
+}
+.crop-handle-e {
+  cursor: e-resize !important;
+}
+
+/* Prevent text selection during crop operations */
+.crop-container * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.crop-handle-nw {
+  top: -6px;
+  left: -6px;
+  cursor: nw-resize;
+}
+.crop-handle-ne {
+  top: -6px;
+  right: -6px;
+  cursor: ne-resize;
+}
+.crop-handle-sw {
+  bottom: -6px;
+  left: -6px;
+  cursor: sw-resize;
+}
+.crop-handle-se {
+  bottom: -6px;
+  right: -6px;
+  cursor: se-resize;
+}
+.crop-handle-n {
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: n-resize;
+}
+.crop-handle-s {
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
+}
+.crop-handle-w {
+  top: 50%;
+  left: -6px;
+  transform: translateY(-50%);
+  cursor: w-resize;
+}
+.crop-handle-e {
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  cursor: e-resize;
+}
+
+.crop-controls {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.crop-presets .btn-group .btn {
+  min-width: 60px;
+}
+
+.crop-presets .btn.active {
+  background-color: #cb1025;
+  border-color: #cb1025;
+  color: white;
+}
+
+.crop-zoom .form-range::-webkit-slider-thumb {
+  background: #cb1025;
+}
+
+.crop-zoom .form-range::-moz-range-thumb {
+  background: #cb1025;
+  border: none;
+}
+
+.crop-preview {
+  text-align: center;
+}
+
+.preview-container {
+  display: inline-block;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.preview-canvas {
+  display: block;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+
+.crop-modal-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
 }
 
 /* Settings Navigation */
@@ -320,6 +702,35 @@
   .settings-nav-item i {
     margin-right: 0.5rem;
   }
+
+  .photo-upload-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .photo-actions {
+    justify-content: center;
+  }
+
+  .crop-modal-content {
+    margin: 0.5rem;
+    max-height: 95vh;
+  }
+
+  .crop-modal-body {
+    padding: 1rem;
+  }
+
+  .crop-controls {
+    padding: 1rem;
+  }
+
+  .crop-modal-footer {
+    padding: 1rem;
+    flex-direction: column;
+  }
 }
 
 /* Modal styles for delete account form */
@@ -456,4 +867,21 @@
 
 .notification-category td {
   padding: 10px 15px;
+}
+
+/* Improve modal responsiveness */
+@media (max-width: 768px) {
+  .crop-modal-content {
+    margin: 1rem;
+    max-height: 95vh;
+  }
+
+  .crop-canvas {
+    max-width: calc(100vw - 4rem);
+  }
+
+  .crop-handle {
+    width: 16px;
+    height: 16px;
+  }
 }

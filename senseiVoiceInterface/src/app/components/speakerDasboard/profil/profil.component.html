@@ -12,6 +12,144 @@
     </div>
   </div>
 
+  <!-- Photo Crop Modal -->
+  <div class="photo-crop-modal" *ngIf="showPhotoCropModal" (click)="closeCropModal()">
+    <div class="crop-modal-content" (click)="$event.stopPropagation()">
+      <div class="crop-modal-header">
+        <h5 class="modal-title">Crop Your Photo</h5>
+        <button type="button" class="btn-close" (click)="closeCropModal()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      
+      <div class="crop-modal-body">
+        <div class="crop-container">
+          <canvas 
+            #cropCanvas 
+            class="crop-canvas"
+            (mousedown)="startCrop($event)"
+            (mousemove)="updateCrop($event)"
+            (mouseup)="endCrop($event)"
+            (mouseleave)="endCrop($event)"
+            [style.cursor]="getCursorStyle()">
+          </canvas>
+          
+          <!-- Crop overlay -->
+          <div class="crop-overlay" *ngIf="cropArea">
+            <div 
+              class="crop-selection"
+              [style.left.px]="cropArea.x"
+              [style.top.px]="cropArea.y"
+              [style.width.px]="cropArea.width"
+              [style.height.px]="cropArea.height">
+              
+              <!-- Resize handles -->
+              <div class="crop-handle crop-handle-nw" 
+                   (mousedown)="startResize($event, 'nw')"
+                   (click)="$event.stopPropagation()"></div>
+              <div class="crop-handle crop-handle-ne" 
+                   (mousedown)="startResize($event, 'ne')"
+                   (click)="$event.stopPropagation()"></div>
+              <div class="crop-handle crop-handle-sw" 
+                   (mousedown)="startResize($event, 'sw')"
+                   (click)="$event.stopPropagation()"></div>
+              <div class="crop-handle crop-handle-se" 
+                   (mousedown)="startResize($event, 'se')"
+                   (click)="$event.stopPropagation()"></div>
+              
+              <!-- Edge handles -->
+              <div class="crop-handle crop-handle-n" 
+                   (mousedown)="startResize($event, 'n')"
+                   (click)="$event.stopPropagation()"></div>
+              <div class="crop-handle crop-handle-s" 
+                   (mousedown)="startResize($event, 's')"
+                   (click)="$event.stopPropagation()"></div>
+              <div class="crop-handle crop-handle-w" 
+                   (mousedown)="startResize($event, 'w')"
+                   (click)="$event.stopPropagation()"></div>
+              <div class="crop-handle crop-handle-e" 
+                   (mousedown)="startResize($event, 'e')"
+                   (click)="$event.stopPropagation()"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Crop Controls -->
+        <div class="crop-controls mt-3">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="crop-presets">
+                <label class="form-label">Aspect Ratio:</label>
+                <div class="btn-group" role="group">
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary btn-sm"
+                    [class.active]="cropAspectRatio === 1"
+                    (click)="setCropAspectRatio(1)">
+                    1:1
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary btn-sm"
+                    [class.active]="cropAspectRatio === 4/3"
+                    (click)="setCropAspectRatio(4/3)">
+                    4:3
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary btn-sm"
+                    [class.active]="cropAspectRatio === 16/9"
+                    (click)="setCropAspectRatio(16/9)">
+                    16:9
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary btn-sm"
+                    [class.active]="cropAspectRatio === 0"
+                    (click)="setCropAspectRatio(0)">
+                    Free
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="crop-zoom">
+                <label class="form-label">Zoom:</label>
+                <input 
+                  type="range" 
+                  class="form-range" 
+                  min="0.5" 
+                  max="3" 
+                  step="0.1" 
+                  [(ngModel)]="cropZoom"
+                  (input)="updateImageZoom()"
+                  (change)="updateImageZoom()">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Preview -->
+        <div class="crop-preview mt-3">
+          <label class="form-label">Preview:</label>
+          <div class="preview-container">
+            <canvas #previewCanvas class="preview-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="crop-modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCropModal()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="applyCrop()">
+          <i class="bi bi-crop me-1"></i>
+          Apply Crop
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Delete Account Form Modal -->
   <div class="delete-account-modal" *ngIf="showDeleteAccountForm">
     <div class="modal-backdrop"></div>
@@ -52,114 +190,138 @@
     </div>
 
     <div class="col-lg-9">
-      <!-- General Settings -->
-<!-- General Settings with Photo Upload -->
-<div *ngIf="activeTab === 'general'" class="card shadow mb-4">
-  <div class="card-header py-3">
-    <h6 class="m-0 fw-bold text-primary">General Settings</h6>
-  </div>
-  <div class="card-body">
-    <!-- Profile Photo Section -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <h6 class="fw-bold mb-3">Profile Photo</h6>
-        <div class="d-flex align-items-center">
-          <div class="me-3">
-            <div class="position-relative">
-              <img 
-                [src]="userPhotoUrl || '/assets/default-avatar.png'" 
-                alt="Profile Photo" 
-                class="rounded-circle"
-                style="width: 80px; height: 80px; object-fit: cover;"
-                *ngIf="!isLoadingPhoto">
-              <div 
-                *ngIf="isLoadingPhoto" 
-                class="d-flex align-items-center justify-content-center rounded-circle bg-light"
-                style="width: 80px; height: 80px;">
-                <div class="spinner-border spinner-border-sm" role="status"></div>
+      <!-- General Settings with Enhanced Photo Upload -->
+      <div *ngIf="activeTab === 'general'" class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 fw-bold text-primary">General Settings</h6>
+        </div>
+        <div class="card-body">
+          <!-- Enhanced Profile Photo Section -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <h6 class="fw-bold mb-3">Profile Photo</h6>
+              <div class="photo-upload-section">
+                <div class="current-photo-container">
+                  <div class="photo-wrapper">
+                    <img 
+                      [src]="userPhotoUrl || '/assets/default-avatar.png'" 
+                      alt="Profile Photo" 
+                      class="current-photo"
+                      *ngIf="!isLoadingPhoto">
+                    <div 
+                      *ngIf="isLoadingPhoto" 
+                      class="photo-loading">
+                      <div class="spinner-border" role="status"></div>
+                    </div>
+                    
+                    <!-- Photo overlay on hover -->
+                    <div class="photo-overlay" *ngIf="!isLoadingPhoto">
+                      <i class="bi bi-camera"></i>
+                      <span>Change Photo</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="photo-controls">
+                  <input 
+                    type="file" 
+                    id="photoUpload" 
+                    accept="image/*" 
+                    (change)="onPhotoSelected($event)"
+                    class="d-none">
+                  
+                  <div class="photo-actions">
+                    <label for="photoUpload" class="btn btn-outline-primary">
+                      <i class="bi bi-upload me-1"></i>
+                      Choose Photo
+                    </label>
+                    
+                    <button 
+                      type="button" 
+                      class="btn btn-primary"
+                      (click)="uploadPhoto()"
+                      [disabled]="!croppedPhotoBlob || isUploadingPhoto">
+                      <span *ngIf="isUploadingPhoto" class="spinner-border spinner-border-sm me-1"></span>
+                      <i *ngIf="!isUploadingPhoto" class="bi bi-check-lg me-1"></i>
+                      {{ isUploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
+                    </button>
+                    
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-danger"
+                      (click)="removePhoto()"
+                      *ngIf="userPhotoUrl && !isLoadingPhoto">
+                      <i class="bi bi-trash me-1"></i>
+                      Remove
+                    </button>
+                  </div>
+                  
+                  <div class="photo-requirements">
+                    <small class="text-muted">
+                      <i class="bi bi-info-circle me-1"></i>
+                      Recommended: Square image, at least 200x200px. Max file size: 5MB.
+                      <br>Supported formats: JPG, PNG, GIF
+                    </small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div>
-            <input 
-              type="file" 
-              id="photoUpload" 
-              accept="image/*" 
-              (change)="onPhotoSelected($event)"
-              class="d-none">
-            <label for="photoUpload" class="btn btn-outline-primary btn-sm me-2">
-              Choose Photo
-            </label>
+
+          <!-- User Information Form -->
+          <form (ngSubmit)="updateAccountSettings()">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="firstName" class="form-label">First Name</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="firstName" 
+                  [(ngModel)]="accountSettings.firstName" 
+                  name="firstName">
+              </div>
+              <div class="col-md-6">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="lastName" 
+                  [(ngModel)]="accountSettings.lastName" 
+                  name="lastName">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email" 
+                  [(ngModel)]="accountSettings.email" 
+                  name="email">
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label">Phone</label>
+                <input 
+                  type="tel" 
+                  class="form-control" 
+                  id="phone" 
+                  [(ngModel)]="accountSettings.phone" 
+                  name="phone">
+              </div>
+            </div>
+
             <button 
-              type="button" 
-              class="btn btn-primary btn-sm"
-              (click)="uploadPhoto()"
-              [disabled]="!selectedPhotoFile || isUploadingPhoto">
-              <span *ngIf="isUploadingPhoto" class="spinner-border spinner-border-sm me-1"></span>
-              {{ isUploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="isUpdatingProfile">
+              <span *ngIf="isUpdatingProfile" class="spinner-border spinner-border-sm me-1"></span>
+              {{ isUpdatingProfile ? 'Updating...' : 'Update Profile' }}
             </button>
-          </div>
+          </form>
         </div>
       </div>
-    </div>
-
-    <!-- User Information Form -->
-    <form (ngSubmit)="updateAccountSettings()">
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="firstName" class="form-label">First Name</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="firstName" 
-            [(ngModel)]="accountSettings.firstName" 
-            name="firstName">
-        </div>
-        <div class="col-md-6">
-          <label for="lastName" class="form-label">Last Name</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="lastName" 
-            [(ngModel)]="accountSettings.lastName" 
-            name="lastName">
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="email" class="form-label">Email</label>
-          <input 
-            type="email" 
-            class="form-control" 
-            id="email" 
-            [(ngModel)]="accountSettings.email" 
-            name="email">
-        </div>
-        <div class="col-md-6">
-          <label for="phone" class="form-label">Phone</label>
-          <input 
-            type="tel" 
-            class="form-control" 
-            id="phone" 
-            [(ngModel)]="accountSettings.phone" 
-            name="phone">
-        </div>
-      </div>
-
-      <!-- ... existing general settings form fields ... -->
-
-      <button 
-        type="submit" 
-        class="btn btn-primary"
-        [disabled]="isUpdatingProfile">
-        <span *ngIf="isUpdatingProfile" class="spinner-border spinner-border-sm me-1"></span>
-        {{ isUpdatingProfile ? 'Updating...' : 'Update Profile' }}
-      </button>
-    </form>
-  </div>
-</div>
-
 
       <!-- Notification Settings -->
       <div *ngIf="activeTab === 'notifications'" class="card shadow mb-4">
@@ -211,143 +373,141 @@
         </div>
       </div>
 
-
       <!-- Security Settings -->
-<!-- Security Settings -->
-<div *ngIf="activeTab === 'security'" class="card shadow mb-4">
-  <div class="card-header py-3">
-    <h6 class="m-0 fw-bold text-primary">Security Settings</h6>
-  </div>
-  <div class="card-body">
-    <div class="mb-4">
-      <h5 class="h6 fw-bold">Two-Factor Authentication</h5>
-      <div class="d-flex align-items-center justify-content-between">
-        <div>
-          <p class="mb-0">Add an extra layer of security to your account</p>
-          <p class="text-muted small mb-0">{{ securitySettings.twoFactorAuth ? 'Currently enabled' : 'Currently disabled' }}</p>
+      <div *ngIf="activeTab === 'security'" class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 fw-bold text-primary">Security Settings</h6>
         </div>
-        <button class="btn btn-sm" [ngClass]="securitySettings.twoFactorAuth ? 'btn-danger' : 'btn-primary'" (click)="toggleTwoFactorAuth()">
-          {{ securitySettings.twoFactorAuth ? 'Disable' : 'Enable' }}
-        </button>
-      </div>
-    </div>
-
-    <div class="mb-4">
-      <h5 class="h6 fw-bold">Security Preferences</h5>
-      <div class="mb-3">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="loginNotifications" [(ngModel)]="securitySettings.loginNotifications" name="loginNotifications">
-          <label class="form-check-label" for="loginNotifications">Email me when there's a new login to my account</label>
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="sessionTimeout" class="form-label">Session Timeout</label>
-          <select class="form-select" id="sessionTimeout" [(ngModel)]="securitySettings.sessionTimeout" name="sessionTimeout">
-            <option value="15m">15 minutes</option>
-            <option value="30m">30 minutes</option>
-            <option value="1h">1 hour</option>
-            <option value="4h">4 hours</option>
-            <option value="8h">8 hours</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="passwordExpiry" class="form-label">Password Expiry</label>
-          <select class="form-select" id="passwordExpiry" [(ngModel)]="securitySettings.passwordExpiry" name="passwordExpiry">
-            <option value="30d">30 days</option>
-            <option value="60d">60 days</option>
-            <option value="90d">90 days</option>
-            <option value="180d">180 days</option>
-            <option value="never">Never</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4">
-      <h5 class="h6 fw-bold">Change Password</h5>
-      
-      <!-- Success Message -->
-      <div *ngIf="passwordValidation.successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-2"></i>
-        {{ passwordValidation.successMessage }}
-        <button type="button" class="btn-close" (click)="passwordValidation.successMessage = ''"></button>
-      </div>
-
-      <!-- General Error Message -->
-      <div *ngIf="passwordValidation.generalError" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        {{ passwordValidation.generalError }}
-        <button type="button" class="btn-close" (click)="passwordValidation.generalError = ''"></button>
-      </div>
-
-      <form (ngSubmit)="changePassword()" #passwordChangeForm="ngForm">
-        <div class="mb-3">
-          <label for="currentPassword" class="form-label">Current Password <span class="text-danger">*</span></label>
-          <input 
-            type="password" 
-            class="form-control" 
-            [class.is-invalid]="passwordValidation.currentPasswordError"
-            id="currentPassword" 
-            [(ngModel)]="passwordForm.currentPassword" 
-            name="currentPassword"
-            required
-            autocomplete="current-password">
-          <div *ngIf="passwordValidation.currentPasswordError" class="invalid-feedback">
-            {{ passwordValidation.currentPasswordError }}
+        <div class="card-body">
+          <div class="mb-4">
+            <h5 class="h6 fw-bold">Two-Factor Authentication</h5>
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <p class="mb-0">Add an extra layer of security to your account</p>
+                <p class="text-muted small mb-0">{{ securitySettings.twoFactorAuth ? 'Currently enabled' : 'Currently disabled' }}</p>
+              </div>
+              <button class="btn btn-sm" [ngClass]="securitySettings.twoFactorAuth ? 'btn-danger' : 'btn-primary'" (click)="toggleTwoFactorAuth()">
+                {{ securitySettings.twoFactorAuth ? 'Disable' : 'Enable' }}
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div class="mb-3">
-          <label for="newPassword" class="form-label">New Password <span class="text-danger">*</span></label>
-          <input 
-            type="password" 
-            class="form-control" 
-            [class.is-invalid]="passwordValidation.newPasswordError"
-            id="newPassword" 
-            [(ngModel)]="passwordForm.newPassword" 
-            name="newPassword"
-            required
-            autocomplete="new-password">
-          <div *ngIf="passwordValidation.newPasswordError" class="invalid-feedback">
-            {{ passwordValidation.newPasswordError }}
+          <div class="mb-4">
+            <h5 class="h6 fw-bold">Security Preferences</h5>
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="loginNotifications" [(ngModel)]="securitySettings.loginNotifications" name="loginNotifications">
+                <label class="form-check-label" for="loginNotifications">Email me when there's a new login to my account</label>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="sessionTimeout" class="form-label">Session Timeout</label>
+                <select class="form-select" id="sessionTimeout" [(ngModel)]="securitySettings.sessionTimeout" name="sessionTimeout">
+                  <option value="15m">15 minutes</option>
+                  <option value="30m">30 minutes</option>
+                  <option value="1h">1 hour</option>
+                  <option value="4h">4 hours</option>
+                  <option value="8h">8 hours</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="passwordExpiry" class="form-label">Password Expiry</label>
+                <select class="form-select" id="passwordExpiry" [(ngModel)]="securitySettings.passwordExpiry" name="passwordExpiry">
+                  <option value="30d">30 days</option>
+                  <option value="60d">60 days</option>
+                  <option value="90d">90 days</option>
+                  <option value="180d">180 days</option>
+                  <option value="never">Never</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="form-text">
-            Password must be at least 8 characters long and contain uppercase, lowercase, and numeric characters.
+
+          <div class="mb-4">
+            <h5 class="h6 fw-bold">Change Password</h5>
+            
+            <!-- Success Message -->
+            <div *ngIf="passwordValidation.successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="bi bi-check-circle me-2"></i>
+              {{ passwordValidation.successMessage }}
+              <button type="button" class="btn-close" (click)="passwordValidation.successMessage = ''"></button>
+            </div>
+
+            <!-- General Error Message -->
+            <div *ngIf="passwordValidation.generalError" class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ passwordValidation.generalError }}
+              <button type="button" class="btn-close" (click)="passwordValidation.generalError = ''"></button>
+            </div>
+
+            <form (ngSubmit)="changePassword()" #passwordChangeForm="ngForm">
+              <div class="mb-3">
+                <label for="currentPassword" class="form-label">Current Password <span class="text-danger">*</span></label>
+                <input 
+                  type="password" 
+                  class="form-control" 
+                  [class.is-invalid]="passwordValidation.currentPasswordError"
+                  id="currentPassword" 
+                  [(ngModel)]="passwordForm.currentPassword" 
+                  name="currentPassword"
+                  required
+                  autocomplete="current-password">
+                <div *ngIf="passwordValidation.currentPasswordError" class="invalid-feedback">
+                  {{ passwordValidation.currentPasswordError }}
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="newPassword" class="form-label">New Password <span class="text-danger">*</span></label>
+                <input 
+                  type="password" 
+                  class="form-control" 
+                  [class.is-invalid]="passwordValidation.newPasswordError"
+                  id="newPassword" 
+                  [(ngModel)]="passwordForm.newPassword" 
+                  name="newPassword"
+                  required
+                  autocomplete="new-password">
+                <div *ngIf="passwordValidation.newPasswordError" class="invalid-feedback">
+                  {{ passwordValidation.newPasswordError }}
+                </div>
+                <div class="form-text">
+                  Password must be at least 8 characters long and contain uppercase, lowercase, and numeric characters.
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm New Password <span class="text-danger">*</span></label>
+                <input 
+                  type="password" 
+                  class="form-control" 
+                  [class.is-invalid]="passwordValidation.confirmPasswordError"
+                  id="confirmPassword" 
+                  [(ngModel)]="passwordForm.confirmPassword" 
+                  name="confirmPassword"
+                  required
+                  autocomplete="new-password">
+                <div *ngIf="passwordValidation.confirmPasswordError" class="invalid-feedback">
+                  {{ passwordValidation.confirmPasswordError }}
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                class="btn btn-primary"
+                [disabled]="isChangingPassword || !passwordChangeForm.form.valid">
+                <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <i *ngIf="!isChangingPassword" class="bi bi-key me-2"></i>
+                {{ isChangingPassword ? 'Changing Password...' : 'Change Password' }}
+              </button>
+            </form>
           </div>
+
+          <button type="button" class="btn btn-primary" (click)="updateSecuritySettings()">Save Security Settings</button>
         </div>
-
-        <div class="mb-3">
-          <label for="confirmPassword" class="form-label">Confirm New Password <span class="text-danger">*</span></label>
-          <input 
-            type="password" 
-            class="form-control" 
-            [class.is-invalid]="passwordValidation.confirmPasswordError"
-            id="confirmPassword" 
-            [(ngModel)]="passwordForm.confirmPassword" 
-            name="confirmPassword"
-            required
-            autocomplete="new-password">
-          <div *ngIf="passwordValidation.confirmPasswordError" class="invalid-feedback">
-            {{ passwordValidation.confirmPasswordError }}
-          </div>
-        </div>
-
-        <button 
-          type="submit" 
-          class="btn btn-primary"
-          [disabled]="isChangingPassword || !passwordChangeForm.form.valid">
-          <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm me-2" role="status"></span>
-          <i *ngIf="!isChangingPassword" class="bi bi-key me-2"></i>
-          {{ isChangingPassword ? 'Changing Password...' : 'Change Password' }}
-        </button>
-      </form>
-    </div>
-
-    <button type="button" class="btn btn-primary" (click)="updateSecuritySettings()">Save Security Settings</button>
-  </div>
-</div>
+      </div>
     </div>
   </div>
 </main>
