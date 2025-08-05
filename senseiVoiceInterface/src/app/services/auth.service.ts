@@ -59,6 +59,11 @@ export class AuthService {
   // --- ADDED --- Key for the refresh token.
   public refreshTokenKey = 'refresh_token';
 
+   // --- ADDED --- Key for the login timestamp
+  private timestampKey = 'login_timestamp';
+
+  private readonly SESSION_DURATION = 24 * 60 * 60 * 1000;
+
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem(this.tokenKey);
@@ -74,6 +79,8 @@ export class AuthService {
       tap((response: AuthenticationResponse) => {
         localStorage.setItem(this.tokenKey, response.access_token);
         localStorage.setItem(this.refreshTokenKey, response.refresh_token);
+        // --- ADDED --- Save the login timestamp
+        localStorage.setItem(this.timestampKey, Date.now().toString());
       })
     );
   }
@@ -82,6 +89,33 @@ export class AuthService {
   // This method redirects the browser to the backend's Google authorization URL.
   loginWithGoogle(): void {
     window.location.href = `${this.baseApiUrl}/oauth2/authorization/google`;
+    // --- ADDED --- Also save the timestamp for OAuth logins
+    localStorage.setItem(this.timestampKey, Date.now().toString());
+    console.log('OAuth tokens and timestamp stored in localStorage.');
+  }
+
+
+
+  // --- ADDED --- The core logic for checking if the session has expired.
+  public checkSession() {
+    const loginTimestampStr = localStorage.getItem(this.timestampKey);
+
+    // If there's no timestamp, the user is not properly logged in.
+    if (!loginTimestampStr) {
+      if(this.isLoggedIn()) { // If tokens exist but timestamp is missing
+        this.logout();
+      }
+      return;
+    }
+
+    const loginTimestamp = parseInt(loginTimestampStr, 10);
+    const now = Date.now();
+
+    // Check if 24 hours have passed
+    if (now > (loginTimestamp + this.SESSION_DURATION)) {
+      console.log('Session has expired after 24 hours. Logging out...');
+      this.logout();
+    }
   }
 
   // --- ADDED ---
@@ -91,6 +125,7 @@ export class AuthService {
     localStorage.setItem(this.refreshTokenKey, refreshToken);
     console.log('OAuth tokens stored in localStorage.');
   }
+
 
   decodeToken(token: string): any {
     try {

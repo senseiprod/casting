@@ -155,7 +155,7 @@ body {
   transform: translateY(-8px);
   box-shadow: 0 35px 70px rgba(190, 24, 93, 0.6);
   border-color: rgba(255, 255, 255, 0.3);
-  background: #cb1025;
+    background: linear-gradient(135deg, #e02c40 0%, #9c0c1a 65%, #1a1a1a 95%);
 }
 
 .voice-hero-card::before {
@@ -272,9 +272,9 @@ body {
 }
 
 .hero-play-btn.secondary {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
-  border-color: #f43f5e;
+  border-color: #cb1025;
 }
 
 .hero-play-btn.secondary:hover {
@@ -339,11 +339,11 @@ body {
 
 .tab-button:hover {
   background: rgba(244, 63, 94, 0.1);
-  color: #f43f5e;
+  color: #cb1025;
 }
 
 .tab-button.active {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   box-shadow: 0 8px 25px rgba(244, 63, 94, 0.3);
 }
@@ -378,7 +378,7 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #f43f5e 0%, #e11d48 50%, #f43f5e 100%);
+  background: linear-gradient(90deg, #cb1025 0%, #e11d48 50%, #cb1025 100%);
   border-radius: 1.25rem 1.25rem 0 0;
 }
 
@@ -436,7 +436,7 @@ body {
 }
 
 .generation-textarea:focus {
-  border-color: #f43f5e;
+  border-color: #cb1025;
   box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1);
   outline: none;
   background: rgba(255, 255, 255, 0.15);
@@ -541,7 +541,7 @@ body {
 
 .project-btn:hover {
   border-color: rgba(244, 63, 94, 0.3);
-  color: #f43f5e;
+  color: #cb1025;
   transform: translateY(-2px);
 }
 
@@ -549,7 +549,7 @@ body {
   padding: 0.75rem 2rem;
   border: none;
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -577,7 +577,7 @@ body {
   padding: 0.75rem 2rem;
   border: none;
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -626,7 +626,7 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #f43f5e 0%, #e11d48 50%, #f43f5e 100%);
+  background: linear-gradient(90deg, #cb1025 0%, #e11d48 50%, #cb1025 100%);
   border-radius: 1.25rem 1.25rem 0 0;
 }
 
@@ -702,7 +702,7 @@ body {
 
 .audio-waveform-bar {
   width: 4px;
-  background: linear-gradient(to top, #f43f5e, #e11d48);
+  background: linear-gradient(to top, #cb1025, #e11d48);
   border-radius: 2px;
   transition: height 0.3s ease;
   min-height: 8px;
@@ -725,7 +725,7 @@ body {
 
 .audio-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(90deg, #cb1025 0%, #e11d48 100%);
   border-radius: 3px;
   transition: width 0.1s ease;
 }
@@ -735,7 +735,7 @@ body {
   top: 50%;
   width: 16px;
   height: 16px;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   border: 3px solid white;
   border-radius: 50%;
   transform: translate(-50%, -50%);
@@ -758,7 +758,7 @@ body {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   border: none;
   display: flex;
@@ -802,8 +802,8 @@ body {
 }
 
 .volume-btn:hover {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-  border-color: #f43f5e;
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
+  border-color: #cb1025;
   color: white;
 }
 
@@ -823,7 +823,7 @@ body {
   appearance: none;
   width: 16px;
   height: 16px;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
@@ -867,7 +867,7 @@ body {
 
 .pricing-value {
   font-weight: 600;
-  color: #f43f5e;
+  color: #cb1025;
 }
 
 /* Voice Selection Section */
@@ -898,7 +898,7 @@ body {
   border: 2px solid rgba(244, 63, 94, 0.3);
   border-radius: 0.75rem;
   background: rgba(244, 63, 94, 0.1);
-  color: #f43f5e;
+  color: #cb1025;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -908,9 +908,9 @@ body {
 }
 
 .collapse-btn:hover {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
-  border-color: #f43f5e;
+  border-color: #cb1025;
 }
 
 /* Voice Filters */
@@ -943,7 +943,7 @@ body {
 
 .filter-input:focus,
 .filter-select:focus {
-  border-color: #f43f5e;
+  border-color: #cb1025;
   box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1);
   outline: none;
 }
@@ -963,7 +963,7 @@ body {
 
 .filter-reset-btn:hover {
   border-color: rgba(244, 63, 94, 0.3);
-  color: #f43f5e;
+  color: #cb1025;
 }
 
 /* Voice Grid */
@@ -1097,7 +1097,7 @@ body {
 }
 
 .voice-favorite-btn:hover {
-  color: #f43f5e;
+  color: #cb1025;
   background: rgba(244, 63, 94, 0.1);
 }
 
@@ -1128,7 +1128,7 @@ body {
 
 .voice-badge-type {
   background: linear-gradient(135deg, rgba(244, 63, 94, 0.1) 0%, rgba(244, 63, 94, 0.05) 100%);
-  color: #f43f5e;
+  color: #cb1025;
 }
 
 .voice-badge-lang {
@@ -1173,8 +1173,8 @@ body {
 }
 
 .voice-preview-btn:hover {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-  border-color: #f43f5e;
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
+  border-color: #cb1025;
   color: white;
 }
 
@@ -1191,7 +1191,7 @@ body {
   padding: 0.75rem;
   border: none;
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -1246,7 +1246,7 @@ body {
 .project-modal-header,
 .char-modal-header {
   padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   display: flex;
   justify-content: space-between;
@@ -1309,7 +1309,7 @@ body {
 }
 
 .project-item.selected {
-  border-color: #f43f5e;
+  border-color: #cb1025;
   background: linear-gradient(135deg, rgba(244, 63, 94, 0.1) 0%, rgba(244, 63, 94, 0.05) 100%);
 }
 
@@ -1323,7 +1323,7 @@ body {
 }
 
 .project-select-icon {
-  color: #f43f5e;
+  color: #cb1025;
   font-size: 1.25rem;
 }
 
@@ -1351,7 +1351,7 @@ body {
 
 .char-value {
   font-weight: 600;
-  color: #f43f5e;
+  color: #cb1025;
 }
 
 .char-modal-footer {
@@ -1382,7 +1382,7 @@ body {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -1482,8 +1482,8 @@ body {
 }
 
 .btn-reset-filters:hover {
-  border-color: #f43f5e;
-  color: #f43f5e;
+  border-color: #cb1025;
+  color: #cb1025;
 }
 
 /* Payment Method Modal Styles */
@@ -1522,7 +1522,7 @@ body {
 
 .payment-modal-header {
   padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   display: flex;
   justify-content: space-between;
@@ -1567,7 +1567,7 @@ body {
 }
 
 .total-price {
-  color: #f43f5e;
+  color: #cb1025;
   font-size: 1.25rem;
   font-weight: 700;
 }
@@ -1596,7 +1596,7 @@ body {
 }
 
 .payment-method-option.selected {
-  border-color: #f43f5e;
+  border-color: #cb1025;
   background: linear-gradient(135deg, rgba(244, 63, 94, 0.1) 0%, rgba(244, 63, 94, 0.05) 100%);
   box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
 }
@@ -1612,7 +1612,7 @@ body {
   margin-right: 1rem;
   flex-shrink: 0;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
 }
 
@@ -1633,7 +1633,7 @@ body {
 }
 
 .payment-method-check {
-  color: #f43f5e;
+  color: #cb1025;
   font-size: 1.25rem;
 }
 
@@ -1664,7 +1664,7 @@ body {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -1694,7 +1694,7 @@ body {
 }
 
 .balance-status {
-  color: #f43f5e;
+  color: #cb1025;
   font-size: 1.5rem;
   animation: spin 2s linear infinite;
 }
@@ -1741,7 +1741,7 @@ body {
 }
 
 .charge-amount-input:focus {
-  border-color: #f43f5e;
+  border-color: #cb1025;
   box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1);
   outline: none;
 }
@@ -1785,7 +1785,7 @@ body {
 .btn-copy {
   background: rgba(244, 63, 94, 0.1);
   border: 1px solid rgba(244, 63, 94, 0.3);
-  color: #f43f5e;
+  color: #cb1025;
   padding: 0.25rem 0.5rem;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -1794,9 +1794,9 @@ body {
 }
 
 .btn-copy:hover {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   color: white;
-  border-color: #f43f5e;
+  border-color: #cb1025;
 }
 
 /* Responsive Design */
@@ -2170,7 +2170,7 @@ border: 2px solid rgba(244, 63, 94, 0.4);
 }
 
 .selector-group .filter-select:focus {
-  border-color: #f43f5e;
+  border-color: #cb1025;
   box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1);
   outline: none;
   background: rgba(255, 255, 255, 0.15);
@@ -2261,8 +2261,8 @@ border: 2px solid rgba(244, 63, 94, 0.4);
 }
 
 .carousel-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-  border-color: #f43f5e;
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
+  border-color: #cb1025;
   color: white;
   transform: scale(1.05);
 }
@@ -2326,12 +2326,12 @@ border: 2px solid rgba(244, 63, 94, 0.4);
 
 .carousel-item.active {
   background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.08) 100%);
-  border-color: #f43f5e;
+  border-color: #cb1025;
   box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
 }
 
 .carousel-item.active .item-name {
-  color: #f43f5e;
+  color: #cb1025;
   font-weight: 700;
 }
 

@@ -241,7 +241,9 @@ export class GenerationComponent implements OnInit {
       // This prevents an empty object from being created when no ID is present.
       if (voice_id) {
         const voice_name = params["voice_name"];
-        const voice_photo = params["voice_photo"];
+        let voice_photo='';
+        if(params["voice_gender"]=='male') { voice_photo ="assets/img/avatar men.png" ;}
+        else voice_photo ="assets/img/avatar women.png" ;
         const voice_gender = params["voice_gender"];
         const voice_age = params["voice_age"];
         const voice_category = params["voice_category"];

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TranslationService } from './services/translation.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,7 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent {
     constructor(private translationService: TranslationService,
-    private router: Router) {}
+    private router: Router,private authService: AuthService) {}
 
   ngOnInit(): void {
     // Translation service is initialized automatically through dependency injection
@@ -18,6 +19,7 @@ export class AppComponent {
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.authService.checkSession();
     });
   }
 }
