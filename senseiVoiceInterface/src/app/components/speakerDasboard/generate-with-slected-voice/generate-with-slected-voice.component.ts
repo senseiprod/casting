@@ -1487,6 +1487,7 @@ export class GenerateWithSlectedVoiceComponent implements OnInit {
     } else if (voice.gender === "Female") {
       return "assets/img/female-voice-profile.jpg"
     } else {
+      
       return `https://api.dicebear.com/7.x/initials/svg?seed=${voice.name}`
     }
   }
