@@ -832,26 +832,73 @@
     "confirmYourPassword": "Confirm your password",
     "accountCreated": "Account created successfully! Redirecting you to login..."
   },
-  "voiceCasting": {
-    "title": "FIND THE PERFECT VOICE IN THE LANGUAGE SUITED TO YOUR AUDIENCE",
-    "description": "Our platform offers a wide selection of voices in multiple languages, ready to be used for your advertising projects, videos, podcasts, e-learning and more.",
-    "filters": {
-      "activeFilters": "Active filters:",
-      "accent": "Accent",
-      "age": "Age",
-      "gender": "Gender",
-      "category": "Category",
-      "voicesPerPage": "Voices per page",
-      "reset": "Reset",
-      "favoritesOnly" : "favorites Only",
-      "language" : "language "
+    "voiceCasting": {
+      "title": "Human Voice Casting",
+      "description": "Discover our collection of professional human voices for your projects",
+      "loading": {
+        "voices": "Loading voices...",
+        "darijaData": "Loading Darija voices and dialects..."
+      },
+      "noVoicesFound": "No voices found with the selected filters",
+      "voicesFound": "voices found",
+      "page": "Page",
+      "generate": "Generate",
+      "voice": {
+        "darijaDefault": "Professional Darija voice",
+        "professional": "Professional"
+      },
+      "filters": {
+        "language": "Language",
+        "accent": "Accent",
+        "age": "Age",
+        "gender": "Gender",
+        "category": "Category",
+        "dialect": "Dialect",
+        "performanceStyle": "Performance Style",
+        "voicesPerPage": "Voices per page",
+        "reset": "Reset",
+        "activeFilters": "Active filters:",
+        "favoritesOnly": "Favorites only",
+        "favorites": "Favorites",
+        "accents": {
+          "all": "All accents",
+          "american": "American",
+          "british": "British",
+          "australian": "Australian",
+          "indian": "Indian",
+          "african": "African",
+          "french": "French",
+          "german": "German",
+          "spanish": "Spanish"
+        },
+        "ages": {
+          "all": "All ages",
+          "young": "Young",
+          "middleAged": "Middle-aged",
+          "old": "Old"
+        },
+        "genders": {
+          "all": "All genders",
+          "male": "Male",
+          "female": "Female",
+          "nonBinary": "Non-binary"
+        },
+        "categories": {
+          "all": "All categories",
+          "professional": "Professional",
+          "casual": "Casual",
+          "character": "Character",
+          "storytelling": "Storytelling"
+        },
+        "dialects": {
+          "all": "All dialects"
+        },
+        "performanceStyles": {
+          "all": "All styles"
+        }
+      }
     },
-    "noVoicesFound": "No voices found with the selected filters. Please try other criteria.",
-    "loading": "Loading voices...",
-    "voicesFound": "voices found",
-    "page": "Page",
-    "generate": "Generate"
-  },
+  
 
     "admin_login": "Client Login",
     "tagline": "Secure admin portal for managing your voice casting platform",
@@ -1371,6 +1418,9 @@
         "answer": "Yes, you can cancel your subscription at any time from your account settings. Go to 'Billing' > 'Subscription' > 'Cancel Subscription'. Your access will continue until the end of your current billing period.",
         "category": "billing-payments"
       }
-    ]
+    ],
+    "about": {
+      "platformDescription": "castingvoixoff.ma is much more than a platform: it's the voice of expertise signed by SenseiProd, an agency that has been supporting major brands with passion, boldness and mastery in the world of communication, marketing and audiovisual for over 10 years."
+    }
    
 }

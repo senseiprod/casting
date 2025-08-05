@@ -48,7 +48,7 @@
               [value]="selectedCategory"
               (change)="filterByCategory($event)">
               <option *ngFor="let category of categories" [value]="category.code" [selected]="category.active">
-                {{ category.name }}
+                {{ category.nameKey | translate }}
               </option>
             </select>
           </div>
@@ -62,7 +62,7 @@
               [value]="selectedGender"
               (change)="filterByGender($event)">
               <option *ngFor="let gender of genders" [value]="gender.code" [selected]="gender.active">
-                {{ gender.name }}
+                {{ gender.nameKey | translate }}
               </option>
             </select>
           </div>
@@ -76,11 +76,55 @@
               [value]="selectedAge"
               (change)="filterByAge($event)">
               <option *ngFor="let age of ages" [value]="age.code" [selected]="age.active">
-                {{ age.name }}
+                {{ age.nameKey | translate }}
               </option>
             </select>
           </div>
 
+          <!-- Accent Filter (only show for non-Darija languages) -->
+          <div class="col-md-2" *ngIf="!isDarijaSelected()">
+            <label for="accentFilter" class="form-label">{{ 'voiceCasting.filters.accent' | translate }}</label>
+            <select
+              id="accentFilter"
+              class="form-select"
+              [value]="selectedAccent"
+              (change)="filterByAccent($event)">
+              <option *ngFor="let accent of accents" [value]="accent.code" [selected]="accent.active">
+                {{ accent.nameKey | translate }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Darija-specific filters -->
+          <div class="col-md-2" *ngIf="isDarijaSelected()">
+            <label for="dialectFilter" class="form-label">{{ 'voiceCasting.filters.dialect' | translate }}</label>
+            <select
+              id="dialectFilter"
+              class="form-select"
+              [value]="selectedDialect"
+              (change)="onDialectChange($event)"
+              [disabled]="!lahajatiDataLoaded">
+              <option value="">{{ 'voiceCasting.filters.dialects.all' | translate }}</option>
+              <option *ngFor="let dialect of lahajatiDialects" [value]="dialect.id">
+                {{ dialect.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-2" *ngIf="isDarijaSelected()">
+            <label for="performanceStyleFilter" class="form-label">{{ 'voiceCasting.filters.performanceStyle' | translate }}</label>
+            <select
+              id="performanceStyleFilter"
+              class="form-select"
+              [value]="selectedPerformanceStyle"
+              (change)="onPerformanceStyleChange($event)"
+              [disabled]="!lahajatiDataLoaded">
+              <option value="">{{ 'voiceCasting.filters.performanceStyles.all' | translate }}</option>
+              <option *ngFor="let style of lahajatiPerformanceStyles" [value]="style.id">
+                {{ style.name }}
+              </option>
+            </select>
+          </div>
 
           <!-- Page Size Selector -->
           <div class="col-md-2">
@@ -112,7 +156,7 @@
     <div class="loading-spinner">
       <i class="bi bi-hourglass-split"></i>
     </div>
-    <p>Loading Darija voices and dialects...</p>
+    <p>{{ 'voiceCasting.loading.darijaData' | translate }}</p>
   </div>
 
   <!-- Active Filters Display -->
@@ -126,33 +170,33 @@
       </span>
 
       <span class="badge bg-primary me-2 mb-1" *ngIf="selectedAccent">
-        {{ 'voiceCasting.filters.accent' | translate }}: {{selectedAccent }}
+        {{ 'voiceCasting.filters.accent' | translate }}: {{ getSelectedAccentName() }}
         <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByAccent('')"></button>
       </span>
 
       <span class="badge bg-primary me-2 mb-1" *ngIf="selectedAge">
-        {{ 'voiceCasting.filters.age' | translate }}: {{ selectedAge }}
+        {{ 'voiceCasting.filters.age' | translate }}: {{ getSelectedAgeName() }}
         <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByAge('')"></button>
       </span>
 
       <span class="badge bg-primary me-2 mb-1" *ngIf="selectedGender">
-        {{ 'voiceCasting.filters.gender' | translate }}: {{selectedGender }}
+        {{ 'voiceCasting.filters.gender' | translate }}: {{ getSelectedGenderName() }}
         <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByGender('')"></button>
       </span>
 
       <span class="badge bg-primary me-2 mb-1" *ngIf="selectedCategory">
-        {{ 'voiceCasting.filters.category' | translate }}: {{ selectedCategory }}
+        {{ 'voiceCasting.filters.category' | translate }}: {{ getSelectedCategoryName() }}
         <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="filterByCategory('')"></button>
       </span>
 
       <!-- Darija-specific filter badges -->
       <span class="badge bg-success me-2 mb-1" *ngIf="selectedDialect">
-        Dialect: {{ selectedDialect }}
+        {{ 'voiceCasting.filters.dialect' | translate }}: {{ selectedDialect }}
         <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="onDialectChange('')"></button>
       </span>
 
       <span class="badge bg-warning me-2 mb-1" *ngIf="selectedPerformanceStyle">
-        Style: {{ selectedPerformanceStyle }}
+        {{ 'voiceCasting.filters.performanceStyle' | translate }}: {{ selectedPerformanceStyle }}
         <button class="btn-close btn-close-white ms-1" aria-label="Close" (click)="onPerformanceStyleChange('')"></button>
       </span>
 
@@ -166,9 +210,9 @@
   <!-- Loading Indicator -->
   <div *ngIf="isLoading" class="text-center my-4">
     <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">{{ 'voiceCasting.loading' | translate }}</span>
+      <span class="visually-hidden">{{ 'voiceCasting.loading.voices' | translate }}</span>
     </div>
-    <p class="mt-2">{{ 'voiceCasting.loading' | translate }}</p>
+    <p class="mt-2">{{ 'voiceCasting.loading.voices' | translate }}</p>
   </div>
 
   <!-- Voice Cards Grid -->
@@ -230,7 +274,7 @@
             <!-- Enhanced description for Darija voices -->
             <p class="voice-description">
               <span *ngIf="voice.language === 'darija'">
-                {{ voice.description || 'Voix Darija professionnelle' | slice:0:60 }}{{ (voice.description || 'Voix Darija professionnelle').length > 60 ? '...' : '' }}
+                {{ voice.description || ('voiceCasting.voice.darijaDefault' | translate) | slice:0:60 }}{{ (voice.description || ('voiceCasting.voice.darijaDefault' | translate)).length > 60 ? '...' : '' }}
               </span>
               <span *ngIf="voice.language !== 'darija'">
                 {{ voice.description | slice:0:60 }}{{ voice.description.length > 60 ? '...' : '' }}

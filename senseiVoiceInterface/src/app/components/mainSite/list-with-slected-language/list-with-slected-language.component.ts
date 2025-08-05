@@ -1,22 +1,22 @@
-import { Component } from '@angular/core';
-import {FavoriteVoicesDto, FavoriteVoicesService} from "../../../services/favorite-voices.service";
-import {ElevenLabsService} from "../../../services/eleven-labs.service";
-import {AuthService} from "../../../services/auth.service";
-import {map} from "rxjs/operators";
-import {ActivatedRoute} from "@angular/router";
-import { LahajatiService } from "../../../services/lahajati.service";
+import { Component,  OnInit } from "@angular/core"
+import  { TranslateService } from "@ngx-translate/core"
+import  { FavoriteVoicesDto, FavoriteVoicesService } from "../../../services/favorite-voices.service"
+import  { ElevenLabsService } from "../../../services/eleven-labs.service"
+import  { AuthService } from "../../../services/auth.service"
+import { map } from "rxjs/operators"
+import  { ActivatedRoute } from "@angular/router"
+import  { LahajatiService } from "../../../services/lahajati.service"
 
 interface Voice {
-  id: string;
-  name: string;
-  description: string;
-  language: string;
-  flagCode: string;
-  sampleUrl: string;
-  preview_url?: string;
+  id: string
+  name: string
+  description: string
+  language: string
+  flagCode: string
+  sampleUrl: string
+  preview_url?: string
 }
 
-// Interface for Lahajati voices
 interface LahajatiVoice {
   id: string
   name: string
@@ -35,14 +35,12 @@ interface LahajatiVoice {
   voice_id?: string
 }
 
-// Interface for Lahajati dialects
 interface LahajatiDialect {
   id: string
   name: string
   description?: string
 }
 
-// Interface for Lahajati performance styles
 interface LahajatiPerformanceStyle {
   id: string
   name: string
@@ -50,51 +48,57 @@ interface LahajatiPerformanceStyle {
 }
 
 export interface Language {
-  code: string;
-  name: string;
-  active: boolean;
+  code: string
+  name: string
+  active: boolean
+}
+
+export interface FilterOption {
+  code: string
+  nameKey: string // Translation key instead of hardcoded name
+  active: boolean
 }
 
 @Component({
-  selector: 'app-list-with-slected-language',
-  templateUrl: './list-with-slected-language.component.html',
-  styleUrls: ['./list-with-slected-language.component.css']
+  selector: "app-list-with-slected-language",
+  templateUrl: "./list-with-slected-language.component.html",
+  styleUrls: ["./list-with-slected-language.component.css"],
 })
-export class ListWithSlectedLanguageComponent {
+export class ListWithSlectedLanguageComponent implements OnInit {
   languages = [
-    { code: "darija", name: "Darija", active: false }, // Added Darija
+    { code: "darija", name: "Darija", active: false },
     { code: "ar", name: "Arabe", active: false },
     { code: "fr", name: "Français", active: false },
     { code: "en", name: "Anglais", active: true },
-    { code: 'de', name: 'Allemand', active: false },
-    { code: 'es', name: 'Espagnol', active: false },
-    { code: 'tr', name: 'Turc', active: false },
-    { code: 'it', name: 'Italien', active: false },
-    { code: 'pt', name: 'Portugais', active: false },
-    { code: 'hi', name: 'Hindi', active: false },
-    { code: 'bn', name: 'Bengali', active: false },
-    { code: 'ru', name: 'Russe', active: false },
-    { code: 'ja', name: 'Japonais', active: false },
-    { code: 'ko', name: 'Coréen', active: false },
-    { code: 'zh', name: 'Chinois', active: false },
-    { code: 'vi', name: 'Vietnamien', active: false },
-    { code: 'pl', name: 'Polonais', active: false },
-    { code: 'uk', name: 'Ukrainien', active: false },
-    { code: 'ro', name: 'Roumain', active: false },
-    { code: 'nl', name: 'Néerlandais', active: false },
-    { code: 'sv', name: 'Suédois', active: false },
-    { code: 'fi', name: 'Finnois', active: false },
-    { code: 'no', name: 'Norvégien', active: false },
-    { code: 'da', name: 'Danois', active: false },
-    { code: 'hu', name: 'Hongrois', active: false },
-    { code: 'cs', name: 'Tchèque', active: false },
-    { code: 'el', name: 'Grec', active: false },
-    { code: 'th', name: 'Thaï', active: false },
-    { code: 'id', name: 'Indonésien', active: false },
-    { code: 'ms', name: 'Malais', active: false },
-    { code: 'he', name: 'Hébreu', active: false },
-    { code: 'fa', name: 'Persan', active: false }
-  ];
+    { code: "de", name: "Allemand", active: false },
+    { code: "es", name: "Espagnol", active: false },
+    { code: "tr", name: "Turc", active: false },
+    { code: "it", name: "Italien", active: false },
+    { code: "pt", name: "Portugais", active: false },
+    { code: "hi", name: "Hindi", active: false },
+    { code: "bn", name: "Bengali", active: false },
+    { code: "ru", name: "Russe", active: false },
+    { code: "ja", name: "Japonais", active: false },
+    { code: "ko", name: "Coréen", active: false },
+    { code: "zh", name: "Chinois", active: false },
+    { code: "vi", name: "Vietnamien", active: false },
+    { code: "pl", name: "Polonais", active: false },
+    { code: "uk", name: "Ukrainien", active: false },
+    { code: "ro", name: "Roumain", active: false },
+    { code: "nl", name: "Néerlandais", active: false },
+    { code: "sv", name: "Suédois", active: false },
+    { code: "fi", name: "Finnois", active: false },
+    { code: "no", name: "Norvégien", active: false },
+    { code: "da", name: "Danois", active: false },
+    { code: "hu", name: "Hongrois", active: false },
+    { code: "cs", name: "Tchèque", active: false },
+    { code: "el", name: "Grec", active: false },
+    { code: "th", name: "Thaï", active: false },
+    { code: "id", name: "Indonésien", active: false },
+    { code: "ms", name: "Malais", active: false },
+    { code: "he", name: "Hébreu", active: false },
+    { code: "fa", name: "Persan", active: false },
+  ]
 
   // Lahajati-specific properties
   lahajatiVoices: LahajatiVoice[] = []
@@ -105,87 +109,114 @@ export class ListWithSlectedLanguageComponent {
   isLoadingLahajatiData = false
   lahajatiDataLoaded = false
 
-  // Filter options
-  accents = [
-    { code: '', name: 'Tous les accents', active: true },
-    { code: 'American', name: 'Américain', active: false },
-    { code: 'British', name: 'Britannique', active: false },
-    { code: 'Australian', name: 'Australien', active: false },
-    { code: 'Indian', name: 'Indien', active: false },
-    { code: 'African', name: 'Africain', active: false },
-    { code: 'French', name: 'Français', active: false },
-    { code: 'German', name: 'Allemand', active: false },
-    { code: 'Spanish', name: 'Espagnol', active: false }
-  ];
+  // Updated filter options with translation keys
+  accents: FilterOption[] = [
+    { code: "", nameKey: "voiceCasting.filters.accents.all", active: true },
+    { code: "American", nameKey: "voiceCasting.filters.accents.american", active: false },
+    { code: "British", nameKey: "voiceCasting.filters.accents.british", active: false },
+    { code: "Australian", nameKey: "voiceCasting.filters.accents.australian", active: false },
+    { code: "Indian", nameKey: "voiceCasting.filters.accents.indian", active: false },
+    { code: "African", nameKey: "voiceCasting.filters.accents.african", active: false },
+    { code: "French", nameKey: "voiceCasting.filters.accents.french", active: false },
+    { code: "German", nameKey: "voiceCasting.filters.accents.german", active: false },
+    { code: "Spanish", nameKey: "voiceCasting.filters.accents.spanish", active: false },
+  ]
 
-  ages = [
-    { code: '', name: 'Tous les âges', active: true },
-    { code: 'young', name: 'Jeune', active: false },
-    { code: 'middle-aged', name: 'Moyen', active: false },
-    { code: 'old', name: 'Âgé', active: false }
-  ];
+  ages: FilterOption[] = [
+    { code: "", nameKey: "voiceCasting.filters.ages.all", active: true },
+    { code: "young", nameKey: "voiceCasting.filters.ages.young", active: false },
+    { code: "middle-aged", nameKey: "voiceCasting.filters.ages.middleAged", active: false },
+    { code: "old", nameKey: "voiceCasting.filters.ages.old", active: false },
+  ]
 
-  genders = [
-    { code: '', name: 'Tous les genres', active: true },
-    { code: 'male', name: 'Homme', active: false },
-    { code: 'female', name: 'Femme', active: false },
-  ];
+  genders: FilterOption[] = [
+    { code: "", nameKey: "voiceCasting.filters.genders.all", active: true },
+    { code: "male", nameKey: "voiceCasting.filters.genders.male", active: false },
+    { code: "female", nameKey: "voiceCasting.filters.genders.female", active: false },
+  ]
 
-  categories = [
-    { code: '', name: 'Toutes les catégories', active: true },
-    { code: 'professional', name: 'Professionnel', active: false },
-    { code: 'casual', name: 'Décontracté', active: false },
-    { code: 'character', name: 'Personnage', active: false },
-    { code: 'storytelling', name: 'Narration', active: false }
-  ];
+  categories: FilterOption[] = [
+    { code: "", nameKey: "voiceCasting.filters.categories.all", active: true },
+    { code: "professional", nameKey: "voiceCasting.filters.categories.professional", active: false },
+    { code: "casual", nameKey: "voiceCasting.filters.categories.casual", active: false },
+    { code: "character", nameKey: "voiceCasting.filters.categories.character", active: false },
+    { code: "storytelling", nameKey: "voiceCasting.filters.categories.storytelling", active: false },
+  ]
 
   // Existing properties
-  voices: any[] = [];
-  allVoices: any[] = []; // Store all voices for filtering
-  pageSizeOptions: number[] = [10, 20, 50, 100];
-  pageSize: number = 10;
-  currentPageIndex: number = 1;
-  totalVoices: number = 0;
-  hasMorePages: boolean = false;
-  isLoading: boolean = true;
-  currentPlayingVoiceId: string | null = null;
-  uuid: string = '';
-  currentAudio: HTMLAudioElement | null = null;
+  voices: any[] = []
+  allVoices: any[] = []
+  pageSizeOptions: number[] = [10, 20, 50, 100]
+  pageSize = 10
+  currentPageIndex = 1
+  totalVoices = 0
+  hasMorePages = false
+  isLoading = true
+  currentPlayingVoiceId: string | null = null
+  uuid = ""
+  currentAudio: HTMLAudioElement | null = null
 
   // Filter selections
-  selectedLanguage: string = '';
-  selectedAccent: string = '';
-  selectedAge: string = '';
-  selectedGender: string = '';
-  selectedCategory: string = '';
+  selectedLanguage = ""
+  selectedAccent = ""
+  selectedAge = ""
+  selectedGender = ""
+  selectedCategory = ""
 
   // Favorites
-  favoriteVoices: FavoriteVoicesDto[] = [];
-  showFavoritesOnly: boolean = false;
+  favoriteVoices: FavoriteVoicesDto[] = []
+  showFavoritesOnly = false
 
   constructor(
     private favoriteVoicesService: FavoriteVoicesService,
     private route: ActivatedRoute,
     private voiceService: ElevenLabsService,
     private authService: AuthService,
-    private lahajatiService: LahajatiService // Added Lahajati service
+    private lahajatiService: LahajatiService,
+    private translateService: TranslateService, // Add TranslateService
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.selectedLanguage = params['language'];
-      
+    this.route.params.subscribe((params) => {
+      this.selectedLanguage = params["language"]
+
       // If Darija is selected, load Lahajati data
-      if (this.selectedLanguage === 'darija') {
-        this.fetchLahajatiData();
+      if (this.selectedLanguage === "darija") {
+        this.fetchLahajatiData()
       }
-    });
-    
+    })
+
     this.authService.getUserConnect().subscribe((data) => {
-      this.uuid = data.uuid;
-      this.loadFavoriteVoices();
-      this.loadVoices();
-    });
+      this.uuid = data.uuid
+      this.loadFavoriteVoices()
+      this.loadVoices()
+    })
+  }
+
+  // Helper method to get translated name for filter options
+  getTranslatedName(filterOption: FilterOption): string {
+    return this.translateService.instant(filterOption.nameKey)
+  }
+
+  // Helper methods to get translated names for active filters
+  getSelectedAccentName(): string {
+    const accent = this.accents.find((a) => a.code === this.selectedAccent)
+    return accent ? this.translateService.instant(accent.nameKey) : ""
+  }
+
+  getSelectedAgeName(): string {
+    const age = this.ages.find((a) => a.code === this.selectedAge)
+    return age ? this.translateService.instant(age.nameKey) : ""
+  }
+
+  getSelectedGenderName(): string {
+    const gender = this.genders.find((g) => g.code === this.selectedGender)
+    return gender ? this.translateService.instant(gender.nameKey) : ""
+  }
+
+  getSelectedCategoryName(): string {
+    const category = this.categories.find((c) => c.code === this.selectedCategory)
+    return category ? this.translateService.instant(category.nameKey) : ""
   }
 
   // New method to fetch Lahajati data
@@ -197,7 +228,6 @@ export class ListWithSlectedLanguageComponent {
     this.isLoadingLahajatiData = true
     console.log("Fetching Lahajati voices and dialects...")
 
-    // Fetch voices, dialects, and performance styles in parallel
     Promise.all([
       this.lahajatiService.getVoices(1, 50).toPromise(),
       this.lahajatiService.getDialects(1, 50).toPromise(),
@@ -205,21 +235,18 @@ export class ListWithSlectedLanguageComponent {
     ])
       .then(([voicesResponse, dialectsResponse, stylesResponse]) => {
         try {
-          // Parse voices
           if (voicesResponse) {
             const voicesData = JSON.parse(voicesResponse)
             this.lahajatiVoices = this.mapLahajatiVoices(voicesData.data || voicesData)
             console.log("Lahajati voices loaded:", this.lahajatiVoices)
           }
 
-          // Parse dialects
           if (dialectsResponse) {
             const dialectsData = JSON.parse(dialectsResponse)
             this.lahajatiDialects = dialectsData.data || dialectsData
             console.log("Lahajati dialects loaded:", this.lahajatiDialects)
           }
 
-          // Parse performance styles
           if (stylesResponse) {
             const stylesData = JSON.parse(stylesResponse)
             this.lahajatiPerformanceStyles = stylesData.data || stylesData
@@ -229,7 +256,6 @@ export class ListWithSlectedLanguageComponent {
           this.lahajatiDataLoaded = true
           this.isLoadingLahajatiData = false
 
-          // Update voices if Darija is currently selected
           if (this.selectedLanguage === "darija") {
             this.applyDarijaVoices()
           }
@@ -244,7 +270,6 @@ export class ListWithSlectedLanguageComponent {
       })
   }
 
-  // Map Lahajati voices to match the existing Voice interface
   mapLahajatiVoices(lahajatiVoices: any[]): LahajatiVoice[] {
     return lahajatiVoices.map((voice) => ({
       id: voice.id_voice || voice.voice_id,
@@ -261,47 +286,41 @@ export class ListWithSlectedLanguageComponent {
       ageZone: voice.age_zone || voice.age || "adult",
       dialect: voice.dialect,
       performanceStyle: voice.performance_style,
-      description: voice.description || `Voix Darija ${voice.gender || ''} ${voice.dialect || ''}`.trim(),
+      description: voice.description || `Voix Darija ${voice.gender || ""} ${voice.dialect || ""}`.trim(),
       labels: {
         gender: voice.gender || "unknown",
-        age: voice.age_zone || voice.age || "adult"
+        age: voice.age_zone || voice.age || "adult",
       },
       category: "darija",
       fine_tuning: {
-        language: "darija"
-      }
+        language: "darija",
+      },
     }))
   }
 
-  // Apply Darija voices to the current voice list
   applyDarijaVoices() {
-    if (this.selectedLanguage === 'darija' && this.lahajatiDataLoaded) {
+    if (this.selectedLanguage === "darija" && this.lahajatiDataLoaded) {
       let filteredVoices = [...this.lahajatiVoices]
 
-      // Apply Darija-specific filters
       if (this.selectedDialect) {
-        filteredVoices = filteredVoices.filter(voice => voice.dialect === this.selectedDialect)
+        filteredVoices = filteredVoices.filter((voice) => voice.dialect === this.selectedDialect)
       }
 
       if (this.selectedPerformanceStyle) {
-        filteredVoices = filteredVoices.filter(voice => voice.performanceStyle === this.selectedPerformanceStyle)
+        filteredVoices = filteredVoices.filter((voice) => voice.performanceStyle === this.selectedPerformanceStyle)
       }
 
-      // Apply general filters
       if (this.selectedGender) {
-        filteredVoices = filteredVoices.filter(voice => voice.gender === this.selectedGender)
+        filteredVoices = filteredVoices.filter((voice) => voice.gender === this.selectedGender)
       }
 
       if (this.selectedAge) {
-        filteredVoices = filteredVoices.filter(voice => voice.ageZone === this.selectedAge)
+        filteredVoices = filteredVoices.filter((voice) => voice.ageZone === this.selectedAge)
       }
 
-      // Apply favorites filter
       if (this.showFavoritesOnly) {
-        const favoriteUrls = this.favoriteVoices.map(fav => fav.voiceUrl)
-        filteredVoices = filteredVoices.filter(voice =>
-          favoriteUrls.includes(voice.voice_id || voice.id || '')
-        )
+        const favoriteUrls = this.favoriteVoices.map((fav) => fav.voiceUrl)
+        filteredVoices = filteredVoices.filter((voice) => favoriteUrls.includes(voice.voice_id || voice.id || ""))
       }
 
       this.allVoices = filteredVoices
@@ -310,7 +329,6 @@ export class ListWithSlectedLanguageComponent {
     }
   }
 
-  // Apply pagination to current voice list
   applyPagination() {
     const startIndex = this.currentPageIndex * this.pageSize
     const endIndex = startIndex + this.pageSize
@@ -321,352 +339,326 @@ export class ListWithSlectedLanguageComponent {
   loadFavoriteVoices(): void {
     this.favoriteVoicesService.getAllFavorites().subscribe({
       next: (favorites) => {
-        this.favoriteVoices = favorites;
-        // If we're showing favorites only, reload the voices
+        this.favoriteVoices = favorites
         if (this.showFavoritesOnly) {
-          this.loadVoices();
+          this.loadVoices()
         }
       },
       error: (error) => {
-        console.error('Error loading favorite voices:', error);
-      }
-    });
+        console.error("Error loading favorite voices:", error)
+      },
+    })
   }
 
   loadVoices(): void {
-    this.isLoading = true;
+    this.isLoading = true
 
-    // If Darija is selected and data is loaded, use Lahajati voices
-    if (this.selectedLanguage === 'darija' && this.lahajatiDataLoaded) {
+    if (this.selectedLanguage === "darija" && this.lahajatiDataLoaded) {
       this.applyDarijaVoices()
       this.isLoading = false
       return
     }
 
-    // If Darija is selected but data is not loaded, wait for it
-    if (this.selectedLanguage === 'darija' && !this.lahajatiDataLoaded) {
+    if (this.selectedLanguage === "darija" && !this.lahajatiDataLoaded) {
       this.fetchLahajatiData()
-      // The applyDarijaVoices will be called when data is loaded
       this.isLoading = false
       return
     }
 
-    // For other languages, use ElevenLabs service
-    this.voiceService.listSharedVoices(
-      this.pageSize,
-      null, // search
-      null, // sort
-      this.selectedCategory,
-      this.selectedGender,
-      this.selectedAge,
-      this.selectedAccent,
-      this.selectedLanguage,
-      this.currentPageIndex
-    ).pipe(
-      map(response => {
-        // Filter by favorites if needed
-        if (this.showFavoritesOnly) {
-          const favoriteUrls = this.favoriteVoices.map(fav => fav.voiceUrl);
-          return {
-            ...response,
-            voices: response.voices.filter(voice =>
-              favoriteUrls.includes(voice.voice_id || voice.url || '')
-            )
-          };
-        }
-        return response;
+    this.voiceService
+      .listSharedVoices(
+        this.pageSize,
+        null,
+        null,
+        this.selectedCategory,
+        this.selectedGender,
+        this.selectedAge,
+        this.selectedAccent,
+        this.selectedLanguage,
+        this.currentPageIndex,
+      )
+      .pipe(
+        map((response) => {
+          if (this.showFavoritesOnly) {
+            const favoriteUrls = this.favoriteVoices.map((fav) => fav.voiceUrl)
+            return {
+              ...response,
+              voices: response.voices.filter((voice) => favoriteUrls.includes(voice.voice_id || voice.url || "")),
+            }
+          }
+          return response
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          this.voices = response.voices
+          this.allVoices = response.voices
+          this.totalVoices = response.total || response.voices.length
+          this.hasMorePages = response.has_more || false
+          this.isLoading = false
+        },
+        error: (error) => {
+          console.error("Error loading voices:", error)
+          this.isLoading = false
+        },
       })
-    ).subscribe({
-      next: (response) => {
-        this.voices = response.voices;
-        this.allVoices = response.voices;
-        this.totalVoices = response.total || response.voices.length;
-        this.hasMorePages = response.has_more || false;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading voices:', error);
-        this.isLoading = false;
-      }
-    });
   }
 
-  // Check if Darija is currently selected
   isDarijaSelected(): boolean {
     return this.selectedLanguage === "darija"
   }
 
-  // Method to handle dialect selection
   onDialectChange(event: any): void {
-    const dialectId = event.target ? event.target.value : event;
+    const dialectId = event.target ? event.target.value : event
     this.selectedDialect = dialectId
     this.currentPageIndex = 0
-    if (this.selectedLanguage === 'darija') {
+    if (this.selectedLanguage === "darija") {
       this.applyDarijaVoices()
     }
   }
 
-  // Method to handle performance style selection
   onPerformanceStyleChange(event: any): void {
-    const styleId = event.target ? event.target.value : event;
+    const styleId = event.target ? event.target.value : event
     this.selectedPerformanceStyle = styleId
     this.currentPageIndex = 0
-    if (this.selectedLanguage === 'darija') {
+    if (this.selectedLanguage === "darija") {
       this.applyDarijaVoices()
     }
   }
 
-  // Favorite voice methods
   isFavorite(voice: any): boolean {
-    const voiceUrl = voice.voice_url || voice.voice_id || voice.id || '';
-    return this.favoriteVoices.some(fav => fav.voiceUrl === voiceUrl);
+    const voiceUrl = voice.voice_url || voice.voice_id || voice.id || ""
+    return this.favoriteVoices.some((fav) => fav.voiceUrl === voiceUrl)
   }
 
   toggleFavoriteVoice(voice: any): void {
-    const voiceUrl = voice.voice_id || voice.id || voice.url || '';
+    const voiceUrl = voice.voice_id || voice.id || voice.url || ""
 
     if (this.isFavorite(voice)) {
-      // Find the favorite to delete
-      const favoriteToDelete = this.favoriteVoices.find(fav => fav.voiceUrl === voiceUrl);
+      const favoriteToDelete = this.favoriteVoices.find((fav) => fav.voiceUrl === voiceUrl)
       if (favoriteToDelete) {
-        // Assuming the ID is stored in the DTO or can be derived
-        const id = favoriteToDelete['id']; // Adjust based on your actual data structure
+        const id = favoriteToDelete["id"]
         this.favoriteVoicesService.deleteFavorite(id).subscribe({
           next: () => {
-            this.favoriteVoices = this.favoriteVoices.filter(fav => fav.voiceUrl !== voiceUrl);
-            // If showing favorites only, reload to remove the unfavorited voice
+            this.favoriteVoices = this.favoriteVoices.filter((fav) => fav.voiceUrl !== voiceUrl)
             if (this.showFavoritesOnly) {
-              this.loadVoices();
+              this.loadVoices()
             }
           },
-          error: (error) => console.error('Error removing favorite:', error)
-        });
+          error: (error) => console.error("Error removing favorite:", error),
+        })
       }
     } else {
-      // Add to favorites
       const newFavorite: FavoriteVoicesDto = {
-        userUuid: this.uuid, // Assuming this is the current user's UUID
-        voiceUrl: voiceUrl
-      };
+        userUuid: this.uuid,
+        voiceUrl: voiceUrl,
+      }
 
       this.favoriteVoicesService.createFavorite(newFavorite).subscribe({
         next: (createdFavorite) => {
-          this.favoriteVoices.push(createdFavorite);
+          this.favoriteVoices.push(createdFavorite)
         },
-        error: (error) => console.error('Error adding favorite:', error)
-      });
+        error: (error) => console.error("Error adding favorite:", error),
+      })
     }
   }
 
   toggleFavorites(): void {
-    this.showFavoritesOnly = !this.showFavoritesOnly;
-    this.currentPageIndex = 0; // Reset to first page
-    this.loadVoices();
+    this.showFavoritesOnly = !this.showFavoritesOnly
+    this.currentPageIndex = 0
+    this.loadVoices()
   }
 
-  // Existing filter methods
   filterVoices(languageCode: string): void {
-    // Update the active language
-    this.languages = this.languages.map(lang => ({
+    this.languages = this.languages.map((lang) => ({
       ...lang,
-      active: lang.code === languageCode
-    }));
+      active: lang.code === languageCode,
+    }))
 
-    this.selectedLanguage = languageCode;
-    this.currentPageIndex = 0; // Reset to first page
-    
-    // Reset Darija-specific filters when changing language
-    if (languageCode !== 'darija') {
-      this.selectedDialect = '';
-      this.selectedPerformanceStyle = '';
+    this.selectedLanguage = languageCode
+    this.currentPageIndex = 0
+
+    if (languageCode !== "darija") {
+      this.selectedDialect = ""
+      this.selectedPerformanceStyle = ""
     }
-    
-    this.loadVoices();
+
+    this.loadVoices()
   }
 
   filterByLanguage(event: any): void {
-    const value = event.target ? event.target.value : event;
-    this.selectedLanguage = value;
-    this.currentPageIndex = 1;
-    
-    // Reset Darija-specific filters when changing language
-    if (value !== 'darija') {
-      this.selectedDialect = '';
-      this.selectedPerformanceStyle = '';
+    const value = event.target ? event.target.value : event
+    this.selectedLanguage = value
+    this.currentPageIndex = 1
+
+    if (value !== "darija") {
+      this.selectedDialect = ""
+      this.selectedPerformanceStyle = ""
     }
-    
-    this.loadVoices();
+
+    this.loadVoices()
   }
 
   filterByAccent(event: any): void {
-    const value = event.target ? event.target.value : event;
-    this.selectedAccent = value;
-    this.currentPageIndex = 1;
-    this.loadVoices();
+    const value = event.target ? event.target.value : event
+    this.selectedAccent = value
+    this.currentPageIndex = 1
+    this.loadVoices()
   }
 
   filterByAge(event: any): void {
-    const value = event.target ? event.target.value : event;
-    this.selectedAge = value;
-    this.currentPageIndex = 1;
-    if (this.selectedLanguage === 'darija') {
-      this.applyDarijaVoices();
+    const value = event.target ? event.target.value : event
+    this.selectedAge = value
+    this.currentPageIndex = 1
+    if (this.selectedLanguage === "darija") {
+      this.applyDarijaVoices()
     } else {
-      this.loadVoices();
+      this.loadVoices()
     }
   }
 
   filterByGender(event: any): void {
-    const value = event.target ? event.target.value : event;
-    this.selectedGender = value;
-    this.currentPageIndex = 1;
-    if (this.selectedLanguage === 'darija') {
-      this.applyDarijaVoices();
+    const value = event.target ? event.target.value : event
+    this.selectedGender = value
+    this.currentPageIndex = 1
+    if (this.selectedLanguage === "darija") {
+      this.applyDarijaVoices()
     } else {
-      this.loadVoices();
+      this.loadVoices()
     }
   }
 
   filterByCategory(event: any): void {
-    const value = event.target ? event.target.value : event;
-    this.selectedCategory = value;
-    this.currentPageIndex = 1;
-    this.loadVoices();
+    const value = event.target ? event.target.value : event
+    this.selectedCategory = value
+    this.currentPageIndex = 1
+    this.loadVoices()
   }
 
   onPageSizeChange(event: any): void {
-    this.pageSize = parseInt(event.target.value, 10);
-    this.currentPageIndex = 1;
-    if (this.selectedLanguage === 'darija') {
-      this.applyDarijaVoices();
+    this.pageSize = Number.parseInt(event.target.value, 10)
+    this.currentPageIndex = 1
+    if (this.selectedLanguage === "darija") {
+      this.applyDarijaVoices()
     } else {
-      this.loadVoices();
+      this.loadVoices()
     }
   }
 
   resetFilters(): void {
-    this.selectedLanguage = '';
-    this.selectedAccent = '';
-    this.selectedAge = '';
-    this.selectedGender = '';
-    this.selectedCategory = '';
-    this.selectedDialect = '';
-    this.selectedPerformanceStyle = '';
-    this.showFavoritesOnly = false;
+    this.selectedLanguage = ""
+    this.selectedAccent = ""
+    this.selectedAge = ""
+    this.selectedGender = ""
+    this.selectedCategory = ""
+    this.selectedDialect = ""
+    this.selectedPerformanceStyle = ""
+    this.showFavoritesOnly = false
 
-    // Reset active state in language pills
-    this.languages = this.languages.map(lang => ({
+    this.languages = this.languages.map((lang) => ({
       ...lang,
-      active: false
-    }));
+      active: false,
+    }))
 
-    this.currentPageIndex = 1;
-    this.loadVoices();
+    this.currentPageIndex = 1
+    this.loadVoices()
   }
 
-  // Pagination methods
   nextPage(): void {
     if (this.hasMorePages) {
-      this.currentPageIndex++;
-      if (this.selectedLanguage === 'darija') {
-        this.applyDarijaVoices();
+      this.currentPageIndex++
+      if (this.selectedLanguage === "darija") {
+        this.applyDarijaVoices()
       } else {
-        this.loadVoices();
+        this.loadVoices()
       }
     }
   }
 
   prevPage(): void {
     if (this.currentPageIndex > 0) {
-      this.currentPageIndex--;
-      if (this.selectedLanguage === 'darija') {
-        this.applyDarijaVoices();
+      this.currentPageIndex--
+      if (this.selectedLanguage === "darija") {
+        this.applyDarijaVoices()
       } else {
-        this.loadVoices();
+        this.loadVoices()
       }
     }
   }
 
   firstPage(): void {
-    this.currentPageIndex = 0;
-    if (this.selectedLanguage === 'darija') {
-      this.applyDarijaVoices();
+    this.currentPageIndex = 0
+    if (this.selectedLanguage === "darija") {
+      this.applyDarijaVoices()
     } else {
-      this.loadVoices();
+      this.loadVoices()
     }
   }
 
-  // Voice playback
   playVoice(voice: any) {
-    // Check if the same voice is clicked again
-    const voiceId = voice.voice_id || voice.id;
-    // Check if the same voice is clicked again
+    const voiceId = voice.voice_id || voice.id
     if (this.currentAudio && this.currentPlayingVoiceId === voiceId) {
-      // Stop the currently playing audio
-      this.currentAudio.pause();
-      this.currentAudio.currentTime = 0;
-      this.currentAudio = null;
-      this.currentPlayingVoiceId = null;
-      console.log(`Stopped voice: ${voice.name}`);
-      return;
+      this.currentAudio.pause()
+      this.currentAudio.currentTime = 0
+      this.currentAudio = null
+      this.currentPlayingVoiceId = null
+      console.log(`Stopped voice: ${voice.name}`)
+      return
     }
 
-    // Stop previous audio if playing
     if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio.currentTime = 0;
+      this.currentAudio.pause()
+      this.currentAudio.currentTime = 0
     }
 
     if (!voice.preview_url) {
-      console.error("No preview URL available for this voice.");
-      return;
+      console.error("No preview URL available for this voice.")
+      return
     }
 
-    // Create and play new audio
-    this.currentAudio = new Audio(voice.preview_url);
-    this.currentPlayingVoiceId = voiceId;
+    this.currentAudio = new Audio(voice.preview_url)
+    this.currentPlayingVoiceId = voiceId
 
-    this.currentAudio.play()
+    this.currentAudio
+      .play()
       .then(() => console.log(`Playing voice: ${voice.name}`))
-      .catch(error => console.error("Error playing audio:", error));
+      .catch((error) => console.error("Error playing audio:", error))
 
-    // Add event listener to reset when audio ends naturally
-    this.currentAudio.addEventListener('ended', () => {
-      this.currentAudio = null;
-      this.currentPlayingVoiceId = null;
-    });
+    this.currentAudio.addEventListener("ended", () => {
+      this.currentAudio = null
+      this.currentPlayingVoiceId = null
+    })
   }
 
-  // Helper method to get the correct route parameters for voice generation
   getVoiceRouteParams(voice: any): any[] {
-    if (voice.language === 'darija') {
+    if (voice.language === "darija") {
       return [
-        '/speakerDasboard',
+        "/speakerDasboard",
         this.uuid,
-        'generate-with-selected-voice',
+        "generate-with-selected-voice",
         voice.voice_id || voice.id,
         voice.name,
-        voice.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + voice.name,
-        voice.gender || 'Non défini',
-        voice.ageZone || voice.labels?.age || 'Non défini',
-        voice.category || 'darija',
-        voice.language || 'darija',
-        voice.preview_url || voice.originalVoiceUrl || 'no-preview'
-      ];
+        voice.avatar || "https://api.dicebear.com/7.x/initials/svg?seed=" + voice.name,
+        voice.gender || "Non défini",
+        voice.ageZone || voice.labels?.age || "Non défini",
+        voice.category || "darija",
+        voice.language || "darija",
+        voice.preview_url || voice.originalVoiceUrl || "no-preview",
+      ]
     } else {
       return [
-        '/speakerDasboard',
+        "/speakerDasboard",
         this.uuid,
-        'generate-with-selected-voice',
+        "generate-with-selected-voice",
         voice.voice_id,
         voice.name,
-        'https://api.dicebear.com/7.x/initials/svg?seed=' + voice.name,
-        voice.labels?.gender || 'Non défini',
-        voice.labels?.age || 'Non défini',
-        voice.category || 'Non classé',
-        voice.fine_tuning?.language || 'Non défini',
-        voice.preview_url || 'no-preview'
-      ];
+        "https://api.dicebear.com/7.x/initials/svg?seed=" + voice.name,
+        voice.labels?.gender || "Non défini",
+        voice.labels?.age || "Non défini",
+        voice.category || "Non classé",
+        voice.fine_tuning?.language || "Non défini",
+        voice.preview_url || "no-preview",
+      ]
     }
   }
 }

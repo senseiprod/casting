@@ -1,4 +1,4 @@
-<div class="wave-container">
+<div class="wave-container" [ngClass]="getLanguageClasses()">
   <canvas id="waveCanvas"></canvas>
 
   <!-- Main Content -->
@@ -67,8 +67,6 @@
       </div>
     </div>
 
-
-    <!-- Hero Section -->
     <!-- Hero Section -->
     <div class="hero-section">
       <div class="card main-card">
@@ -188,7 +186,8 @@
     </div>
   </div>
 </div>
-<div class="header-container" style="margin-top:-35px">
+
+<div class="header-container" style="margin-top:-35px" [ngClass]="getLanguageClasses()">
   <div class="nav-buttons">
     <a class="nav-button" [routerLink]="['/signup2']">{{ 'landingPage.navigation.speakers' | translate }}</a>
     <a class="nav-button" [routerLink]="['/signup2']">{{ 'landingPage.navigation.celebrities' | translate }}</a>
@@ -198,7 +197,7 @@
   <h1 class="main-title">{{ 'landingPage.aiSection.title' | translate }}</h1>
 </div>
 
-<div class="container py-4">
+<div class="container py-4" [ngClass]="getLanguageClasses()">
   <div class="content-section">
     <div class="row align-items-center">
       <div class="col-md-6">
@@ -228,8 +227,8 @@
         </div>
 
         <a class="btn btn-custom" [routerLink]="['/signup3']">
-  {{ 'landingPage.aiSection.signUp' | translate }}
-</a>
+          {{ 'landingPage.aiSection.signUp' | translate }}
+        </a>
 
       </div>
       <div class="col-md-6 mt-4 mt-md-0">
@@ -239,6 +238,7 @@
     </div>
   </div>
 </div>
+
 <div class="background-waves">
   <div class="wave wave-1"></div>
   <div class="wave wave-2"></div>
@@ -249,7 +249,8 @@
   <div class="wave wave-7"></div>
   <div class="wave wave-8"></div>
 </div>
-<div class="main-container" style="margin-top:-20px">
+
+<div class="main-container" style="margin-top:-20px" [ngClass]="getLanguageClasses()">
   <div class="header-text">
     <h1 class="main-title">{{ 'landingPage.voiceTypes.title' | translate }}</h1>
     <p class="subtitle">{{ 'landingPage.voiceTypes.subtitle' | translate }}</p>
@@ -291,8 +292,8 @@
     </div>
   </div>
 </div>
-<div class="main-container">
 
+<div class="main-container" [ngClass]="getLanguageClasses()">
   <div class="benefits-card">
     <div class="benefit-item">
       <div class="benefit-marker"></div>
@@ -337,7 +338,7 @@
 </div>
 
 <!-- References Section -->
-<div class="references-section">
+<div class="references-section" [ngClass]="getLanguageClasses()">
   <div class="container">
     <div class="references-header">
       <h2 class="references-title">{{ 'landingPage.references.title' | translate }}</h2>
@@ -346,11 +347,8 @@
     </div>
 
    <p class="custom-text" style="text-align:center; font-family: 'Poppins', sans-serif; font-size: 1.25rem; color: #333; line-height: 1.5;">
-  <strong>castingvoixoff.ma</strong>, c’est bien plus qu’une plateforme : c’est la voix d’un <strong>savoir-faire</strong> signé <strong>SenseiProd</strong>, une agence qui, depuis plus de 10 ans, accompagne les grandes marques avec <strong>passion</strong>, <strong>audace</strong> et <strong>maîtrise</strong> dans l’univers de la communication, du marketing et de l’audiovisuel.
+      {{ 'about.platformDescription' | translate }}
 </p>
-
-
-
 
     
     <div class="references-grid">
@@ -363,7 +361,7 @@
   </div>
 </div>
 
-<div class="banner-container">
+<div class="banner-container" [ngClass]="getLanguageClasses()">
   <div class="banner-background">
     <!-- Background image set in CSS -->
   </div>

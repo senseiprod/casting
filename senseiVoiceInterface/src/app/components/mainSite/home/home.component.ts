@@ -1,4 +1,5 @@
 import { Component,  OnInit,  OnDestroy } from "@angular/core"
+import  { TranslateService } from "@ngx-translate/core"
 import  { SpeakerResponse, SpeakerService } from "../../../services/speaker-service.service"
 import  { UtilisateurService } from "../../../services/utilisateur-service.service"
 
@@ -13,14 +14,29 @@ export class HomeComponent implements OnInit, OnDestroy {
   photoUrls: { [key: string]: string } = {}
   currentAudio: HTMLAudioElement | null = null
   currentPlayingId: string | null = null
+  currentLanguage = "fr" // Default language
+  isRTL = false // Track RTL state
 
   constructor(
     private speakerService: SpeakerService,
     private utilisateurService: UtilisateurService,
+    private translateService: TranslateService, // Add TranslateService
   ) {}
 
   ngOnInit(): void {
     this.loadSpeakers()
+
+    // Subscribe to language changes
+    this.translateService.onLangChange.subscribe((event) => {
+      this.currentLanguage = event.lang
+      this.updateRTLState()
+      this.updateDocumentDirection()
+    })
+
+    // Set initial language state
+    this.currentLanguage = this.translateService.currentLang || this.translateService.defaultLang || "fr"
+    this.updateRTLState()
+    this.updateDocumentDirection()
   }
 
   ngOnDestroy(): void {
@@ -29,6 +45,29 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.currentAudio.pause()
       this.currentAudio = null
     }
+
+    // Reset document direction to default when leaving component
+    document.documentElement.setAttribute("dir", "ltr")
+    document.body.classList.remove("rtl-layout")
+  }
+
+  private updateRTLState(): void {
+    this.isRTL = this.currentLanguage === "ar"
+  }
+
+  private updateDocumentDirection(): void {
+    if (this.isRTL) {
+      document.documentElement.setAttribute("dir", "rtl")
+      document.body.classList.add("rtl-layout")
+    } else {
+      document.documentElement.setAttribute("dir", "ltr")
+      document.body.classList.remove("rtl-layout")
+    }
+  }
+
+  // Helper method to get CSS classes based on language
+  getLanguageClasses(): string {
+    return this.isRTL ? "rtl-layout" : "ltr-layout"
   }
 
   loadSpeakers() {

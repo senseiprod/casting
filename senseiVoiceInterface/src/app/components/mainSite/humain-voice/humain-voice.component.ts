@@ -1,4 +1,5 @@
 import { Component,  OnInit } from "@angular/core"
+import  { TranslateService } from "@ngx-translate/core"
 import  { ElevenLabsService } from "../../../services/eleven-labs.service"
 import  { AuthService } from "../../../services/auth.service"
 import  { FavoriteVoicesDto, FavoriteVoicesService } from "../../../services/favorite-voices.service"
@@ -15,7 +16,6 @@ interface Voice {
   preview_url?: string
 }
 
-// Interface for Lahajati voices
 interface LahajatiVoice {
   id: string
   name: string
@@ -42,14 +42,12 @@ interface LahajatiVoice {
   category?: string
 }
 
-// Interface for Lahajati dialects
 interface LahajatiDialect {
   id: string
   name: string
   description?: string
 }
 
-// Interface for Lahajati performance styles
 interface LahajatiPerformanceStyle {
   id: string
   name: string
@@ -62,6 +60,12 @@ export interface Language {
   active: boolean
 }
 
+export interface FilterOption {
+  code: string
+  nameKey: string // Translation key instead of hardcoded name
+  active: boolean
+}
+
 @Component({
   selector: "app-humain-voice",
   templateUrl: "./humain-voice.component.html",
@@ -69,7 +73,7 @@ export interface Language {
 })
 export class HumainVoiceComponent implements OnInit {
   languages = [
-    { code: "darija", name: "Darija", active: false }, // Added Darija
+    { code: "darija", name: "Darija", active: false },
     { code: "ar", name: "Arabe", active: false },
     { code: "fr", name: "Français", active: false },
     { code: "en", name: "Anglais", active: true },
@@ -112,44 +116,44 @@ export class HumainVoiceComponent implements OnInit {
   isLoadingLahajatiData = false
   lahajatiDataLoaded = false
 
-  // Filter options
-  accents = [
-    { code: "", name: "Tous les accents", active: true },
-    { code: "American", name: "Américain", active: false },
-    { code: "British", name: "Britannique", active: false },
-    { code: "Australian", name: "Australien", active: false },
-    { code: "Indian", name: "Indien", active: false },
-    { code: "African", name: "Africain", active: false },
-    { code: "French", name: "Français", active: false },
-    { code: "German", name: "Allemand", active: false },
-    { code: "Spanish", name: "Espagnol", active: false },
+  // Updated filter options with translation keys
+  accents: FilterOption[] = [
+    { code: "", nameKey: "voiceCasting.filters.accents.all", active: true },
+    { code: "American", nameKey: "voiceCasting.filters.accents.american", active: false },
+    { code: "British", nameKey: "voiceCasting.filters.accents.british", active: false },
+    { code: "Australian", nameKey: "voiceCasting.filters.accents.australian", active: false },
+    { code: "Indian", nameKey: "voiceCasting.filters.accents.indian", active: false },
+    { code: "African", nameKey: "voiceCasting.filters.accents.african", active: false },
+    { code: "French", nameKey: "voiceCasting.filters.accents.french", active: false },
+    { code: "German", nameKey: "voiceCasting.filters.accents.german", active: false },
+    { code: "Spanish", nameKey: "voiceCasting.filters.accents.spanish", active: false },
   ]
 
-  ages = [
-    { code: "", name: "Tous les âges", active: true },
-    { code: "young", name: "Jeune", active: false },
-    { code: "middle-aged", name: "Moyen", active: false },
-    { code: "old", name: "Âgé", active: false },
+  ages: FilterOption[] = [
+    { code: "", nameKey: "voiceCasting.filters.ages.all", active: true },
+    { code: "young", nameKey: "voiceCasting.filters.ages.young", active: false },
+    { code: "middle-aged", nameKey: "voiceCasting.filters.ages.middleAged", active: false },
+    { code: "old", nameKey: "voiceCasting.filters.ages.old", active: false },
   ]
 
-  genders = [
-    { code: "", name: "Tous les genres", active: true },
-    { code: "male", name: "Homme", active: false },
-    { code: "female", name: "Femme", active: false },
-    { code: "non-binary", name: "Non-binaire", active: false },
+  genders: FilterOption[] = [
+    { code: "", nameKey: "voiceCasting.filters.genders.all", active: true },
+    { code: "male", nameKey: "voiceCasting.filters.genders.male", active: false },
+    { code: "female", nameKey: "voiceCasting.filters.genders.female", active: false },
+    { code: "non-binary", nameKey: "voiceCasting.filters.genders.nonBinary", active: false },
   ]
 
-  categories = [
-    { code: "", name: "Toutes les catégories", active: true },
-    { code: "professional", name: "Professionnel", active: false },
-    { code: "casual", name: "Décontracté", active: false },
-    { code: "character", name: "Personnage", active: false },
-    { code: "storytelling", name: "Narration", active: false },
+  categories: FilterOption[] = [
+    { code: "", nameKey: "voiceCasting.filters.categories.all", active: true },
+    { code: "professional", nameKey: "voiceCasting.filters.categories.professional", active: false },
+    { code: "casual", nameKey: "voiceCasting.filters.categories.casual", active: false },
+    { code: "character", nameKey: "voiceCasting.filters.categories.character", active: false },
+    { code: "storytelling", nameKey: "voiceCasting.filters.categories.storytelling", active: false },
   ]
 
   // Existing properties
   voices: any[] = []
-  allVoices: any[] = [] // Store all voices for filtering
+  allVoices: any[] = []
   pageSizeOptions: number[] = [10, 20, 50, 100]
   pageSize = 10
   currentPageIndex = 1
@@ -175,7 +179,8 @@ export class HumainVoiceComponent implements OnInit {
     private favoriteVoicesService: FavoriteVoicesService,
     private voiceService: ElevenLabsService,
     private authService: AuthService,
-    private lahajatiService: LahajatiService, // Added Lahajati service
+    private lahajatiService: LahajatiService,
+    private translateService: TranslateService, // Add TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -184,6 +189,32 @@ export class HumainVoiceComponent implements OnInit {
       this.loadFavoriteVoices()
       this.loadVoices()
     })
+  }
+
+  // Helper method to get translated name for filter options
+  getTranslatedName(filterOption: FilterOption): string {
+    return this.translateService.instant(filterOption.nameKey)
+  }
+
+  // Helper methods to get translated names for active filters
+  getSelectedAccentName(): string {
+    const accent = this.accents.find((a) => a.code === this.selectedAccent)
+    return accent ? this.translateService.instant(accent.nameKey) : ""
+  }
+
+  getSelectedAgeName(): string {
+    const age = this.ages.find((a) => a.code === this.selectedAge)
+    return age ? this.translateService.instant(age.nameKey) : ""
+  }
+
+  getSelectedGenderName(): string {
+    const gender = this.genders.find((g) => g.code === this.selectedGender)
+    return gender ? this.translateService.instant(gender.nameKey) : ""
+  }
+
+  getSelectedCategoryName(): string {
+    const category = this.categories.find((c) => c.code === this.selectedCategory)
+    return category ? this.translateService.instant(category.nameKey) : ""
   }
 
   // New method to fetch Lahajati data
@@ -195,7 +226,6 @@ export class HumainVoiceComponent implements OnInit {
     this.isLoadingLahajatiData = true
     console.log("Fetching Lahajati voices and dialects...")
 
-    // Fetch voices, dialects, and performance styles in parallel
     Promise.all([
       this.lahajatiService.getVoices(1, 50).toPromise(),
       this.lahajatiService.getDialects(1, 50).toPromise(),
@@ -203,21 +233,18 @@ export class HumainVoiceComponent implements OnInit {
     ])
       .then(([voicesResponse, dialectsResponse, stylesResponse]) => {
         try {
-          // Parse voices
           if (voicesResponse) {
             const voicesData = JSON.parse(voicesResponse)
             this.lahajatiVoices = this.mapLahajatiVoices(voicesData.data || voicesData)
             console.log("Lahajati voices loaded:", this.lahajatiVoices)
           }
 
-          // Parse dialects
           if (dialectsResponse) {
             const dialectsData = JSON.parse(dialectsResponse)
             this.lahajatiDialects = dialectsData.data || dialectsData
             console.log("Lahajati dialects loaded:", this.lahajatiDialects)
           }
 
-          // Parse performance styles
           if (stylesResponse) {
             const stylesData = JSON.parse(stylesResponse)
             this.lahajatiPerformanceStyles = stylesData.data || stylesData
@@ -227,7 +254,6 @@ export class HumainVoiceComponent implements OnInit {
           this.lahajatiDataLoaded = true
           this.isLoadingLahajatiData = false
 
-          // Update voices if Darija is currently selected
           if (this.selectedLanguage === "darija") {
             this.applyDarijaVoices()
           }
@@ -242,7 +268,6 @@ export class HumainVoiceComponent implements OnInit {
       })
   }
 
-  // Map Lahajati voices to match the existing Voice interface
   mapLahajatiVoices(lahajatiVoices: any[]): LahajatiVoice[] {
     return lahajatiVoices.map((voice) => ({
       id: voice.id_voice || voice.voice_id,
@@ -268,16 +293,14 @@ export class HumainVoiceComponent implements OnInit {
       fine_tuning: {
         language: "darija",
       },
-      category: "professional", // Mark as professional for human voice component
+      category: "professional",
     }))
   }
 
-  // Apply Darija voices to the current voice list
   applyDarijaVoices() {
     if (this.selectedLanguage === "darija" && this.lahajatiDataLoaded) {
       let filteredVoices = [...this.lahajatiVoices]
 
-      // Apply Darija-specific filters
       if (this.selectedDialect) {
         filteredVoices = filteredVoices.filter((voice) => voice.dialect === this.selectedDialect)
       }
@@ -286,7 +309,6 @@ export class HumainVoiceComponent implements OnInit {
         filteredVoices = filteredVoices.filter((voice) => voice.performanceStyle === this.selectedPerformanceStyle)
       }
 
-      // Apply general filters
       if (this.selectedGender) {
         filteredVoices = filteredVoices.filter((voice) => voice.gender === this.selectedGender)
       }
@@ -295,7 +317,6 @@ export class HumainVoiceComponent implements OnInit {
         filteredVoices = filteredVoices.filter((voice) => voice.ageZone === this.selectedAge)
       }
 
-      // Apply favorites filter
       if (this.showFavoritesOnly) {
         const favoriteUrls = this.favoriteVoices.map((fav) => fav.voiceUrl)
         filteredVoices = filteredVoices.filter((voice) => favoriteUrls.includes(voice.voice_id || voice.id || ""))
@@ -307,7 +328,6 @@ export class HumainVoiceComponent implements OnInit {
     }
   }
 
-  // Apply pagination to current voice list
   applyPagination() {
     const startIndex = this.currentPageIndex * this.pageSize
     const endIndex = startIndex + this.pageSize
@@ -315,12 +335,10 @@ export class HumainVoiceComponent implements OnInit {
     this.hasMorePages = endIndex < this.allVoices.length
   }
 
-  // Check if Darija is currently selected
   isDarijaSelected(): boolean {
     return this.selectedLanguage === "darija"
   }
 
-  // Method to handle dialect selection
   onDialectChange(event: any): void {
     const dialectId = event.target ? event.target.value : event
     this.selectedDialect = dialectId
@@ -330,7 +348,6 @@ export class HumainVoiceComponent implements OnInit {
     }
   }
 
-  // Method to handle performance style selection
   onPerformanceStyleChange(event: any): void {
     const styleId = event.target ? event.target.value : event
     this.selectedPerformanceStyle = styleId
@@ -344,7 +361,6 @@ export class HumainVoiceComponent implements OnInit {
     this.favoriteVoicesService.getAllFavorites().subscribe({
       next: (favorites) => {
         this.favoriteVoices = favorites
-        // If we're showing favorites only, reload the voices
         if (this.showFavoritesOnly) {
           this.loadVoices()
         }
@@ -358,28 +374,24 @@ export class HumainVoiceComponent implements OnInit {
   loadVoices(): void {
     this.isLoading = true
 
-    // If Darija is selected and data is loaded, use Lahajati voices
     if (this.selectedLanguage === "darija" && this.lahajatiDataLoaded) {
       this.applyDarijaVoices()
       this.isLoading = false
       return
     }
 
-    // If Darija is selected but data is not loaded, wait for it
     if (this.selectedLanguage === "darija" && !this.lahajatiDataLoaded) {
       this.fetchLahajatiData()
-      // The applyDarijaVoices will be called when data is loaded
       this.isLoading = false
       return
     }
 
-    // For other languages, use ElevenLabs service with professional category
     this.voiceService
       .listSharedVoices(
         this.pageSize,
-        null, // search
-        null, // sort
-        "professional", // Always use professional category for human voices
+        null,
+        null,
+        "professional",
         this.selectedGender,
         this.selectedAge,
         this.selectedAccent,
@@ -388,7 +400,6 @@ export class HumainVoiceComponent implements OnInit {
       )
       .pipe(
         map((response) => {
-          // Filter by favorites if needed
           if (this.showFavoritesOnly) {
             const favoriteUrls = this.favoriteVoices.map((fav) => fav.voiceUrl)
             return {
@@ -414,7 +425,6 @@ export class HumainVoiceComponent implements OnInit {
       })
   }
 
-  // Favorite voice methods
   isFavorite(voice: any): boolean {
     const voiceUrl = voice.voice_url || voice.voice_id || voice.id || ""
     return this.favoriteVoices.some((fav) => fav.voiceUrl === voiceUrl)
@@ -424,15 +434,12 @@ export class HumainVoiceComponent implements OnInit {
     const voiceUrl = voice.voice_id || voice.id || voice.url || ""
 
     if (this.isFavorite(voice)) {
-      // Find the favorite to delete
       const favoriteToDelete = this.favoriteVoices.find((fav) => fav.voiceUrl === voiceUrl)
       if (favoriteToDelete) {
-        // Assuming the ID is stored in the DTO or can be derived
-        const id = favoriteToDelete["id"] // Adjust based on your actual data structure
+        const id = favoriteToDelete["id"]
         this.favoriteVoicesService.deleteFavorite(id).subscribe({
           next: () => {
             this.favoriteVoices = this.favoriteVoices.filter((fav) => fav.voiceUrl !== voiceUrl)
-            // If showing favorites only, reload to remove the unfavorited voice
             if (this.showFavoritesOnly) {
               this.loadVoices()
             }
@@ -441,9 +448,8 @@ export class HumainVoiceComponent implements OnInit {
         })
       }
     } else {
-      // Add to favorites
       const newFavorite: FavoriteVoicesDto = {
-        userUuid: this.uuid, // Assuming this is the current user's UUID
+        userUuid: this.uuid,
         voiceUrl: voiceUrl,
       }
 
@@ -458,22 +464,19 @@ export class HumainVoiceComponent implements OnInit {
 
   toggleFavorites(): void {
     this.showFavoritesOnly = !this.showFavoritesOnly
-    this.currentPageIndex = 0 // Reset to first page
+    this.currentPageIndex = 0
     this.loadVoices()
   }
 
-  // Existing filter methods
   filterVoices(languageCode: string): void {
-    // Update the active language
     this.languages = this.languages.map((lang) => ({
       ...lang,
       active: lang.code === languageCode,
     }))
 
     this.selectedLanguage = languageCode
-    this.currentPageIndex = 1 // Reset to first page
+    this.currentPageIndex = 1
 
-    // Reset Darija-specific filters when changing language
     if (languageCode !== "darija") {
       this.selectedDialect = ""
       this.selectedPerformanceStyle = ""
@@ -487,7 +490,6 @@ export class HumainVoiceComponent implements OnInit {
     this.selectedLanguage = value
     this.currentPageIndex = 1
 
-    // Reset Darija-specific filters when changing language
     if (value !== "darija") {
       this.selectedDialect = ""
       this.selectedPerformanceStyle = ""
@@ -552,7 +554,6 @@ export class HumainVoiceComponent implements OnInit {
     this.selectedPerformanceStyle = ""
     this.showFavoritesOnly = false
 
-    // Reset active state in language pills
     this.languages = this.languages.map((lang) => ({
       ...lang,
       active: false,
@@ -562,7 +563,6 @@ export class HumainVoiceComponent implements OnInit {
     this.loadVoices()
   }
 
-  // Pagination methods
   nextPage(): void {
     if (this.hasMorePages) {
       this.currentPageIndex++
@@ -594,13 +594,9 @@ export class HumainVoiceComponent implements OnInit {
     }
   }
 
-  // Voice playback
   playVoice(voice: any) {
-    // Check if the same voice is clicked again
     const voiceId = voice.voice_id || voice.id
-    // Check if the same voice is clicked again
     if (this.currentAudio && this.currentPlayingVoiceId === voiceId) {
-      // Stop the currently playing audio
       this.currentAudio.pause()
       this.currentAudio.currentTime = 0
       this.currentAudio = null
@@ -609,7 +605,6 @@ export class HumainVoiceComponent implements OnInit {
       return
     }
 
-    // Stop previous audio if playing
     if (this.currentAudio) {
       this.currentAudio.pause()
       this.currentAudio.currentTime = 0
@@ -620,7 +615,6 @@ export class HumainVoiceComponent implements OnInit {
       return
     }
 
-    // Create and play new audio
     this.currentAudio = new Audio(voice.preview_url)
     this.currentPlayingVoiceId = voiceId
 
@@ -629,14 +623,12 @@ export class HumainVoiceComponent implements OnInit {
       .then(() => console.log(`Playing voice: ${voice.name}`))
       .catch((error) => console.error("Error playing audio:", error))
 
-    // Add event listener to reset when audio ends naturally
     this.currentAudio.addEventListener("ended", () => {
       this.currentAudio = null
       this.currentPlayingVoiceId = null
     })
   }
 
-  // Helper method to get the correct route parameters for voice generation
   getVoiceRouteParams(voice: any): any[] {
     if (voice.language === "darija") {
       return [
