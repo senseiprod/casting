@@ -105,12 +105,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
             // Check if these properties exist on your entity before updating
             // For the Balance and Fidelity fields that weren't in the original code
-            if (dto.getBalance() != null && hasProperty(existingUtilisateur, "balance")) {
-                setProperty(existingUtilisateur, "balance", dto.getBalance());
-            }
-            if (dto.getFidelity() != null && hasProperty(existingUtilisateur, "fidelity")) {
-                setProperty(existingUtilisateur, "fidelity", dto.getFidelity());
-            }
+
 
             if (existingUtilisateur instanceof Client && dto.getFree_test() != null) {
                 Client client = (Client) existingUtilisateur;
