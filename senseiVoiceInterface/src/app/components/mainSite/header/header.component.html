@@ -178,7 +178,8 @@
                aria-expanded="false"
                [attr.aria-label]="'header.userMenu.toggle' | translate">
               <img
-                [src]="'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png'"
+                [src]="userPhotoUrl"
+                (error)="onImageError($event)"
                 [alt]="'header.userMenu.avatar' | translate"
                 class="user-avatar me-2"
               >

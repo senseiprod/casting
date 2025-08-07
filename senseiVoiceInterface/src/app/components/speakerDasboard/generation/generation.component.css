@@ -810,12 +810,19 @@ body {
 .volume-slider {
   width: 80px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
   -webkit-appearance: none;
   appearance: none;
+  background: transparent;
+}
+
+/* WebKit browsers: Chrome, Safari, Edge */
+.volume-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: #e11d48; /* SOLID filled bar */
 }
 
 .volume-slider::-webkit-slider-thumb {
@@ -823,11 +830,38 @@ body {
   appearance: none;
   width: 16px;
   height: 16px;
+  margin-top: -6px; /* center thumb vertically */
   background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+  position: relative;
+  z-index: 2;
 }
+
+/* Firefox */
+.volume-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2); /* unfilled part if desired */
+}
+
+.volume-slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: #e11d48; /* SOLID filled bar */
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #cb1025 0%, #e11d48 100%);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+}
+
 
 /* Pricing Info */
 .pricing-info {

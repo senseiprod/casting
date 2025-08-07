@@ -1,13 +1,13 @@
-import { Component,  OnInit, ViewChild,  ElementRef,  AfterViewInit,  OnDestroy } from "@angular/core"
-import  {
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from "@angular/core"
+import {
   UtilisateurService,
   UtilisateurRequest,
   ChangePasswordRequest,
 } from "../../../services/utilisateur-service.service"
-import  { DomSanitizer, SafeUrl } from "@angular/platform-browser"
-import  { ActivatedRoute } from "@angular/router"
-import  { ClientService } from "src/app/services/client-service.service"
-import  { AuthService } from "src/app/services/auth.service"
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser"
+import { ActivatedRoute } from "@angular/router"
+import { ClientService } from "src/app/services/client-service.service"
+import { AuthService } from "src/app/services/auth.service"
 
 interface NotificationSetting {
   id: string
@@ -432,15 +432,15 @@ export class ProfilComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Show crop option to user
   showCropOption(file: File): void {
-    const shouldCrop = confirm("Would you like to crop your image? Click OK to crop, or Cancel to use the image as-is.")
+    // const shouldCrop = confirm("Would you like to crop your image? Click OK to crop, or Cancel to use the image as-is.")
 
-    if (shouldCrop) {
+    // if (shouldCrop) {
       this.loadImageForCropping(file)
-    } else {
+   // } else {
       // Use original image without cropping
-      this.croppedPhotoBlob = null
-      console.log("Using original image without cropping")
-    }
+     // this.croppedPhotoBlob = null
+      //console.log("Using original image without cropping")
+    //}
   }
 
   // Load image for cropping
@@ -932,6 +932,7 @@ export class ProfilComponent implements OnInit, AfterViewInit, OnDestroy {
           this.selectedPhotoFile = null
           this.croppedPhotoBlob = null
           this.loadUserPhoto()
+          
         },
         error: (error) => {
           console.error("Error uploading photo:", error)
@@ -959,8 +960,11 @@ export class ProfilComponent implements OnInit, AfterViewInit, OnDestroy {
       this.utilisateurService.updateUtilisateur(this.userId, this.currentUser).subscribe({
         next: (response) => {
           console.log("Profile updated successfully:", response)
-          this.isUpdatingProfile = false
-          this.mapUserToAccountSettings()
+          // As requested, reload the entire page to reflect changes globally.
+          // The lines below are commented out as they are no longer needed before a reload.
+          // this.isUpdatingProfile = false
+          // this.mapUserToAccountSettings()
+          window.location.reload()
         },
         error: (error) => {
           console.error("Error updating profile:", error)

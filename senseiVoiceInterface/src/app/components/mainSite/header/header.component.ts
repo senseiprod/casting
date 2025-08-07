@@ -4,6 +4,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import {ClientResponse} from "../../../services/client-service.service";
 import { TranslateService } from '@ngx-translate/core';
 import { TranslationService } from 'src/app/services/translation.service';
+import { UtilisateurService } from "src/app/services/utilisateur-service.service";
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 
 interface User {
   id: string;
@@ -24,6 +26,7 @@ export class HeaderComponent implements OnInit {
   isLoggedIn = false
   currentUser: any = {} // Declare currentUser without using ClientResponse
   currentUILanguage = "en"
+  userPhotoUrl: SafeUrl | null = null;
 
   // Available voice languages for filtering
   voiceLanguages = [
@@ -66,6 +69,8 @@ export class HeaderComponent implements OnInit {
     private router: Router,
     public translate: TranslateService,
     private translationService: TranslationService,
+    private utilisateurService: UtilisateurService, 
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
@@ -85,12 +90,36 @@ export class HeaderComponent implements OnInit {
         next: (response: any) => {
           // Use any type instead of ClientResponse
           this.currentUser = response
+          this.loadUserPhoto();
         },
         error: (error) => {
           console.error("Error loading user data:", error)
         },
       })
     }
+  }
+
+  private loadUserPhoto(): void {
+    if (this.currentUser?.uuid) {
+      this.utilisateurService.getPhoto(this.currentUser.uuid).subscribe({
+        next: (photoBlob: Blob) => {
+          const objectURL = URL.createObjectURL(photoBlob);
+          this.userPhotoUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+        },
+        error: (error) => {
+          console.error("Header: Error loading user photo:", error);
+          this.userPhotoUrl = null; // Reset on error to allow fallback
+        },
+      });
+    }
+  }
+
+  /**
+   * Fallback for when the user image fails to load.
+   */
+  onImageError(event: any): void {
+    console.log("Header: Image failed to load, using fallback.");
+    event.target.src = 'assets/img/png-clipart-computer-icons-avatar-avatar-web-design-heroes.png';
   }
 
   private setupEventListeners(): void {

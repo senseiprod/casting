@@ -93,8 +93,8 @@ export class GenerationRequestComponent implements OnInit {
             return {
               ...project,
               actions: project.actions
-                ? project.actions.filter(action => action.actionAccessType === 'PAYED')
-                : []
+                // ? project.actions.filter(action => action.actionAccessType === 'FREE')
+                // : []
             };
           })
           // Keep only the projects that still have actions after filtering

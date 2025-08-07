@@ -208,13 +208,13 @@
                   <i class="bi bi-chevron-right"></i>
                 </button>
               </div>
-              <div class="calendar-grid">
+              <!-- <div class="calendar-grid">
                 <div class="calendar-day-header" *ngFor="let day of weekDays">{{ day }}</div>
                 <div class="calendar-day" *ngFor="let day of calendarDays" [class.other-month]="day.otherMonth" [class.has-reservation]="day.hasReservation" [class.today]="day.isToday" (click)="selectDay(day)">
                   <span class="day-number">{{ day.number }}</span>
                   <span class="reservation-indicator" *ngIf="day.hasReservation"></span>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="col-lg-4">
@@ -231,7 +231,7 @@
                     <i class="bi bi-calendar-check"></i>
                   </div>
                   <div class="item-content">
-                    <h4 class="item-title">{{ reservation.service }}</h4>
+                    <h4 class="item-title">{{ reservation.service }} TEST FOR GIT THIS IS A TEST</h4>
                     <p class="item-subtitle">{{ reservation.date | date:'dd/MM/yyyy' }} - {{ reservation.heureDebut }} à {{ reservation.heureFin }} this is a test btw, please add git</p>
                   </div>
                   <div class="item-action">
