@@ -5,6 +5,7 @@ import com.example.senseiVoix.dtos.audio.AudioResponse;
 import com.example.senseiVoix.dtos.audio.ResponseAudio;
 import com.example.senseiVoix.entities.Audio;
 import com.example.senseiVoix.entities.Speaker;
+import com.example.senseiVoix.enumeration.TypeAudio;
 import com.example.senseiVoix.repositories.AudioRepository;
 import com.example.senseiVoix.repositories.SpeakerRepository;
 import com.example.senseiVoix.services.AudioService;
@@ -18,11 +19,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+
 public class AudioServiceImpl implements AudioService {
-
-    private final AudioRepository audioRepository;
-    private final SpeakerRepository speakerRepository;
-
 
     @Autowired
     public AudioServiceImpl(AudioRepository audioRepository, SpeakerRepository speakerRepository, DataSource dataSource) {
@@ -82,20 +80,6 @@ public class AudioServiceImpl implements AudioService {
 
 
     @Override
-    public AudioResponse getAudioById(Long id) {
-        Audio audio = audioRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Audio not found"));
-
-
-        byte[] audioData = audio.getAudioFile();
-        String base64Audio = Base64.getEncoder().encodeToString(audio.getAudioFile());
-
-
-
-        return new AudioResponse(audio.getId(),audio.getSpeaker().getUuid(), audio.getFormat(),audio.getAudioFile(), audio.getTypeAudio());
-    }
-
-    @Override
     public List<ResponseAudio> getAllAudiosBySpeaker(String speakerId) {
         List<Audio> audios = audioRepository.findBySpeakerId(speakerId);
         return audios.stream()
@@ -131,7 +115,108 @@ public class AudioServiceImpl implements AudioService {
     }
 
 
+ @Autowired
+    private AudioRepository audioRepository;
 
+    @Autowired
+    private SpeakerRepository speakerRepository;
+
+    @Override
+    public List<AudioResponse> getAudiosBySpeaker(String speakerUuid) {
+        Speaker speaker = speakerRepository.findByUuid(speakerUuid);
+        if (speaker == null || speaker.getAudios() == null) {
+            return List.of();
+        }
+        
+        return speaker.getAudios().stream()
+                .map(this::mapToAudioResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AudioResponse> getAudiosByType(TypeAudio typeAudio) {
+        List<Audio> audios = audioRepository.findByTypeAudio(typeAudio);
+        return audios.stream()
+                .map(this::mapToAudioResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AudioResponse> getAudiosBySpeakerAndType(String speakerUuid, TypeAudio typeAudio) {
+        Speaker speaker = speakerRepository.findByUuid(speakerUuid);
+        if (speaker == null || speaker.getAudios() == null) {
+            return List.of();
+        }
+        
+        return speaker.getAudios().stream()
+                .filter(audio -> audio.getTypeAudio() == typeAudio)
+                .map(this::mapToAudioResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public AudioResponse getAudioById(Long id) {
+        Audio audio = audioRepository.findById(id).orElse(null);
+        if (audio == null ) {
+            return null;
+        }
+        return mapToAudioResponse(audio);
+    }
+
+    @Override
+    public Long getTotalAudioSizeBySpeaker(String speakerUuid) {
+        Speaker speaker = speakerRepository.findByUuid(speakerUuid);
+        if (speaker == null || speaker.getAudios() == null) {
+            return 0L;
+        }
+        
+        return speaker.getAudios().stream()
+                .filter(audio -> audio.getAudioFile() != null)
+                .mapToLong(audio -> audio.getAudioFile().length)
+                .sum();
+    }
+
+    @Override
+    public Integer getAudioCountBySpeaker(String speakerUuid) {
+        Speaker speaker = speakerRepository.findByUuid(speakerUuid);
+        if (speaker == null || speaker.getAudios() == null) {
+            return 0;
+        }
+        
+        return (int) speaker.getAudios().stream()
+                
+                .count();
+    }
+
+    private AudioResponse mapToAudioResponse(Audio audio) {
+        AudioResponse response = new AudioResponse();
+        response.setId(audio.getId());
+        response.setFormat(audio.getFormat());
+        response.setTypeAudio(audio.getTypeAudio());
+        
+        // Speaker information
+        if (audio.getSpeaker() != null) {
+            response.setSpeakerUuid(audio.getSpeaker().getUuid());
+            response.setSpeakerName(audio.getSpeaker().getPrenom() + " " + audio.getSpeaker().getNom());
+        }
+        
+        
+        // Audio file information
+        response.setHasAudioFile(audio.getAudioFile() != null && audio.getAudioFile().length > 0);
+        if (audio.getAudioFile() != null) {
+            response.setFileSizeInBytes((long) audio.getAudioFile().length);
+            response.setFileSizeFormatted(formatFileSize(audio.getAudioFile().length));
+        }
+        
+        return response;
+    }
+
+    private String formatFileSize(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(1024));
+        String pre = "KMGTPE".charAt(exp - 1) + "";
+        return String.format("%.1f %sB", bytes / Math.pow(1024, exp), pre);
+    }
 
 
 }

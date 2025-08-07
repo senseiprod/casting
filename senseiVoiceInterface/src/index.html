@@ -1,28 +1,330 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Castingvoixoff</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="senseiprod">
-  <meta name="description" content="text to speech site web">
-  <meta name="keywords" content="text to speech - Podcast, Video & Music HTML Template">
-  <meta name="robots" content="INDEX,FOLLOW">
-  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="assets/img/CASTINGVOIXOFF_Plan de travail 1 copie 5.png">
-  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <!-- endinject -->
-  <!-- Fonts -->
+    <meta charset="utf-8">
+    <title>Castingvoixoff</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="senseiprod">
+    <meta name="description" content="text to speech site web">
+    <meta name="keywords" content="text to speech - Podcast, Video & Music HTML Template">
+    <meta name="robots" content="INDEX,FOLLOW">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icon -->
+    <link rel="icon" type="image/x-icon" href="assets/img/CASTINGVOIXOFF_Plan de travail 1 copie 5.png">
+    
+    <!-- CSS -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <!-- SUBTLE SCREEN PROTECTION STYLES -->
+    <style>
+        /* Only disable text selection and drag - keep content visible */
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-drag: none;
+            -moz-user-drag: none;
+            user-drag: none;
+        }
+        
+        /* Allow text selection for inputs */
+        input, textarea, [contenteditable="true"] {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
+        
+        /* Subtle invisible overlay for screen capture interference */
+        .screen-protection-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.01; /* Almost invisible */
+            background: transparent;
+        }
+        
+        /* Very subtle watermark - barely visible to users */
+        .subtle-watermark {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: rgba(255,255,255,0.05);
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 9998;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Hide content only when printing */
+        @media print {
+            body {
+                display: none !important;
+            }
+            body::after {
+                content: "Protected Content - Printing Not Allowed";
+                display: block !important;
+                font-size: 24px;
+                color: red;
+                text-align: center;
+                margin-top: 200px;
+            }
+        }
+        
+        /* Warning message - only shows when screen sharing is detected */
+        .screen-sharing-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,0,0,0.95);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            z-index: 10000;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+            box-shadow: 0 0 30px rgba(255,0,0,0.5);
+        }
+        
+        /* Only blur content when screen sharing is actually detected */
+        .content-protected-mode {
+            filter: blur(10px) !important;
+            opacity: 0.5 !important;
+        }
+    </style>
 </head>
 <body>
-  <app-root></app-root>
-  <!-- inject:js-->
-  <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <!-- Very subtle protection overlay - won't affect user experience -->
+    <div class="screen-protection-overlay" id="protectionOverlay"></div>
+    
+    <!-- Subtle watermark -->
+    <div class="subtle-watermark" id="watermark">
+        Protected • <span id="timestamp"></span>
+    </div>
+    
+    <!-- Warning only appears when screen sharing detected -->
+    <div class="screen-sharing-warning" id="sharingWarning">
+        ⚠️ Screen Sharing Detected ⚠️<br>
+        <div style="font-size: 14px; margin-top: 10px;">
+            This content is protected from recording
+        </div>
+    </div>
+    
+    <app-root></app-root>
+    
+    <!-- SMART PROTECTION SCRIPT - Doesn't interfere with normal use -->
+    <script>
+        (function() {
+            'use strict';
+            
+            let screenSharingDetected = false;
+            let warningTimeout;
+            
+            // Update timestamp
+            function updateTimestamp() {
+                const timestamp = document.getElementById('timestamp');
+                if (timestamp) {
+                    timestamp.textContent = new Date().toLocaleTimeString();
+                }
+            }
+            updateTimestamp();
+            setInterval(updateTimestamp, 1000);
+            
+            // Smart screen sharing detection
+            function detectScreenSharing() {
+                // Block getDisplayMedia API
+                if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                    const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia;
+                    navigator.mediaDevices.getDisplayMedia = function() {
+                        showScreenSharingWarning();
+                        return Promise.reject(new Error('Screen sharing blocked'));
+                    };
+                }
+                
+                // Monitor for suspicious window behavior
+                let focusCount = 0;
+                let lastFocusTime = 0;
+                
+                window.addEventListener('focus', function() {
+                    const now = Date.now();
+                    if (now - lastFocusTime < 2000) { // Rapid focus changes
+                        focusCount++;
+                        if (focusCount > 3) {
+                            showScreenSharingWarning();
+                        }
+                    } else {
+                        focusCount = 0;
+                    }
+                    lastFocusTime = now;
+                });
+                
+                // Detect developer tools opening
+                let devToolsOpen = false;
+                function checkDevTools() {
+                    const threshold = 160;
+                    if (window.outerHeight - window.innerHeight > threshold || 
+                        window.outerWidth - window.innerWidth > threshold) {
+                        if (!devToolsOpen) {
+                            devToolsOpen = true;
+                            showScreenSharingWarning();
+                        }
+                    } else {
+                        devToolsOpen = false;
+                    }
+                }
+                setInterval(checkDevTools, 1000);
+            }
+            
+            function showScreenSharingWarning() {
+                if (!screenSharingDetected) {
+                    screenSharingDetected = true;
+                    
+                    // Show warning
+                    document.getElementById('sharingWarning').style.display = 'block';
+                    
+                    // Temporarily blur content
+                    document.body.classList.add('content-protected-mode');
+                    
+                    // Hide warning after 3 seconds and restore content
+                    clearTimeout(warningTimeout);
+                    warningTimeout = setTimeout(function() {
+                        document.getElementById('sharingWarning').style.display = 'none';
+                        document.body.classList.remove('content-protected-mode');
+                        screenSharingDetected = false;
+                    }, 3000);
+                }
+            }
+            
+            // Create subtle interference (won't affect user experience)
+            function createSubtleInterference() {
+                const overlay = document.getElementById('protectionOverlay');
+                if (overlay) {
+                    const canvas = document.createElement('canvas');
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
+                    canvas.style.opacity = '0.005'; // Almost invisible
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    
+                    const ctx = canvas.getContext('2d');
+                    overlay.appendChild(canvas);
+                    
+                    function drawSubtleNoise() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Add very subtle noise - won't be visible to users
+                        for (let i = 0; i < 20; i++) {
+                            ctx.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.002)`;
+                            ctx.fillRect(
+                                Math.random() * canvas.width, 
+                                Math.random() * canvas.height, 
+                                1, 1
+                            );
+                        }
+                    }
+                    
+                    // Update every 200ms - won't affect performance
+                    setInterval(drawSubtleNoise, 200);
+                    
+                    window.addEventListener('resize', function() {
+                        canvas.width = window.innerWidth;
+                        canvas.height = window.innerHeight;
+                    });
+                }
+            }
+            
+            // Block only screenshot shortcuts - don't interfere with normal typing
+            document.addEventListener('keydown', function(e) {
+                // Only block screenshot-specific shortcuts
+                const screenshotShortcuts = [
+                    { key: 'PrintScreen' },
+                    { ctrl: true, shift: true, key: 'S' }, // Firefox screenshot
+                    { cmd: true, shift: true, key: '3' }, // Mac screenshot
+                    { cmd: true, shift: true, key: '4' }, // Mac screenshot
+                    { cmd: true, shift: true, key: '5' }, // Mac screenshot
+                    { key: 'F12' }, // Dev tools
+                    { ctrl: true, shift: true, key: 'I' }, // Dev tools
+                ];
+                
+                for (let shortcut of screenshotShortcuts) {
+                    let match = true;
+                    if (shortcut.ctrl && !e.ctrlKey) match = false;
+                    if (shortcut.shift && !e.shiftKey) match = false;
+                    if (shortcut.cmd && !e.metaKey) match = false;
+                    if (shortcut.key && e.key !== shortcut.key) match = false;
+                    
+                    if (match) {
+                        e.preventDefault();
+                        showScreenSharingWarning();
+                        return false;
+                    }
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable drag and drop
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Only blur when window loses focus (potential screenshot)
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    document.body.style.filter = 'blur(5px)';
+                    document.body.style.opacity = '0.7';
+                } else {
+                    setTimeout(function() {
+                        document.body.style.filter = 'none';
+                        document.body.style.opacity = '1';
+                    }, 500);
+                }
+            });
+            
+            // Initialize protection
+            function initializeProtection() {
+                detectScreenSharing();
+                createSubtleInterference();
+                
+                // Simple console warning
+                console.log('%cContent Protection Active', 'color: blue; font-size: 16px;');
+                console.log('Screen capture monitoring enabled');
+            }
+            
+            // Start protection when page loads
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeProtection);
+            } else {
+                initializeProtection();
+            }
+            
+        })();
+    </script>
+    
+    <!-- Bootstrap JS -->
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
