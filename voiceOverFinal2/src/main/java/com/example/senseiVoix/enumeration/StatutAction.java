@@ -4,5 +4,6 @@ public enum StatutAction {
     EN_ATTENTE,
     VALIDE,
     REJETE,
-    GENERE
+    GENERE,
+    LOCKED
 }

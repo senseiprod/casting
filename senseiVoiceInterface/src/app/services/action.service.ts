@@ -1,35 +1,29 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+
+// --- INTERFACES ---
 export interface Action {
   id: number;
   text: string;
-  statutAction: 'EN_ATTENTE' | 'EN_COURS' | 'TERMINEE' | string;
+  statutAction: 'EN_ATTENTE' | 'EN_COURS' | 'TERMINEE' | 'LOCKED' | 'GENERE' | string;
   language: string;
-  audioGenerated: string; // ou `Blob` selon ce que tu reçois
+  audioGenerated: string; // Base64 string from backend
   dateCreation: string;
-  voice?: any; // tu peux créer une interface Voix si nécessaire
+  voice?: any;
+  project?: any;
+  utilisateur?: any;
 }
-
 export class ActionRequest {
   text: string;
-  statutAction: string; // Enum string value
+  statutAction: string;
   voiceUuid: string;
   utilisateurUuid: string;
   language: string;
   projectUuid: string;
   audioGenerated: Blob;
-
-  constructor(
-    text: string,
-    statutAction: string,
-    voiceUuid: string,
-    utilisateurUuid: string,
-    language: string,
-    projectUuid: string,
-    audioGenerated: Blob
-  ) {
+  constructor( text: string, statutAction: string, voiceUuid: string, utilisateurUuid: string, language: string, projectUuid: string, audioGenerated: Blob ) {
     this.text = text;
     this.statutAction = statutAction;
     this.voiceUuid = voiceUuid;
@@ -48,7 +42,6 @@ export interface ActionRequestLahajati {
   dialectId?: string;
   performanceId?: string;
 }
-
 export interface ActionResponse {
   uuid: string;
   code: string;
@@ -58,9 +51,19 @@ export interface ActionResponse {
   voiceUuid: string;
   dateCreation: Date;
   utilisateurUuid: string;
-  audioGenerated: string;
+  audioGenerated: string; // Base64 string
 }
-
+export interface LockedActionResponse {
+  id: number;
+  uuid: string;
+  status: string;
+  message: string;
+}
+export interface UnlockPaymentResponse {
+  actionId: number;
+  approvalUrl: string;
+  price: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -70,13 +73,49 @@ export class ActionService {
 
   constructor(private http: HttpClient) {}
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+  
+  // --- METHODS FOR LOCKED AUDIO WORKFLOW ---
+
+  createLockedAction(request: ActionRequestLahajati): Observable<LockedActionResponse> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<LockedActionResponse>(`${this.apiUrl}/create-locked-action`, request, { headers });
+  }
+
+  initiateUnlockPayment(actionId: number): Observable<UnlockPaymentResponse> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<UnlockPaymentResponse>(`${this.apiUrl}/${actionId}/initiate-unlock-payment`, {}, { headers });
+  }
+
+  getActionStatus(actionId: number): Observable<Action> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<Action>(`${this.apiUrl}/status/${actionId}`, { headers });
+  }
+
+  /**
+   * THIS IS THE METHOD THAT FIXES THE ERROR.
+   * Sets up a bank transfer for an existing LOCKED action.
+   * @param actionId The database ID of the locked action.
+   */
+  setupBankTransferForUnlock(actionId: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<any>(`${this.apiUrl}/${actionId}/setup-bank-transfer-unlock`, {}, { headers });
+  }
+
+  // --- EXISTING METHODS ---
+
   getActionBySpeakerUuid(uuid: string | null): Observable<ActionResponse[]> {
     return this.http.get<ActionResponse[]>(`${this.apiUrl}/speaker/${uuid}`);
   }
+
   createAction(actionFormData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/create`, actionFormData);
   }
-
 
   validateAction(uuid: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/validate/${uuid}`, {});
@@ -101,6 +140,7 @@ export class ActionService {
       params: { clientUuid, actionUuid, amount: amount.toString(), paypalId, paypalPayerId }
     });
   }
+  
   getActionsByProject(uuid: string): Observable<Action[]> {
     return this.http.get<Action[]>(`${this.apiUrl}/by-project/${uuid}`);
   }
@@ -108,11 +148,11 @@ export class ActionService {
   getActionByUuid(uuid: string): Observable<ActionResponse> {
     return this.http.get<ActionResponse>(`${this.apiUrl}/uuid/${uuid}`);
   }
+
   createActionPayed(requestBody: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/create-action`, requestBody);
   }
 
-  // Called on PayPal success
   paymentSuccess(actionId: number, paymentId: string, payerId: string): Observable<any> {
     const params = new HttpParams()
       .set('paymentId', paymentId)
@@ -120,24 +160,12 @@ export class ActionService {
     return this.http.get(`${this.apiUrl}/payment/success/${actionId}`, { params });
   }
 
-  // Called on PayPal cancel
   paymentCancel(actionId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/payment/cancel/${actionId}`);
   }
 
-  // Used for testing success endpoint manually (bypass PayPal)
   testSuccess(actionId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/test-success/${actionId}`);
-  }
-
-  // Get temporary voice storage (debug)
-  getVoiceStorage(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/debug/voice-storage`);
-  }
-
-  // Clear temporary voice storage (debug)
-  clearVoiceStorage(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/debug/clear-voice-storage`, {});
   }
 
   createActionWithBankTransfer(request: any): Observable<any> {
@@ -154,13 +182,6 @@ export class ActionService {
     return this.http.post<any>(url, actionRequest);
   }
 
-  setBalanceClient(uuid: string, balance: number) {
-    const params = new HttpParams()
-      .set('uuid', uuid)
-      .set('balance', balance.toString());
-
-    return this.http.post(`${this.apiUrl}/set-balance`, null, { params });
-  }
   generateElevenLabsAudioWithBalance(
     text: string,
     statutAction: string,
@@ -178,7 +199,6 @@ export class ActionService {
     formData.append('language', language);
     formData.append('projectUuid', projectUuid);
     formData.append('audioFile', audioFile);
-
     return this.http.post(`${this.apiUrl}/generate-elevenlabs-audio-with-balance`, formData);
   }
 
@@ -197,10 +217,6 @@ export class ActionService {
       .set('utilisateurUuid', utilisateurUuid)
       .set('language', language)
       .set('projectUuid', projectUuid);
-
     return this.http.post(`${this.apiUrl}/lahajati-generate-audio-with-balance`, params);
   }
-
-
-
 }

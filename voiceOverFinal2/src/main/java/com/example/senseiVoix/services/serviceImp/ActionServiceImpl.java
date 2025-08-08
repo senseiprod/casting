@@ -647,4 +647,94 @@ public double getClientBalance(String utilisateurUuid) {
     Client client = (Client) utilisateur;
     return client.getBalance();
 }
+
+
+
+    /**
+     * NEW METHOD for creating a locked action for the "Free Test with Project" flow.
+     * Generates audio, saves it to the DB with a LOCKED status.
+     * @return The created Action entity with the LOCKED status.
+     */
+    @Transactional
+    public Action createLockedAction(ActionRequest request) throws IOException {
+        Utilisateur user = utilisateurRepository.findByUuid(request.getUtilisateurUuid());
+        if (user == null) {
+            throw new RuntimeException("User not found for UUID: " + request.getUtilisateurUuid());
+        }
+
+        Project project = projectRepository.findByUuidAndDeletedFalse(request.getProjectUuid());
+        if (project == null) {
+            throw new RuntimeException("Project not found for UUID: " + request.getProjectUuid());
+        }
+
+        // --- Step 1: Generate the audio bytes ---
+        byte[] audioData;
+        try {
+            // This assumes a simple mapping. Add more complex logic if needed.
+            if ("darija".equalsIgnoreCase(request.getLanguage())) {
+                Map<String, Object> lahajatiRequestBody = new HashMap<>();
+                lahajatiRequestBody.put("text", request.getText());
+                lahajatiRequestBody.put("id_voice", request.getVoiceUuid());
+                lahajatiRequestBody.put("professional_quality", true);
+                ResponseEntity<byte[]> responseEntity = lahajatiService.textToSpeechPro(lahajatiRequestBody);
+                if (!responseEntity.getStatusCode().is2xxSuccessful() || !responseEntity.hasBody()) {
+                    throw new RuntimeException("Failed to generate Lahajati audio.");
+                }
+                audioData = responseEntity.getBody();
+            } else {
+                Map<String, Object> elevenLabsRequestBody = new HashMap<>();
+                elevenLabsRequestBody.put("text", request.getText());
+                Map<String, Object> voiceSettings = new HashMap<>();
+                voiceSettings.put("stability", 0.5);
+                voiceSettings.put("similarity_boost", 0.5);
+                elevenLabsRequestBody.put("voice_settings", voiceSettings);
+                audioData = elevenLabsService.textToSpeech(request.getVoiceUuid(), "mp3_44100_128", true, null, elevenLabsRequestBody);
+            }
+        } catch (Exception e) {
+            log.error("Failed to generate audio for locked action", e);
+            throw new IOException("Audio generation failed: " + e.getMessage());
+        }
+
+
+        // --- Step 2: Create and save the Action entity ---
+        Action action = new Action();
+        action.setText(request.getText());
+        action.setLanguage(request.getLanguage());
+        action.setUtilisateur(user);
+        action.setProject(project);
+        action.setVoice(voixRepository.findByUuid(request.getVoiceUuid()));
+
+        action.setStatutAction(StatutAction.LOCKED); // <-- Set the new status
+        action.setActionAccessType(ActionAccessType.FREE); // It's a free test initially
+        action.setAudioGenerated(audioData); // Save the generated audio
+        action.setDateCreation(new Date());
+
+        return actionRepository.save(action);
+    }
+
+    /**
+     * NEW METHOD to unlock an action after successful payment.
+     * @param actionId The ID of the action to unlock.
+     * @return The updated Action entity.
+     */
+    @Transactional
+    public Action unlockActionAfterPayment(Long actionId) {
+        Action action = actionRepository.findById(actionId)
+                .orElseThrow(() -> new RuntimeException("Action not found with ID: " + actionId));
+
+        if (action.getStatutAction() != StatutAction.LOCKED) {
+            log.warn("Attempted to unlock an action (ID: {}) that was not in LOCKED state. Current state: {}", actionId, action.getStatutAction());
+            // Decide if this should be an error or just ignored. For now, we'll proceed but log it.
+        }
+
+        action.setStatutAction(StatutAction.GENERE); // Change status to GENERE (unlocked)
+        action.setActionAccessType(ActionAccessType.PAYED); // It is now a paid action
+
+        Action unlockedAction = actionRepository.save(action);
+
+        // Notify user that their audio is unlocked and ready
+        notificationService.notifyAudioGenerated(unlockedAction.getUtilisateur(), unlockedAction.getUuid());
+
+        return unlockedAction;
+    }
 }

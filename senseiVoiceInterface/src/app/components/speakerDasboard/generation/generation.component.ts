@@ -3,11 +3,12 @@ import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
 import { HttpClient, HttpHeaders } from '@angular/common/http'; // <-- ADDED
+import { Observable } from 'rxjs';
 
 // Services
 import { ElevenLabsService, Voice } from "../../../services/eleven-labs.service";
 import { ProjectService, Project } from "../../../services/project.service";
-import { ActionRequestLahajati, ActionService } from "../../../services/action.service";
+import { ActionRequestLahajati, ActionService , LockedActionResponse} from "../../../services/action.service";
 import { LahajatiService } from "../../../services/lahajati.service";
 import { PaypalService } from "src/app/services/paypal-service.service";
 import { ClientService } from "src/app/services/client-service.service";
@@ -84,6 +85,14 @@ export class GenerationComponent implements OnInit {
   private currentUser: Utilisateur | null = null;
   public freeTestError: string | null = null; // Public for template access
   // --- END ADDED PROPERTIES ---
+
+
+    // --- ADDED: State for the new unlock flow ---
+  public lockedActionId: number | null = null;
+  public showUnlockPrompt = false;
+  public isProcessingUnlock = false;
+  private paymentMode: 'generate' | 'unlock' = 'generate'; // CRITICAL FOR ROUTING LOGIC
+  
 
 
   // --- All your existing properties are maintained ---
@@ -222,6 +231,27 @@ export class GenerationComponent implements OnInit {
   // generation.component.ts
 
   ngOnInit(): void {
+     
+    // --- ADDED: Check for unlock payment success in URL ---
+    this.route.queryParams.subscribe(params => {
+        const unlockSuccess = params['unlock_success'];
+        const actionId = params['action_id'];
+
+        if (unlockSuccess === 'true' && actionId) {
+            console.log(`Unlock payment successful for action ID: ${actionId}. Finalizing...`);
+            this.finalizeUnlock(parseInt(actionId, 10));
+
+            // Clean the URL to avoid re-triggering this logic on refresh
+            this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: { unlock_success: null, action_id: null },
+                queryParamsHandling: 'merge',
+            });
+        }
+    });
+
+
+
     // --- ADDED: Load user data from JWT for free test logic ---
     this.loadUserDataFromJwt();
 
@@ -232,6 +262,9 @@ export class GenerationComponent implements OnInit {
         this.loadUserBalance();
       }
     });
+
+
+    
 
     // --- MODIFIED: Added a condition to check for a voice_id ---
     this.route.params.subscribe((params) => {
@@ -323,6 +356,18 @@ export class GenerationComponent implements OnInit {
     }
   }
 
+
+   /**
+   
+   * Sets up a bank transfer for an existing LOCKED action.
+   * @param actionId The database ID of the locked action.
+   */
+  setupBankTransferForUnlock(actionId: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<any>(`${this.apiUrl}/${actionId}/setup-bank-transfer-unlock`, {}, { headers });
+  }
+
+
   private updateFreeTestBalance(charactersUsed: number): void {
     if (!this.userUuid || !this.currentUser) {
         console.error("Cannot update balance: User UUID or current user data is missing.");
@@ -384,6 +429,7 @@ export class GenerationComponent implements OnInit {
 
     } else if (this.activeTab === 'request') {
       // For audio request, show balance/payment options (existing logic is maintained)
+      this.paymentMode = 'generate';
       this.showPaymentMethodSelection();
     }
   }
@@ -395,6 +441,16 @@ export class GenerationComponent implements OnInit {
     this.generationError = null;
     this.generationSuccess = false;
     this.audioUrl = null;
+    this.showUnlockPrompt = false;
+    this.lockedActionId = null;
+
+
+     // --- NEW LOGIC: If it's a free test with a project, use the locked flow ---
+    if (this.activeTab === 'free' && this.selectedProject) {
+        console.log("Initiating 'Free Test with Project' locked flow.");
+        this.createLockedAudioAction();
+        return; // Exit here, the rest of the flow is different
+    }
 
     const textLength = this.actionData.text.length; // Capture length before async calls
 
@@ -428,6 +484,113 @@ export class GenerationComponent implements OnInit {
         });
     }
   }
+
+
+   // --- NEW METHODS for the locked audio flow ---
+
+  private createLockedAudioAction() {
+    if (!this.selectedVoice || !this.userId || !this.selectedProject) {
+        this.generationError = "Missing required information (Voice, User, or Project).";
+        this.isGenerating = false;
+        return;
+    }
+
+    const request: ActionRequestLahajati = {
+      text: this.actionData.text,
+      voiceUuid: this.selectedVoice.id,
+      utilisateurUuid: this.userId,
+      language: this.selectedVoice.language,
+      projectUuid: this.selectedProject.uuid,
+    };
+
+    this.actionService.createLockedAction(request).subscribe({
+        next: (response: LockedActionResponse) => {
+            console.log("Locked action created successfully:", response);
+            this.isGenerating = false;
+            this.generationSuccess = true;
+            this.lockedActionId = response.id;
+            this.showUnlockPrompt = true; // This will trigger the UI to show the unlock button
+            this.updateFreeTestBalance(this.actionData.text.length);
+        },
+        error: (err) => {
+            console.error("Error creating locked action:", err);
+            this.isGenerating = false;
+            this.generationError = err.error?.message || "Failed to create locked audio. Please try again.";
+        }
+    });
+  }
+
+  startUnlockPayment() {
+    if (!this.lockedActionId) {
+      this.paymentError = "No locked action to pay for.";
+      return;
+    }
+
+    this.isProcessingUnlock = true;
+    this.paymentError = null;
+
+    this.actionService.initiateUnlockPayment(this.lockedActionId).subscribe({
+        next: (response) => {
+            this.isProcessingUnlock = false;
+            
+            // --- THIS IS THE FIX ---
+            // The buggy URL manipulation code is gone.
+            // We now simply redirect the user to the approval URL.
+            // The backend will handle redirecting the user back to this page.
+            if (response.approvalUrl) {
+                window.location.href = response.approvalUrl;
+            } else {
+                this.paymentError = "Failed to get payment approval URL from the server.";
+                this.isProcessingUnlock = false;
+            }
+        },
+        error: (err) => {
+            console.error("Error initiating unlock payment:", err);
+            this.paymentError = err.error?.error || "Failed to start payment process.";
+            this.isProcessingUnlock = false;
+        }
+    });
+  }
+
+  finalizeUnlock(actionId: number) {
+    this.isGenerating = true;
+    this.generationSuccess = true;
+    this.showUnlockPrompt = false;
+
+    const pollInterval = setInterval(() => {
+        this.actionService.getActionStatus(actionId).subscribe(action => {
+            if (action.statutAction === 'GENERE' && action.audioGenerated) {
+                clearInterval(pollInterval);
+                this.isGenerating = false;
+                try {
+                    const byteCharacters = atob(action.audioGenerated);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                      byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const audioBlob = new Blob([byteArray], { type: 'audio/mpeg' });
+                    const objectUrl = URL.createObjectURL(audioBlob);
+                    this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+                    console.log("SUCCESS: Audio loaded from unlocked action.");
+                  } catch (e) {
+                    this.generationError = "Failed to process unlocked audio data from server.";
+                  }
+            } else {
+                console.log("Polling... action status is still:", action.statutAction);
+            }
+        });
+    }, 2000);
+
+    setTimeout(() => {
+      clearInterval(pollInterval);
+      if (this.isGenerating) {
+          this.isGenerating = false;
+          this.generationError = "Could not verify audio unlock in time. Please refresh the page.";
+      }
+    }, 30000);
+  }
+
 
   // MODIFIED: generateDarijaAudio to accept callbacks
   generateDarijaAudio(onSuccess: (blob: Blob) => void, onError: (error: any) => void) {
@@ -786,14 +949,92 @@ export class GenerationComponent implements OnInit {
     this.paymentError = null
   }
 
+ // REPLACE the old proceedWithPayment() with this:
   proceedWithPayment() {
     if (!this.selectedPaymentMethod) {
-      this.paymentError = "Please select a payment method"
-      return
+      this.paymentError = "Please select a payment method";
+      return;
     }
 
-    this.executeSelectedPayment()
+    // This is the new routing logic
+    if (this.paymentMode === 'unlock') {
+      this.executeSelectedUnlockPayment();
+    } else {
+      // This calls the original logic for generating new paid audio
+      this.executeSelectedPayment();
+    }
   }
+
+
+  openUnlockPaymentModal() {
+    this.paymentMode = 'unlock'; // Set mode for unlocking
+    this.paymentError = null;
+    // You must have a way to calculate the price. Let's assume a function.
+    this.calculatedPrice = this.price * this.actionData.text.length;
+    this.showPaymentMethodModal = true;
+  }
+
+  // --- NEW: Logic router specifically for the UNLOCK flow ---
+  private executeSelectedUnlockPayment() {
+    this.isProcessingPayment = true; // Use the existing loader flag
+    this.paymentError = null;
+
+    if (this.selectedPaymentMethod === 'paypal') {
+        this.processUnlockWithPayPal();
+    } else if (this.selectedPaymentMethod === 'verment') {
+        this.processUnlockWithBankTransfer();
+    } else if (this.selectedPaymentMethod === 'card') {
+        this.paymentError = "Card payment for unlocking is not implemented yet.";
+        this.isProcessingPayment = false;
+    }
+  }
+
+  // --- NEW: PayPal logic for UNLOCKING ---
+  private processUnlockWithPayPal() {
+    if (!this.lockedActionId) {
+      this.paymentError = "Error: No locked action ID found to pay for.";
+      this.isProcessingPayment = false;
+      return;
+    }
+
+    this.actionService.initiateUnlockPayment(this.lockedActionId).subscribe({
+      next: (response) => {
+        if (response.approvalUrl) {
+          window.location.href = response.approvalUrl;
+        } else {
+          this.paymentError = "Failed to get payment approval URL from the server.";
+        }
+        this.isProcessingPayment = false;
+      },
+      error: (err) => {
+        this.paymentError = err.error?.error || "Failed to start PayPal unlock process.";
+        this.isProcessingPayment = false;
+      }
+    });
+  }
+
+  // --- NEW: Bank Transfer logic for UNLOCKING ---
+  private processUnlockWithBankTransfer() {
+    if (!this.lockedActionId) {
+      this.paymentError = "Error: No locked action ID found to set up transfer.";
+      this.isProcessingPayment = false;
+      return;
+    }
+
+    this.actionService.setupBankTransferForUnlock(this.lockedActionId).subscribe({
+      next: (response: BankTransferResponse) => {
+        this.bankTransferDetails = response;
+        this.closePaymentMethodModal();
+        this.showBankTransferModal = true;
+        this.isProcessingPayment = false;
+      },
+      error: (err) => {
+        this.paymentError = err.error?.message || "Failed to set up bank transfer for unlock.";
+        this.isProcessingPayment = false;
+      }
+    });
+  }
+
 
   private executeSelectedPayment() {
     if (this.selectedPaymentMethod === "paypal") {

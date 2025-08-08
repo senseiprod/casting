@@ -4,6 +4,8 @@ import com.example.senseiVoix.dtos.action.ActionRequest;
 import com.example.senseiVoix.dtos.action.ActionResponse;
 import com.example.senseiVoix.dtos.action.BankTransferResponse;
 import com.example.senseiVoix.entities.Action;
+import com.example.senseiVoix.entities.Utilisateur;
+import com.example.senseiVoix.enumeration.StatutAction;
 import com.example.senseiVoix.repositories.ActionRepository;
 import com.example.senseiVoix.services.serviceImp.ActionServiceImpl;
 import com.example.senseiVoix.services.serviceImp.PaypalService;
@@ -11,11 +13,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +35,9 @@ import com.example.senseiVoix.services.NotificationService;
 @CrossOrigin(origins = "*")
 public class ActionController {
 
+
+    @Value("${app.frontend.url}")
+    private String frontendBaseUrl;
 
     private static final Logger log = LoggerFactory.getLogger(ActionController.class);
 
@@ -570,22 +579,7 @@ public class ActionController {
     }
 
 
-    /**
-     * Gets the current status of an action.
-     * This is used by the frontend to poll for payment completion.
-     * @param actionId The ID of the action to check.
-     * @return The Action entity with its current status.
-     */
-    @GetMapping("/status/{actionId}")
-    public ResponseEntity<Action> getActionStatus(@PathVariable Long actionId) {
-        Action action = actionRepository.findById(actionId)
-                .orElse(null);
 
-        if (action == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(action);
-    }
 
     @PostMapping("/set-balance")
     public ResponseEntity<?> setClientBalance(@RequestParam String uuid, @RequestParam Double balance) {
@@ -637,4 +631,190 @@ public class ActionController {
                     .body("Error generating Lahajati audio: " + e.getMessage());
         }
     }
+
+
+    // ############# NEW WORKFLOW FOR FREE-BUT-LOCKED AUDIO ##########
+    // ###############################################################
+
+    @PostMapping("/create-locked-action")
+    public ResponseEntity<ActionResponse> createLockedAction(@RequestBody ActionRequest actionRequest) {
+        try {
+            Action lockedAction = actionService.createLockedAction(actionRequest);
+
+            // Create a response DTO, but DO NOT include the audio bytes
+            ActionResponse response = new ActionResponse();
+            response.setUuid(lockedAction.getUuid());
+            response.setStatutAction(lockedAction.getStatutAction());
+            // Return the database ID, which is crucial for the payment flow
+            // Let's add the ID to the response DTO for this purpose.
+            // You might need to add `private Long id;` to your ActionResponse DTO.
+            // For now, let's use a Map for simplicity.
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("id", lockedAction.getId());
+            responseMap.put("uuid", lockedAction.getUuid());
+            responseMap.put("status", lockedAction.getStatutAction());
+            responseMap.put("message", "Locked action created successfully. Awaiting payment to unlock.");
+
+            return new ResponseEntity(responseMap, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/{actionId}/initiate-unlock-payment")
+    public ResponseEntity<Map<String, Object>> initiateUnlockPayment(@PathVariable Long actionId) {
+        try {
+            Action action = actionRepository.findById(actionId)
+                    .orElseThrow(() -> new RuntimeException("Action not found"));
+
+            if (action.getStatutAction() != StatutAction.LOCKED) {
+                return ResponseEntity.badRequest().body(Map.of("error", "This action is not locked or does not require payment."));
+            }
+
+            double price = actionService.calculatePrice(action.getText());
+            if (price < 0.01) price = 0.01;
+
+            Payment payment = paypalService.createPayment(
+                    price,
+                    "USD",
+                    "Unlock Audio Generation",
+                    // NOTE: Using a distinct cancel URL path
+                    "http://localhost:8080/api/actions/payment/unlock/cancel/" + action.getId(),
+                    // NOTE: Using a distinct success URL path
+                    "http://localhost:8080/api/actions/payment/unlock/success/" + action.getId()
+            );
+
+            String approvalUrl = payment.getLinks().stream()
+                    .filter(link -> "approval_url".equals(link.getRel()))
+                    .findFirst()
+                    .map(link -> link.getHref())
+                    .orElseThrow(() -> new PayPalRESTException("Approval URL not found"));
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("actionId", action.getId());
+            response.put("approvalUrl", approvalUrl);
+            response.put("price", price);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error initiating unlock payment for actionId {}", actionId, e);
+            return ResponseEntity.badRequest().body(Map.of("error", "Failed to initiate unlock payment: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/payment/unlock/success/{actionId}")
+    public ResponseEntity<Void> unlockPaymentSuccess(
+            @PathVariable Long actionId,
+            @RequestParam("paymentId") String paymentId,
+            @RequestParam("PayerID") String payerId) {
+
+        String errorRedirectPath = "/error"; // A default path in case we can't find the user
+
+        try {
+            Payment payment = paypalService.executePayment2(paymentId, payerId);
+
+            if ("approved".equals(payment.getState())) {
+                // Unlock the action and get the updated entity, which contains the user
+                Action unlockedAction = actionService.unlockActionAfterPayment(actionId);
+                Utilisateur user = unlockedAction.getUtilisateur();
+
+                if (user == null || user.getUuid() == null) {
+                    log.error("CRITICAL: User not found for unlocked actionId {}. Redirecting to default error page.", actionId);
+                    // Redirect to a generic error page if user is missing
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setLocation(URI.create(frontendBaseUrl + errorRedirectPath));
+                    return new ResponseEntity<>(headers, HttpStatus.FOUND);
+                }
+
+                // --- THIS IS THE FIX ---
+                // Dynamically build the correct, user-specific redirect URL
+                String userUuid = user.getUuid();
+                String successRedirectUrl = String.format(
+                        "%s/speakerDasboard/%s/demande-generation?unlock_success=true&action_id=%d",
+                        frontendBaseUrl,
+                        userUuid,
+                        actionId
+                );
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setLocation(URI.create(successRedirectUrl));
+                return new ResponseEntity<>(headers, HttpStatus.FOUND);
+
+            } else {
+                // If payment fails, redirect back with an error message
+                String failureRedirectUrl = frontendBaseUrl + errorRedirectPath + "?error=payment_not_approved";
+                HttpHeaders headers = new HttpHeaders();
+                headers.setLocation(URI.create(failureRedirectUrl));
+                return new ResponseEntity<>(headers, HttpStatus.FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Error executing unlock payment for actionId {}", actionId, e);
+            // On critical error, redirect back with an error message
+            String failureRedirectUrl = frontendBaseUrl + errorRedirectPath + "?error=payment_execution_failed";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create(failureRedirectUrl));
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        }
+    }
+
+    // You can add a cancel endpoint if desired, for now it can be a no-op
+    @GetMapping("/payment/unlock/cancel/{actionId}")
+    public ResponseEntity<Map<String, Object>> unlockPaymentCancel(@PathVariable Long actionId) {
+        return ResponseEntity.ok(Map.of("message", "Unlock payment cancelled for action " + actionId));
+    }
+
+
+    @PostMapping("/{actionId}/setup-bank-transfer-unlock")
+    public ResponseEntity<BankTransferResponse> setupBankTransferForUnlock(@PathVariable Long actionId) {
+        try {
+            Action action = actionRepository.findById(actionId)
+                    .orElseThrow(() -> new RuntimeException("Action not found with ID: " + actionId));
+
+            if (action.getStatutAction() != StatutAction.LOCKED) {
+                // You could return an error, but creating a response for a completed action is also fine.
+                BankTransferResponse errorResponse = new BankTransferResponse();
+                errorResponse.setMessage("This action is not locked or has already been processed.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // Use the existing service method to generate the bank transfer details and libelle
+            BankTransferResponse response = actionService.createBankTransferResponse(action, action.getText());
+
+            // The action's status remains LOCKED until an admin validates the transfer
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error setting up bank transfer for unlock on actionId {}: {}", actionId, e.getMessage());
+            BankTransferResponse errorResponse = new BankTransferResponse();
+            errorResponse.setMessage("Failed to setup bank transfer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**
+     * MODIFIED
+     * Gets the current status of an action.
+     * This is used by the frontend to poll for payment completion.
+     * @param actionId The ID of the action to check.
+     * @return The Action entity with its current status.
+     */
+    @GetMapping("/status/{actionId}")
+    public ResponseEntity<Action> getActionStatus(@PathVariable Long actionId) {
+        Action action = actionRepository.findById(actionId)
+                .orElse(null);
+
+        if (action == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // --- SECURITY MODIFICATION ---
+        // If the action is locked, do not send the audio data.
+        if (action.getStatutAction() == StatutAction.LOCKED) {
+            action.setAudioGenerated(null);
+        }
+
+        return ResponseEntity.ok(action);
+    }
+
 }

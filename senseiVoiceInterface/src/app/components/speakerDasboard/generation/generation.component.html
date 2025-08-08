@@ -163,60 +163,109 @@
             </div>
 
             <!-- Custom Audio Player -->
-            <div class="custom-audio-player" *ngIf="audioUrl">
-              <audio #audioPlayer 
-                     [src]="audioUrl" 
-                     (loadedmetadata)="onAudioLoaded()" 
-                     (timeupdate)="onTimeUpdate()" 
-                     (ended)="onAudioEnded()"
-                     (error)="onAudioError($event)"
-                     style="display: none;"
-                     preload="metadata">
-              </audio>
-              <div class="audio-player-container">
-                <div class="audio-player-header">
-                  <div class="audio-voice-info">
-                    <img [src]="selectedVoice.avatar" [alt]="selectedVoice.name" class="audio-voice-avatar">
-                    <div class="audio-voice-details">
-                      <span class="audio-voice-name">{{ selectedVoice.name }}</span>
-                      <span class="audio-voice-type">{{ selectedVoice.type }} • {{ selectedVoice.language }}</span>
-                    </div>
-                  </div>
-                  <div class="audio-time-display">
-                    <span class="current-time">{{ formatTime(currentTime) }}</span>
-                    <span class="time-separator">/</span>
-                    <span class="total-time">{{ formatTime(duration) }}</span>
-                  </div>
-                </div>
-                <div class="audio-waveform-container">
-                  <div class="audio-waveform-bars">
-                    <div class="audio-waveform-bar" *ngFor="let bar of waveformBars" [style.height.%]="isAudioPlaying ? bar : 20"></div>
-                  </div>
-                </div>
-                <div class="audio-progress-container" (click)="seekAudio($event)">
-                  <div class="audio-progress-bar">
-                    <div class="audio-progress-fill" [style.width.%]="progressPercentage"></div>
-                    <div class="audio-progress-handle" [style.left.%]="progressPercentage"></div>
-                  </div>
-                </div>
-                <div class="audio-controls">
-                  <button class="audio-play-btn" (click)="togglePlayPause()" [disabled]="!audioUrl">
-                    <i class="bi" [ngClass]="isAudioPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
-                  </button>
-                  <div class="audio-volume-controls">
-                    <button class="volume-btn" (click)="toggleMute()">
-                      <i class="bi" [ngClass]="volumeIcon"></i>
-                    </button>
-                    <input type="range" 
-                           class="volume-slider" 
-                           min="0" 
-                           max="100" 
-                           [(ngModel)]="volume" 
-                           (input)="setVolume($event)">
-                  </div>
-                </div>
-              </div>
+            <!-- PASTE THIS NEW CODE BLOCK HERE -->
+
+<!-- Custom Audio Player (Now conditionally shown) -->
+<div class="custom-audio-player" *ngIf="audioUrl && !showUnlockPrompt">
+    <audio #audioPlayer 
+           [src]="audioUrl" 
+           (loadedmetadata)="onAudioLoaded()" 
+           (timeupdate)="onTimeUpdate()" 
+           (ended)="onAudioEnded()"
+           (error)="onAudioError($event)"
+           style="display: none;"
+           preload="metadata">
+    </audio>
+    <div class="audio-player-container">
+        <div class="audio-player-header">
+          <div class="audio-voice-info">
+            <img [src]="selectedVoice.avatar" [alt]="selectedVoice.name" class="audio-voice-avatar">
+            <div class="audio-voice-details">
+              <span class="audio-voice-name">{{ selectedVoice.name }}</span>
+              <span class="audio-voice-type">{{ selectedVoice.type }} • {{ selectedVoice.language }}</span>
             </div>
+          </div>
+          <div class="audio-time-display">
+            <span class="current-time">{{ formatTime(currentTime) }}</span>
+            <span class="time-separator">/</span>
+            <span class="total-time">{{ formatTime(duration) }}</span>
+          </div>
+        </div>
+        <div class="audio-waveform-container">
+          <div class="audio-waveform-bars">
+            <div class="audio-waveform-bar" *ngFor="let bar of waveformBars" [style.height.%]="isAudioPlaying ? bar : 20"></div>
+          </div>
+        </div>
+        <div class="audio-progress-container" (click)="seekAudio($event)">
+          <div class="audio-progress-bar">
+            <div class="audio-progress-fill" [style.width.%]="progressPercentage"></div>
+            <div class="audio-progress-handle" [style.left.%]="progressPercentage"></div>
+          </div>
+        </div>
+        <div class="audio-controls">
+          <button class="audio-play-btn" (click)="togglePlayPause()" [disabled]="!audioUrl">
+            <i class="bi" [ngClass]="isAudioPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+          </button>
+          <div class="audio-volume-controls">
+            <button class="volume-btn" (click)="toggleMute()">
+              <i class="bi" [ngClass]="volumeIcon"></i>
+            </button>
+            <input type="range" 
+                   class="volume-slider" 
+                   min="0" 
+                   max="100" 
+                   [(ngModel)]="volume" 
+                   (input)="setVolume($event)">
+          </div>
+        </div>
+    </div>
+</div>
+
+<!-- Generation Status Messages -->
+<div class="generation-status" *ngIf="generationSuccess || generationError || isGenerating || freeTestError">
+    <!-- Loading Spinner -->
+    <div *ngIf="isGenerating" class="alert alert-info d-flex align-items-center">
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+        {{ 'generation.generating' | translate }}
+    </div>
+
+    <!-- Success Message & Unlock Prompt -->
+    <div *ngIf="generationSuccess && !isGenerating">
+        
+        <!-- NEW: Unlock Prompt for Free Test with Project -->
+        <div *ngIf="showUnlockPrompt" class="alert alert-success unlock-prompt">
+            <div class="unlock-prompt-content">
+                <i class="bi bi-lock-fill me-3 fs-4"></i>
+                <div>
+                    <strong>Audio généré et sauvegardé!</strong>
+                    <p class="mb-0">Votre test gratuit a été sauvegardé dans votre projet. Déverrouillez-le pour l'écouter et le télécharger.</p>
+                </div>
+            </div>
+           <button class="btn btn-primary btn-unlock" 
+            (click)="openUnlockPaymentModal()" 
+            [disabled]="isProcessingPayment">
+        <i class="bi" [ngClass]="isProcessingPayment ? 'bi-hourglass-split' : 'bi-unlock-fill'"></i>
+        {{ isProcessingPayment ? 'Traitement...' : 'Déverrouiller l\'audio' }}
+    </button>
+        </div>
+
+        <!-- Regular Success Message (for non-project free tests OR after unlocking) -->
+        <div *ngIf="!showUnlockPrompt && audioUrl" class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>
+            Génération réussie! Votre audio est prêt dans le lecteur ci-dessus.
+        </div>
+    </div>
+    
+    <!-- Error Messages -->
+    <div class="alert alert-danger" *ngIf="generationError">
+        <i class="bi bi-exclamation-triangle me-2"></i> {{ generationError }}
+    </div>
+    <div class="alert alert-danger" *ngIf="freeTestError">
+        <i class="bi bi-exclamation-octagon-fill me-2"></i> <strong>{{ freeTestError }}</strong>
+    </div>
+</div>
+
+<!-- END OF THE NEW CODE BLOCK -->
 
             <!-- Generation Status Messages -->
             <div class="generation-status" *ngIf="generationSuccess || generationError">
