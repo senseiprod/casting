@@ -679,9 +679,9 @@ public class ActionController {
                     "USD",
                     "Unlock Audio Generation",
                     // NOTE: Using a distinct cancel URL path
-                    "http://localhost:8080/api/actions/payment/unlock/cancel/" + action.getId(),
+                    "https://api.castingvoixoff.ma/api/actions/payment/unlock/cancel/" + action.getId(),
                     // NOTE: Using a distinct success URL path
-                    "http://localhost:8080/api/actions/payment/unlock/success/" + action.getId()
+                    "https://api.castingvoixoff.ma/api/actions/payment/unlock/success/" + action.getId()
             );
 
             String approvalUrl = payment.getLinks().stream()

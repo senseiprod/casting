@@ -7,7 +7,7 @@ import { SpeakerProfileResponse } from '../models/speaker-profile.model';
   providedIn: 'root'
 })
 export class SpeakerProfileService {
-  private baseUrl = 'http://localhost:8080/api/speaker-profiles';
+  private baseUrl = 'https://api.castingvoixoff.ma/api/speaker-profiles';
 
   constructor(private http: HttpClient) {}
 

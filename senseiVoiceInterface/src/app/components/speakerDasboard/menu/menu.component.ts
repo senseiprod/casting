@@ -350,7 +350,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   // Navigation methods
   navigateToHome(): void {
     if (this.userId) {
-      this.router.navigate([`http://localhost:4201/`])
+      this.router.navigate([`https://castingvoixoff.ma/`])
     } else {
       this.router.navigate(["/"])
     }

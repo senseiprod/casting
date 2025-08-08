@@ -80,7 +80,7 @@ interface BankTransferResponse {
 })
 export class GenerationComponent implements OnInit {
   // --- ADDED: Properties for Free Test Logic ---
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = 'https://api.castingvoixoff.ma';
   private userUuid: string | null = null;
   private currentUser: Utilisateur | null = null;
   public freeTestError: string | null = null; // Public for template access
