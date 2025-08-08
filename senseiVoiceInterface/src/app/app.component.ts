@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core'; // <-- Import the core TranslateService
 import { AuthService } from './services/auth.service';
+import { ClientResponse } from './services/client-service.service';
 // Your custom TranslationService is likely used elsewhere, which is fine.
 // We just need the core TranslateService here for its events.
 
@@ -12,6 +13,7 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit { // <-- Implement OnInit
+     client : ClientResponse;
     
     constructor(
       private router: Router,
@@ -27,6 +29,9 @@ export class AppComponent implements OnInit { // <-- Implement OnInit
     }
 
   ngOnInit(): void {
+    this.authService.getUserConnect().subscribe((client: ClientResponse) => {
+      this.client = client;
+    });
     // === Your existing logic (unchanged) ===
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -34,7 +39,7 @@ export class AppComponent implements OnInit { // <-- Implement OnInit
       window.scrollTo({ top: 0, behavior: 'smooth' });
       this.authService.checkSession();
     });
-
+    
     // === NEW: Logic for persistent RTL/LTR direction ===
     // 1. Listen for language changes from anywhere in the app
     this.translate.onLangChange.subscribe((event: { lang: string }) => {
