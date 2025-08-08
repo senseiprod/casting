@@ -1,9 +1,14 @@
 package com.example.senseiVoix.dtos.audio;
 
 import com.example.senseiVoix.enumeration.TypeAudio;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AudioResponse {
     public TypeAudio getTypeAudio() {
         return typeAudio;
@@ -20,7 +25,11 @@ public class AudioResponse {
     public String getSpeakerUuid() {
         return speakerUuid;
     }
-
+    private String speakerName;
+        // Additional computed fields
+    private Long fileSizeInBytes;
+    private String fileSizeFormatted; // e.g., "2.5 MB"
+    private Boolean hasAudioFile;
     public AudioResponse(Long id, String speakerUuid, String format, byte[] audioFile, TypeAudio typeAudio) {
         this.id = id;
         this.speakerUuid = speakerUuid;

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,9 +27,10 @@ public class Speaker extends Utilisateur {
     public void setEarnings(double earnings) {
         this.earnings = earnings;
     }
+    
     @JsonIgnore
     @OneToMany(mappedBy = "speaker", cascade = CascadeType.ALL)
-    private List<Voix> voix;
+    private List<Voix2> voix;
 
     public Boolean getActiveTextValidation() {
         return activeTextValidation;
@@ -38,14 +40,17 @@ public class Speaker extends Utilisateur {
         this.activeTextValidation = activeTextValidation;
     }
 
-    private Boolean activeTextValidation ;
+    private Boolean activeTextValidation;
+    
     @JsonIgnore
     @OneToMany(mappedBy = "speaker", cascade = CascadeType.ALL)
     private List<Audio> audios;
+    
     @JsonIgnore
     @OneToMany(mappedBy = "preferedVoice", cascade = CascadeType.ALL)
     private List<Project> projects;
-    private String banckRib ;
+    
+    private String banckRib;
 
     public String getBanckRib() {
         return banckRib;
@@ -71,10 +76,35 @@ public class Speaker extends Utilisateur {
         this.gender = gender;
     }
 
-    private Integer age ;
-    private String gender ;
+    private Integer age;
+    private String gender;
 
     @JsonIgnore
     @OneToMany(mappedBy = "speaker", cascade = CascadeType.ALL)
     private List<ReservationSpeaker> reservationSpeakers;
+    
+    // New language relationship
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "speaker_languages",
+        joinColumns = @JoinColumn(name = "speaker_id"),
+        inverseJoinColumns = @JoinColumn(name = "language_id")
+    )
+    private List<Language> languages = new ArrayList<>();
+    
+    // Helper methods for language management
+    public void addLanguage(Language language) {
+        if (languages == null) {
+            languages = new ArrayList<>();
+        }
+        if (!languages.contains(language)) {
+            languages.add(language);
+        }
+    }
+    
+    public void removeLanguage(Language language) {
+        if (languages != null) {
+            languages.remove(language);
+        }
+    }
 }
